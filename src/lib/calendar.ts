@@ -184,7 +184,14 @@ export async function upcomingCalendar(
     where ${sql.join(conditions, sql` and `)}
     -- Une exposition commencée en juin n'a pas à s'afficher avant les activités de demain
     -- sous prétexte qu'elle a commencé avant : ce qui compte, c'est la prochaine occasion.
-    order by greatest(e.starts_at, now()) asc, e.starts_at asc
+    --
+    -- Entre deux activités déjà commencées, toutes égales sur ce critère, c'est la fin qui
+    -- départage : celle qui ferme samedi passe avant celle qui dure jusqu'en octobre.
+    -- Sans cela, l'ordre entre elles était celui que la base voulait bien rendre.
+    order by
+      greatest(e.starts_at, now()) asc,
+      coalesce(e.ends_at, e.starts_at + interval '2 hours') asc,
+      e.starts_at asc
     limit ${limit}
   `);
 

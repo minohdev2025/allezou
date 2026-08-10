@@ -45,7 +45,12 @@ export default async function Maintenant() {
       {cercles.length === 0 ? (
         <Vide emoji="🫱" titre="Aucun cercle pour l'instant">
           <p className="mb-4">C&apos;est là que se partagent les sorties.</p>
-          <LienBouton href="/cercles">Créer un cercle</LienBouton>
+          {/*
+            « Rejoindre ou créer » et pas « créer » : on arrive presque toujours ici parce
+            qu'on a été invité. Envoyer d'emblée vers la création ferait fabriquer un cercle
+            vide à quelqu'un qui a déjà le lien du bon dans ses messages.
+          */}
+          <LienBouton href="/cercles">Rejoindre ou créer un cercle</LienBouton>
         </Vide>
       ) : (
         <>

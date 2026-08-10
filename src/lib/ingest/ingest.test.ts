@@ -67,7 +67,16 @@ describe("Lecture du JSON-LD (format réel de geneve.ch)", () => {
     expect(event.title).toBe("Concert à La Chaloupe à Vapeur !");
     expect(event.startsAt.toISOString()).toBe("2026-08-09T14:00:00.000Z");
     expect(event.endsAt?.toISOString()).toBe("2026-08-09T16:00:00.000Z");
-    expect(event.placeLabel).toBe("La Chaloupe à vapeur, Rue de Lausanne 126");
+    // Le nom seul : l'adresse postale de la source tenait une ligne de plus sur un
+    // téléphone, avec les patronymes en capitales tels qu'elle les écrit.
+    expect(event.placeLabel).toBe("La Chaloupe à vapeur");
+  });
+
+  it("retombe sur l'adresse quand le lieu n'a pas de nom", () => {
+    const sansNom = page.replace('"name":"La Chaloupe à vapeur",', "");
+    const [event] = eventsFromHtml(sansNom, "https://example.test");
+
+    expect(event.placeLabel).toBe("Rue de Lausanne 126");
   });
 
   it("ignore un bloc sans date plutôt que d'inventer", () => {

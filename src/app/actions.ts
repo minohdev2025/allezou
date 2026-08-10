@@ -160,10 +160,40 @@ export async function inviterAutreParent() {
   redirect(`/compte?coparent=${token}`);
 }
 
+/**
+ * Le code d'un lien, qu'on ait collé le lien entier ou seulement le code.
+ *
+ * Ce qu'on reçoit par message, c'est « https://totir.ch/rejoindre/ab12… », souvent avec une
+ * ponctuation collée au bout par la messagerie. Exiger le code nu ferait échouer le geste le
+ * plus naturel — coller ce qu'on a reçu — et l'erreur n'en dirait pas la raison.
+ */
+function codeDuLien(saisie: string): string {
+  const sansSuite = saisie.trim().split(/[?#]/)[0];
+  const segments = sansSuite.split("/").filter(Boolean);
+  return (segments.pop() ?? "").replace(/[.,;:)\]}>]+$/, "");
+}
+
 export async function accepterCoparent(formData: FormData) {
   const account = await requireAccount();
-  const result = await acceptCoparent(account.id, String(formData.get("jeton") ?? ""));
+  const result = await acceptCoparent(
+    account.id,
+    codeDuLien(String(formData.get("jeton") ?? "")),
+  );
   redirect(result.ok ? "/compte" : `/compte?erreur=${result.reason}`);
+}
+
+/**
+ * Entrer par un lien d'invitation qu'on a sous les yeux plutôt qu'en le suivant.
+ *
+ * Un lien passé par message se recopie de travers, se coupe en deux, ou arrive dans une
+ * application qui refuse de l'ouvrir. Sans cette porte, la seule issue est de redemander le
+ * lien à quelqu'un — et il ne peut pas le réafficher.
+ */
+export async function rejoindreParLien(formData: FormData) {
+  await requireAccount();
+  const code = codeDuLien(String(formData.get("lien") ?? ""));
+  if (!code) redirect("/cercles?erreur=lien_vide");
+  redirect(`/rejoindre/${encodeURIComponent(code)}`);
 }
 
 /**
@@ -197,6 +227,24 @@ export async function creerCercle(formData: FormData) {
  * serveur et dans le référent des liens sortants. Le jeton voyage donc dans un cookie de
  * courte durée, lu une fois par la page qui l'affiche, puis oublié de lui-même.
  */
+/**
+ * Porte le jeton fraîchement créé jusqu'à l'écran qui l'affiche.
+ *
+ * Par un cookie et non par l'URL : une barre d'adresse se retrouve dans l'historique, dans
+ * les journaux du proxy et dans le référent des liens sortants. Cinq minutes suffisent, et
+ * c'est la seule fenêtre où le jeton existe en clair — seul son condensé est enregistré.
+ */
+async function poserJetonInvitation(circleId: string, token: string): Promise<void> {
+  const cookieStore = await cookies();
+  cookieStore.set(COOKIE_INVITATION, token, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: `/cercles/${circleId}`,
+    maxAge: 300,
+  });
+}
+
 export async function creerInvitation(formData: FormData) {
   const account = await requireAccount();
   const circleId = String(formData.get("cercle") ?? "");
@@ -210,15 +258,32 @@ export async function creerInvitation(formData: FormData) {
   });
   if (!result.ok) redirect(`/cercles/${circleId}?erreur=${result.reason}`);
 
-  const cookieStore = await cookies();
-  cookieStore.set(COOKIE_INVITATION, result.value.token, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    path: `/cercles/${circleId}`,
-    maxAge: 300,
-  });
+  await poserJetonInvitation(circleId, result.value.token);
+  redirect(`/cercles/${circleId}?invitation=1`);
+}
 
+/**
+ * Refaire un lien à la place d'un autre.
+ *
+ * Un lien ne s'affiche qu'une fois. L'administrateur à qui une famille redemande « le lien »
+ * n'a donc pas d'autre issue que d'en refaire un — et s'il révoque puis recrée en deux
+ * gestes, il perd entre-temps le nombre de familles qu'il avait annoncé. En un seul geste,
+ * la portée est reprise et la conséquence peut être écrite à côté du bouton : l'ancien lien
+ * cesse de fonctionner pour tout le monde, y compris ceux à qui il avait déjà été transmis.
+ */
+export async function remplacerInvitation(formData: FormData) {
+  const account = await requireAccount();
+  const circleId = String(formData.get("cercle") ?? "");
+  const nombre = Number(formData.get("familles"));
+
+  await revokeInvite(account.id, String(formData.get("invitation") ?? ""));
+
+  const result = await createInvite(account.id, circleId, {
+    maxUses: Number.isFinite(nombre) ? nombre : undefined,
+  });
+  if (!result.ok) redirect(`/cercles/${circleId}?erreur=${result.reason}`);
+
+  await poserJetonInvitation(circleId, result.value.token);
   redirect(`/cercles/${circleId}?invitation=1`);
 }
 
@@ -484,9 +549,16 @@ export async function declarerSortie(formData: FormData) {
   // Le champ « quand » est vide quand on y est déjà : la sortie commence alors maintenant.
   const debut = heureDeGeneve(formData.get("debut")?.toString());
 
+  /*
+    Les cercles cochés à l'écran font foi, y compris quand il n'y en a aucun : c'est alors
+    `aucun_destinataire` et non un repli silencieux sur les réglages par défaut. Une sortie
+    publiée vers un cercle qu'on croyait avoir décoché est exactement la faute que l'écran
+    cherche à rendre impossible.
+  */
   const result = await declarePresence(account.id, {
     placeId: String(formData.get("lieu") ?? ""),
     minutes: Number(formData.get("duree") ?? 120),
+    circleIds: formData.getAll("cercle").map(String),
     childIds: formData.getAll("enfant").map(String),
     startsAt: debut ?? undefined,
   });

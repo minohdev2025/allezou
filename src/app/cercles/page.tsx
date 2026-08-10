@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { estRelecteur, requireAccount } from "@/lib/session";
 import { readerCircles } from "@/lib/visibility";
-import { creerCercle, seDeconnecter } from "../actions";
+import { creerCercle, rejoindreParLien, seDeconnecter } from "../actions";
 import {
   Alerte,
   Bouton,
@@ -14,8 +14,62 @@ import {
   Navigation,
   Pastille,
   Titre,
+  Vide,
   teinte,
 } from "../ui";
+
+const MESSAGES: Record<string, string> = {
+  "1": "Il faut un nom de cercle.",
+  lien_vide: "Collez le lien que vous avez reçu, ou seulement le code qu'il contient.",
+};
+
+/**
+ * Les deux façons d'avoir un cercle, données comme deux gestes distincts.
+ *
+ * Elles ne se valent pas selon le moment : quelqu'un qui ouvre l'application pour la
+ * première fois y arrive presque toujours parce qu'on l'a invité, alors que quelqu'un qui a
+ * déjà des cercles vient plus souvent en créer un. L'ordre suit ce constat.
+ */
+function CarteInvitation({ mise = "second" }: { mise?: "principal" | "second" }) {
+  return (
+    <Carte accent="bleu">
+      <form action={rejoindreParLien} className="space-y-5">
+        <Champ
+          label="J'ai reçu une invitation"
+          aide="Collez le lien reçu par message — ou seulement le code qu'il contient."
+          name="lien"
+          required
+          autoComplete="off"
+          placeholder="https://…/rejoindre/…"
+        />
+        <Bouton type="submit" variante={mise}>
+          Suivre l&apos;invitation
+        </Bouton>
+      </form>
+    </Carte>
+  );
+}
+
+function CarteCreation() {
+  return (
+    <Carte accent="rose">
+      <form action={creerCercle} className="space-y-5">
+        <Champ
+          label="Créer un cercle"
+          aide="Vous en serez l'administrateur : c'est vous qui validerez les entrées."
+          name="nom"
+          required
+          maxLength={60}
+          placeholder="Classe de 4P"
+        />
+        <Bouton type="submit" variante="second">
+          <IconePlus className="h-5 w-5" />
+          Créer
+        </Bouton>
+      </form>
+    </Carte>
+  );
+}
 
 export default async function Cercles({
   searchParams,
@@ -33,7 +87,24 @@ export default async function Cercles({
         Vos cercles
       </Titre>
 
-      {erreur ? <Alerte ton="erreur">Il faut un nom de cercle.</Alerte> : null}
+      {erreur ? (
+        <Alerte ton="erreur">{MESSAGES[erreur] ?? "Cela n'a pas marché."}</Alerte>
+      ) : null}
+
+      {cercles.length === 0 ? (
+        /*
+          Un formulaire nu ne dit pas à quoi sert ce qu'il demande. Quelqu'un qui arrive ici
+          au sortir de l'inscription n'a encore rien vu de l'application : l'écran doit dire
+          ce qu'est un cercle, et pourquoi il ne se passera rien tant qu'il n'en a pas.
+        */
+        <Vide emoji="🫂" titre="Vous n'avez encore aucun cercle">
+          <p className="leading-snug">
+            Un cercle, c&apos;est une classe, une école, un voisinage : les familles à qui
+            vos sorties seront visibles. Tant qu&apos;il n&apos;y en a aucun, personne ne
+            voit les vôtres et vous ne voyez celles de personne.
+          </p>
+        </Vide>
+      ) : null}
 
       {cercles.length > 0 ? (
         <ul className="mb-7 space-y-3">
@@ -72,22 +143,19 @@ export default async function Cercles({
         </ul>
       ) : null}
 
-      <Carte accent="rose">
-        <form action={creerCercle} className="space-y-5">
-          <Champ
-            label="Créer un cercle"
-            aide="Vous en serez l'administrateur : c'est vous qui validerez les entrées."
-            name="nom"
-            required
-            maxLength={60}
-            placeholder="Classe de 4P"
-          />
-          <Bouton type="submit" variante="second">
-            <IconePlus className="h-5 w-5" />
-            Créer
-          </Bouton>
-        </form>
-      </Carte>
+      <div className={`space-y-4 ${cercles.length === 0 ? "mt-5" : ""}`}>
+        {cercles.length === 0 ? (
+          <>
+            <CarteInvitation mise="principal" />
+            <CarteCreation />
+          </>
+        ) : (
+          <>
+            <CarteCreation />
+            <CarteInvitation />
+          </>
+        )}
+      </div>
 
       <div className="mt-8 space-y-3">
         <LienBouton href="/reglages">🔔 Notifications</LienBouton>

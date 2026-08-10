@@ -24,6 +24,7 @@ import {
   exclureMembre,
   quitterCercle,
   refuserDemande,
+  remplacerInvitation,
   revoquerInvitation,
 } from "../../actions";
 import { CodeQR } from "../../qr";
@@ -92,9 +93,19 @@ export default async function Cercle({
         <Alerte ton="succes">
           <strong className="mb-1 block text-lg">Lien d&apos;invitation créé 🔗</strong>
           <p className="mb-3 text-sm leading-snug">
-            Envoyez-le aux familles concernées, ou faites-leur scanner le carré. Sa durée et
-            le nombre d&apos;entrées restantes s&apos;affichent plus bas. Chaque personne qui
-            le suivra devra être validée{admin ? " par vous" : " par un administrateur"}.
+            Envoyez-le maintenant aux familles concernées, ou faites-leur scanner le carré.
+            Chaque personne qui le suivra devra être validée
+            {admin ? " par vous" : " par un administrateur"}.
+          </p>
+          {/*
+            Le jeton n'est enregistré que sous forme de condensé : cet écran est le seul
+            endroit où il existe en clair, et il n'y a aucun moyen de le réafficher ensuite.
+            Le taire reviendrait à laisser un administrateur le découvrir le jour où une
+            famille le lui redemande.
+          */}
+          <p className="mb-3 text-sm leading-snug font-bold">
+            C&apos;est la seule fois qu&apos;il s&apos;affiche. Copiez-le ou envoyez-le tout
+            de suite : plus bas, vous ne verrez que sa durée et le nombre d&apos;entrées.
           </p>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
             <CodeQR valeur={`${appUrl}/rejoindre/${lien}`} />
@@ -300,39 +311,66 @@ export default async function Cercle({
               ? "Un lien d'invitation est actif"
               : `${invitations.value.length} liens d'invitation sont actifs`}
           </h2>
-          <p className="mb-4 text-sm leading-snug text-[color:var(--color-doux)]">
+          <p className="mb-2 text-sm leading-snug text-[color:var(--color-doux)]">
             Tant qu&apos;un lien vit, quiconque l&apos;a reçu peut demander à entrer. Révoquez
             celui qui a circulé trop loin. Passé sa date, le cercle continue de vivre : c&apos;est
             seulement l&apos;entrée qui se referme.
           </p>
+          {/*
+            Un lien perdu est le cas courant, pas le cas rare : il circule par message, et
+            l'on redemande à celui qui l'a envoyé. Sans ce bouton, la seule issue est de
+            révoquer puis recréer — deux gestes, avec la portée annoncée perdue au milieu.
+          */}
+          <p className="mb-4 text-sm leading-snug text-[color:var(--color-doux)]">
+            Un lien ne se réaffiche jamais. « Refaire le lien » en crée un nouveau pour le
+            même nombre de familles et coupe l&apos;ancien pour tout le monde, y compris ceux
+            à qui il avait déjà été transmis.
+          </p>
           <ul className="space-y-2">
             {invitations.value.map((invitation) => (
-              <li key={invitation.id} className="flex items-center gap-3">
-                <span className="min-w-0 flex-1 text-sm">
-                  <span className="block font-bold">
-                    {invitation.useCount} entrée{invitation.useCount > 1 ? "s" : ""} sur{" "}
-                    {invitation.maxUses}
-                  </span>
-                  <span className="text-[color:var(--color-doux)]">
-                    créé le {jourCourt(invitation.createdAt).nombre}{" "}
-                    {jourCourt(invitation.createdAt).mois}, expire le{" "}
-                    {jourCourt(invitation.expiresAt).nombre}{" "}
-                    {jourCourt(invitation.expiresAt).mois}
-                  </span>
-                </span>
-                <form action={revoquerInvitation}>
-                  <input type="hidden" name="cercle" value={id} />
-                  <input type="hidden" name="invitation" value={invitation.id} />
-                  <button
-                    className="shrink-0 rounded-[var(--radius-pilule)] px-4 py-2 text-sm font-bold"
-                    style={{
-                      background: "var(--color-corail-doux)",
-                      color: "var(--color-corail)",
-                    }}
-                  >
-                    Révoquer
-                  </button>
-                </form>
+              <li
+                key={invitation.id}
+                className="rounded-2xl bg-[color:var(--color-fond)] px-4 py-3"
+              >
+                <p className="text-sm font-bold">
+                  {invitation.useCount} entrée{invitation.useCount > 1 ? "s" : ""} sur{" "}
+                  {invitation.maxUses}
+                </p>
+                <p className="text-sm text-[color:var(--color-doux)]">
+                  créé le {jourCourt(invitation.createdAt).nombre}{" "}
+                  {jourCourt(invitation.createdAt).mois}, expire le{" "}
+                  {jourCourt(invitation.expiresAt).nombre}{" "}
+                  {jourCourt(invitation.expiresAt).mois}
+                </p>
+                <div className="mt-3 flex gap-2">
+                  <form action={remplacerInvitation} className="flex-1">
+                    <input type="hidden" name="cercle" value={id} />
+                    <input type="hidden" name="invitation" value={invitation.id} />
+                    <input type="hidden" name="familles" value={invitation.maxUses} />
+                    <button
+                      className="w-full rounded-[var(--radius-pilule)] px-4 py-2.5 text-sm font-bold"
+                      style={{
+                        background: "var(--color-bleu-doux)",
+                        color: "var(--color-bleu)",
+                      }}
+                    >
+                      Refaire le lien 🔗
+                    </button>
+                  </form>
+                  <form action={revoquerInvitation} className="flex-1">
+                    <input type="hidden" name="cercle" value={id} />
+                    <input type="hidden" name="invitation" value={invitation.id} />
+                    <button
+                      className="w-full rounded-[var(--radius-pilule)] px-4 py-2.5 text-sm font-bold"
+                      style={{
+                        background: "var(--color-corail-doux)",
+                        color: "var(--color-corail)",
+                      }}
+                    >
+                      Révoquer
+                    </button>
+                  </form>
+                </div>
               </li>
             ))}
           </ul>

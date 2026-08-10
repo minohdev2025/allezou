@@ -66,9 +66,16 @@ function toRawEvent(event: JsonLdEvent, pageUrl: string): RawEvent | null {
 
   const endsAt = event.endDate ? new Date(event.endDate) : undefined;
 
-  const lieu = [event.location?.name, event.location?.address?.streetAddress]
-    .filter(Boolean)
-    .join(", ");
+  /*
+    Le nom du lieu, et rien de plus.
+
+    Coller l'adresse postale derrière donnait « Musée d'art et d'histoire, Rue
+    Charles-GALLAND 2 » : deux lignes sur un téléphone, avec un patronyme en capitales tel
+    que la source l'écrit. Un parent genevois sait où est le Muséum ; l'adresse complète est
+    à un lien de là, sur le site de l'organisateur. L'adresse ne sert que si le lieu n'a pas
+    de nom du tout.
+  */
+  const lieu = event.location?.name || event.location?.address?.streetAddress;
 
   // schema.org expose parfois `typicalAgeRange` ; sinon la tranche est écrite en toutes
   // lettres dans la description (« dès 5 ans »). On ne devine rien au-delà.

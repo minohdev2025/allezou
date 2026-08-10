@@ -6,6 +6,7 @@ import {
   TRANCHES_AGE,
   communesDisponibles,
   upcomingCalendar,
+  type CalendarEntry,
   type Fenetre,
 } from "@/lib/calendar";
 import { requireAccount } from "@/lib/session";
@@ -18,6 +19,7 @@ import {
   Vide,
   cleDuJour,
   heureCourte,
+  jourCourt,
   libelleJour,
   teinte,
 } from "../ui";
@@ -212,84 +214,161 @@ export default async function Agenda({
           devenir un en-tête : chacune y gagne les 64 px que prenait sa pastille, et l'on
           lit l'agenda comme on le cherche — par jour, pas par carte.
         */
-        journees.map(([cle, activites]) => (
-          <section key={cle} className="mb-6">
-            <h2 className="titre sticky top-0 z-10 -mx-5 bg-[color:var(--color-fond)] px-5 py-2 text-lg font-bold">
-              {cle === EN_COURS ? "En ce moment" : libelleJour(activites[0].startsAt)}
-              <span className="ml-3 font-normal text-[color:var(--color-doux)]">
-                {activites.length} activité{activites.length > 1 ? "s" : ""}
-              </span>
-            </h2>
+        journees.map(([cle, activites]) => {
+          /*
+            « En ce moment » réunit les expositions et les étés d'animations. Ils durent des
+            semaines, donc ils s'accumulent : dix d'entre eux repoussaient la première
+            activité réellement datée hors de l'écran, un soir où aucun n'était ouvert.
 
-            <ul className="space-y-2">
-              {activites.map((entree) => {
-                const couleur = teinte(entree.id);
+            Au-delà de trois, le reste se replie — derrière un bouton qui dit combien il en
+            cache, jamais en silence. Le tri par date de fin met devant ceux qui se terminent
+            bientôt : ce sont les seuls pour lesquels il y a quelque chose à décider.
+          */
+          const enTete = cle === EN_COURS ? activites.slice(0, 3) : activites;
+          const replies = cle === EN_COURS ? activites.slice(3) : [];
 
-                return (
-                  <li key={entree.id}>
-                    <Link
-                      href={`/agenda/${entree.id}`}
-                      className="flex gap-3 rounded-2xl bg-[color:var(--color-surface)] px-4 py-3"
-                      style={{ boxShadow: `inset 0 0 0 2px var(--color-${couleur}-doux)` }}
-                    >
-                      <span
-                        className="w-14 shrink-0 pt-0.5 text-sm font-bold"
-                        style={{ color: `var(--color-${couleur})` }}
-                      >
-                        {entree.enCours ? "en cours" : heureCourte(entree.startsAt)}
-                      </span>
+          return (
+            <section key={cle} className="mb-6">
+              <h2 className="titre sticky top-0 z-10 -mx-5 bg-[color:var(--color-fond)] px-5 py-2 text-lg font-bold">
+                {cle === EN_COURS ? "En ce moment" : libelleJour(activites[0].startsAt)}
+                <span className="ml-3 font-normal text-[color:var(--color-doux)]">
+                  {activites.length} activité{activites.length > 1 ? "s" : ""}
+                </span>
+              </h2>
 
-                      <span className="min-w-0 flex-1">
-                        <span className="titre block font-bold leading-tight">
-                          {entree.title}
-                        </span>
+              <ul className="space-y-2">
+                {enTete.map((entree) => (
+                  <LigneActivite key={entree.id} entree={entree} lecteurId={account.id} />
+                ))}
+              </ul>
 
-                        {entree.place ? (
-                          <span className="mt-0.5 block truncate text-sm text-[color:var(--color-doux)]">
-                            📍 {entree.place}
-                          </span>
-                        ) : null}
-
-                        {entree.ageLabel || entree.commune ? (
-                          <span className="mt-1.5 flex flex-wrap gap-1.5">
-                            {entree.ageLabel ? (
-                              <Pastille couleur="ambre">{entree.ageLabel}</Pastille>
-                            ) : null}
-                            {entree.commune ? (
-                              <Pastille couleur="bleu">{entree.commune}</Pastille>
-                            ) : null}
-                          </span>
-                        ) : null}
-
-                        {entree.attendees.length > 0 ? (
-                          <span className="mt-1.5 flex items-center gap-2">
-                            <span className="flex -space-x-1.5">
-                              {entree.attendees.slice(0, 3).map((a) => (
-                                <Jeton
-                                  key={a.publicationId}
-                                  nom={a.displayName}
-                                  id={a.accountId}
-                                  taille={22}
-                                />
-                              ))}
-                            </span>
-                            <span className="min-w-0 truncate text-sm font-bold text-[color:var(--color-vert)]">
-                              {entree.attendees.map((a) => a.displayName).join(", ")}
-                              {entree.attendees.length === 1 ? " y va" : " y vont"}
-                            </span>
-                          </span>
-                        ) : null}
-                      </span>
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </section>
-        ))
+              {replies.length > 0 ? (
+                <details className="mt-2">
+                  <summary className="cursor-pointer py-2 text-sm font-bold text-[color:var(--color-doux)]">
+                    Et {replies.length} autre{replies.length > 1 ? "s" : ""} qui{" "}
+                    {replies.length > 1 ? "durent" : "dure"} encore
+                  </summary>
+                  <ul className="mt-2 space-y-2">
+                    {replies.map((entree) => (
+                      <LigneActivite key={entree.id} entree={entree} lecteurId={account.id} />
+                    ))}
+                  </ul>
+                </details>
+              ) : null}
+            </section>
+          );
+        })
       )}
 
       <Navigation actif="agenda" />
     </main>
+  );
+}
+
+/** Une ligne de l'agenda — la même dans la liste du jour et dans le repli « en ce moment ». */
+function LigneActivite({
+  entree,
+  lecteurId,
+}: {
+  entree: CalendarEntry;
+  lecteurId: string;
+}) {
+  const couleur = teinte(entree.id);
+
+  /*
+    Soi-même en dernier, et sous le nom « vous ».
+
+    Lire son propre nom d'affichage parmi les inscrits donne l'impression que l'écran vous
+    compte comme quelqu'un d'autre — et fait passer le filtre « où va quelqu'un de mes
+    cercles » pour cassé, alors qu'il ne retient bien que les activités où une autre famille
+    est inscrite.
+  */
+  const autres = entree.attendees.filter((a) => a.accountId !== lecteurId);
+  const jySuis = autres.length < entree.attendees.length;
+  const inscrits = [
+    ...autres,
+    ...entree.attendees.filter((a) => a.accountId === lecteurId),
+  ];
+  const noms = autres.map((a) => a.displayName).join(", ");
+  const texteInscrits = jySuis
+    ? autres.length > 0
+      ? `${noms} et vous y allez`
+      : "Vous y allez"
+    : `${noms} ${autres.length === 1 ? "y va" : "y vont"}`;
+
+  return (
+    <li>
+      <Link
+        href={`/agenda/${entree.id}`}
+        className="flex gap-3 rounded-2xl bg-[color:var(--color-surface)] px-4 py-3"
+        style={{ boxShadow: `inset 0 0 0 2px var(--color-${couleur}-doux)` }}
+      >
+        {/*
+          Pour une activité déjà commencée, l'heure de début ne dit rien : elle est passée.
+          C'est la date de fin qui informe — il reste trois jours, ou tout l'été — et c'est
+          elle aussi qui distingue deux entrées que la source publie sous le même titre.
+        */}
+        <span
+          className="w-16 shrink-0 pt-0.5 text-sm font-bold leading-tight"
+          style={{ color: `var(--color-${couleur})` }}
+        >
+          {entree.enCours ? (
+            entree.endsAt ? (
+              <>
+                <span className="block text-[0.7rem] opacity-75">jusqu&apos;au</span>
+                {jourCourt(entree.endsAt).nombre} {jourCourt(entree.endsAt).mois}
+              </>
+            ) : (
+              "en cours"
+            )
+          ) : (
+            heureCourte(entree.startsAt)
+          )}
+        </span>
+
+        <span className="min-w-0 flex-1">
+          {/*
+            Deux lignes au plus : certains titres de source font cent caractères et
+            occupaient à eux seuls le quart de l'écran. Le titre entier est sur sa page.
+          */}
+          {/*
+            `line-clamp-2` pose lui-même `display: -webkit-box` : lui ajouter `block`, comme
+            aux autres lignes de ce bloc, écrase cette valeur et la coupure ne se fait plus.
+          */}
+          <span className="titre line-clamp-2 font-bold leading-tight">{entree.title}</span>
+
+          {entree.place ? (
+            <span className="mt-0.5 block truncate text-sm text-[color:var(--color-doux)]">
+              📍 {entree.place}
+            </span>
+          ) : null}
+
+          {entree.ageLabel || entree.commune ? (
+            <span className="mt-1.5 flex flex-wrap gap-1.5">
+              {entree.ageLabel ? <Pastille couleur="ambre">{entree.ageLabel}</Pastille> : null}
+              {entree.commune ? <Pastille couleur="bleu">{entree.commune}</Pastille> : null}
+            </span>
+          ) : null}
+
+          {inscrits.length > 0 ? (
+            <span className="mt-1.5 flex items-center gap-2">
+              <span className="flex -space-x-1.5">
+                {inscrits.slice(0, 3).map((a) => (
+                  <Jeton
+                    key={a.publicationId}
+                    nom={a.displayName}
+                    id={a.accountId}
+                    taille={22}
+                  />
+                ))}
+              </span>
+              <span className="min-w-0 truncate text-sm font-bold text-[color:var(--color-vert)]">
+                {texteInscrits}
+              </span>
+            </span>
+          ) : null}
+        </span>
+      </Link>
+    </li>
   );
 }

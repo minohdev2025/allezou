@@ -4,12 +4,14 @@ import { myChildren } from "@/lib/children";
 import { searchPlaces } from "@/lib/places";
 import { defaultAudience, dureesProposees, lastOuting } from "@/lib/publications";
 import { requireAccount } from "@/lib/session";
+import { readerCircles } from "@/lib/visibility";
 import { declarerSortie, refaireDerniereSortie } from "../actions";
-import { Alerte, Bouton, Carte, IconePlus, Pastille, Titre, Vide, teinte } from "../ui";
+import { Alerte, Bouton, IconePlus, PUCE_COCHEE, Titre, Vide, teinte } from "../ui";
 
 const MESSAGES: Record<string, string> = {
   aucun_destinataire:
-    "Aucun cercle n'est coché pour vos sorties. Ouvrez un cercle pour en cocher un.",
+    "Cochez au moins un cercle : une sortie que personne ne verrait n'a pas de destinataire.",
+  cercle_interdit: "Vous n'êtes pas membre d'un des cercles cochés.",
   lieu_inconnu: "Ce lieu n'existe plus.",
   duree_invalide: "Cette durée n'est pas possible.",
   debut_invalide:
@@ -33,14 +35,18 @@ export default async function Sortir({
   const { erreur, q } = await searchParams;
   const recherche = (q ?? "").trim();
 
-  const [lieux, cercles, enfants, derniere] = await Promise.all([
+  const [lieux, cercles, defauts, enfants, derniere] = await Promise.all([
     searchPlaces(recherche, 30),
+    readerCircles(account.id),
     defaultAudience(account.id),
     myChildren(account.id),
     lastOuting(account.id),
   ]);
 
+  const cerclesCoches = new Set(defauts.map((c) => c.id));
+
   const durees = dureesProposees();
+  const dureeParDefaut = durees.find((d) => d.minutes === 120)?.libelle ?? "2 h";
 
   return (
     <main className="apparait">
@@ -57,21 +63,6 @@ export default async function Sortir({
           <Bouton>Comme la dernière fois — {derniere.placeName}</Bouton>
         </form>
       ) : null}
-
-      <Carte className="mb-5" accent="bleu">
-        <p className="mb-2 text-sm font-bold text-[color:var(--color-doux)]">Sera visible par</p>
-        <div className="mb-3 flex flex-wrap gap-2">
-          {cercles.length > 0 ? (
-            cercles.map((c) => (
-              <Pastille key={c.id} couleur={teinte(c.id)}>
-                {c.name}
-              </Pastille>
-            ))
-          ) : (
-            <Pastille couleur="corail">aucun cercle</Pastille>
-          )}
-        </div>
-      </Carte>
 
       {/*
         La recherche n'apparaît que lorsqu'elle sert. En dessous d'une dizaine de lieux, le
@@ -106,6 +97,75 @@ export default async function Sortir({
         </Vide>
       ) : (
         <form action={declarerSortie}>
+          {/*
+            Le destinataire est le seul réglage qui ne se replie pas.
+
+            « Le destinataire retenu doit être écrit en toutes lettres dans le geste de
+            publication » : un cercle coché en silence est le moyen le plus probable de
+            diffuser une sortie au mauvais monde. Il est donc coché d'avance selon les
+            réglages du cercle, mais visible et décochable ici, pour cette sortie-là, sans
+            toucher aux réglages des suivantes.
+          */}
+          <fieldset className="mb-4">
+            <legend className="mb-2 font-bold">Visible par</legend>
+            {cercles.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {cercles.map((cercle) => (
+                  <label key={cercle.id}>
+                    <input
+                      type="checkbox"
+                      name="cercle"
+                      value={cercle.id}
+                      defaultChecked={cerclesCoches.has(cercle.id)}
+                      className="peer sr-only"
+                    />
+                    <span
+                      className={`inline-flex cursor-pointer items-center rounded-[var(--radius-pilule)] px-4 py-2 font-bold text-[color:var(--color-doux)] shadow-[inset_0_0_0_2px_var(--color-trait)] peer-checked:text-[color:var(--color-fond)] peer-checked:shadow-none ${PUCE_COCHEE[teinte(cercle.id)]}`}
+                    >
+                      {cercle.name}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm leading-snug text-[color:var(--color-doux)]">
+                Vous n&apos;avez encore aucun cercle : personne ne verrait cette sortie.
+              </p>
+            )}
+          </fieldset>
+
+          {/*
+            Les réglages sont repliés au-dessus des lieux plutôt qu'étalés devant eux.
+
+            Mesuré avant ce changement : le premier lieu commençait à 797 px sur un écran de
+            812 — l'action principale de l'écran le plus pressé de l'application était sous
+            la ligne de flottaison, derrière trois champs qu'on ne touche presque jamais.
+
+            Repliés au-dessus et non déplacés en dessous : un réglage placé sous la liste ne
+            se trouverait qu'après avoir touché un lieu, c'est-à-dire après la publication.
+            Le résumé rappelle ce qui partira si l'on ne touche à rien.
+          */}
+          <details className="mb-4">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-[var(--radius-pilule)] bg-[color:var(--color-surface)] px-4 py-3 shadow-[inset_0_0_0_2px_var(--color-trait)]">
+              <span className="min-w-0 truncate text-sm text-[color:var(--color-doux)]">
+                {enfants.length > 0 ? (
+                  <>
+                    Avec{" "}
+                    <strong className="text-[color:var(--color-encre)]">
+                      {enfants.map((e) => e.firstName).join(", ")}
+                    </strong>{" "}
+                    ·{" "}
+                  </>
+                ) : null}
+                <strong className="text-[color:var(--color-encre)]">{dureeParDefaut}</strong> ·
+                maintenant
+              </span>
+              <span className="shrink-0 text-sm font-bold text-[color:var(--color-vert)]">
+                Changer
+              </span>
+            </summary>
+
+            <div className="mt-4">
           {enfants.length > 0 ? (
             <fieldset className="mb-4">
               <legend className="mb-2 font-bold">Qui vient</legend>
@@ -159,6 +219,8 @@ export default async function Sortir({
               className="w-full rounded-2xl bg-[color:var(--color-surface)] px-4 py-3.5 text-base ring-2 ring-[color:var(--color-trait)] outline-none focus:ring-[color:var(--color-vert)]"
             />
           </label>
+            </div>
+          </details>
 
           <p className="mb-2 font-bold">Où</p>
           <ul className="space-y-3">

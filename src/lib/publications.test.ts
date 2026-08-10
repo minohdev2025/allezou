@@ -75,6 +75,43 @@ describe("Déclarer une présence", () => {
     expect(result.value.circles.map((c) => c.name)).toEqual(["Classe 4P"]);
   });
 
+  it("se restreint à un cercle pour une sortie, sans changer les suivantes", async () => {
+    const alice = await createAccount("Alice");
+    const camarade = await createAccount("Camarade");
+    const voisin = await createAccount("Voisin");
+    const classe = await createCircle(alice, "Classe 4P");
+    const voisinage = await createCircle(alice, "Voisinage");
+    await join(classe, camarade);
+    await join(voisinage, voisin);
+    const parc = await createPlace("Parc du Gué");
+
+    // Les deux cercles sont cochés par défaut : c'est bien une restriction, pas un état de départ.
+    expect((await defaultAudience(alice.id)).map((c) => c.name)).toEqual([
+      "Classe 4P",
+      "Voisinage",
+    ]);
+
+    const restreinte = await declarePresence(alice.id, {
+      placeId: parc.id,
+      circleIds: [classe.id],
+    });
+    expect(restreinte.ok).toBe(true);
+    if (!restreinte.ok) return;
+
+    expect(await canSeePublication(camarade.id, restreinte.value.publicationId)).toBe(true);
+    expect(await canSeePublication(voisin.id, restreinte.value.publicationId)).toBe(false);
+
+    // Décocher pour une sortie ne décoche pas pour toujours : la suivante repart vers les deux.
+    const suivante = await declarePresence(alice.id, { placeId: parc.id });
+    if (!suivante.ok) return;
+    // Trié ici : les destinataires renvoyés ne promettent pas d'ordre, seulement un contenu.
+    expect(suivante.value.circles.map((c) => c.name).sort()).toEqual([
+      "Classe 4P",
+      "Voisinage",
+    ]);
+    expect(await canSeePublication(voisin.id, suivante.value.publicationId)).toBe(true);
+  });
+
   it("refuse un cercle dont on n'est pas membre", async () => {
     const alice = await createAccount("Alice");
     const carla = await createAccount("Carla");
