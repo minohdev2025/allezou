@@ -7,6 +7,12 @@ import Link from "next/link";
 export const metadata = { title: "Vos données dans Totir" };
 
 /**
+ * Rendue à chaque requête, comme le reste : la politique de sécurité du contenu porte un
+ * nonce différent à chaque fois, qu'une page figée au moment du build ne pourrait pas porter.
+ */
+export const dynamic = "force-dynamic";
+
+/**
  * La page d'information rend directement `DONNEES.md`.
  *
  * Une seule source : ce que le dépôt documente et ce que les parents lisent ne peuvent pas

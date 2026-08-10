@@ -1,0 +1,77 @@
+# Déploiement de Totir sur le hub.
+#
+#   docker compose -f docker-compose.prod.yml up -d --build
+#
+# Base et identifiants séparés de LiNX : réseau nommé à part, volume nommé à part, mot de
+# passe distinct. Une faille ou un identifiant fuité d'un côté n'ouvre pas l'autre.
+#
+# Aucun port de base de données n'est publié, et l'application n'écoute que sur la boucle
+# locale : nginx est le seul chemin d'entrée, et il termine le TLS.
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    container_name: totir-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: totir
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD doit être défini}
+      POSTGRES_DB: totir
+    volumes:
+      # Postgres 18+ attend un montage unique sur /var/lib/postgresql.
+      - postgres_data:/var/lib/postgresql
+    networks:
+      - totir-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U totir -d totir"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: totir:latest
+    container_name: totir-app
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://totir:${POSTGRES_PASSWORD}@postgres:5432/totir
+      APP_URL: ${APP_URL:?APP_URL doit être défini}
+      SESSION_SECRET: ${SESSION_SECRET:?SESSION_SECRET doit être défini}
+
+      # Sans SMTP, personne ne peut se connecter : le lien de connexion ne part pas.
+      SMTP_HOST: ${SMTP_HOST:?SMTP_HOST doit être défini}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:?SMTP_USER doit être défini}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:?SMTP_PASSWORD doit être défini}
+      SMTP_FROM: ${SMTP_FROM:?SMTP_FROM doit être défini}
+
+      VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY:-}
+      NEXT_PUBLIC_VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY:-}
+      VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY:-}
+      VAPID_SUBJECT: ${VAPID_SUBJECT:-}
+
+      # Qui peut relire la file de l'agenda.
+      ADMIN_EMAILS: ${ADMIN_EMAILS:-}
+      # Clé de lecture des agendas communaux sans flux structuré.
+      MINIMAX_API_KEY: ${MINIMAX_API_KEY:-}
+
+      # Effacements quotidiens et rafraîchissement de l'agenda, dans le serveur.
+      SCHEDULER: ${SCHEDULER:-1}
+    ports:
+      - "127.0.0.1:4100:4100"
+    networks:
+      - totir-net
+
+volumes:
+  postgres_data:
+    name: totir_postgres_data
+
+networks:
+  totir-net:
+    name: totir_net
