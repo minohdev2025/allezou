@@ -1,0 +1,8 @@
+# Configuration volontairement vide, et c'est tout son intérêt.
+#
+# Sans `--config`, cloudflared lit ~/.cloudflared/config.yml — celui de linq-a.ch. Sa règle
+# finale `- service: http_status:404` attrape alors tout ce qui n'est pas un de ses hôtes,
+# y compris l'adresse trycloudflare.com d'un tunnel éphémère : l'application répond 404 sur
+# toutes ses pages, sans qu'aucune erreur ne le signale.
+#
+# Ce fichier vide neutralise cet héritage.

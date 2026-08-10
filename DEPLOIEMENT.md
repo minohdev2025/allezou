@@ -162,6 +162,13 @@ justement les deux choses qu'on veut montrer.
 Un tunnel Cloudflare éphémère suffit : aucun DNS à configurer, une adresse en
 `*.trycloudflare.com`, du HTTPS immédiatement.
 
+> **Toujours passer par `npm run demo:tunnel`**, jamais par `cloudflared tunnel --url` seul.
+> Sans `--config`, cloudflared lit `~/.cloudflared/config.yml`, celui de `linq-a.ch` : sa
+> règle finale `- service: http_status:404` attrape l'adresse `trycloudflare.com` et
+> l'application répond 404 sur toutes ses pages, sans qu'aucune erreur ne le signale.
+> [cloudflared/rapide.yml](cloudflared/rapide.yml) est vide exprès, pour neutraliser cet
+> héritage.
+
 **L'ordre compte.** Le tunnel d'abord, parce que son adresse n'est connue qu'une fois lancé,
 et que l'application doit la connaître pour fabriquer ses liens.
 
