@@ -339,7 +339,7 @@ export function Vide({
 
 export function Navigation({ actif }: { actif: "maintenant" | "agenda" | "cercles" }) {
   const onglets = [
-    { cle: "maintenant", href: "/maintenant", texte: "Dehors", Icone: IconeArbre },
+    { cle: "maintenant", href: "/maintenant", texte: "Sorties", Icone: IconeArbre },
     { cle: "agenda", href: "/agenda", texte: "Agenda", Icone: IconeCalendrier },
     { cle: "cercles", href: "/cercles", texte: "Cercles", Icone: IconeCercles },
   ] as const;
