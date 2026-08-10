@@ -18,7 +18,9 @@
     "sources:seed": "tsx scripts/seed-sources.mts",
     "sources:run": "tsx scripts/run-sources.mts",
     "maintenance": "tsx scripts/maintenance.mts",
-    "demo:seed": "tsx scripts/seed-demo.mts"
+    "demo:seed": "tsx scripts/seed-demo.mts",
+    "demo:start": "next build && next start",
+    "demo:tunnel": "cloudflared tunnel --config cloudflared/totir.yml run"
   },
   "dependencies": {
     "drizzle-orm": "^0.45.2",

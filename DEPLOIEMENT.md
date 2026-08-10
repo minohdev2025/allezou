@@ -1,5 +1,11 @@
 # Déploiement de Totir
 
+> **Pour une démonstration**, rien de tout ceci n'est nécessaire : voir
+> [« Montrer l'app sans la déployer »](#montrer-lapp-sans-la-déployer) à la fin.
+
+---
+
+
 Cible : une **instance dédiée sur Infomaniak Public Cloud** (Suisse), provisionnée comme les
 autres — Terraform / OpenStack, le même projet que la flotte LiNX. Séparée du VPS éditeur :
 Totir bougera souvent, et il n'a rien à faire sur la machine qui sert des cabinets qui paient.
@@ -143,3 +149,47 @@ second chemin.
 - Un lien de connexion qui arrive par courriel, et pas dans les indésirables.
 - L'adresse de contact de DONNEES.md — aujourd'hui une adresse postale seulement. Un parent
   qui veut corriger une donnée doit écrire une lettre.
+
+---
+
+## Montrer l'app sans la déployer
+
+Pour une présentation que tu mènes toi-même, depuis ton écran : personne ne crée de compte,
+aucune donnée réelle n'existe, et il n'y a rien à héberger. Il faut juste du HTTPS — sans lui,
+ni les notifications ni l'installation sur l'écran d'accueil ne fonctionnent, et ce sont
+justement les deux choses qu'on veut montrer.
+
+Un tunnel Cloudflare depuis ta machine suffit. Il est **séparé** de celui de `linq-a.ch` :
+voir [cloudflared/totir.yml](cloudflared/totir.yml) pour les trois commandes d'installation,
+à faire une seule fois.
+
+**Avant la première démonstration**, dans `.env.local` :
+
+```
+APP_URL=https://r4c.app
+```
+
+Sans quoi les liens d'invitation, les liens de connexion et les codes QR pointeraient encore
+vers `localhost` — et ne marcheraient sur aucun téléphone.
+
+**Le jour même**, deux terminaux :
+
+```bash
+npm run demo:start
+```
+
+```bash
+npm run demo:tunnel
+```
+
+`demo:start` construit et lance en mode production : les cookies passent en `secure`, la
+politique de sécurité perd son `unsafe-eval` de développement, et ce que tu montres ressemble
+à ce qui tournera vraiment.
+
+Deux choses à savoir avant de te lancer :
+
+- **Sans SMTP, le lien de connexion s'affiche à l'écran** dans un encadré « Développement :
+  aucun SMTP configuré ». Pratique pour toi, mais visible par-dessus ton épaule. Quatre
+  lignes `SMTP_*` d'un compte Infomaniak suffisent à le faire disparaître.
+- **Sur iPhone, les notifications n'arrivent que depuis l'app installée.** Ajoute-la à
+  l'écran d'accueil avant la démonstration, pas devant les parents.

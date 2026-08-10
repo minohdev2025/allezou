@@ -1,0 +1,26 @@
+# Tunnel dédié à Totir, pour une démonstration en HTTPS depuis ta machine.
+#
+# Séparé de ~/.cloudflared/config.yml, qui sert à linq-a.ch : rien de ce qui tourne pour
+# LiNQ n'est touché, et arrêter l'un n'arrête pas l'autre.
+#
+# Mise en place, une seule fois :
+#
+#   cloudflared tunnel login
+#   cloudflared tunnel create totir
+#   cloudflared tunnel route dns totir r4c.app
+#
+# La deuxième commande écrit un fichier <identifiant>.json dans ~/.cloudflared :
+# reporter cet identifiant ci-dessous, aux deux endroits.
+#
+# Ensuite, à chaque démonstration :
+#
+#   npm run demo:start     (dans un terminal)
+#   npm run demo:tunnel    (dans un autre)
+
+tunnel: REMPLACER-PAR-IDENTIFIANT-DU-TUNNEL
+credentials-file: C:\Users\Admin\.cloudflared\REMPLACER-PAR-IDENTIFIANT-DU-TUNNEL.json
+
+ingress:
+  - hostname: r4c.app
+    service: http://localhost:3000
+  - service: http_status:404
