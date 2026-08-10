@@ -12,7 +12,7 @@
  */
 
 import { config } from "dotenv";
-import { and, eq, isNull } from "drizzle-orm";
+import { and, eq, gt, isNotNull, isNull } from "drizzle-orm";
 
 config({ path: ".env.local" });
 
@@ -26,7 +26,9 @@ const s = await import("../src/lib/db/schema.ts");
 const { addChild, myChildren } = await import("../src/lib/children.ts");
 const { createCircle } = await import("../src/lib/circles.ts");
 const { createPlace } = await import("../src/lib/places.ts");
-const { declarePresence, joinPresence } = await import("../src/lib/publications.ts");
+const { declareAttendance, declarePresence, joinPresence } = await import(
+  "../src/lib/publications.ts"
+);
 
 /**
  * À qui rattacher la démo : l'adresse passée en argument, sinon la première d'ADMIN_EMAILS.
@@ -233,6 +235,56 @@ if (dejaDesSorties.length > 0) {
   await sortie("nadia@demo.test", 4, [voisinageId], 120, { dansMinutes: 26 * 60 });
   await sortie("camille@demo.test", 3, [classeId], 90, { dansMinutes: 3 * 60 });
   console.log("sorties   : 5 créées, dont 2 à venir");
+}
+
+/* ------------------------------------------------- inscriptions à l'agenda */
+
+/**
+ * Sans inscriptions de démo, le filtre « où va quelqu'un de mes cercles » n'a jamais rien
+ * à montrer : il ne compte pas les siennes propres.
+ */
+const aVenirAgenda = await db
+  .select({ id: s.event.id, title: s.event.title })
+  .from(s.event)
+  .where(and(isNotNull(s.event.publishedAt), gt(s.event.startsAt, new Date())))
+  .orderBy(s.event.startsAt)
+  .limit(3);
+
+// On regarde les inscriptions, pas les sorties : la première famille en a déjà une.
+const dejaInscrits = await db
+  .select({ id: s.publication.id })
+  .from(s.publication)
+  .where(
+    and(
+      eq(s.publication.authorId, premiereFamille.id),
+      eq(s.publication.kind, "attendance"),
+    ),
+  )
+  .limit(1);
+
+if (aVenirAgenda.length === 0) {
+  console.log("agenda    : aucune activité à venir, aucune inscription ajoutée");
+} else if (dejaInscrits.length > 0 && dejaInscrits[0]) {
+  console.log("agenda    : inscriptions de démo déjà en place");
+} else {
+  const inscriptions: [string, string[]][] = [
+    ["lea@demo.test", [classeId]],
+    ["sophie@demo.test", [classeId, voisinageId]],
+    ["marco@demo.test", [voisinageId]],
+  ];
+
+  let posees = 0;
+  for (const [index, evenement] of aVenirAgenda.entries()) {
+    const [email, circleIds] = inscriptions[index % inscriptions.length];
+    const { parent, enfants } = await enfantsDe(email);
+    const faite = await declareAttendance(parent.id, {
+      eventId: evenement.id,
+      circleIds,
+      childIds: enfants,
+    });
+    if (faite.ok) posees += 1;
+  }
+  console.log(`agenda    : ${posees} inscriptions posées sur des activités à venir`);
 }
 
 console.log(`\nConnecte-toi avec ${TON_ADRESSE} pour tout voir.`);

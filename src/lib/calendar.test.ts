@@ -126,6 +126,28 @@ describe("Filtres", () => {
 
     expect(await upcomingCalendar(inconnu.id, { avecMonCercle: true })).toEqual([]);
   });
+
+  it("sa propre inscription ne fait pas ressortir l'activité", async () => {
+    // « Où va quelqu'un de mes cercles » veut dire quelqu'un d'autre : on chercherait
+    // sinon ce qu'on sait déjà.
+    const alice = await createAccount("Alice");
+    const bob = await createAccount("Bob");
+    const classe = await createCircle(alice);
+    await join(classe, bob);
+
+    const seule = await createEvent({ title: "Atelier où je suis seule" });
+    await declareAttendance(alice.id, { eventId: seule.id });
+
+    expect(await upcomingCalendar(alice.id, { avecMonCercle: true })).toEqual([]);
+
+    // Bob s'inscrit à son tour : l'activité ressort alors pour Alice.
+    await declareAttendance(bob.id, { eventId: seule.id });
+
+    const pourAlice = await upcomingCalendar(alice.id, { avecMonCercle: true });
+    expect(pourAlice.map((e) => e.title)).toEqual(["Atelier où je suis seule"]);
+    // Et elle continue d'y voir sa propre inscription.
+    expect(pourAlice[0].attendees.map((a) => a.accountId)).toContain(alice.id);
+  });
 });
 
 describe("Filtre par âge, choisi à l'écran", () => {

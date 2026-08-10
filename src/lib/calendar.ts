@@ -120,7 +120,16 @@ export async function upcomingCalendar(
     parEvenement.set(p.eventId, liste);
   }
 
-  const idsAvecMonCercle = [...parEvenement.keys()];
+  /**
+   * « Où va quelqu'un de mes cercles » veut dire quelqu'un d'autre.
+   *
+   * Sa propre inscription ne doit pas faire ressortir l'activité : on chercherait alors ce
+   * qu'on sait déjà. Elle reste bien sûr affichée dans la liste des inscrits.
+   */
+  const idsAvecMonCercle = [...parEvenement.entries()]
+    .filter(([, inscrits]) => inscrits.some((i) => i.accountId !== actorId))
+    .map(([eventId]) => eventId);
+
   if (filtre.avecMonCercle && idsAvecMonCercle.length === 0) return [];
 
   const conditions: SQL[] = [
