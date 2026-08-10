@@ -8,7 +8,6 @@ import { rejoindreSortie, retirerSortie } from "../actions";
 import {
   Carte,
   IconeArbre,
-  IconeHorloge,
   Jeton,
   LienBouton,
   Navigation,
@@ -132,18 +131,26 @@ async function LigneSortie({
             {sortie.placeName}
           </Link>
         </h2>
+        {/*
+          « jusqu'à » et « dès », écrits.
+
+          Le même emplacement portait l'heure de fin pour une sortie en cours et l'heure de
+          début pour une sortie à venir, avec la même icône d'horloge : seule la couleur les
+          distinguait, et personne n'apprend un code couleur qu'on ne lui a pas donné. Deux
+          mots règlent la question, et l'horloge devient inutile — elle prenait la place
+          qu'ils occupent.
+        */}
         <span
-          className="flex shrink-0 items-center gap-1 rounded-[var(--radius-pilule)] px-2.5 py-1 text-sm font-bold"
+          className="shrink-0 rounded-[var(--radius-pilule)] px-2.5 py-1 text-sm font-bold"
           style={
             aVenir
               ? { background: "var(--color-bleu-doux)", color: "var(--color-bleu)" }
               : { background: "var(--color-ambre-doux)", color: "var(--color-ambre)" }
           }
         >
-          <IconeHorloge className="h-4 w-4" />
           {aVenir
-            ? `${jourCourt(sortie.startsAt).jour} ${heureCourte(sortie.startsAt)}`
-            : heureCourte(sortie.endsAt)}
+            ? `${jourCourt(sortie.startsAt).jour} dès ${heureCourte(sortie.startsAt)}`
+            : `jusqu'à ${heureCourte(sortie.endsAt)}`}
         </span>
       </div>
 
@@ -188,13 +195,21 @@ async function LigneSortie({
 
       {autres.length > 0 ? (
         <details className="mt-2">
+          {/*
+            « 5 autres familles » et non « +5 ».
+
+            Trois visages s'affichaient, suivis de « +5 » où 5 était le total : on lisait
+            « trois, et cinq de plus ». Le nombre annoncé compte maintenant tout le monde,
+            et les visages ne le contredisent plus.
+          */}
           <summary className="flex cursor-pointer list-none items-center gap-2 py-1 text-sm font-bold text-[color:var(--color-vert)]">
             <span className="flex -space-x-2">
               {autres.slice(0, 3).map((p) => (
                 <Jeton key={p.accountId} nom={p.displayName} id={p.accountId} taille={24} />
               ))}
             </span>
-            +{autres.length} avec eux
+            {autres.length} autre{autres.length > 1 ? "s" : ""} famille
+            {autres.length > 1 ? "s" : ""}
           </summary>
           <ul className="mt-2 space-y-1.5 text-sm">
             {autres.map((p) => (

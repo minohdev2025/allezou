@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { myChildren } from "@/lib/children";
 import { mesCles } from "@/lib/passkeys";
-import { requireAccount } from "@/lib/session";
+import { estRelecteur, requireAccount } from "@/lib/session";
 import {
   accepterCoparent,
   ajouterEnfantCompte,
@@ -13,11 +13,22 @@ import {
   preparerCleAcces,
   renommerEnfant,
   retirerEnfant,
+  seDeconnecter,
   supprimerCompte,
 } from "../actions";
 import { AjouterCleAcces } from "../passkey-client";
 import { CodeQR } from "../qr";
-import { Alerte, Bouton, Carte, Champ, Navigation, Titre, jourCourt, teinte } from "../ui";
+import {
+  Alerte,
+  Bouton,
+  Carte,
+  Champ,
+  LienBouton,
+  Navigation,
+  Titre,
+  jourCourt,
+  teinte,
+} from "../ui";
 
 const MESSAGES: Record<string, string> = {
   nom: "Il faut écrire quelque chose.",
@@ -39,6 +50,7 @@ export default async function Compte({
   const { erreur, coparent, rejoindre } = await searchParams;
   const [enfants, cles] = await Promise.all([myChildren(account.id), mesCles(account.id)]);
   const appUrl = process.env.APP_URL ?? "http://localhost:3000";
+  const relecteur = estRelecteur(account);
 
   return (
     <main className="apparait">
@@ -207,6 +219,16 @@ export default async function Compte({
         />
       </Carte>
 
+      {/*
+        Les réglages vivaient sous la liste des cercles, où rien ne laissait deviner qu'ils
+        s'y trouvaient. Ils sont ici, derrière l'onglet qui porte leur nom.
+      */}
+      <div className="mb-5 space-y-3">
+        <LienBouton href="/reglages">🔔 Notifications</LienBouton>
+        <LienBouton href="/lieux">📍 Les lieux</LienBouton>
+        {relecteur ? <LienBouton href="/relecture">🧐 Relire l&apos;agenda</LienBouton> : null}
+      </div>
+
       <Carte accent="corail">
         <h2 className="titre mb-2 text-lg font-bold">Supprimer votre compte</h2>
         <p className="mb-4 text-sm leading-snug text-[color:var(--color-doux)]">
@@ -227,16 +249,23 @@ export default async function Compte({
         </form>
       </Carte>
 
-      <p className="mt-8 text-center text-sm">
-        <Link
-          href="/donnees"
-          className="font-semibold text-[color:var(--color-doux)] underline underline-offset-4"
-        >
-          Ce que Totir enregistre
-        </Link>
-      </p>
+      <div className="mt-10 space-y-4 text-center text-sm">
+        <p>
+          <Link
+            href="/donnees"
+            className="font-semibold text-[color:var(--color-doux)] underline underline-offset-4"
+          >
+            Ce que Totir enregistre
+          </Link>
+        </p>
+        <form action={seDeconnecter}>
+          <button className="text-[color:var(--color-doux)] underline underline-offset-4">
+            Se déconnecter
+          </button>
+        </form>
+      </div>
 
-      <Navigation actif="cercles" />
+      <Navigation actif="vous" />
     </main>
   );
 }

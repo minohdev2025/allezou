@@ -125,7 +125,7 @@ export default async function Reglages() {
         </ul>
       )}
 
-      <Navigation actif="cercles" />
+      <Navigation actif="vous" />
     </main>
   );
 }

@@ -1,8 +1,8 @@
 import Link from "next/link";
 
-import { estRelecteur, requireAccount } from "@/lib/session";
+import { requireAccount } from "@/lib/session";
 import { readerCircles } from "@/lib/visibility";
-import { creerCercle, rejoindreParLien, seDeconnecter } from "../actions";
+import { creerCercle, rejoindreParLien } from "../actions";
 import {
   Alerte,
   Bouton,
@@ -10,7 +10,6 @@ import {
   Champ,
   IconeCercles,
   IconePlus,
-  LienBouton,
   Navigation,
   Pastille,
   Titre,
@@ -79,7 +78,6 @@ export default async function Cercles({
   const account = await requireAccount();
   const { erreur } = await searchParams;
   const cercles = await readerCircles(account.id);
-  const relecteur = estRelecteur(account);
 
   return (
     <main className="apparait">
@@ -134,6 +132,14 @@ export default async function Cercles({
                     <span className="titre block text-lg font-bold leading-tight">
                       {cercle.name}
                     </span>
+                    {/*
+                      Trois cercles qui ne montrent qu'un nom se ressemblent tous. Le nombre
+                      de familles est la première chose qui les distingue, et la seule qui
+                      dise si l'un est resté vide.
+                    */}
+                    <span className="block text-sm text-[color:var(--color-doux)]">
+                      {cercle.memberCount} famille{cercle.memberCount > 1 ? "s" : ""}
+                    </span>
                   </span>
                   {cercle.role === "admin" ? <Pastille couleur={couleur}>admin</Pastille> : null}
                 </Link>
@@ -155,29 +161,6 @@ export default async function Cercles({
             <CarteInvitation />
           </>
         )}
-      </div>
-
-      <div className="mt-8 space-y-3">
-        <LienBouton href="/reglages">🔔 Notifications</LienBouton>
-        <LienBouton href="/compte">🙂 Votre compte et vos enfants</LienBouton>
-        <LienBouton href="/lieux">📍 Les lieux</LienBouton>
-        {relecteur ? <LienBouton href="/relecture">🧐 Relire l&apos;agenda</LienBouton> : null}
-      </div>
-
-      <div className="mt-10 space-y-4 text-center text-sm">
-        <p>
-          <Link
-            href="/donnees"
-            className="font-semibold text-[color:var(--color-doux)] underline underline-offset-4"
-          >
-            Ce que Totir enregistre
-          </Link>
-        </p>
-        <form action={seDeconnecter}>
-          <button className="text-[color:var(--color-doux)] underline underline-offset-4">
-            Se déconnecter
-          </button>
-        </form>
       </div>
 
       <Navigation actif="cercles" />

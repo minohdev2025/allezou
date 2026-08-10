@@ -153,9 +153,20 @@ export default async function Cercle({
       <h2 className="titre mb-2 text-lg font-bold">
         {membres.length} membre{membres.length > 1 ? "s" : ""}
       </h2>
+      {/*
+        Deux leviers voisins qui ne font pas du tout la même chose, et dont l'un se donnait
+        pour toute explication un pictogramme et une infobulle — que l'on ne survole pas avec
+        un pouce. Les distinguer par écrit coûte deux lignes ; les confondre coûte une
+        personne qu'on croyait avoir seulement mise en sourdine.
+      */}
+      <p className="mb-2 text-sm leading-snug text-[color:var(--color-doux)]">
+        <strong>Décocher</strong> coupe la visibilité dans les deux sens : cette personne ne
+        voit plus vos sorties, vous ne voyez plus les siennes, et rien ne le lui signale.
+      </p>
       <p className="mb-4 text-sm leading-snug text-[color:var(--color-doux)]">
-        Décochez quelqu&apos;un pour qu&apos;il ne voie plus vos sorties — vous ne verrez plus
-        les siennes non plus, et rien ne le lui signale.
+        <strong>🔔 et 🔕</strong> ne touchent qu&apos;au téléphone : mettre quelqu&apos;un en
+        sourdine, c&apos;est ne plus être prévenu de ses sorties tout en continuant à les
+        voir à l&apos;écran.
       </p>
 
       <ul className="mb-7 space-y-2">
@@ -189,6 +200,11 @@ export default async function Cercle({
                     value={sourdines.has(membre.accountId) ? "1" : "0"}
                   />
                   <button
+                    aria-label={
+                      sourdines.has(membre.accountId)
+                        ? `Être à nouveau prévenu des sorties de ${membre.displayName}`
+                        : `Ne plus être prévenu des sorties de ${membre.displayName}`
+                    }
                     title={
                       sourdines.has(membre.accountId)
                         ? "Être à nouveau prévenu"

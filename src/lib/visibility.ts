@@ -448,17 +448,40 @@ export async function isCircleAdmin(
 
 /**
  * Les cercles dont le lecteur est membre actif — la liste proposée au moment de publier.
+ *
+ * Le nombre de familles se compte exactement comme `visibleCircleMembers` les liste :
+ * appartenances actives, comptes non supprimés, liens coupés compris. Deux façons de
+ * compter finiraient par afficher deux nombres différents pour le même cercle.
  */
 export async function readerCircles(
   readerId: string,
-): Promise<{ id: string; name: string; role: "admin" | "member" }[]> {
-  const rows = await db.execute<{ id: string; name: string; role: "admin" | "member" }>(sql`
-    select c.id, c.name, m.role
+): Promise<{ id: string; name: string; role: "admin" | "member"; memberCount: number }[]> {
+  const rows = await db.execute<{
+    id: string;
+    name: string;
+    role: "admin" | "member";
+    member_count: number;
+  }>(sql`
+    select
+      c.id,
+      c.name,
+      m.role,
+      (
+        select count(*)
+        from circle_membership mm
+        join account a on a.id = mm.account_id and a.deleted_at is null
+        where mm.circle_id = c.id and mm.left_at is null
+      )::int as member_count
     from circle_membership m
     join circle c on c.id = m.circle_id and c.archived_at is null
     where m.account_id = ${readerId}
       and m.left_at is null
     order by c.name asc
   `);
-  return rows.map((r) => ({ id: r.id, name: r.name, role: r.role }));
+  return rows.map((r) => ({
+    id: r.id,
+    name: r.name,
+    role: r.role,
+    memberCount: r.member_count,
+  }));
 }

@@ -120,6 +120,20 @@ export function IconeHorloge({ className = "" }: IconeProps) {
   );
 }
 
+export function IconePersonne({ className = "" }: IconeProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={`${base} ${className}`} aria-hidden>
+      <circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="1.8" />
+      <path
+        d="M4.5 20.5a7.5 7.5 0 0 1 15 0"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 export function IconeMaison({ className = "" }: IconeProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={`${base} ${className}`} aria-hidden>
@@ -337,11 +351,25 @@ export function Vide({
   );
 }
 
-export function Navigation({ actif }: { actif: "maintenant" | "agenda" | "cercles" }) {
+/**
+ * Quatre onglets, et non trois.
+ *
+ * « Cercles » en contenait neuf destinations : les cercles eux-mêmes, mais aussi les
+ * notifications, le compte, les enfants, les lieux, la page données et la déconnexion. Un
+ * onglet qui annonce une chose et en cache huit oblige à chercher là où rien ne l'indique.
+ * À quatre, chacun tient encore 93 px sur un écran de 375 — largement au-dessus des 44 px
+ * d'une cible tactile.
+ */
+export function Navigation({
+  actif,
+}: {
+  actif: "maintenant" | "agenda" | "cercles" | "vous";
+}) {
   const onglets = [
     { cle: "maintenant", href: "/maintenant", texte: "Sorties", Icone: IconeArbre },
     { cle: "agenda", href: "/agenda", texte: "Agenda", Icone: IconeCalendrier },
     { cle: "cercles", href: "/cercles", texte: "Cercles", Icone: IconeCercles },
+    { cle: "vous", href: "/compte", texte: "Vous", Icone: IconePersonne },
   ] as const;
 
   return (

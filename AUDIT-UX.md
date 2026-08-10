@@ -8,8 +8,9 @@
 
 ## Corrigé dans la foulée
 
-Les points 1 à 7 ont été traités le jour même, et vérifiés sur l'application qui tourne.
-Le reste du document est conservé tel qu'écrit : il dit ce qui n'allait pas et pourquoi.
+**Les onze points ont été traités le jour même**, et vérifiés sur l'application qui tourne.
+Le reste du document est conservé tel qu'écrit : il dit ce qui n'allait pas et pourquoi, ce
+qui reste utile même une fois réparé.
 
 | Point | Avant | Après |
 |---|---|---|
@@ -21,9 +22,14 @@ Le reste du document est conservé tel qu'écrit : il dit ce qui n'allait pas et
 | 6. Titres et lieux bruts de l'agenda | « Musée d'art et d'histoire, Rue Charles-GALLAND 2 », titres de 5 lignes | nom du lieu seul, titres coupés à **2 lignes** |
 | 7. L'accueil sans cercle | un formulaire nu | un état vide qui explique, et une porte **« J'ai reçu une invitation »** qui accepte le lien collé entier |
 
-Restent ouverts : le troisième onglet fourre-tout (point 6 de la liste ci-dessous), les deux
-sens de la pastille d'heure (point 8), le « +n » qui se compte deux fois (point 9), et les
-deux détails du point 11.
+| 8. Le troisième onglet fourre-tout | « Cercles » menait à neuf destinations | un **quatrième onglet « Vous »** (99 px de large) prend le compte, les notifications, les lieux, la relecture et la déconnexion |
+| 9. La pastille d'heure disait deux choses | « 21:18 » ou « mar 13:21 », même icône | « **jusqu'à 21:18** » et « **mar dès 13:21** », l'horloge retirée puisque les mots la remplacent |
+| 10. Le « +n » se comptait deux fois | 3 visages puis « +5 avec eux » | « **5 autres familles** » — le nombre compte tout le monde |
+| 11. Deux détails | un nom et rien d'autre ; 🔔/🔕 sans légende | **« 9 familles »** sur chaque cercle, et deux lignes qui séparent « décocher » de « mettre en sourdine » |
+
+Le décompte des familles se lit exactement comme la liste des membres du cercle —
+appartenances actives, comptes non supprimés, liens coupés compris. Deux façons de compter
+auraient fini par afficher deux nombres différents pour le même cercle.
 
 ---
 
