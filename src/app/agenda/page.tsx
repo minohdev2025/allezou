@@ -216,7 +216,7 @@ export default async function Agenda({
           <section key={cle} className="mb-6">
             <h2 className="titre sticky top-0 z-10 -mx-5 bg-[color:var(--color-fond)] px-5 py-2 text-lg font-bold">
               {cle === EN_COURS ? "En ce moment" : libelleJour(activites[0].startsAt)}
-              <span className="ml-2 font-normal text-[color:var(--color-doux)]">
+              <span className="ml-3 font-normal text-[color:var(--color-doux)]">
                 {activites.length} activité{activites.length > 1 ? "s" : ""}
               </span>
             </h2>
