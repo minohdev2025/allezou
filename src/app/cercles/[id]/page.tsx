@@ -1,10 +1,21 @@
+import { cookies } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { listPendingRequests } from "@/lib/circles";
-import { requireAccount } from "@/lib/session";
+import { mutedIn } from "@/lib/notifications";
+import { defaultAudience } from "@/lib/publications";
+import { COOKIE_INVITATION, requireAccount } from "@/lib/session";
 import { isCircleAdmin, readerCircles, visibleCircleMembers } from "@/lib/visibility";
-import { accepterDemande, basculerLien, creerInvitation, refuserDemande } from "../../actions";
+import {
+  accepterDemande,
+  basculerDefaut,
+  basculerLien,
+  basculerSourdine,
+  creerInvitation,
+  quitterCercle,
+  refuserDemande,
+} from "../../actions";
 import { Alerte, Bouton, Carte, Jeton, Pastille, teinte } from "../../ui";
 
 export default async function Cercle({
@@ -12,19 +23,26 @@ export default async function Cercle({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ lien?: string; erreur?: string }>;
+  searchParams: Promise<{ invitation?: string; erreur?: string }>;
 }) {
   const account = await requireAccount();
-  const { id } = await params;
-  const { lien, erreur } = await searchParams;
+  const { id: id } = await params;
+  const { invitation, erreur } = await searchParams;
+
+  // Le jeton arrive par un cookie de cinq minutes, jamais par la barre d'adresse.
+  const lien = invitation ? (await cookies()).get(COOKIE_INVITATION)?.value : undefined;
 
   const cercle = (await readerCircles(account.id)).find((c) => c.id === id);
   if (!cercle) notFound();
 
-  const [membres, admin] = await Promise.all([
+  const [membres, admin, sourdines, defauts] = await Promise.all([
     visibleCircleMembers(account.id, id),
     isCircleAdmin(account.id, id),
+    mutedIn(account.id, id),
+    defaultAudience(account.id),
   ]);
+
+  const cocheParDefaut = defauts.some((c) => c.id === id);
 
   const demandes = admin ? await listPendingRequests(account.id, id) : null;
   const appUrl = process.env.APP_URL ?? "http://localhost:3000";
@@ -125,35 +143,87 @@ export default async function Cercle({
             </span>
 
             {membre.accountId === account.id ? null : (
-              <form action={basculerLien}>
-                <input type="hidden" name="cercle" value={id} />
-                <input type="hidden" name="membre" value={membre.accountId} />
-                <input type="hidden" name="coupe" value={membre.linkCut ? "1" : "0"} />
-                <button
-                  className="rounded-[var(--radius-pilule)] px-4 py-2 text-sm font-bold"
-                  style={
-                    membre.linkCut
-                      ? {
-                          background: "var(--color-corail-doux)",
-                          color: "var(--color-corail)",
-                        }
-                      : {
-                          background: "var(--color-vert-doux)",
-                          color: "var(--color-vert)",
-                        }
-                  }
-                >
-                  {membre.linkCut ? "Rétablir" : "Décocher"}
-                </button>
-              </form>
+              <div className="flex shrink-0 gap-2">
+                {/* Sourdine : on continue de la voir, elle ne fait plus sonner le téléphone. */}
+                <form action={basculerSourdine}>
+                  <input type="hidden" name="cercle" value={id} />
+                  <input type="hidden" name="membre" value={membre.accountId} />
+                  <input
+                    type="hidden"
+                    name="sourdine"
+                    value={sourdines.has(membre.accountId) ? "1" : "0"}
+                  />
+                  <button
+                    title={
+                      sourdines.has(membre.accountId)
+                        ? "Être à nouveau prévenu"
+                        : "Ne plus être prévenu"
+                    }
+                    className="rounded-[var(--radius-pilule)] px-3 py-2 text-sm font-bold"
+                    style={
+                      sourdines.has(membre.accountId)
+                        ? { background: "var(--color-ambre-doux)", color: "var(--color-ambre)" }
+                        : { color: "var(--color-doux)" }
+                    }
+                  >
+                    {sourdines.has(membre.accountId) ? "🔕" : "🔔"}
+                  </button>
+                </form>
+
+                <form action={basculerLien}>
+                  <input type="hidden" name="cercle" value={id} />
+                  <input type="hidden" name="membre" value={membre.accountId} />
+                  <input type="hidden" name="coupe" value={membre.linkCut ? "1" : "0"} />
+                  <button
+                    className="rounded-[var(--radius-pilule)] px-4 py-2 text-sm font-bold"
+                    style={
+                      membre.linkCut
+                        ? {
+                            background: "var(--color-corail-doux)",
+                            color: "var(--color-corail)",
+                          }
+                        : {
+                            background: "var(--color-vert-doux)",
+                            color: "var(--color-vert)",
+                          }
+                    }
+                  >
+                    {membre.linkCut ? "Rétablir" : "Décocher"}
+                  </button>
+                </form>
+              </div>
             )}
           </li>
         ))}
       </ul>
 
-      <form action={creerInvitation}>
+      <Carte className="mb-5" accent={cocheParDefaut ? "vert" : "ambre"}>
+        <p className="mb-1 font-bold">
+          {cocheParDefaut
+            ? "Vos sorties partent vers ce cercle"
+            : "Vos sorties ne partent pas vers ce cercle"}
+        </p>
+        <p className="mb-4 text-sm leading-snug text-[color:var(--color-doux)]">
+          C&apos;est le réglage par défaut au moment de publier. Vous voyez toujours les
+          sorties des autres, quoi qu&apos;il en soit.
+        </p>
+        <form action={basculerDefaut}>
+          <input type="hidden" name="cercle" value={id} />
+          <input type="hidden" name="coche" value={cocheParDefaut ? "1" : "0"} />
+          <Bouton variante="second">
+            {cocheParDefaut ? "Ne plus y publier par défaut" : "Y publier par défaut"}
+          </Bouton>
+        </form>
+      </Carte>
+
+      <form action={creerInvitation} className="mb-3">
         <input type="hidden" name="cercle" value={id} />
         <Bouton variante="second">Créer un lien d&apos;invitation 🔗</Bouton>
+      </form>
+
+      <form action={quitterCercle}>
+        <input type="hidden" name="cercle" value={id} />
+        <Bouton variante="discret">Quitter ce cercle</Bouton>
       </form>
 
       <p className="mt-7 text-center">

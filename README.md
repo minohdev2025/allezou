@@ -55,9 +55,14 @@ src/app/
   sortir/       deux gestes : arriver ici, toucher un lieu
   cercles/      liste, création, membres, invitations, demandes en attente
   rejoindre/    suivre une invitation — dépose une demande, ne fait entrer personne
+  sortie/       détail d'une sortie : qui vient, un mot, une heure de plus
   agenda/       activités du canton et qui de vos cercles y va
+  reglages/     notifications par cercle, abonnement push de cet appareil
+  compte/       nom, enfants, second parent, suppression du compte
+  relecture/    file de l'agenda pour qui figure dans ADMIN_EMAILS
   donnees/      rend DONNEES.md : une seule source pour le dépôt et les parents
   actions.ts    toutes les mutations, chacune ouverte par requireAccount()
+  icon.tsx      l'icône, dessinée plutôt qu'embarquée en binaire
 
 src/lib/
   db/           schéma, connexion, conversion des lignes brutes

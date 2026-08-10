@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { requireAccount } from "@/lib/session";
+import { estRelecteur, requireAccount } from "@/lib/session";
 import { readerCircles } from "@/lib/visibility";
 import { creerCercle, seDeconnecter } from "../actions";
 import {
@@ -10,6 +10,7 @@ import {
   Champ,
   IconeCercles,
   IconePlus,
+  LienBouton,
   Navigation,
   Pastille,
   Titre,
@@ -24,6 +25,7 @@ export default async function Cercles({
   const account = await requireAccount();
   const { erreur } = await searchParams;
   const cercles = await readerCircles(account.id);
+  const relecteur = estRelecteur(account);
 
   return (
     <main className="apparait">
@@ -86,6 +88,12 @@ export default async function Cercles({
           </Bouton>
         </form>
       </Carte>
+
+      <div className="mt-8 space-y-3">
+        <LienBouton href="/reglages">🔔 Notifications</LienBouton>
+        <LienBouton href="/compte">🙂 Votre compte et vos enfants</LienBouton>
+        {relecteur ? <LienBouton href="/relecture">🧐 Relire l&apos;agenda</LienBouton> : null}
+      </div>
 
       <div className="mt-10 space-y-4 text-center text-sm">
         <p>

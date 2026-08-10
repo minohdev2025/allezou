@@ -16,6 +16,7 @@
 import { and, eq, isNull, sql } from "drizzle-orm";
 
 import { db } from "./db";
+import { asDateOrNull } from "./db/rows";
 import * as s from "./db/schema";
 import { readersOfPublication } from "./visibility";
 
@@ -60,11 +61,77 @@ export async function subscribe(
     });
 }
 
-export async function unsubscribe(endpoint: string): Promise<void> {
-  await db.delete(s.pushSubscription).where(eq(s.pushSubscription.endpoint, endpoint));
+/**
+ * On ne supprime que ses propres abonnements : sans le compte dans la condition, il
+ * suffirait de connaître l'adresse d'un appareil pour couper les notifications d'autrui.
+ */
+export async function unsubscribe(accountId: string, endpoint: string): Promise<void> {
+  await db
+    .delete(s.pushSubscription)
+    .where(
+      and(
+        eq(s.pushSubscription.endpoint, endpoint),
+        eq(s.pushSubscription.accountId, accountId),
+      ),
+    );
 }
 
 /* ----------------------------------------------------------------- réglages */
+
+export type ReglageCercle = {
+  circleId: string;
+  circleName: string;
+  onPresence: boolean;
+  onAttendance: boolean;
+  pausedUntil: Date | null;
+};
+
+/** Les réglages d'un compte pour chacun de ses cercles, valeurs par défaut comprises. */
+export async function prefsParCercle(accountId: string): Promise<ReglageCercle[]> {
+  const rows = await db.execute<{
+    circle_id: string;
+    circle_name: string;
+    on_presence: boolean;
+    on_attendance: boolean;
+    paused_until: Date | null;
+  }>(sql`
+    select
+      c.id as circle_id,
+      c.name as circle_name,
+      coalesce(np.on_presence, true) as on_presence,
+      coalesce(np.on_attendance, true) as on_attendance,
+      np.paused_until
+    from circle_membership m
+    join circle c on c.id = m.circle_id and c.archived_at is null
+    left join notification_pref np
+      on np.account_id = m.account_id and np.circle_id = c.id
+    where m.account_id = ${accountId}
+      and m.left_at is null
+    order by c.name asc
+  `);
+
+  return rows.map((r) => ({
+    circleId: r.circle_id,
+    circleName: r.circle_name,
+    onPresence: r.on_presence,
+    onAttendance: r.on_attendance,
+    pausedUntil: asDateOrNull(r.paused_until),
+  }));
+}
+
+/** Les personnes mises en sourdine dans un cercle. */
+export async function mutedIn(accountId: string, circleId: string): Promise<Set<string>> {
+  const rows = await db
+    .select({ mutedAccountId: s.notificationMute.mutedAccountId })
+    .from(s.notificationMute)
+    .where(
+      and(
+        eq(s.notificationMute.accountId, accountId),
+        eq(s.notificationMute.circleId, circleId),
+      ),
+    );
+  return new Set(rows.map((r) => r.mutedAccountId));
+}
 
 export type NotificationPrefs = {
   onPresence: boolean;

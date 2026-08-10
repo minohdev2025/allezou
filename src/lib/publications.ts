@@ -282,6 +282,148 @@ export async function joinPresence(
   });
 }
 
+/**
+ * Corriger les enfants qu'on amène. C'est exactement le même geste que rejoindre : on
+ * redit avec qui on est là. Vaut aussi pour l'auteur de la sortie.
+ */
+export const setParticipantChildren = joinPresence;
+
+/**
+ * Les enfants que *je* déclare présents à cette sortie, par identifiant.
+ *
+ * On ne se contente pas de comparer des prénoms affichés : deux enfants d'une même famille
+ * peuvent porter le même, et l'on cocherait alors la mauvaise case.
+ */
+export async function myChildrenOnPublication(
+  actorId: string,
+  publicationId: string,
+): Promise<string[]> {
+  const rows = await db
+    .select({ childId: s.publicationParticipantChild.childId })
+    .from(s.publicationParticipantChild)
+    .where(
+      and(
+        eq(s.publicationParticipantChild.publicationId, publicationId),
+        eq(s.publicationParticipantChild.accountId, actorId),
+      ),
+    );
+  return rows.map((r) => r.childId);
+}
+
+/**
+ * Prolonger une sortie en cours. On est encore au parc à midi vingt, on ne veut pas
+ * disparaître de l'écran des autres pour autant.
+ */
+export async function extendPresence(
+  actorId: string,
+  publicationId: string,
+  minutes = 60,
+): Promise<Result<{ endsAt: Date }>> {
+  const [publication] = await db
+    .select({
+      authorId: s.publication.authorId,
+      kind: s.publication.kind,
+      startsAt: s.publication.startsAt,
+      endsAt: s.publication.endsAt,
+    })
+    .from(s.publication)
+    .where(eq(s.publication.id, publicationId))
+    .limit(1);
+
+  if (!publication) return ko("publication_inconnue");
+  if (publication.authorId !== actorId) return ko("pas_auteur");
+  if (publication.kind !== "presence") return ko("pas_une_presence");
+
+  const nouvelleFin = new Date(publication.endsAt.getTime() + minutes * 60_000);
+  const dureeTotale =
+    (nouvelleFin.getTime() - publication.startsAt.getTime()) / 60_000;
+
+  // Une sortie reste une sortie : au-delà de la durée maximale, ce n'est plus une présence
+  // spontanée mais un séjour, et l'expiration automatique perdrait son sens.
+  if (dureeTotale > DUREE_MAX_MINUTES) return ko("duree_invalide");
+
+  await db
+    .update(s.publication)
+    .set({ endsAt: nouvelleFin })
+    .where(eq(s.publication.id, publicationId));
+
+  return ok({ endsAt: nouvelleFin });
+}
+
+/** Le mot de 140 caractères : « pataugeoire ouverte », « on est côté toboggan ». */
+export async function setNote(
+  actorId: string,
+  publicationId: string,
+  rawNote: string,
+): Promise<Result<void>> {
+  const note = noteSchema.safeParse(rawNote.trim() || undefined);
+  if (!note.success) return ko("note_invalide");
+
+  const [publication] = await db
+    .select({ authorId: s.publication.authorId })
+    .from(s.publication)
+    .where(eq(s.publication.id, publicationId))
+    .limit(1);
+
+  if (!publication) return ko("publication_inconnue");
+  if (publication.authorId !== actorId) return ko("pas_auteur");
+
+  await db
+    .update(s.publication)
+    .set({ note: note.data ?? null })
+    .where(eq(s.publication.id, publicationId));
+
+  return ok(undefined as void);
+}
+
+/**
+ * La dernière sortie déclarée, pour la rejouer en un geste : les familles retournent aux
+ * deux ou trois mêmes endroits, il est inutile de leur faire refaire le choix à chaque fois.
+ */
+export async function lastOuting(actorId: string): Promise<{
+  placeId: string;
+  placeName: string;
+  minutes: number;
+  childIds: string[];
+} | null> {
+  const rows = await db.execute<{
+    place_id: string;
+    place_name: string;
+    minutes: number;
+    child_ids: string[];
+  }>(sql`
+    select
+      p.place_id,
+      pl.name as place_name,
+      round(extract(epoch from (p.ends_at - p.starts_at)) / 60)::int as minutes,
+      coalesce(
+        (
+          select array_agg(ppc.child_id)
+          from publication_participant_child ppc
+          join child c on c.id = ppc.child_id and c.deleted_at is null
+          where ppc.publication_id = p.id and ppc.account_id = p.author_id
+        ),
+        '{}'
+      ) as child_ids
+    from publication p
+    join place pl on pl.id = p.place_id and pl.archived_at is null
+    where p.author_id = ${actorId}
+      and p.kind = 'presence'
+    order by p.created_at desc
+    limit 1
+  `);
+
+  const row = rows[0];
+  if (!row) return null;
+
+  return {
+    placeId: row.place_id,
+    placeName: row.place_name,
+    minutes: Math.min(Math.max(row.minutes, DUREE_MIN_MINUTES), DUREE_MAX_MINUTES),
+    childIds: row.child_ids ?? [],
+  };
+}
+
 /** Se retirer d'une sortie qu'on avait rejointe. L'auteur, lui, retire sa sortie. */
 export async function leavePresence(
   actorId: string,

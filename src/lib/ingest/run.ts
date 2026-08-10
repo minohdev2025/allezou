@@ -220,6 +220,9 @@ export type PendingEvent = {
   startsAt: Date;
   endsAt: Date | null;
   placeLabel: string | null;
+  commune: string | null;
+  minAge: number | null;
+  maxAge: number | null;
   url: string | null;
   sourceName: string | null;
 };
@@ -233,10 +236,14 @@ export async function pendingReview(limit = 50): Promise<PendingEvent[]> {
     starts_at: Date;
     ends_at: Date | null;
     place_label: string | null;
+    commune: string | null;
+    min_age: number | null;
+    max_age: number | null;
     url: string | null;
     source_name: string | null;
   }>(sql`
     select e.id, e.title, e.description, e.starts_at, e.ends_at, e.place_label, e.url,
+           e.commune, e.min_age, e.max_age,
            src.name as source_name
     from event e
     left join source src on src.id = e.source_id
@@ -253,9 +260,50 @@ export async function pendingReview(limit = 50): Promise<PendingEvent[]> {
     startsAt: asDate(r.starts_at),
     endsAt: asDateOrNull(r.ends_at),
     placeLabel: r.place_label,
+    commune: r.commune,
+    minAge: r.min_age,
+    maxAge: r.max_age,
     url: r.url,
     sourceName: r.source_name,
   }));
+}
+
+export type Correction = {
+  title?: string;
+  startsAt?: Date;
+  endsAt?: Date | null;
+  placeLabel?: string | null;
+  commune?: string | null;
+  minAge?: number | null;
+  maxAge?: number | null;
+};
+
+/**
+ * Corriger puis publier.
+ *
+ * Une lecture par l'IA se trompe surtout sur les heures — une activité sans horaire écrit
+ * ressort volontiers à minuit. Accepter ou refuser ne suffit donc pas : il faut pouvoir
+ * rectifier, sinon la seule option devant une bonne activité mal datée est de la jeter.
+ */
+export async function correctAndPublish(
+  eventId: string,
+  correction: Correction,
+): Promise<void> {
+  const champs = Object.fromEntries(
+    Object.entries(correction).filter(([, v]) => v !== undefined),
+  );
+
+  await db
+    .update(s.event)
+    .set({
+      ...champs,
+      publishedAt: new Date(),
+      rejectedAt: null,
+      // L'origine ne change pas : corriger une heure ne fait pas de nous la source de
+      // l'activité, et le parent qui la lit doit continuer à voir d'où elle vient.
+      updatedAt: new Date(),
+    })
+    .where(and(eq(s.event.id, eventId), isNull(s.event.publishedAt)));
 }
 
 export async function publishEvent(eventId: string): Promise<void> {

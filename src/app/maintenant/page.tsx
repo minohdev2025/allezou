@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { myChildren } from "@/lib/children";
 import { currentlyOut, upcomingOutings } from "@/lib/publications";
 import { requireAccount } from "@/lib/session";
@@ -112,7 +114,11 @@ async function LigneSortie({
   return (
     <Carte accent={couleur}>
       <div className="mb-3 flex items-start justify-between gap-3">
-        <h2 className="titre text-xl font-bold leading-tight">{sortie.placeName}</h2>
+        <h2 className="titre text-xl font-bold leading-tight">
+          <Link href={`/sortie/${sortie.id}`} className="underline-offset-4 hover:underline">
+            {sortie.placeName}
+          </Link>
+        </h2>
         <span
           className="flex shrink-0 items-center gap-1 rounded-[var(--radius-pilule)] px-2.5 py-1 text-sm font-bold"
           style={

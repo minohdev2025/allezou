@@ -7,11 +7,17 @@
  */
 
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 import { resolveSession, type Account } from "./auth";
 
 export const COOKIE_SESSION = "totir_session";
+
+/**
+ * Porte le jeton d'invitation de l'action à la page qui l'affiche, sans passer par l'URL.
+ * Cinq minutes suffisent : au-delà, il faut en recréer un, ce qui ne coûte rien.
+ */
+export const COOKIE_INVITATION = "totir_invitation";
 
 const SIX_MOIS_EN_SECONDES = 180 * 24 * 60 * 60;
 
@@ -51,5 +57,27 @@ export async function currentAccount(): Promise<Account | null> {
 export async function requireAccount(): Promise<Account> {
   const account = await currentAccount();
   if (!account) redirect("/connexion");
+  return account;
+}
+
+/**
+ * Qui relit l'agenda.
+ *
+ * Il n'y a volontairement pas de rôle « administrateur » dans la base : ce serait un pouvoir
+ * de plus à modéliser, à protéger et à révoquer, pour une seule personne au pilote. La liste
+ * vit dans la configuration du serveur, où elle ne peut être modifiée que par qui l'exploite.
+ */
+export function estRelecteur(account: Account): boolean {
+  const autorises = (process.env.ADMIN_EMAILS ?? "")
+    .split(",")
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean);
+
+  return autorises.includes(account.email.toLowerCase());
+}
+
+export async function requireRelecteur(): Promise<Account> {
+  const account = await requireAccount();
+  if (!estRelecteur(account)) notFound();
   return account;
 }

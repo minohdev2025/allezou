@@ -1,0 +1,214 @@
+import Link from "next/link";
+
+import { pendingReview, sourceHealth } from "@/lib/ingest/run";
+import { requireRelecteur } from "@/lib/session";
+import { ecarterActivite, publierActivite } from "../actions";
+import { Bouton, Carte, Pastille, Titre, Vide, jourCourt, teinte } from "../ui";
+
+/** « 2026-08-11T22:00 », le format attendu par un champ datetime-local, à l'heure de Genève. */
+function pourChamp(date: Date | null): string {
+  if (!date) return "";
+  const parties = new Intl.DateTimeFormat("sv-SE", {
+    timeZone: "Europe/Zurich",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).formatToParts(date);
+
+  const lire = (type: string) => parties.find((p) => p.type === type)?.value ?? "";
+  return `${lire("year")}-${lire("month")}-${lire("day")}T${lire("hour")}:${lire("minute")}`;
+}
+
+const champ =
+  "w-full rounded-xl bg-[color:var(--color-fond)] px-3 py-2 text-base ring-2 ring-[color:var(--color-trait)] outline-none focus:ring-[color:var(--color-vert)]";
+
+/**
+ * La file de relecture.
+ *
+ * Sans cet écran, tout ce que MiniMax extrait reste invisible pour toujours. Et accepter ou
+ * refuser ne suffit pas : une activité réelle mal datée doit pouvoir être corrigée, sinon la
+ * seule issue est de la jeter.
+ */
+export default async function Relecture() {
+  await requireRelecteur();
+  const [attente, sante] = await Promise.all([pendingReview(50), sourceHealth()]);
+
+  return (
+    <main className="apparait">
+      <Titre
+        emoji="🧐"
+        sous="Ce que l'IA a extrait des sites communaux, avant que les parents ne le voient."
+      >
+        À relire
+      </Titre>
+
+      <section className="mb-8">
+        <h2 className="titre mb-3 text-lg font-bold">Santé des sources</h2>
+        <ul className="space-y-2">
+          {sante.map((source) => (
+            <li
+              key={source.id}
+              className="rounded-2xl bg-[color:var(--color-surface)] px-4 py-3 ring-2 ring-[color:var(--color-trait)]"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <span className="font-bold">{source.name}</span>
+                <Pastille couleur={source.muette ? "corail" : "vert"}>
+                  {source.joursSansContenu === null
+                    ? "jamais rien rapporté"
+                    : `${source.lastEventCount ?? 0} activités, il y a ${source.joursSansContenu} j`}
+                </Pastille>
+              </div>
+              {source.lastError ? (
+                <p className="mt-1 text-sm text-[color:var(--color-corail)]">
+                  {source.lastError}
+                </p>
+              ) : null}
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <h2 className="titre mb-3 text-lg font-bold">
+        {attente.length === 0
+          ? "Rien en attente"
+          : `${attente.length} en attente de relecture`}
+      </h2>
+
+      {attente.length === 0 ? (
+        <Vide emoji="✅" titre="Tout est relu">
+          Repassez après le prochain passage des sources.
+        </Vide>
+      ) : (
+        <ul className="space-y-4">
+          {attente.map((activite) => {
+            const date = jourCourt(activite.startsAt);
+            return (
+              <li key={activite.id}>
+                <Carte accent={teinte(activite.id)}>
+                  <p className="mb-1 text-sm text-[color:var(--color-doux)]">
+                    {activite.sourceName} · {date.jour} {date.nombre} {date.mois}
+                  </p>
+
+                  <form action={publierActivite} className="space-y-3">
+                    <input type="hidden" name="activite" value={activite.id} />
+
+                    <label className="block">
+                      <span className="mb-1 block text-sm font-bold">Titre</span>
+                      <input
+                        name="titre"
+                        defaultValue={activite.title}
+                        maxLength={120}
+                        className={champ}
+                      />
+                    </label>
+
+                    <div className="flex gap-2">
+                      <label className="flex-1">
+                        <span className="mb-1 block text-sm font-bold">Début</span>
+                        <input
+                          type="datetime-local"
+                          name="debut"
+                          defaultValue={pourChamp(activite.startsAt)}
+                          className={champ}
+                        />
+                      </label>
+                      <label className="flex-1">
+                        <span className="mb-1 block text-sm font-bold">Fin</span>
+                        <input
+                          type="datetime-local"
+                          name="fin"
+                          defaultValue={pourChamp(activite.endsAt)}
+                          className={champ}
+                        />
+                      </label>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <label className="flex-1">
+                        <span className="mb-1 block text-sm font-bold">Lieu</span>
+                        <input
+                          name="lieu"
+                          defaultValue={activite.placeLabel ?? ""}
+                          maxLength={120}
+                          className={champ}
+                        />
+                      </label>
+                      <label className="w-32">
+                        <span className="mb-1 block text-sm font-bold">Commune</span>
+                        <input
+                          name="commune"
+                          defaultValue={activite.commune ?? ""}
+                          maxLength={60}
+                          className={champ}
+                        />
+                      </label>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <label className="flex-1">
+                        <span className="mb-1 block text-sm font-bold">Âge min.</span>
+                        <input
+                          type="number"
+                          name="ageMin"
+                          min={0}
+                          max={18}
+                          defaultValue={activite.minAge ?? ""}
+                          className={champ}
+                        />
+                      </label>
+                      <label className="flex-1">
+                        <span className="mb-1 block text-sm font-bold">Âge max.</span>
+                        <input
+                          type="number"
+                          name="ageMax"
+                          min={0}
+                          max={18}
+                          defaultValue={activite.maxAge ?? ""}
+                          className={champ}
+                        />
+                      </label>
+                    </div>
+
+                    {activite.url ? (
+                      <p className="text-sm">
+                        <a
+                          href={activite.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="underline underline-offset-4"
+                        >
+                          Voir la page d&apos;origine ↗
+                        </a>
+                      </p>
+                    ) : null}
+
+                    <Bouton className="!py-2.5">Publier</Bouton>
+                  </form>
+
+                  <form action={ecarterActivite} className="mt-2">
+                    <input type="hidden" name="activite" value={activite.id} />
+                    <Bouton variante="second" className="!py-2.5">
+                      Écarter
+                    </Bouton>
+                  </form>
+                </Carte>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+
+      <p className="mt-8 text-center">
+        <Link
+          href="/maintenant"
+          className="text-[color:var(--color-doux)] underline underline-offset-4"
+        >
+          Retour
+        </Link>
+      </p>
+    </main>
+  );
+}

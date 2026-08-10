@@ -16,14 +16,20 @@ import {
   declarePresence,
   defaultAudience,
   dureesProposees,
+  extendPresence,
+  lastOuting,
+  myChildrenOnPublication,
   purgeExpired,
   setDefaultAudience,
+  setNote,
+  setParticipantChildren,
   upcomingOutings,
   withdraw,
 } from "@/lib/publications";
-import { canSeePublication } from "@/lib/visibility";
+import { canSeePublication, visiblePublications } from "@/lib/visibility";
 import {
   createAccount,
+  createChild,
   createCircle,
   createEvent,
   createPlace,
@@ -346,6 +352,85 @@ describe("« En ce moment »", () => {
 
     const maintenant = await currentlyOut(bob.id);
     expect(maintenant.map((p) => p.placeName)).toEqual(["Parc du Gué"]);
+  });
+});
+
+describe("Ajuster une sortie après coup", () => {
+  async function uneSortie() {
+    const alice = await createAccount("Alice");
+    const bob = await createAccount("Bob");
+    const classe = await createCircle(alice);
+    await join(classe, bob);
+    const parc = await createPlace();
+    const mateo = await createChild(alice, "Matéo");
+    const lea = await createChild(alice, "Léa");
+
+    const result = await declarePresence(alice.id, {
+      placeId: parc.id,
+      childIds: [mateo.id, lea.id],
+    });
+    if (!result.ok) throw new Error(result.reason);
+
+    return { alice, bob, parc, mateo, lea, id: result.value.publicationId };
+  }
+
+  it("corrige qui est finalement là", async () => {
+    const { alice, bob, mateo, id } = await uneSortie();
+
+    expect(await myChildrenOnPublication(alice.id, id)).toHaveLength(2);
+
+    await setParticipantChildren(alice.id, id, [mateo.id]);
+
+    expect(await myChildrenOnPublication(alice.id, id)).toEqual([mateo.id]);
+    const [vue] = await visiblePublications(bob.id);
+    expect(vue.authorChildren).toEqual(["Matéo"]);
+  });
+
+  it("prolonge d'une heure, sans dépasser la durée maximale", async () => {
+    const { alice, id } = await uneSortie();
+
+    const prolongee = await extendPresence(alice.id, id, 60);
+    expect(prolongee.ok).toBe(true);
+
+    // 2 h au départ, +1 h six fois : la septième dépasserait huit heures.
+    for (let i = 0; i < 5; i += 1) await extendPresence(alice.id, id, 60);
+    expect(await extendPresence(alice.id, id, 60)).toEqual({
+      ok: false,
+      reason: "duree_invalide",
+    });
+  });
+
+  it("seul l'auteur prolonge ou écrit le mot", async () => {
+    const { bob, id } = await uneSortie();
+
+    expect(await extendPresence(bob.id, id)).toEqual({ ok: false, reason: "pas_auteur" });
+    expect(await setNote(bob.id, id, "coucou")).toEqual({ ok: false, reason: "pas_auteur" });
+  });
+
+  it("écrit puis efface le mot", async () => {
+    const { alice, bob, id } = await uneSortie();
+
+    expect((await setNote(alice.id, id, "On est côté toboggan")).ok).toBe(true);
+    expect((await visiblePublications(bob.id))[0].note).toBe("On est côté toboggan");
+
+    expect((await setNote(alice.id, id, "   ")).ok).toBe(true);
+    expect((await visiblePublications(bob.id))[0].note).toBeNull();
+  });
+
+  it("rejoue la dernière sortie à l'identique", async () => {
+    const { alice, parc, mateo, lea, id } = await uneSortie();
+    await setParticipantChildren(alice.id, id, [mateo.id]);
+
+    const derniere = await lastOuting(alice.id);
+    expect(derniere?.placeId).toBe(parc.id);
+    expect(derniere?.minutes).toBe(120);
+    expect(derniere?.childIds).toEqual([mateo.id]);
+    expect(lea.id).toBeTruthy();
+  });
+
+  it("sans sortie passée, il n'y a rien à rejouer", async () => {
+    const alice = await createAccount("Alice");
+    expect(await lastOuting(alice.id)).toBeNull();
   });
 });
 

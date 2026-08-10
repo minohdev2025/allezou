@@ -7,6 +7,7 @@ import { sql } from "drizzle-orm";
 import { beforeEach, describe, expect, it } from "vitest";
 
 import {
+  MAGIC_LINK_MAX_PAR_MINUTE,
   consumeMagicLink,
   destroySession,
   requestMagicLink,
@@ -58,6 +59,19 @@ describe("Demande d'un lien de connexion", () => {
       reason: "trop_de_demandes",
     });
     expect(sentMails).toHaveLength(1);
+  });
+
+  it("refuse au-delà du plafond global, adresses différentes comprises", async () => {
+    // La minimisation interdit de compter par adresse IP : sans plafond global, on
+    // servirait de relais de courrier à qui parcourrait des milliers d'adresses.
+    for (let i = 0; i < MAGIC_LINK_MAX_PAR_MINUTE; i += 1) {
+      expect((await requestMagicLink(`parent${i}@example.test`)).ok).toBe(true);
+    }
+
+    expect(await requestMagicLink("un-de-plus@example.test")).toEqual({
+      ok: false,
+      reason: "service_sature",
+    });
   });
 });
 

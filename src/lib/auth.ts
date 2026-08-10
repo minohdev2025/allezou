@@ -23,6 +23,16 @@ export const SESSION_TTL = "180 days";
 /** Délai minimal entre deux demandes de lien pour une même adresse. */
 export const MAGIC_LINK_MIN_INTERVAL = "60 seconds";
 
+/**
+ * Plafond global de demandes par minute.
+ *
+ * On ne compte pas par adresse IP : la minimisation interdit de les enregistrer, et une
+ * limite par adresse électronique seule laisserait quelqu'un en parcourir des milliers pour
+ * se servir de notre serveur comme d'un relais de courrier. Le plafond est donc global —
+ * grossier, mais il tient sans rien collecter de plus.
+ */
+export const MAGIC_LINK_MAX_PAR_MINUTE = 20;
+
 export const emailSchema = z
   .string()
   .trim()
@@ -40,7 +50,7 @@ export type Account = typeof s.account.$inferSelect;
 
 export type MagicLinkRequest =
   | { ok: true }
-  | { ok: false; reason: "adresse_invalide" | "trop_de_demandes" };
+  | { ok: false; reason: "adresse_invalide" | "trop_de_demandes" | "service_sature" };
 
 /**
  * Demande un lien de connexion. Ne révèle jamais si un compte existe déjà pour cette
@@ -62,6 +72,13 @@ export async function requestMagicLink(rawEmail: string): Promise<MagicLinkReque
   `);
   if (recent.length > 0) {
     return { ok: false, reason: "trop_de_demandes" };
+  }
+
+  const [{ n: demandesRecentes }] = await db.execute<{ n: number }>(sql`
+    select count(*)::int as n from magic_link where created_at > now() - interval '1 minute'
+  `);
+  if (demandesRecentes >= MAGIC_LINK_MAX_PAR_MINUTE) {
+    return { ok: false, reason: "service_sature" };
   }
 
   const token = generateToken();

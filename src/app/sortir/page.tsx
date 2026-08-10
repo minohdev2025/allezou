@@ -2,10 +2,10 @@ import Link from "next/link";
 
 import { myChildren } from "@/lib/children";
 import { searchPlaces } from "@/lib/places";
-import { defaultAudience, dureesProposees } from "@/lib/publications";
+import { defaultAudience, dureesProposees, lastOuting } from "@/lib/publications";
 import { requireAccount } from "@/lib/session";
-import { declarerSortie } from "../actions";
-import { Alerte, Carte, IconePlus, Pastille, Titre, Vide, teinte } from "../ui";
+import { declarerSortie, refaireDerniereSortie } from "../actions";
+import { Alerte, Bouton, Carte, IconePlus, Pastille, Titre, Vide, teinte } from "../ui";
 
 const MESSAGES: Record<string, string> = {
   aucun_destinataire:
@@ -32,10 +32,11 @@ export default async function Sortir({
   const account = await requireAccount();
   const { erreur } = await searchParams;
 
-  const [lieux, cercles, enfants] = await Promise.all([
+  const [lieux, cercles, enfants, derniere] = await Promise.all([
     searchPlaces("", 30),
     defaultAudience(account.id),
     myChildren(account.id),
+    lastOuting(account.id),
   ]);
 
   const durees = dureesProposees();
@@ -48,6 +49,12 @@ export default async function Sortir({
 
       {erreur ? (
         <Alerte ton="erreur">{MESSAGES[erreur] ?? "La sortie n'a pas pu être déclarée."}</Alerte>
+      ) : null}
+
+      {derniere ? (
+        <form action={refaireDerniereSortie} className="mb-5">
+          <Bouton>Comme la dernière fois — {derniere.placeName}</Bouton>
+        </form>
       ) : null}
 
       <Carte className="mb-5" accent="bleu">
@@ -63,11 +70,6 @@ export default async function Sortir({
             <Pastille couleur="corail">aucun cercle</Pastille>
           )}
         </div>
-        {enfants.length > 0 ? (
-          <p className="text-sm text-[color:var(--color-doux)]">
-            avec <strong>{enfants.map((e) => e.firstName).join(" et ")}</strong>
-          </p>
-        ) : null}
       </Carte>
 
       {lieux.length === 0 ? (
@@ -78,9 +80,27 @@ export default async function Sortir({
         </Vide>
       ) : (
         <form action={declarerSortie}>
-          {enfants.map((enfant) => (
-            <input key={enfant.id} type="hidden" name="enfant" value={enfant.id} />
-          ))}
+          {enfants.length > 0 ? (
+            <fieldset className="mb-4">
+              <legend className="mb-2 font-bold">Qui vient</legend>
+              <div className="flex flex-wrap gap-2">
+                {enfants.map((enfant) => (
+                  <label key={enfant.id}>
+                    <input
+                      type="checkbox"
+                      name="enfant"
+                      value={enfant.id}
+                      defaultChecked
+                      className="peer sr-only"
+                    />
+                    <span className="inline-flex cursor-pointer items-center rounded-[var(--radius-pilule)] px-4 py-2 font-bold text-[color:var(--color-doux)] shadow-[inset_0_0_0_2px_var(--color-trait)] peer-checked:bg-[color:var(--color-violet)] peer-checked:text-[color:var(--color-fond)] peer-checked:shadow-none">
+                      {enfant.firstName}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+          ) : null}
 
           <fieldset className="mb-4">
             <legend className="mb-2 font-bold">Combien de temps</legend>

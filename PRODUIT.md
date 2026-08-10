@@ -181,3 +181,18 @@ précisément pourquoi la minimisation n'est pas une posture ici.
 - **Filtres de l'agenda** : quand, âge, commune, et « où va quelqu'un de mes cercles ». Chacun
   est un lien — l'agenda reste utilisable sans JavaScript et une recherche se partage par URL.
   L'âge choisi ne quitte jamais l'écran.
+- **Les enfants présents se cochent**, ils ne sont plus attachés en silence. Une sortie où
+  Léa n'est pas venue ne doit pas affirmer le contraire : c'est une inexactitude sur un
+  enfant, pas un détail de confort.
+- **Qui relit l'agenda** est défini par `ADMIN_EMAILS` dans la configuration du serveur, pas
+  par un rôle en base. Un pouvoir de plus à modéliser, protéger et révoquer ne se justifie pas
+  pour une seule personne au pilote.
+- **Le jeton d'invitation ne passe pas par l'URL** : il voyage dans un cookie de cinq minutes.
+  Une barre d'adresse se retrouve dans l'historique, dans les journaux et dans le référent des
+  liens sortants.
+- **Plafond global de vingt demandes de lien par minute.** On ne compte pas par adresse IP —
+  la minimisation l'interdit — donc la limite est globale : grossière, mais elle empêche de se
+  servir du serveur comme d'un relais de courrier sans rien collecter de plus.
+- **Le service worker ne met rien en cache.** L'application dit qui est dehors *maintenant* ;
+  servir une version périmée serait pire qu'afficher une erreur de réseau. Il n'existe que
+  parce que les notifications l'exigent.
