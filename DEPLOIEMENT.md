@@ -159,32 +159,42 @@ aucune donnée réelle n'existe, et il n'y a rien à héberger. Il faut juste du
 ni les notifications ni l'installation sur l'écran d'accueil ne fonctionnent, et ce sont
 justement les deux choses qu'on veut montrer.
 
-Un tunnel Cloudflare depuis ta machine suffit. Il est **séparé** de celui de `linq-a.ch` :
-voir [cloudflared/totir.yml](cloudflared/totir.yml) pour les trois commandes d'installation,
-à faire une seule fois.
+Un tunnel Cloudflare éphémère suffit : aucun DNS à configurer, une adresse en
+`*.trycloudflare.com`, du HTTPS immédiatement.
 
-**Avant la première démonstration**, dans `.env.local` :
+**L'ordre compte.** Le tunnel d'abord, parce que son adresse n'est connue qu'une fois lancé,
+et que l'application doit la connaître pour fabriquer ses liens.
 
-```
-APP_URL=https://r4c.app
-```
-
-Sans quoi les liens d'invitation, les liens de connexion et les codes QR pointeraient encore
-vers `localhost` — et ne marcheraient sur aucun téléphone.
-
-**Le jour même**, deux terminaux :
-
-```bash
-npm run demo:start
-```
+**1.** Lancer le tunnel et noter l'adresse affichée :
 
 ```bash
 npm run demo:tunnel
 ```
 
-`demo:start` construit et lance en mode production : les cookies passent en `secure`, la
-politique de sécurité perd son `unsafe-eval` de développement, et ce que tu montres ressemble
-à ce qui tournera vraiment.
+**2.** Reporter cette adresse dans `.env.local` :
+
+```
+APP_URL=https://xxxx-yyyy-zzzz.trycloudflare.com
+```
+
+Sans cela, les liens d'invitation, les liens de connexion et les codes QR pointeraient vers
+`localhost` — et ne marcheraient sur aucun téléphone, ce qui casserait précisément la
+démonstration du code QR.
+
+**3.** Dans un second terminal, construire et lancer :
+
+```bash
+npm run demo:start
+```
+
+Le mode production plutôt que développement : les cookies passent en `secure`, la politique
+de sécurité perd son `unsafe-eval`, et ce que tu montres ressemble à ce qui tournera vraiment.
+
+**L'adresse change à chaque redémarrage du tunnel.** Il faut alors refaire les étapes 2 et 3,
+et une application déjà ajoutée à un écran d'accueil devient caduque. C'est le prix de
+l'absence de DNS — acceptable pour une démonstration qu'on mène soi-même, pas pour un pilote.
+Le jour où `r4c.app` passera chez Cloudflare, [cloudflared/totir.yml](cloudflared/totir.yml)
+donne la marche à suivre pour une adresse stable.
 
 Deux choses à savoir avant de te lancer :
 

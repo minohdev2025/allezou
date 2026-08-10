@@ -20,7 +20,8 @@
     "maintenance": "tsx scripts/maintenance.mts",
     "demo:seed": "tsx scripts/seed-demo.mts",
     "demo:start": "next build && next start",
-    "demo:tunnel": "cloudflared tunnel --config cloudflared/totir.yml run"
+    "demo:tunnel": "cloudflared tunnel --url http://localhost:3000",
+    "demo:tunnel:nomme": "cloudflared tunnel --config cloudflared/totir.yml run"
   },
   "dependencies": {
     "drizzle-orm": "^0.45.2",

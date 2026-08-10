@@ -1,24 +1,24 @@
-# Tunnel dédié à Totir, pour une démonstration en HTTPS depuis ta machine.
+# Tunnel nommé — INUTILISÉ POUR L'INSTANT.
 #
-# Séparé de ~/.cloudflared/config.yml, qui sert à linq-a.ch : rien de ce qui tourne pour
-# LiNQ n'est touché, et arrêter l'un n'arrête pas l'autre.
+# Il ne servira que le jour où la zone `r4c.app` sera gérée par Cloudflare. Aujourd'hui elle
+# est chez Infomaniak, et un tunnel nommé s'expose via `<identifiant>.cfargotunnel.com`, un
+# nom qui ne résout que dans le DNS de Cloudflare : un CNAME depuis Infomaniak n'y arriverait
+# pas. Il n'y a pas de demi-mesure.
 #
-# Mise en place, une seule fois :
+# En attendant, les démonstrations passent par un tunnel éphémère, sans aucun DNS :
 #
-#   cloudflared tunnel login
-#   cloudflared tunnel create totir
-#   cloudflared tunnel route dns totir r4c.app
+#   npm run demo:tunnel
 #
-# La deuxième commande écrit un fichier <identifiant>.json dans ~/.cloudflared :
-# reporter cet identifiant ci-dessous, aux deux endroits.
+# Le jour où la zone déménage chez Cloudflare :
 #
-# Ensuite, à chaque démonstration :
+#   cloudflared tunnel route dns c03a77d6-2588-4aed-b21d-0fa17b9eb23f r4c.app
+#   npm run demo:tunnel:nomme
 #
-#   npm run demo:start     (dans un terminal)
-#   npm run demo:tunnel    (dans un autre)
+# (Donner l'identifiant et non le nom : `~/.cloudflared/config.yml` prend sinon le dessus et
+# la route part vers le tunnel de LiNQ.)
 
-tunnel: REMPLACER-PAR-IDENTIFIANT-DU-TUNNEL
-credentials-file: C:\Users\Admin\.cloudflared\REMPLACER-PAR-IDENTIFIANT-DU-TUNNEL.json
+tunnel: c03a77d6-2588-4aed-b21d-0fa17b9eb23f
+credentials-file: C:\Users\Admin\.cloudflared\c03a77d6-2588-4aed-b21d-0fa17b9eb23f.json
 
 ingress:
   - hostname: r4c.app
