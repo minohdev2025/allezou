@@ -49,8 +49,9 @@ import {
   unsubscribe,
   webPushSender,
 } from "@/lib/notifications";
-import { createPlace } from "@/lib/places";
+import { createPlace, proposeRename, voteRename } from "@/lib/places";
 import {
+  createEventAndAttend,
   declareAttendance,
   declarePresence,
   extendPresence,
@@ -369,6 +370,56 @@ export async function declarerSortie(formData: FormData) {
 
   prevenir(result.value.publicationId);
   redirect("/maintenant");
+}
+
+/**
+ * Un parent propose une activité à l'agenda.
+ *
+ * Elle est publiée sans passer par la file de relecture : celle-ci existe pour ce qu'une
+ * IA a extrait d'une page web, pas pour ce qu'une famille du cercle écrit elle-même.
+ */
+export async function proposerActivite(formData: FormData) {
+  const account = await requireAccount();
+
+  const debut = heureDeGeneve(formData.get("debut")?.toString());
+  if (!debut) redirect("/agenda/nouveau?erreur=dates_invalides");
+
+  const lieuId = String(formData.get("lieu") ?? "");
+
+  const result = await createEventAndAttend(account.id, {
+    title: String(formData.get("titre") ?? ""),
+    startsAt: debut,
+    endsAt: heureDeGeneve(formData.get("fin")?.toString()) ?? undefined,
+    placeId: lieuId || undefined,
+    placeLabel: formData.get("lieuLibre")?.toString().trim() || undefined,
+    circleIds: formData.getAll("cercle").map(String),
+    childIds: formData.getAll("enfant").map(String),
+  });
+
+  if (!result.ok) redirect(`/agenda/nouveau?erreur=${result.reason}`);
+
+  prevenir(result.value.publicationId);
+  redirect(`/agenda/${result.value.eventId}`);
+}
+
+/* ---------------------------------------------------------------------- lieux */
+
+export async function proposerRenommage(formData: FormData) {
+  const account = await requireAccount();
+  const result = await proposeRename(
+    account.id,
+    String(formData.get("lieu") ?? ""),
+    String(formData.get("nom") ?? ""),
+  );
+  redirect(result.ok ? "/lieux?propose=1" : `/lieux?erreur=${result.reason}`);
+}
+
+export async function validerRenommage(formData: FormData) {
+  const account = await requireAccount();
+  const result = await voteRename(account.id, String(formData.get("proposition") ?? ""));
+
+  if (!result.ok) redirect(`/lieux?erreur=${result.reason}`);
+  redirect(result.value.votes >= result.value.needed ? "/lieux?applique=1" : "/lieux");
 }
 
 export async function ajouterLieu(formData: FormData) {

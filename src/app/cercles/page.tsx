@@ -92,6 +92,7 @@ export default async function Cercles({
       <div className="mt-8 space-y-3">
         <LienBouton href="/reglages">🔔 Notifications</LienBouton>
         <LienBouton href="/compte">🙂 Votre compte et vos enfants</LienBouton>
+        <LienBouton href="/lieux">📍 Les lieux</LienBouton>
         {relecteur ? <LienBouton href="/relecture">🧐 Relire l&apos;agenda</LienBouton> : null}
       </div>
 

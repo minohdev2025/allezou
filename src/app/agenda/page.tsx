@@ -12,6 +12,7 @@ import { requireAccount } from "@/lib/session";
 import {
   Carte,
   Jeton,
+  LienBouton,
   Navigation,
   Pastille,
   Titre,
@@ -148,6 +149,10 @@ export default async function Agenda({
             🫂 Où va quelqu&apos;un de mes cercles
           </Puce>
         </Rangee>
+      </div>
+
+      <div className="mb-5">
+        <LienBouton href="/agenda/nouveau">📅 Proposer une activité</LienBouton>
       </div>
 
       {entrees.length === 0 ? (

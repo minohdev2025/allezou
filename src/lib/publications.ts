@@ -586,6 +586,7 @@ export type NewEventInput = {
   placeLabel?: string;
   circleIds?: string[];
   hiddenFrom?: string[];
+  childIds?: string[];
 };
 
 export async function createEventAndAttend(
@@ -625,6 +626,7 @@ export async function createEventAndAttend(
     eventId: event.id,
     circleIds: input.circleIds,
     hiddenFrom: input.hiddenFrom,
+    childIds: input.childIds,
   });
 
   if (!attendance.ok) return attendance;

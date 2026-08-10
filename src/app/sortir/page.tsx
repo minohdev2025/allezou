@@ -27,13 +27,14 @@ const MESSAGES: Record<string, string> = {
 export default async function Sortir({
   searchParams,
 }: {
-  searchParams: Promise<{ erreur?: string }>;
+  searchParams: Promise<{ erreur?: string; q?: string }>;
 }) {
   const account = await requireAccount();
-  const { erreur } = await searchParams;
+  const { erreur, q } = await searchParams;
+  const recherche = (q ?? "").trim();
 
   const [lieux, cercles, enfants, derniere] = await Promise.all([
-    searchPlaces("", 30),
+    searchPlaces(recherche, 30),
     defaultAudience(account.id),
     myChildren(account.id),
     lastOuting(account.id),
@@ -72,11 +73,36 @@ export default async function Sortir({
         </div>
       </Carte>
 
+      {/*
+        La recherche n'apparaît que lorsqu'elle sert. En dessous d'une dizaine de lieux, le
+        défilement va plus vite qu'un champ à remplir — et l'écran doit rester à deux gestes.
+        Elle est en dehors du formulaire de sortie : on n'imbrique pas deux formulaires.
+      */}
+      {lieux.length > 8 || recherche ? (
+        <form method="get" className="mb-5 flex gap-2">
+          <input
+            name="q"
+            defaultValue={recherche}
+            placeholder="Chercher un lieu"
+            className="min-w-0 flex-1 rounded-[var(--radius-pilule)] bg-[color:var(--color-surface)] px-5 py-3 text-base ring-2 ring-[color:var(--color-trait)] outline-none focus:ring-[color:var(--color-vert)]"
+          />
+          <button className="shrink-0 rounded-[var(--radius-pilule)] px-5 py-3 font-bold shadow-[inset_0_0_0_2px_var(--color-trait)]">
+            Chercher
+          </button>
+        </form>
+      ) : null}
+
       {lieux.length === 0 ? (
-        <Vide emoji="📍" titre="Aucun lieu dans le catalogue">
-          <Link href="/sortir/lieu" className="font-bold underline underline-offset-4">
-            Ajouter le premier
-          </Link>
+        <Vide emoji="📍" titre={recherche ? "Aucun lieu de ce nom" : "Aucun lieu dans le catalogue"}>
+          {recherche ? (
+            <Link href="/sortir" className="font-bold underline underline-offset-4">
+              Voir tous les lieux
+            </Link>
+          ) : (
+            <Link href="/sortir/lieu" className="font-bold underline underline-offset-4">
+              Ajouter le premier
+            </Link>
+          )}
         </Vide>
       ) : (
         <form action={declarerSortie}>

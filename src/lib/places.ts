@@ -216,6 +216,51 @@ export async function voteRename(
   });
 }
 
+/**
+ * Toutes les corrections de nom en attente, avec ce que le lecteur en a déjà fait.
+ *
+ * `dejaVote` évite de proposer un bouton qui ne ferait rien : une voix est déjà comptée,
+ * et rien n'est plus décourageant qu'un bouton qui ne bouge pas.
+ */
+export async function openRenames(
+  actorId: string,
+): Promise<(RenameProposal & { dejaVote: boolean })[]> {
+  const rows = await db.execute<{
+    id: string;
+    place_id: string;
+    current_name: string;
+    proposed_name: string;
+    votes: number;
+    deja_vote: boolean;
+  }>(sql`
+    select
+      p.id,
+      p.place_id,
+      pl.name as current_name,
+      p.proposed_name,
+      (select count(*)::int from place_rename_vote v where v.proposal_id = p.id) as votes,
+      exists (
+        select 1 from place_rename_vote v
+        where v.proposal_id = p.id and v.account_id = ${actorId}
+      ) as deja_vote
+    from place_rename_proposal p
+    join place pl on pl.id = p.place_id and pl.archived_at is null
+    where p.applied_at is null
+      and p.rejected_at is null
+    order by votes desc, p.created_at asc
+  `);
+
+  return rows.map((r) => ({
+    id: r.id,
+    placeId: r.place_id,
+    currentName: r.current_name,
+    proposedName: r.proposed_name,
+    votes: r.votes,
+    needed: VALIDATIONS_RENOMMAGE,
+    dejaVote: r.deja_vote,
+  }));
+}
+
 /** Les renommages en attente de validation pour un lieu. */
 export async function pendingRenames(placeId: string): Promise<RenameProposal[]> {
   const rows = await db.execute<{
