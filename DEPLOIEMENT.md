@@ -159,49 +159,36 @@ aucune donnée réelle n'existe, et il n'y a rien à héberger. Il faut juste du
 ni les notifications ni l'installation sur l'écran d'accueil ne fonctionnent, et ce sont
 justement les deux choses qu'on veut montrer.
 
-Un tunnel Cloudflare éphémère suffit : aucun DNS à configurer, une adresse en
-`*.trycloudflare.com`, du HTTPS immédiatement.
+Un tunnel Cloudflare depuis ta machine suffit. **`r4c.app` est en place** : la zone est chez
+Cloudflare, le tunnel nommé y répond, l'adresse est stable — une application ajoutée à un
+écran d'accueil le reste, et les codes QR restent valables d'une fois sur l'autre.
 
-> **Toujours passer par `npm run demo:tunnel`**, jamais par `cloudflared tunnel --url` seul.
-> Sans `--config`, cloudflared lit `~/.cloudflared/config.yml`, celui de `linq-a.ch` : sa
-> règle finale `- service: http_status:404` attrape l'adresse `trycloudflare.com` et
-> l'application répond 404 sur toutes ses pages, sans qu'aucune erreur ne le signale.
-> [cloudflared/rapide.yml](cloudflared/rapide.yml) est vide exprès, pour neutraliser cet
-> héritage.
-
-**L'ordre compte.** Le tunnel d'abord, parce que son adresse n'est connue qu'une fois lancé,
-et que l'application doit la connaître pour fabriquer ses liens.
-
-**1.** Lancer le tunnel et noter l'adresse affichée :
+Deux terminaux :
 
 ```bash
-npm run demo:tunnel
+npm run demo:tunnel:nomme
 ```
-
-**2.** Reporter cette adresse dans `.env.local` :
-
-```
-APP_URL=https://xxxx-yyyy-zzzz.trycloudflare.com
-```
-
-Sans cela, les liens d'invitation, les liens de connexion et les codes QR pointeraient vers
-`localhost` — et ne marcheraient sur aucun téléphone, ce qui casserait précisément la
-démonstration du code QR.
-
-**3.** Dans un second terminal, construire et lancer :
 
 ```bash
 npm run demo:start
 ```
 
-Le mode production plutôt que développement : les cookies passent en `secure`, la politique
-de sécurité perd son `unsafe-eval`, et ce que tu montres ressemble à ce qui tournera vraiment.
+`demo:start` construit et sert en mode production : les cookies passent en `secure`, la
+politique de sécurité perd son `unsafe-eval`, et ce que tu montres ressemble à ce qui
+tournera vraiment. `.env.local` doit contenir `APP_URL=https://r4c.app`.
 
-**L'adresse change à chaque redémarrage du tunnel.** Il faut alors refaire les étapes 2 et 3,
-et une application déjà ajoutée à un écran d'accueil devient caduque. C'est le prix de
-l'absence de DNS — acceptable pour une démonstration qu'on mène soi-même, pas pour un pilote.
-Le jour où `r4c.app` passera chez Cloudflare, [cloudflared/totir.yml](cloudflared/totir.yml)
-donne la marche à suivre pour une adresse stable.
+### Le repli sans DNS
+
+`npm run demo:tunnel` ouvre un tunnel éphémère en `*.trycloudflare.com`, utile si la zone est
+indisponible. L'adresse change à chaque lancement : il faut alors la reporter dans `APP_URL`
+**avant** de démarrer l'application, sinon les liens et les codes QR pointent ailleurs.
+
+> **Ne jamais lancer `cloudflared tunnel --url` seul.** Sans `--config`, cloudflared lit
+> `~/.cloudflared/config.yml`, celui de `linq-a.ch` : sa règle finale
+> `- service: http_status:404` attrape l'adresse `trycloudflare.com` et l'application répond
+> 404 sur toutes ses pages, sans qu'aucune erreur ne le signale.
+> [cloudflared/rapide.yml](cloudflared/rapide.yml) est vide exprès pour neutraliser cet
+> héritage, et `npm run demo:tunnel` le passe en `--config`.
 
 Deux choses à savoir avant de te lancer :
 
