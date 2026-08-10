@@ -1,36 +1,105 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Totir
 
-## Getting Started
+Coordination entre parents : « nous sommes au parc du Gué jusqu'à midi » et « nous serons à
+la visite du Muséum », diffusés à des cercles de confiance qui existent déjà hors de l'app.
 
-First, run the development server:
+Le **quoi** et le **pourquoi** sont dans [PRODUIT.md](PRODUIT.md). Ce fichier ne dit que le
+**comment**.
+
+## Démarrer
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env.local   # puis renseigner SESSION_SECRET et les clés VAPID
+npm install
+npm run db:up                # PostgreSQL 18 dans Docker, port 5433
+npm run db:migrate
+npm test
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Générer les secrets manquants :
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npx web-push generate-vapid-keys
+```
 
-## Learn More
+La base de test (`TEST_DATABASE_URL`) est distincte et recréée à chaque exécution :
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+docker exec totir-db psql -U totir -c "CREATE DATABASE totir_test OWNER totir;"
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Commandes
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Commande | Ce qu'elle fait |
+|---|---|
+| `npm test` | Toute la suite, dont les tests d'isolation |
+| `npm run typecheck` | Types Next + `tsc --noEmit` |
+| `npm run lint` | ESLint |
+| `npm run db:generate` | Migration SQL depuis le schéma |
+| `npm run db:migrate` | Application des migrations |
+| `npm run sources:seed` | Inscrit les sources d'agenda genevoises |
+| `npm run sources:run` | Passe les sources et affiche leur santé |
+| `npm run maintenance` | Effacements automatiques (à planifier quotidiennement) |
 
-## Deploy on Vercel
+## Organisation
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+src/app/
+  connexion/    lien magique — le jeton est consommé par un Route Handler, pas une page
+  bienvenue/    nom affiché, puis enfants
+  maintenant/   qui est dehors, avec le « +n » dépliable
+  sortir/       deux gestes : arriver ici, toucher un lieu
+  cercles/      liste, création, membres, invitations, demandes en attente
+  rejoindre/    suivre une invitation — dépose une demande, ne fait entrer personne
+  agenda/       activités du canton et qui de vos cercles y va
+  donnees/      rend DONNEES.md : une seule source pour le dépôt et les parents
+  actions.ts    toutes les mutations, chacune ouverte par requireAccount()
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+src/lib/
+  db/           schéma, connexion, conversion des lignes brutes
+  visibility.ts LA règle — point de passage unique de toute lecture
+  auth.ts       accès sans mot de passe (lien magique)
+  account.ts    suppression d'un compte
+  children.ts   enfants (un prénom) et lien entre co-parents
+  circles.ts    cercles, invitations, rôles, liens coupés
+  publications.ts présence, participation, « rejoindre une sortie »
+  places.ts     catalogue de lieux, renommage validé à plusieurs
+  calendar.ts   lecture du calendrier
+  notifications.ts destinataires, réglages, envoi
+  ingest/       sources de l'agenda genevois
+  audit.ts      journal des actes sensibles (liste blanche)
+  maintenance.ts effacements automatiques
+```
+
+## Ce qu'il ne faut pas casser
+
+**Toute lecture de publication passe par `src/lib/visibility.ts`.** Aucune autre partie du
+code ne doit interroger la table `publication` directement. Le prédicat y est écrit une seule
+fois et sert dans les deux sens : « que voit cette personne » et « qui voit cette
+publication » — c'est ce qui garantit qu'une notification ne part jamais vers quelqu'un qui
+ne verrait pas la sortie à l'écran.
+
+Les tests de `visibility.test.ts` sont la démonstration exigée par PRODUIT.md, pas un filet
+de sécurité parmi d'autres. Ils sont écrits pour être lus par quelqu'un qui ne programme pas.
+
+**Les dates comparées viennent de l'horloge de la base**, jamais de celle de Node : quelques
+millisecondes d'écart suffisent à faire sortir un membre avant son entrée, ou à afficher
+« dernier apport il y a -1 jour ».
+
+**Les requêtes SQL brutes renvoient les horodatages en chaîne.** Tout ce qui sort de
+`db.execute` et annonce une `Date` passe par `src/lib/db/rows.ts`.
+
+## Sources de l'agenda
+
+Vérifiées le 9 août 2026.
+
+- **Ville de Genève**, filtre « Enfants et famille » — chaque fiche expose du schema.org
+  `Event` en JSON-LD. Publication automatique : rien n'est interprété.
+- **Lancy, Onex** — aucun flux structuré (ni JSON-LD, ni iCal, ni RSS). Lecture par
+  MiniMax M3, mise en file de relecture. Rien n'est publié sans validation humaine.
+
+Une source qui répond correctement mais ne rapporte plus rien est signalée comme muette.

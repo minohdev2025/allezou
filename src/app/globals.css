@@ -1,26 +1,172 @@
 @import "tailwindcss";
 
+/*
+ * Un parent dehors, une main occupée, quelques secondes d'attention, souvent en plein soleil.
+ * L'app est colorée et ronde — elle assume à qui elle s'adresse — mais jamais au détriment
+ * du contraste : chaque couleur de texte reste lisible sur son fond.
+ */
+
+/*
+ * La palette vit dans `:root` et non dans `@theme`.
+ *
+ * Tailwind v4 élague les variables `@theme` qu'aucune classe générée n'utilise — et il ne
+ * peut pas voir celles employées dans un attribut `style`, comme les couleurs choisies à
+ * l'exécution pour un cercle. La moitié de la palette disparaissait du CSS livré.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Fonds et encre */
+  --color-fond: #fffcf5;
+  --color-surface: #ffffff;
+  --color-encre: #1b1a22;
+  --color-doux: #6d6a78;
+  --color-trait: #ece7dc;
+
+  /* Couleurs de sections et de cercles. Saturées, mais toutes contrastées sur blanc. */
+  --color-vert: #17784f;
+  --color-vert-doux: #c9e8d8;
+  --color-bleu: #1f6fc4;
+  --color-bleu-doux: #cfe3fa;
+  --color-ambre: #9c5c00;
+  --color-ambre-doux: #fbe0b6;
+  --color-corail: #c0362f;
+  --color-corail-doux: #fbd5d1;
+  --color-violet: #6a45c9;
+  --color-violet-doux: #ded1fa;
+  --color-rose: #b32e72;
+  --color-rose-doux: #fbcfe3;
+
+  --radius-carte: 1.5rem;
+  --radius-pilule: 999px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
+/*
+ * Le thème sombre redéfinit les variables sur `:root`, et surtout PAS dans un second bloc
+ * `@theme` : Tailwind v4 traite `@theme` au build sans tenir compte de la media query qui
+ * l'entoure, si bien que les valeurs sombres s'appliquaient à tout le monde, en permanence.
+ */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --color-fond: #100f16;
+    --color-surface: #221f2c;
+    --color-encre: #f6f3ec;
+    --color-doux: #aeaabb;
+    --color-trait: #383343;
+
+    --color-vert: #6fd8a5;
+    --color-vert-doux: #1a3b2c;
+    --color-bleu: #7cbaf5;
+    --color-bleu-doux: #182e45;
+    --color-ambre: #f2b45c;
+    --color-ambre-doux: #3d2d12;
+    --color-corail: #f89189;
+    --color-corail-doux: #40201e;
+    --color-violet: #b79cf5;
+    --color-violet-doux: #2b2046;
+    --color-rose: #f186b7;
+    --color-rose-doux: #3d1932;
   }
 }
 
+html {
+  color-scheme: light dark;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-fond);
+  color: var(--color-encre);
+  font-family: var(--font-texte), ui-sans-serif, system-ui, sans-serif;
+  -webkit-text-size-adjust: 100%;
+  overscroll-behavior-y: none;
+}
+
+h1,
+h2,
+.titre {
+  font-family: var(--font-titre), var(--font-texte), ui-sans-serif, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+/* Aucune cible tactile en dessous de 44 px : c'est la taille d'un pouce. */
+button,
+a[data-bouton],
+input,
+select,
+summary {
+  min-height: 2.75rem;
+}
+
+/*
+ * Apparition douce — en opacité seulement.
+ *
+ * Surtout pas de `transform` ici : un transform, même terminé, fait de l'élément un bloc
+ * conteneur pour ses descendants en `position: fixed`. La barre de navigation cessait
+ * alors d'être collée en bas de l'écran.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .apparait {
+    animation: apparait 0.25s ease-out both;
+  }
+  @keyframes apparait {
+    from {
+      opacity: 0;
+    }
+  }
+}
+
+/* Mise en forme de la page d'information, rendue depuis DONNEES.md. */
+.prose-totir h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 1.5rem 0 0.75rem;
+}
+.prose-totir h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 2rem 0 0.5rem;
+  color: var(--color-vert);
+}
+.prose-totir p,
+.prose-totir ul,
+.prose-totir ol {
+  margin: 0.75rem 0;
+  line-height: 1.65;
+}
+.prose-totir ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+}
+.prose-totir li {
+  margin: 0.35rem 0;
+}
+.prose-totir blockquote {
+  border-left: 4px solid var(--color-vert);
+  background: var(--color-vert-doux);
+  border-radius: 0 1rem 1rem 0;
+  padding: 0.75rem 1rem;
+  margin: 1rem 0;
+}
+.prose-totir strong {
+  font-weight: 700;
+}
+.prose-totir hr {
+  border: 0;
+  border-top: 2px dashed var(--color-trait);
+  margin: 2rem 0;
+}
+.prose-totir table {
+  display: block;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  margin: 1rem 0;
+}
+.prose-totir th,
+.prose-totir td {
+  border: 1px solid var(--color-trait);
+  padding: 0.55rem 0.65rem;
+  text-align: left;
+  vertical-align: top;
+}
+.prose-totir th {
+  background: var(--color-vert-doux);
 }

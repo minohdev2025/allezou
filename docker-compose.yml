@@ -1,0 +1,24 @@
+services:
+  db:
+    image: postgres:18-alpine
+    container_name: totir-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: totir
+      POSTGRES_PASSWORD: totir
+      POSTGRES_DB: totir
+    ports:
+      # 5433 pour ne pas entrer en conflit avec un Postgres déjà installé en local
+      - "5433:5432"
+    volumes:
+      # Postgres 18+ attend un montage unique sur /var/lib/postgresql
+      # (les données vont dans un sous-dossier par version majeure).
+      - totir-db-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U totir -d totir"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  totir-db-data:

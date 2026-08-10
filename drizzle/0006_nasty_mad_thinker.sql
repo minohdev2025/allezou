@@ -1,0 +1,1 @@
+ALTER TABLE "child" DROP COLUMN "birth_year";

@@ -1,0 +1,1 @@
+ALTER TABLE "circle_membership" ADD COLUMN "default_audience" boolean DEFAULT true NOT NULL;
