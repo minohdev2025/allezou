@@ -3,7 +3,8 @@ import { redirect } from "next/navigation";
 
 import { lienDeConnexionEnDeveloppement } from "@/lib/mail";
 import { currentAccount } from "@/lib/session";
-import { demanderLien } from "../actions";
+import { connecterParCleAcces, demanderLien, preparerConnexionCle } from "../actions";
+import { ConnexionParCleAcces } from "../passkey-client";
 import { Alerte, Bouton, Carte, Champ } from "../ui";
 
 const MESSAGES: Record<string, string> = {
@@ -62,6 +63,11 @@ export default async function Connexion({
           </Link>
         </Alerte>
       ) : null}
+
+      <ConnexionParCleAcces
+        preparer={preparerConnexionCle}
+        connecter={connecterParCleAcces}
+      />
 
       <Carte accent="vert">
         <form action={demanderLien} className="space-y-5">

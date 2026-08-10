@@ -524,6 +524,37 @@ export const magicLink = pgTable(
   (t) => [uniqueIndex("magic_link_token_key").on(t.tokenHash)],
 );
 
+/**
+ * Clés d'accès : revenir dans l'application sans courriel.
+ *
+ * Ce qui est enregistré est une **clé publique** — elle ne permet pas de se faire passer
+ * pour la personne. L'empreinte, le visage ou le code ne quittent jamais l'appareil et ne
+ * nous parviennent jamais : le téléphone se déverrouille tout seul, puis signe.
+ *
+ * Le courriel reste le chemin de première entrée et de récupération : un appareil perdu ne
+ * doit pas fermer un compte.
+ */
+export const passkey = pgTable(
+  "passkey",
+  {
+    /** Identifiant de la clé, tel que l'appareil le fournit (base64url). */
+    id: varchar({ length: 500 }).primaryKey(),
+    accountId: uuid()
+      .notNull()
+      .references(() => account.id, { onDelete: "cascade" }),
+    publicKey: varchar({ length: 1000 }).notNull(),
+    /** Compteur anti-rejeu, tel que l'authentificateur l'incrémente. */
+    counter: integer().notNull().default(0),
+    /** Comment l'appareil s'est présenté : « internal », « hybrid »… */
+    transports: varchar({ length: 120 }),
+    /** Ce que la personne voit dans sa liste : « Téléphone de Sophie ». */
+    label: varchar({ length: 60 }).notNull(),
+    createdAt: timestamp({ withTimezone: true }).notNull().default(now),
+    lastUsedAt: timestamp({ withTimezone: true }),
+  },
+  (t) => [index("passkey_account_idx").on(t.accountId)],
+);
+
 export const session = pgTable(
   "session",
   {

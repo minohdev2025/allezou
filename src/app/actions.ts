@@ -53,6 +53,13 @@ import {
   unsubscribe,
   webPushSender,
 } from "@/lib/notifications";
+import {
+  connecterParCle,
+  enregistrerCle,
+  oublierCle,
+  optionsConnexion,
+  optionsEnregistrement,
+} from "@/lib/passkeys";
 import { createPlace, proposeRename, voteRename } from "@/lib/places";
 import {
   createEventAndAttend,
@@ -70,11 +77,13 @@ import {
   withdraw,
 } from "@/lib/publications";
 import {
+  COOKIE_DEFI,
   COOKIE_INVITATION,
   clearSessionCookie,
   readSessionToken,
   requireAccount,
   requireRelecteur,
+  setSessionCookie,
 } from "@/lib/session";
 
 /* ------------------------------------------------------------------ connexion */
@@ -336,6 +345,67 @@ export async function ecarterActivite(formData: FormData) {
   await requireRelecteur();
   await rejectEvent(String(formData.get("activite") ?? ""));
   revalidatePath("/relecture");
+}
+
+/* ------------------------------------------------------------- clés d'accès */
+
+async function poserDefi(defi: string) {
+  const cookieStore = await cookies();
+  cookieStore.set(COOKIE_DEFI, defi, {
+    httpOnly: true,
+    sameSite: "strict",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: 120,
+  });
+}
+
+/** Lit le défi et l'efface aussitôt : une signature ne doit pouvoir servir qu'une fois. */
+async function releverDefi(): Promise<string | null> {
+  const cookieStore = await cookies();
+  const defi = cookieStore.get(COOKIE_DEFI)?.value ?? null;
+  cookieStore.delete(COOKIE_DEFI);
+  return defi;
+}
+
+export async function preparerCleAcces() {
+  const account = await requireAccount();
+  const options = await optionsEnregistrement(account.id, account.displayName);
+  await poserDefi(options.challenge);
+  return options;
+}
+
+export async function enregistrerCleAcces(reponseJson: string, libelle: string) {
+  const account = await requireAccount();
+  const defi = await releverDefi();
+  if (!defi) return { ok: false as const, reason: "defi_absent" as const };
+
+  const result = await enregistrerCle(account.id, JSON.parse(reponseJson), defi, libelle);
+  revalidatePath("/compte");
+  return result.ok ? { ok: true as const } : { ok: false as const, reason: result.reason };
+}
+
+export async function preparerConnexionCle() {
+  const options = await optionsConnexion();
+  await poserDefi(options.challenge);
+  return options;
+}
+
+export async function connecterParCleAcces(reponseJson: string) {
+  const defi = await releverDefi();
+  if (!defi) return { ok: false as const, reason: "defi_absent" as const };
+
+  const result = await connecterParCle(JSON.parse(reponseJson), defi);
+  if (!result.ok) return { ok: false as const, reason: result.reason };
+
+  await setSessionCookie(result.value.sessionToken);
+  return { ok: true as const };
+}
+
+export async function oublierCleAcces(formData: FormData) {
+  const account = await requireAccount();
+  await oublierCle(account.id, String(formData.get("cle") ?? ""));
+  redirect("/compte");
 }
 
 /* ------------------------------------------------------------- notifications */

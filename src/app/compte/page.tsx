@@ -1,18 +1,23 @@
 import Link from "next/link";
 
 import { myChildren } from "@/lib/children";
+import { mesCles } from "@/lib/passkeys";
 import { requireAccount } from "@/lib/session";
 import {
   accepterCoparent,
   ajouterEnfantCompte,
   changerNom,
+  enregistrerCleAcces,
   inviterAutreParent,
+  oublierCleAcces,
+  preparerCleAcces,
   renommerEnfant,
   retirerEnfant,
   supprimerCompte,
 } from "../actions";
+import { AjouterCleAcces } from "../passkey-client";
 import { CodeQR } from "../qr";
-import { Alerte, Bouton, Carte, Champ, Navigation, Titre, teinte } from "../ui";
+import { Alerte, Bouton, Carte, Champ, Navigation, Titre, jourCourt, teinte } from "../ui";
 
 const MESSAGES: Record<string, string> = {
   nom: "Il faut écrire quelque chose.",
@@ -32,7 +37,7 @@ export default async function Compte({
 }) {
   const account = await requireAccount();
   const { erreur, coparent, rejoindre } = await searchParams;
-  const enfants = await myChildren(account.id);
+  const [enfants, cles] = await Promise.all([myChildren(account.id), mesCles(account.id)]);
   const appUrl = process.env.APP_URL ?? "http://localhost:3000";
 
   return (
@@ -151,6 +156,55 @@ export default async function Compte({
           />
           <Bouton variante="second">Rejoindre</Bouton>
         </form>
+      </Carte>
+
+      <Carte className="mb-5" accent="vert">
+        <h2 className="titre mb-2 text-lg font-bold">Revenir sans courriel</h2>
+        <p className="mb-4 text-sm leading-snug text-[color:var(--color-doux)]">
+          Enregistrez cet appareil et vous entrerez ensuite comme vous le déverrouillez —
+          empreinte, visage ou code, selon votre téléphone. Rien de tout cela ne nous est
+          transmis : l&apos;appareil garde une clé qu&apos;il ne révèle à personne, et nous
+          n&apos;en connaissons que la moitié publique. Le lien par courriel reste là si vous
+          changez de téléphone.
+        </p>
+
+        {cles.length > 0 ? (
+          <ul className="mb-4 space-y-2">
+            {cles.map((cle) => (
+              <li
+                key={cle.id}
+                className="flex items-center gap-3 rounded-2xl bg-[color:var(--color-fond)] px-4 py-2.5"
+              >
+                <span className="min-w-0 flex-1 text-sm">
+                  <span className="block font-bold">{cle.label}</span>
+                  <span className="text-[color:var(--color-doux)]">
+                    {cle.lastUsedAt
+                      ? `dernière entrée le ${jourCourt(cle.lastUsedAt).nombre} ${jourCourt(cle.lastUsedAt).mois}`
+                      : "jamais utilisé"}
+                  </span>
+                </span>
+                <form action={oublierCleAcces}>
+                  <input type="hidden" name="cle" value={cle.id} />
+                  <button
+                    className="shrink-0 rounded-[var(--radius-pilule)] px-3 py-2 text-sm font-bold"
+                    style={{
+                      background: "var(--color-corail-doux)",
+                      color: "var(--color-corail)",
+                    }}
+                  >
+                    Oublier
+                  </button>
+                </form>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+
+        <AjouterCleAcces
+          preparer={preparerCleAcces}
+          enregistrer={enregistrerCleAcces}
+          nomParDefaut="Cet appareil"
+        />
       </Carte>
 
       <Carte accent="corail">

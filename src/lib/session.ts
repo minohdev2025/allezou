@@ -19,6 +19,14 @@ export const COOKIE_SESSION = "totir_session";
  */
 export const COOKIE_INVITATION = "totir_invitation";
 
+/**
+ * Le défi d'une clé d'accès, entre son émission et sa vérification.
+ *
+ * Il doit être à usage unique et de courte durée : c'est lui qui empêche de rejouer une
+ * signature capturée. Deux minutes suffisent largement à poser un doigt sur un capteur.
+ */
+export const COOKIE_DEFI = "totir_defi";
+
 const SIX_MOIS_EN_SECONDES = 180 * 24 * 60 * 60;
 
 export async function setSessionCookie(token: string): Promise<void> {

@@ -158,6 +158,20 @@ export async function consumeMagicLink(token: string): Promise<LoginResult> {
 }
 
 /**
+ * Ouvre une session. Extrait pour que la connexion par clé d'accès aboutisse exactement
+ * au même état qu'un lien par courriel : une seule notion de session dans l'application.
+ */
+export async function createSession(accountId: string): Promise<string> {
+  const sessionToken = generateToken();
+  await db.insert(s.session).values({
+    accountId,
+    tokenHash: hashToken(sessionToken),
+    expiresAt: sql`now() + interval '${sql.raw(SESSION_TTL)}'`,
+  });
+  return sessionToken;
+}
+
+/**
  * Le compte derrière un jeton de session, ou null. Rejette les sessions expirées et les
  * comptes supprimés — un compte supprimé ne peut plus rien lire, même avec un cookie valide.
  */

@@ -24,6 +24,8 @@
     "demo:tunnel:nomme": "cloudflared tunnel --config cloudflared/totir.yml run"
   },
   "dependencies": {
+    "@simplewebauthn/browser": "^13.3.0",
+    "@simplewebauthn/server": "^13.3.2",
     "drizzle-orm": "^0.45.2",
     "marked": "^18.0.9",
     "next": "16.3.0",
