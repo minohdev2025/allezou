@@ -424,6 +424,78 @@ export async function lastOuting(actorId: string): Promise<{
   };
 }
 
+/** Mon inscription à une activité du calendrier, si j'en ai une. */
+export async function myAttendance(
+  actorId: string,
+  eventId: string,
+): Promise<{ publicationId: string; circleIds: string[]; childIds: string[] } | null> {
+  const [publication] = await db
+    .select({ id: s.publication.id })
+    .from(s.publication)
+    .where(
+      and(
+        eq(s.publication.authorId, actorId),
+        eq(s.publication.eventId, eventId),
+        isNull(s.publication.withdrawnAt),
+      ),
+    )
+    .limit(1);
+
+  if (!publication) return null;
+
+  const [cercles, enfants] = await Promise.all([
+    db
+      .select({ circleId: s.publicationCircle.circleId })
+      .from(s.publicationCircle)
+      .where(eq(s.publicationCircle.publicationId, publication.id)),
+    myChildrenOnPublication(actorId, publication.id),
+  ]);
+
+  return {
+    publicationId: publication.id,
+    circleIds: cercles.map((c) => c.circleId),
+    childIds: enfants,
+  };
+}
+
+/**
+ * Changer les cercles destinataires d'une publication déjà faite.
+ *
+ * On repasse par le même filtre qu'à la création : on ne peut pas s'adresser après coup à
+ * un cercle dont on n'est pas membre. Et l'on ne descend jamais à zéro destinataire — une
+ * publication que plus personne ne voit doit être retirée, pas vidée en silence.
+ */
+export async function setPublicationCircles(
+  actorId: string,
+  publicationId: string,
+  circleIds: string[],
+): Promise<Result<{ circles: { id: string; name: string }[] }>> {
+  const [publication] = await db
+    .select({ authorId: s.publication.authorId })
+    .from(s.publication)
+    .where(eq(s.publication.id, publicationId))
+    .limit(1);
+
+  if (!publication) return ko("publication_inconnue");
+  if (publication.authorId !== actorId) return ko("pas_auteur");
+
+  const circles = await allowedCircles(actorId, circleIds);
+  if (circles.length === 0) return ko("aucun_destinataire");
+  if (circles.length !== new Set(circleIds).size) return ko("cercle_interdit");
+
+  return db.transaction(async (tx) => {
+    await tx
+      .delete(s.publicationCircle)
+      .where(eq(s.publicationCircle.publicationId, publicationId));
+
+    await tx
+      .insert(s.publicationCircle)
+      .values(circles.map((c) => ({ publicationId, circleId: c.id })));
+
+    return ok({ circles });
+  });
+}
+
 /** Se retirer d'une sortie qu'on avait rejointe. L'auteur, lui, retire sa sortie. */
 export async function leavePresence(
   actorId: string,

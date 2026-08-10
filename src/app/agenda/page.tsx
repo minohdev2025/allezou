@@ -201,7 +201,14 @@ export default async function Agenda({
                             : "en ce moment"
                           : heureCourte(entree.startsAt)}
                       </p>
-                      <h2 className="titre text-lg font-bold leading-tight">{entree.title}</h2>
+                      <h2 className="titre text-lg font-bold leading-tight">
+                        <Link
+                          href={`/agenda/${entree.id}`}
+                          className="underline-offset-4 hover:underline"
+                        >
+                          {entree.title}
+                        </Link>
+                      </h2>
                       {entree.place ? (
                         <p className="mt-1 text-sm text-[color:var(--color-doux)]">
                           📍 {entree.place}

@@ -18,11 +18,13 @@ import {
   dureesProposees,
   extendPresence,
   lastOuting,
+  myAttendance,
   myChildrenOnPublication,
   purgeExpired,
   setDefaultAudience,
   setNote,
   setParticipantChildren,
+  setPublicationCircles,
   upcomingOutings,
   withdraw,
 } from "@/lib/publications";
@@ -333,6 +335,75 @@ describe("Activité du calendrier", () => {
         eventId: "00000000-0000-0000-0000-000000000000",
       }),
     ).toEqual({ ok: false, reason: "activite_inconnue" });
+  });
+});
+
+describe("Inscription à une activité, destinataires modifiables", () => {
+  async function uneInscription() {
+    const alice = await createAccount("Alice");
+    const bob = await createAccount("Bob");
+    const carla = await createAccount("Carla");
+    const classe = await createCircle(alice, "Classe 4P");
+    const voisinage = await createCircle(alice, "Voisinage");
+    await join(classe, bob);
+    await join(voisinage, carla);
+    const musee = await createEvent({ title: "Visite du Muséum" });
+
+    const result = await declareAttendance(alice.id, {
+      eventId: musee.id,
+      circleIds: [classe.id],
+    });
+    if (!result.ok) throw new Error(result.reason);
+
+    return { alice, bob, carla, classe, voisinage, musee, id: result.value.publicationId };
+  }
+
+  it("se retrouve pour la modifier plus tard", async () => {
+    const { alice, classe, musee, id } = await uneInscription();
+
+    const mienne = await myAttendance(alice.id, musee.id);
+    expect(mienne?.publicationId).toBe(id);
+    expect(mienne?.circleIds).toEqual([classe.id]);
+  });
+
+  it("change de cercle destinataire sans être republiée", async () => {
+    const { alice, bob, carla, voisinage, musee, id } = await uneInscription();
+
+    expect(await canSeePublication(bob.id, id)).toBe(true);
+    expect(await canSeePublication(carla.id, id)).toBe(false);
+
+    const change = await setPublicationCircles(alice.id, id, [voisinage.id]);
+    expect(change.ok).toBe(true);
+
+    expect(await canSeePublication(bob.id, id)).toBe(false);
+    expect(await canSeePublication(carla.id, id)).toBe(true);
+    expect((await myAttendance(alice.id, musee.id))?.publicationId).toBe(id);
+  });
+
+  it("refuse de ne laisser aucun destinataire", async () => {
+    const { alice, id } = await uneInscription();
+
+    expect(await setPublicationCircles(alice.id, id, [])).toEqual({
+      ok: false,
+      reason: "aucun_destinataire",
+    });
+  });
+
+  it("refuse un cercle dont on n'est pas membre, et un autre auteur", async () => {
+    const { bob, carla, id } = await uneInscription();
+    const cercleDeCarla = await createCircle(carla, "Ailleurs");
+
+    expect(await setPublicationCircles(bob.id, id, [cercleDeCarla.id])).toEqual({
+      ok: false,
+      reason: "pas_auteur",
+    });
+  });
+
+  it("une inscription retirée ne se retrouve plus", async () => {
+    const { alice, musee, id } = await uneInscription();
+    await withdraw(alice.id, id);
+
+    expect(await myAttendance(alice.id, musee.id)).toBeNull();
   });
 });
 

@@ -19,6 +19,21 @@ export function teinte(graine: string): Teinte {
   return TEINTES[somme % TEINTES.length];
 }
 
+/**
+ * Classes de puce cochée, une par teinte.
+ *
+ * Tailwind ne génère que les classes qu'il voit écrites : une couleur composée à
+ * l'exécution ne produirait aucun style. On les écrit donc toutes, une fois.
+ */
+export const PUCE_COCHEE: Record<Teinte, string> = {
+  vert: "peer-checked:bg-[color:var(--color-vert)]",
+  bleu: "peer-checked:bg-[color:var(--color-bleu)]",
+  ambre: "peer-checked:bg-[color:var(--color-ambre)]",
+  corail: "peer-checked:bg-[color:var(--color-corail)]",
+  violet: "peer-checked:bg-[color:var(--color-violet)]",
+  rose: "peer-checked:bg-[color:var(--color-rose)]",
+};
+
 export function styleTeinte(t: Teinte) {
   return {
     color: `var(--color-${t})`,

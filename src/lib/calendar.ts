@@ -197,6 +197,71 @@ export async function upcomingCalendar(
   }));
 }
 
+/** Une activité précise, avec les personnes inscrites que ce lecteur a le droit de voir. */
+export async function calendarEntry(
+  actorId: string,
+  eventId: string,
+): Promise<CalendarEntry | null> {
+  const rows = await db.execute<{
+    id: string;
+    title: string;
+    description: string | null;
+    starts_at: Date;
+    ends_at: Date | null;
+    place: string | null;
+    commune: string | null;
+    url: string | null;
+    origin: "parent" | "feed" | "ai";
+    source_name: string | null;
+    updated_at: Date;
+    min_age: number | null;
+    max_age: number | null;
+    en_cours: boolean;
+  }>(sql`
+    select
+      e.id, e.title, e.description, e.starts_at, e.ends_at, e.url, e.origin, e.updated_at,
+      e.min_age, e.max_age, e.commune,
+      (e.starts_at <= now()) as en_cours,
+      coalesce(pl.name, e.place_label) as place,
+      src.name as source_name
+    from event e
+    left join place pl on pl.id = e.place_id
+    left join source src on src.id = e.source_id
+    where e.id = ${eventId}
+      and e.published_at is not null
+    limit 1
+  `);
+
+  const r = rows[0];
+  if (!r) return null;
+
+  const participations = await visiblePublications(actorId, {
+    kind: "attendance",
+    eventId,
+  });
+
+  return {
+    id: r.id,
+    title: r.title,
+    description: r.description,
+    startsAt: asDate(r.starts_at),
+    endsAt: asDateOrNull(r.ends_at),
+    place: r.place,
+    commune: r.commune,
+    url: r.url,
+    origin: r.origin,
+    sourceName: r.source_name,
+    updatedAt: asDate(r.updated_at),
+    ageLabel: libelleAge(r.min_age, r.max_age),
+    enCours: r.en_cours,
+    attendees: participations.map((p) => ({
+      publicationId: p.id,
+      accountId: p.authorId,
+      displayName: p.authorName,
+    })),
+  };
+}
+
 /** Les communes réellement représentées à l'agenda — pas une liste figée dans le code. */
 export async function communesDisponibles(): Promise<string[]> {
   const rows = await db.execute<{ commune: string }>(sql`

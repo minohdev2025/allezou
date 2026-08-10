@@ -196,3 +196,12 @@ précisément pourquoi la minimisation n'est pas une posture ici.
 - **Le service worker ne met rien en cache.** L'application dit qui est dehors *maintenant* ;
   servir une version périmée serait pire qu'afficher une erreur de réseau. Il n'existe que
   parce que les notifications l'exigent.
+- **Les liens à partager portent un code QR**, généré sur le serveur et sans aucun appel
+  extérieur : confier un lien d'invitation à un service de génération d'images reviendrait à
+  lui confier la clé d'entrée d'un cercle. Deux parents à la sortie de l'école se montrent un
+  écran plutôt que d'épeler une adresse.
+- **Une activité de l'agenda a sa page** : description, lien vers le site de l'organisateur,
+  qui de vos cercles y va, et inscription avec choix des cercles destinataires. Une
+  inscription se modifie sans être republiée — changer de destinataires n'est pas une
+  nouvelle publication — et ne peut jamais tomber à zéro destinataire : une publication que
+  plus personne ne voit doit être retirée, pas vidée en silence.

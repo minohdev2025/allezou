@@ -44,6 +44,7 @@ docker exec totir-db psql -U totir -c "CREATE DATABASE totir_test OWNER totir;"
 | `npm run sources:seed` | Inscrit les sources d'agenda genevoises |
 | `npm run sources:run` | Passe les sources et affiche leur santé |
 | `npm run maintenance` | Effacements automatiques (à planifier quotidiennement) |
+| `npm run demo:seed` | Deux cercles peuplés et des sorties, pour essayer l'app |
 
 ## Organisation
 

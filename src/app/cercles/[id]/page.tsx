@@ -16,6 +16,7 @@ import {
   quitterCercle,
   refuserDemande,
 } from "../../actions";
+import { CodeQR } from "../../qr";
 import { Alerte, Bouton, Carte, Jeton, Pastille, teinte } from "../../ui";
 
 export default async function Cercle({
@@ -72,13 +73,16 @@ export default async function Cercle({
         <Alerte ton="succes">
           <strong className="mb-1 block text-lg">Lien d&apos;invitation créé 🔗</strong>
           <p className="mb-3 text-sm leading-snug">
-            Envoyez-le aux familles concernées, par message ou comme vous voulez. Il vaut
+            Envoyez-le aux familles concernées, ou faites-leur scanner le carré. Il vaut
             14 jours et 20 usages. Chaque personne qui le suivra devra être validée
             {admin ? " par vous" : " par un administrateur"}.
           </p>
-          <code className="block break-all rounded-xl bg-[color:var(--color-surface)] p-3 text-sm">
-            {appUrl}/rejoindre/{lien}
-          </code>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
+            <CodeQR valeur={`${appUrl}/rejoindre/${lien}`} />
+            <code className="min-w-0 flex-1 break-all rounded-xl bg-[color:var(--color-surface)] p-3 text-sm">
+              {appUrl}/rejoindre/{lien}
+            </code>
+          </div>
         </Alerte>
       ) : null}
 

@@ -11,6 +11,7 @@ import {
   retirerEnfant,
   supprimerCompte,
 } from "../actions";
+import { CodeQR } from "../qr";
 import { Alerte, Bouton, Carte, Champ, Navigation, Titre, teinte } from "../ui";
 
 const MESSAGES: Record<string, string> = {
@@ -49,9 +50,12 @@ export default async function Compte({
             Donnez-le à la personne qui élève les mêmes enfants. Il vaut 14 jours et ne sert
             qu&apos;une fois. Elle verra alors les mêmes prénoms que vous.
           </p>
-          <code className="block break-all rounded-xl bg-[color:var(--color-surface)] p-3 text-sm">
-            {appUrl}/compte?rejoindre={coparent}
-          </code>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
+            <CodeQR valeur={`${appUrl}/compte?rejoindre=${coparent}`} />
+            <code className="min-w-0 flex-1 break-all rounded-xl bg-[color:var(--color-surface)] p-3 text-sm">
+              {appUrl}/compte?rejoindre={coparent}
+            </code>
+          </div>
         </Alerte>
       ) : null}
 

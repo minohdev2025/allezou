@@ -51,14 +51,17 @@ import {
 } from "@/lib/notifications";
 import { createPlace } from "@/lib/places";
 import {
+  declareAttendance,
   declarePresence,
   extendPresence,
   joinPresence,
   lastOuting,
   leavePresence,
+  myAttendance,
   setDefaultAudience,
   setNote,
   setParticipantChildren,
+  setPublicationCircles,
   withdraw,
 } from "@/lib/publications";
 import {
@@ -376,6 +379,40 @@ export async function ajouterLieu(formData: FormData) {
   });
   if (!result.ok) redirect("/sortir/lieu?erreur=1");
   redirect("/sortir");
+}
+
+/* ------------------------------------------------------- activités du calendrier */
+
+export async function sInscrireActivite(formData: FormData) {
+  const account = await requireAccount();
+  const eventId = String(formData.get("activite") ?? "");
+
+  const circleIds = formData.getAll("cercle").map(String);
+  const childIds = formData.getAll("enfant").map(String);
+
+  const deja = await myAttendance(account.id, eventId);
+
+  // Déjà inscrit : on ne recrée rien, on met à jour les destinataires et les enfants.
+  if (deja) {
+    const cercles = await setPublicationCircles(account.id, deja.publicationId, circleIds);
+    if (!cercles.ok) redirect(`/agenda/${eventId}?erreur=${cercles.reason}`);
+    await setParticipantChildren(account.id, deja.publicationId, childIds);
+    redirect(`/agenda/${eventId}`);
+  }
+
+  const result = await declareAttendance(account.id, { eventId, circleIds, childIds });
+  if (!result.ok) redirect(`/agenda/${eventId}?erreur=${result.reason}`);
+
+  prevenir(result.value.publicationId);
+  redirect(`/agenda/${eventId}`);
+}
+
+export async function annulerParticipation(formData: FormData) {
+  const account = await requireAccount();
+  const eventId = String(formData.get("activite") ?? "");
+  const deja = await myAttendance(account.id, eventId);
+  if (deja) await withdraw(account.id, deja.publicationId);
+  redirect(`/agenda/${eventId}`);
 }
 
 export async function rejoindreSortie(formData: FormData) {
