@@ -8,6 +8,9 @@ import { beforeEach, describe, expect, it } from "vitest";
 
 import { AUDIT_ACTIONS } from "@/lib/audit";
 import {
+  DUREE_INVITATION_JOURS,
+  DUREE_INVITATION_MAX_JOURS,
+  USAGES_INVITATION_MAX,
   approveJoin,
   createCircle,
   createInvite,
@@ -167,6 +170,55 @@ describe("Le lien d'invitation ne fait entrer personne", () => {
       ok: false,
       reason: "pas_membre",
     });
+  });
+});
+
+describe("Portée d'une invitation", () => {
+  it("retient le nombre de familles et la durée annoncés", async () => {
+    const alice = await createAccount("Alice");
+    const cercle = await createCircle(alice.id, "Classe 4P");
+    if (!cercle.ok) return;
+
+    const invite = await createInvite(alice.id, cercle.value.id, { maxUses: 8, days: 3 });
+    expect(invite.ok).toBe(true);
+    if (!invite.ok) return;
+
+    expect(invite.value.invite.maxUses).toBe(8);
+    const jours = (invite.value.invite.expiresAt.getTime() - Date.now()) / 86_400_000;
+    expect(Math.round(jours)).toBe(3);
+  });
+
+  it("par défaut, une semaine", async () => {
+    const alice = await createAccount("Alice");
+    const cercle = await createCircle(alice.id, "Classe 4P");
+    if (!cercle.ok) return;
+
+    const invite = await createInvite(alice.id, cercle.value.id);
+    if (!invite.ok) return;
+
+    const jours = (invite.value.invite.expiresAt.getTime() - Date.now()) / 86_400_000;
+    expect(Math.round(jours)).toBe(DUREE_INVITATION_JOURS);
+  });
+
+  it("borne les valeurs extravagantes sans faire échouer la demande", async () => {
+    // Une action serveur est joignable par une requête directe : les bornes de l'écran ne
+    // protègent rien, celles-ci si.
+    const alice = await createAccount("Alice");
+    const cercle = await createCircle(alice.id, "Classe 4P");
+    if (!cercle.ok) return;
+
+    const enorme = await createInvite(alice.id, cercle.value.id, {
+      maxUses: 100_000,
+      days: 3_650,
+    });
+    if (!enorme.ok) return;
+    expect(enorme.value.invite.maxUses).toBe(USAGES_INVITATION_MAX);
+    const jours = (enorme.value.invite.expiresAt.getTime() - Date.now()) / 86_400_000;
+    expect(Math.round(jours)).toBe(DUREE_INVITATION_MAX_JOURS);
+
+    const negatif = await createInvite(alice.id, cercle.value.id, { maxUses: -5, days: -5 });
+    if (!negatif.ok) return;
+    expect(negatif.value.invite.maxUses).toBe(1);
   });
 });
 

@@ -192,7 +192,13 @@ export async function creerInvitation(formData: FormData) {
   const account = await requireAccount();
   const circleId = String(formData.get("cercle") ?? "");
 
-  const result = await createInvite(account.id, circleId);
+  const nombre = Number(formData.get("familles"));
+  const jours = Number(formData.get("jours"));
+
+  const result = await createInvite(account.id, circleId, {
+    maxUses: Number.isFinite(nombre) ? nombre : undefined,
+    days: Number.isFinite(jours) ? jours : undefined,
+  });
   if (!result.ok) redirect(`/cercles/${circleId}?erreur=${result.reason}`);
 
   const cookieStore = await cookies();

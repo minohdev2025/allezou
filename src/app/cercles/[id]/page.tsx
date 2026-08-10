@@ -2,7 +2,14 @@ import { cookies } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { listInvites, listPendingRequests } from "@/lib/circles";
+import {
+  DUREE_INVITATION_JOURS,
+  DUREE_INVITATION_MAX_JOURS,
+  USAGES_INVITATION_MAX,
+  USAGES_INVITATION_PAR_DEFAUT,
+  listInvites,
+  listPendingRequests,
+} from "@/lib/circles";
 import { mutedIn } from "@/lib/notifications";
 import { defaultAudience } from "@/lib/publications";
 import { COOKIE_INVITATION, requireAccount } from "@/lib/session";
@@ -85,9 +92,9 @@ export default async function Cercle({
         <Alerte ton="succes">
           <strong className="mb-1 block text-lg">Lien d&apos;invitation créé 🔗</strong>
           <p className="mb-3 text-sm leading-snug">
-            Envoyez-le aux familles concernées, ou faites-leur scanner le carré. Il vaut
-            14 jours et 20 usages. Chaque personne qui le suivra devra être validée
-            {admin ? " par vous" : " par un administrateur"}.
+            Envoyez-le aux familles concernées, ou faites-leur scanner le carré. Sa durée et
+            le nombre d&apos;entrées restantes s&apos;affichent plus bas. Chaque personne qui
+            le suivra devra être validée{admin ? " par vous" : " par un administrateur"}.
           </p>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
             <CodeQR valeur={`${appUrl}/rejoindre/${lien}`} />
@@ -295,7 +302,8 @@ export default async function Cercle({
           </h2>
           <p className="mb-4 text-sm leading-snug text-[color:var(--color-doux)]">
             Tant qu&apos;un lien vit, quiconque l&apos;a reçu peut demander à entrer. Révoquez
-            celui qui a circulé trop loin.
+            celui qui a circulé trop loin. Passé sa date, le cercle continue de vivre : c&apos;est
+            seulement l&apos;entrée qui se referme.
           </p>
           <ul className="space-y-2">
             {invitations.value.map((invitation) => (
@@ -331,10 +339,46 @@ export default async function Cercle({
         </Carte>
       ) : null}
 
-      <form action={creerInvitation} className="mb-3">
-        <input type="hidden" name="cercle" value={id} />
-        <Bouton variante="second">Créer un lien d&apos;invitation 🔗</Bouton>
-      </form>
+      <Carte className="mb-3" accent="bleu">
+        <form action={creerInvitation} className="space-y-4">
+          <input type="hidden" name="cercle" value={id} />
+
+          <div>
+            <h2 className="titre mb-1 text-lg font-bold">Inviter des familles</h2>
+            <p className="text-sm leading-snug text-[color:var(--color-doux)]">
+              Annoncez combien de familles vous attendez : le lien cesse de fonctionner une
+              fois ce nombre atteint, même s&apos;il a été transféré plus loin.
+            </p>
+          </div>
+
+          <div className="flex gap-3">
+            <label className="flex-1">
+              <span className="mb-1 block text-sm font-bold">Combien de familles</span>
+              <input
+                type="number"
+                name="familles"
+                defaultValue={USAGES_INVITATION_PAR_DEFAUT}
+                min={1}
+                max={USAGES_INVITATION_MAX}
+                className="w-full rounded-xl bg-[color:var(--color-fond)] px-3 py-3 text-base ring-2 ring-[color:var(--color-trait)] outline-none focus:ring-[color:var(--color-vert)]"
+              />
+            </label>
+            <label className="flex-1">
+              <span className="mb-1 block text-sm font-bold">Valable (jours)</span>
+              <input
+                type="number"
+                name="jours"
+                defaultValue={DUREE_INVITATION_JOURS}
+                min={1}
+                max={DUREE_INVITATION_MAX_JOURS}
+                className="w-full rounded-xl bg-[color:var(--color-fond)] px-3 py-3 text-base ring-2 ring-[color:var(--color-trait)] outline-none focus:ring-[color:var(--color-vert)]"
+              />
+            </label>
+          </div>
+
+          <Bouton variante="second">Créer le lien 🔗</Bouton>
+        </form>
+      </Carte>
 
       <form action={quitterCercle}>
         <input type="hidden" name="cercle" value={id} />

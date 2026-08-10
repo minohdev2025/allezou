@@ -207,7 +207,14 @@ précisément pourquoi la minimisation n'est pas une posture ici.
   comme tous les autres, et respecte la mise en pause du cercle — mais pas les réglages
   « sorties » et « inscriptions » : administrer un cercle n'est pas le même sujet que suivre
   ce qu'y publient les familles.
-- **Un lien d'invitation se liste et se révoque.** Il vaut quatorze jours et vingt usages, et
+- **Un lien d'invitation porte le nombre de familles attendues**, annoncé par qui invite, et
+  vaut **une semaine** par défaut. Il cesse de fonctionner une fois ce nombre atteint, même
+  s'il a été transféré plus loin — et passé sa date, le cercle continue de vivre : c'est
+  seulement l'entrée qui se referme, jusqu'à ce qu'un administrateur en crée un nouveau. Les
+  bornes sont appliquées côté serveur et pas seulement à l'écran : une action serveur est
+  joignable par une requête directe, un champ de formulaire ne protège rien.
+- **Un lien d'invitation se liste et se révoque.** Il circule par message, donc hors de tout
+  contrôle, et
   il circule par message, donc hors de tout contrôle : ne pas pouvoir le rappeler serait une
   porte laissée ouverte. Exclure quelqu'un et nommer un second administrateur sont repliés
   derrière « Administrer cette personne » — ces gestes sont rares, et un bouton « exclure » à

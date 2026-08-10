@@ -21,8 +21,17 @@ import * as s from "./db/schema";
 import { generateToken, hashToken } from "./tokens";
 import { isActiveMember, isCircleAdmin } from "./visibility";
 
-export const DUREE_INVITATION_JOURS = 14;
+/**
+ * Une semaine par défaut, et le nombre de familles annoncé par celui qui invite.
+ *
+ * Un lien qui reste ouvert est une porte qu'on oublie d'avoir laissée ouverte. Après ce
+ * délai le cercle continue de vivre normalement : c'est seulement l'entrée qui se referme,
+ * et il faut un nouveau lien pour la rouvrir.
+ */
+export const DUREE_INVITATION_JOURS = 7;
 export const USAGES_INVITATION_PAR_DEFAUT = 20;
+export const USAGES_INVITATION_MAX = 100;
+export const DUREE_INVITATION_MAX_JOURS = 60;
 
 export const circleNameSchema = z.string().trim().min(1).max(60);
 
@@ -91,8 +100,16 @@ export async function createInvite(
 ): Promise<Result<{ token: string; invite: CircleInvite }>> {
   if (!(await isActiveMember(actorId, circleId))) return ko("pas_membre");
 
-  const maxUses = Math.min(Math.max(options.maxUses ?? USAGES_INVITATION_PAR_DEFAUT, 1), 100);
-  const days = Math.min(Math.max(options.days ?? DUREE_INVITATION_JOURS, 1), 60);
+  // Bornes appliquées ici et pas seulement à l'écran : une action serveur est joignable
+  // par une requête directe, un champ de formulaire ne protège rien.
+  const maxUses = Math.min(
+    Math.max(options.maxUses ?? USAGES_INVITATION_PAR_DEFAUT, 1),
+    USAGES_INVITATION_MAX,
+  );
+  const days = Math.min(
+    Math.max(options.days ?? DUREE_INVITATION_JOURS, 1),
+    DUREE_INVITATION_MAX_JOURS,
+  );
   const token = generateToken();
 
   return db.transaction(async (tx) => {
