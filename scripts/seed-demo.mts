@@ -12,7 +12,7 @@
  */
 
 import { config } from "dotenv";
-import { eq } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 
 config({ path: ".env.local" });
 
@@ -28,9 +28,22 @@ const { createCircle } = await import("../src/lib/circles.ts");
 const { createPlace } = await import("../src/lib/places.ts");
 const { declarePresence, joinPresence } = await import("../src/lib/publications.ts");
 
-const TON_ADRESSE = (process.env.ADMIN_EMAILS ?? "").split(",")[0]?.trim();
+/**
+ * À qui rattacher la démo : l'adresse passée en argument, sinon la première d'ADMIN_EMAILS.
+ *
+ *   npm run demo:seed -- mon.adresse@exemple.ch
+ *
+ * C'est le piège de la première version : les cercles avaient été montés autour d'un compte,
+ * et la personne qui essayait l'application s'était connectée avec une autre adresse.
+ */
+const TON_ADRESSE = (process.argv[2] ?? (process.env.ADMIN_EMAILS ?? "").split(",")[0] ?? "")
+  .trim()
+  .toLowerCase();
+
 if (!TON_ADRESSE) {
-  console.error("Renseigne ADMIN_EMAILS dans .env.local pour savoir à qui rattacher la démo.");
+  console.error(
+    "Indique l'adresse à laquelle rattacher la démo :\n  npm run demo:seed -- ton.adresse@exemple.ch",
+  );
   process.exit(1);
 }
 
@@ -98,10 +111,33 @@ if ((await myChildren(toi.id)).length === 0) {
   await addChild(toi.id, { firstName: "Matéo" });
 }
 
+/** Te fait entrer comme administrateur, ou te remet dedans si tu en étais sorti. */
+async function tAdmettre(circleId: string) {
+  const [deja] = await db
+    .select({ id: s.circleMembership.id })
+    .from(s.circleMembership)
+    .where(
+      and(
+        eq(s.circleMembership.circleId, circleId),
+        eq(s.circleMembership.accountId, toi.id),
+        isNull(s.circleMembership.leftAt),
+      ),
+    )
+    .limit(1);
+
+  if (deja) return false;
+
+  await db
+    .insert(s.circleMembership)
+    .values({ circleId, accountId: toi.id, role: "admin" });
+  return true;
+}
+
 async function cercle(nom: string, membres: typeof CLASSE) {
   const [deja] = await db.select().from(s.circle).where(eq(s.circle.name, nom)).limit(1);
   if (deja) {
-    console.log(`déjà là   : ${nom}`);
+    const ajoute = await tAdmettre(deja.id);
+    console.log(`déjà là   : ${nom}${ajoute ? " — tu y es maintenant admin" : ""}`);
     return deja.id;
   }
 

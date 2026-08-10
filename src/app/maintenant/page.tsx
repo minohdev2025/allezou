@@ -4,13 +4,11 @@ import { myChildren } from "@/lib/children";
 import { currentlyOut, upcomingOutings } from "@/lib/publications";
 import { requireAccount } from "@/lib/session";
 import { readerCircles, visibleParticipants, type VisiblePublication } from "@/lib/visibility";
-import { quitterSortie, rejoindreSortie, retirerSortie } from "../actions";
+import { rejoindreSortie, retirerSortie } from "../actions";
 import {
-  Bouton,
   Carte,
   IconeArbre,
   IconeHorloge,
-  IconeMaison,
   Jeton,
   LienBouton,
   Navigation,
@@ -111,9 +109,19 @@ async function LigneSortie({
   const cestMoi = sortie.authorId === accountId;
   const couleur = teinte(sortie.placeId ?? sortie.id);
 
+  /**
+   * L'action tient dans une pastille à droite du nom plutôt que dans une barre pleine
+   * largeur : la carte descend d'environ 70 px, ce qui fait tenir une sortie de plus à
+   * l'écran sans rien retirer de ce qui se lit. Se retirer d'une sortie qu'on a rejointe
+   * reste possible depuis sa page de détail — c'est un geste rare, il n'a pas à occuper
+   * l'écran principal.
+   */
+  const pastilleAction =
+    "shrink-0 rounded-[var(--radius-pilule)] px-4 py-2.5 text-sm font-bold shadow-[inset_0_0_0_2px_var(--color-trait)] active:translate-y-[1px]";
+
   return (
-    <Carte accent={couleur}>
-      <div className="mb-3 flex items-start justify-between gap-3">
+    <Carte accent={couleur} className="!p-4">
+      <div className="mb-2 flex items-start justify-between gap-3">
         <h2 className="titre text-xl font-bold leading-tight">
           <Link href={`/sortie/${sortie.id}`} className="underline-offset-4 hover:underline">
             {sortie.placeName}
@@ -136,32 +144,57 @@ async function LigneSortie({
 
       <div className="flex items-center gap-3">
         <Jeton nom={sortie.authorName} id={sortie.authorId} />
-        <div className="min-w-0">
-          <p className="font-bold">{cestMoi ? "Vous" : sortie.authorName}</p>
+
+        <div className="min-w-0 flex-1">
+          <p className="font-bold leading-tight">{cestMoi ? "Vous" : sortie.authorName}</p>
           {sortie.authorChildren.length > 0 ? (
             <p className="text-sm text-[color:var(--color-doux)]">
               avec {sortie.authorChildren.join(" et ")}
             </p>
           ) : null}
         </div>
+
+        {cestMoi ? (
+          <form action={retirerSortie}>
+            <input type="hidden" name="sortie" value={sortie.id} />
+            <button className={pastilleAction}>
+              {aVenir ? "Annuler" : "Rentrés"}
+            </button>
+          </form>
+        ) : jySuis ? (
+          <Pastille couleur="vert">Vous y êtes</Pastille>
+        ) : (
+          <form action={rejoindreSortie}>
+            <input type="hidden" name="sortie" value={sortie.id} />
+            {mesEnfants.map((id) => (
+              <input key={id} type="hidden" name="enfant" value={id} />
+            ))}
+            <button
+              className={pastilleAction}
+              style={{ background: "var(--color-vert)", color: "var(--color-fond)" }}
+            >
+              Nous aussi
+            </button>
+          </form>
+        )}
       </div>
 
-      {sortie.note ? <p className="mt-3 text-[0.95rem]">{sortie.note}</p> : null}
+      {sortie.note ? <p className="mt-2 text-[0.95rem]">{sortie.note}</p> : null}
 
       {autres.length > 0 ? (
-        <details className="mt-3 rounded-2xl bg-[color:var(--color-fond)] px-4 py-2">
-          <summary className="flex cursor-pointer list-none items-center gap-2 font-bold text-[color:var(--color-vert)]">
+        <details className="mt-2">
+          <summary className="flex cursor-pointer list-none items-center gap-2 py-1 text-sm font-bold text-[color:var(--color-vert)]">
             <span className="flex -space-x-2">
               {autres.slice(0, 3).map((p) => (
-                <Jeton key={p.accountId} nom={p.displayName} id={p.accountId} taille={28} />
+                <Jeton key={p.accountId} nom={p.displayName} id={p.accountId} taille={24} />
               ))}
             </span>
             +{autres.length} avec eux
           </summary>
-          <ul className="mt-3 space-y-2 pb-2">
+          <ul className="mt-2 space-y-1.5 text-sm">
             {autres.map((p) => (
-              <li key={p.accountId} className="flex items-center gap-3">
-                <Jeton nom={p.displayName} id={p.accountId} taille={32} />
+              <li key={p.accountId} className="flex items-center gap-2">
+                <Jeton nom={p.displayName} id={p.accountId} taille={26} />
                 <span>
                   <span className="font-semibold">
                     {p.accountId === accountId ? "Vous" : p.displayName}
@@ -178,42 +211,6 @@ async function LigneSortie({
           </ul>
         </details>
       ) : null}
-
-      <div className="mt-4">
-        {cestMoi ? (
-          <form action={retirerSortie}>
-            <input type="hidden" name="sortie" value={sortie.id} />
-            <Bouton variante="second">
-              {aVenir ? (
-                "Annuler cette sortie"
-              ) : (
-                <>
-                  <IconeMaison className="h-5 w-5" />
-                  Nous rentrons
-                </>
-              )}
-            </Bouton>
-          </form>
-        ) : jySuis ? (
-          <div className="flex items-center gap-3">
-            <Pastille couleur="vert">Vous y êtes</Pastille>
-            <form action={quitterSortie} className="flex-1">
-              <input type="hidden" name="sortie" value={sortie.id} />
-              <Bouton variante="discret" className="!py-2">
-                Finalement non
-              </Bouton>
-            </form>
-          </div>
-        ) : (
-          <form action={rejoindreSortie}>
-            <input type="hidden" name="sortie" value={sortie.id} />
-            {mesEnfants.map((id) => (
-              <input key={id} type="hidden" name="enfant" value={id} />
-            ))}
-            <Bouton variante="second">Nous venons aussi 🙋</Bouton>
-          </form>
-        )}
-      </div>
     </Carte>
   );
 }
