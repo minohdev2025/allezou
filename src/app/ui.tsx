@@ -382,6 +382,38 @@ export function heureCourte(date: Date): string {
   }).format(date);
 }
 
+/** Clé de regroupement par jour, à l'heure de Genève : « 2026-08-15 ». */
+export function cleDuJour(date: Date): string {
+  return new Intl.DateTimeFormat("sv-SE", {
+    timeZone: "Europe/Zurich",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(date);
+}
+
+/**
+ * L'en-tête d'une journée. « Aujourd'hui » et « Demain » plutôt qu'une date : c'est ce
+ * qu'un parent cherche en premier, et il n'a pas à compter les jours pour le trouver.
+ */
+export function libelleJour(date: Date): string {
+  const aujourdhui = cleDuJour(new Date());
+  const demain = cleDuJour(new Date(Date.now() + 86_400_000));
+  const jour = cleDuJour(date);
+
+  if (jour === aujourdhui) return "Aujourd'hui";
+  if (jour === demain) return "Demain";
+
+  const libelle = new Intl.DateTimeFormat("fr-CH", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    timeZone: "Europe/Zurich",
+  }).format(date);
+
+  return libelle.charAt(0).toUpperCase() + libelle.slice(1);
+}
+
 export function jourCourt(date: Date): { jour: string; nombre: string; mois: string } {
   const parties = new Intl.DateTimeFormat("fr-CH", {
     weekday: "short",
