@@ -2,6 +2,10 @@
 
 > **Pour une démonstration**, rien de tout ceci n'est nécessaire : voir
 > [« Montrer l'app sans la déployer »](#montrer-lapp-sans-la-déployer) à la fin.
+>
+> Ce document dit **comment** installer l'application sur une machine.
+> [PRODUCTION.md](PRODUCTION.md) dit **ce qui doit être vrai avant que de vrais parents s'en
+> servent** — à lire en premier.
 
 ---
 
@@ -10,8 +14,10 @@ Cible : une **instance dédiée sur Infomaniak Public Cloud** (Suisse), provisio
 autres — Terraform / OpenStack, le même projet que la flotte LiNX. Séparée du VPS éditeur :
 Totir bougera souvent, et il n'a rien à faire sur la machine qui sert des cabinets qui paient.
 
-Domaine : **r4c.app**. En `.app`, donc sur la liste de préchargement HSTS — les navigateurs
-refusent le HTTP sur ce domaine, aucune bascule n'est possible.
+Domaine : **totir.ch**. Contrairement à un `.app`, le TLD n'est pas préchargé HSTS en bloc :
+le domaine est à soumettre une fois à [hstspreload.org](https://hstspreload.org), l'en-tête
+étant déjà conforme. Voir [PRODUCTION.md §1](PRODUCTION.md). `r4c.app` reste l'adresse de
+démonstration servie par tunnel, et rien d'autre.
 
 Devant, un proxy inverse : **nginx** ou **Caddy**, au choix — l'instance est neuve, rien
 n'impose l'un ou l'autre. Dans l'écosystème LiNX, nginx sert sur les VPS de cabinet et Caddy
@@ -25,8 +31,12 @@ publie aucun port.
 Une petite instance suffit : un pilote de quelques classes, c'est une poignée de requêtes par
 jour. Deux vCPU et 4 Go de mémoire laissent de la marge pour construire l'image sur place.
 
-Le pare-feu n'ouvre que **22** et **443**. Ni 80 — le domaine est en `.app`, préchargé HSTS,
-personne n'y arrivera en clair — ni 5432 : Postgres ne sort pas de la machine.
+Le pare-feu n'ouvre que **22** et **443**. Ni 5432 : Postgres ne sort pas de la machine. Ni 80,
+et c'est un choix : un port 80 fermé ne peut rien laisser passer en clair, là où un port 80 qui
+redirige offre une première requête à intercepter. Les navigateurs actuels essaient HTTPS
+d'eux-mêmes pour une adresse tapée à la main, et les invitations circulent en `https://` — mais
+un lien écrit `http://totir.ch` par quelqu'un échouera franchement. C'est le compromis retenu,
+et [hstspreload.org](https://hstspreload.org) n'exige de redirection que si le port 80 écoute.
 
 À installer : Docker avec le module Compose, et Caddy.
 
@@ -39,7 +49,7 @@ renseigner :
 |---|---|
 | `POSTGRES_PASSWORD` | `openssl rand -base64 32` — différent de celui de LiNX |
 | `SESSION_SECRET` | `openssl rand -base64 32` — **jamais** celui du développement |
-| `APP_URL` | `https://r4c.app` |
+| `APP_URL` | `https://totir.ch` — en changer plus tard invalide les clés d'accès et les abonnements push ([PRODUCTION.md §1](PRODUCTION.md)) |
 | `SMTP_*` | Compte d'envoi Infomaniak. Sans lui, personne ne se connecte |
 | `VAPID_*` | `npx web-push generate-vapid-keys` |
 | `ADMIN_EMAILS` | Les adresses qui accèdent à `/relecture` |
@@ -74,12 +84,12 @@ Le certificat vient de certbot, à installer et à renouveler.
 server {
     listen 443 ssl;
     http2 on;
-    server_name r4c.app;
+    server_name totir.ch;
 
-    ssl_certificate     /etc/letsencrypt/live/r4c.app/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/r4c.app/privkey.pem;
+    ssl_certificate     /etc/letsencrypt/live/totir.ch/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/totir.ch/privkey.pem;
 
-    access_log /var/log/nginx/r4c.access.log;
+    access_log /var/log/nginx/totir.access.log;
 
     location / {
         proxy_pass http://127.0.0.1:4100;
@@ -96,20 +106,20 @@ server {
 
 Avec, dans `/etc/logrotate.d/nginx`, une rotation qui ne garde pas plus de sept jours.
 
-Le port 80 n'est pas ouvert : le domaine est en `.app`, préchargé HSTS, personne n'y arrivera
-en clair. Certbot doit donc utiliser le défi DNS (`--preferred-challenges dns`) plutôt que le
-défi HTTP.
+Le port 80 n'est pas ouvert. Certbot doit donc utiliser le défi DNS
+(`--preferred-challenges dns`) plutôt que le défi HTTP.
 
 ### Caddy
 
-Le certificat et son renouvellement sont automatiques, et le défi DNS n'est pas nécessaire.
+Le certificat et son renouvellement sont automatiques, et le défi DNS n'est pas nécessaire :
+le port 80 étant fermé, Caddy obtient son certificat par le défi TLS-ALPN sur 443.
 
 ```caddyfile
-r4c.app {
+totir.ch {
     reverse_proxy 127.0.0.1:4100
 
     log {
-        output file /var/log/caddy/r4c.log {
+        output file /var/log/caddy/totir.log {
             roll_size 20MiB
             roll_keep_for 168h
         }

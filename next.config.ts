@@ -16,8 +16,10 @@ const nextConfig: NextConfig = {
         source: "/:chemin*",
         headers: [
           {
-            // Le domaine est en .app, donc déjà forcé en HTTPS par les navigateurs.
-            // L'en-tête reste utile si l'application était servie ailleurs un jour.
+            // Le domaine de production est un .ch : contrairement au .app, le TLD n'est pas
+            // préchargé en bloc dans les navigateurs. Cet en-tête est donc la protection
+            // réelle, et il ne vaut qu'à partir de la deuxième visite — d'où la soumission
+            // du domaine à hstspreload.org, dont ces valeurs sont exactement le prérequis.
             key: "Strict-Transport-Security",
             value: "max-age=63072000; includeSubDomains; preload",
           },

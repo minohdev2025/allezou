@@ -4,7 +4,9 @@ Coordination entre parents : « nous sommes au parc du Gué jusqu'à midi » et 
 la visite du Muséum », diffusés à des cercles de confiance qui existent déjà hors de l'app.
 
 Le **quoi** et le **pourquoi** sont dans [PRODUIT.md](PRODUIT.md). Ce fichier ne dit que le
-**comment**.
+**comment**. Avant d'ouvrir l'application à de vrais parents, lire
+[PRODUCTION.md](PRODUCTION.md) : ce qui doit être vrai avant, et ce qui reste à construire
+après.
 
 ## Démarrer
 
