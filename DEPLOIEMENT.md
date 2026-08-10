@@ -1,11 +1,27 @@
 # Déploiement de Totir
 
-Cible : le même serveur que le hub LiNX, chez Infomaniak en Suisse, derrière nginx.
-Domaine : **r4c.app** — en `.app`, donc sur la liste de préchargement HSTS : les navigateurs
+Cible : une **instance dédiée sur Infomaniak Public Cloud** (Suisse), provisionnée comme les
+autres — Terraform / OpenStack, le même projet que la flotte LiNX. Séparée du VPS éditeur :
+Totir bougera souvent, et il n'a rien à faire sur la machine qui sert des cabinets qui paient.
+
+Domaine : **r4c.app**. En `.app`, donc sur la liste de préchargement HSTS — les navigateurs
 refusent le HTTP sur ce domaine, aucune bascule n'est possible.
 
+Devant, **Caddy**, comme sur le VPS éditeur : il obtient et renouvelle le certificat tout
+seul, il n'y a pas de certbot à entretenir.
+
 L'application écoute sur `127.0.0.1:4100` et n'est jamais exposée directement ; Postgres ne
-publie aucun port. Réseau, volume et mot de passe sont distincts de ceux de LiNX.
+publie aucun port.
+
+## 0. L'instance
+
+Une petite instance suffit : un pilote de quelques classes, c'est une poignée de requêtes par
+jour. Deux vCPU et 4 Go de mémoire laissent de la marge pour construire l'image sur place.
+
+Le pare-feu n'ouvre que **22** et **443**. Ni 80 — le domaine est en `.app`, préchargé HSTS,
+personne n'y arrivera en clair — ni 5432 : Postgres ne sort pas de la machine.
+
+À installer : Docker avec le module Compose, et Caddy.
 
 ## 1. Variables
 
@@ -33,36 +49,28 @@ docker compose -f docker-compose.prod.yml exec app npx drizzle-kit migrate
 docker compose -f docker-compose.prod.yml exec app npm run sources:seed
 ```
 
-## 3. nginx
+## 3. Caddy
 
-```nginx
-server {
-    listen 443 ssl http2;
-    server_name r4c.app;
+Dans le `Caddyfile` de l'hôte. Le certificat et son renouvellement sont automatiques.
 
-    ssl_certificate     /etc/letsencrypt/live/r4c.app/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/r4c.app/privkey.pem;
+```caddyfile
+r4c.app {
+    reverse_proxy 127.0.0.1:4100
 
     # Les en-têtes de sécurité viennent de l'application (src/proxy.ts et next.config.ts).
-    # Ne pas les redéfinir ici : deux valeurs pour un même en-tête, et les navigateurs
-    # retiennent la plus restrictive ou aucune, selon l'en-tête.
+    # Ne rien redéfinir ici : deux valeurs pour un même en-tête, et selon lequel, le
+    # navigateur retient la plus restrictive — ou aucune.
 
-    location / {
-        proxy_pass http://127.0.0.1:4100;
-        proxy_http_version 1.1;
-        proxy_set_header Host              $host;
-        proxy_set_header X-Real-IP         $remote_addr;
-        proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_set_header Upgrade           $http_upgrade;
-        proxy_set_header Connection        "upgrade";
+    log {
+        # Les journaux d'accès contiennent des adresses IP et des chemins. Une sortie
+        # apparaît dans une URL de type /sortie/<identifiant> : garder ces journaux
+        # longtemps reviendrait à garder une trace des sorties consultées, ce que la page
+        # d'information exclut. Sept jours suffisent à diagnostiquer une panne.
+        output file /var/log/caddy/r4c.log {
+            roll_size 20MiB
+            roll_keep_for 168h
+        }
     }
-}
-
-server {
-    listen 80;
-    server_name r4c.app;
-    return 301 https://$host$request_uri;
 }
 ```
 
@@ -86,6 +94,10 @@ Trois façons de tenir la promesse, à trancher avant les premiers vrais parents
 
 La première est la plus honnête : elle protège ce qui a de la valeur sans conserver
 d'historique de déplacement.
+
+Pour la destination, l'écosystème LiNX sauvegarde déjà sur **S3 Swiss Backup d'Infomaniak** :
+les copies restent en Suisse, comme la base. Autant y ajouter Totir plutôt que d'inventer un
+second chemin.
 
 ## 5. Ce qui reste à vérifier une fois en ligne
 

@@ -1,12 +1,9 @@
-# Déploiement de Totir sur le hub.
+# Déploiement de Totir sur son instance dédiée. Voir DEPLOIEMENT.md.
 #
 #   docker compose -f docker-compose.prod.yml up -d --build
 #
-# Base et identifiants séparés de LiNX : réseau nommé à part, volume nommé à part, mot de
-# passe distinct. Une faille ou un identifiant fuité d'un côté n'ouvre pas l'autre.
-#
 # Aucun port de base de données n'est publié, et l'application n'écoute que sur la boucle
-# locale : nginx est le seul chemin d'entrée, et il termine le TLS.
+# locale : Caddy est le seul chemin d'entrée, et il termine le TLS.
 
 services:
   postgres:
