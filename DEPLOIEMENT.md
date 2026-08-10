@@ -7,8 +7,9 @@ Totir bougera souvent, et il n'a rien à faire sur la machine qui sert des cabin
 Domaine : **r4c.app**. En `.app`, donc sur la liste de préchargement HSTS — les navigateurs
 refusent le HTTP sur ce domaine, aucune bascule n'est possible.
 
-Devant, **Caddy**, comme sur le VPS éditeur : il obtient et renouvelle le certificat tout
-seul, il n'y a pas de certbot à entretenir.
+Devant, un proxy inverse : **nginx** ou **Caddy**, au choix — l'instance est neuve, rien
+n'impose l'un ou l'autre. Dans l'écosystème LiNX, nginx sert sur les VPS de cabinet et Caddy
+sur le VPS éditeur. Les deux configurations sont données plus bas.
 
 L'application écoute sur `127.0.0.1:4100` et n'est jamais exposée directement ; Postgres ne
 publie aucun port.
@@ -49,23 +50,59 @@ docker compose -f docker-compose.prod.yml exec app npx drizzle-kit migrate
 docker compose -f docker-compose.prod.yml exec app npm run sources:seed
 ```
 
-## 3. Caddy
+## 3. Le proxy inverse
 
-Dans le `Caddyfile` de l'hôte. Le certificat et son renouvellement sont automatiques.
+Dans les deux cas, **ne pas redéfinir les en-têtes de sécurité** : ils viennent de
+l'application (`src/proxy.ts` et `next.config.ts`). Deux valeurs pour un même en-tête, et
+selon lequel, le navigateur retient la plus restrictive — ou aucune.
+
+Et dans les deux cas, **garder les journaux d'accès sept jours au plus**. Une sortie apparaît
+dans une URL de type `/sortie/<identifiant>` : des journaux conservés des mois reviendraient
+à garder une trace des sorties consultées, ce que la page d'information exclut.
+
+### nginx
+
+Le certificat vient de certbot, à installer et à renouveler.
+
+```nginx
+server {
+    listen 443 ssl;
+    http2 on;
+    server_name r4c.app;
+
+    ssl_certificate     /etc/letsencrypt/live/r4c.app/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/r4c.app/privkey.pem;
+
+    access_log /var/log/nginx/r4c.access.log;
+
+    location / {
+        proxy_pass http://127.0.0.1:4100;
+        proxy_http_version 1.1;
+        proxy_set_header Host              $host;
+        proxy_set_header X-Real-IP         $remote_addr;
+        proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Upgrade           $http_upgrade;
+        proxy_set_header Connection        "upgrade";
+    }
+}
+```
+
+Avec, dans `/etc/logrotate.d/nginx`, une rotation qui ne garde pas plus de sept jours.
+
+Le port 80 n'est pas ouvert : le domaine est en `.app`, préchargé HSTS, personne n'y arrivera
+en clair. Certbot doit donc utiliser le défi DNS (`--preferred-challenges dns`) plutôt que le
+défi HTTP.
+
+### Caddy
+
+Le certificat et son renouvellement sont automatiques, et le défi DNS n'est pas nécessaire.
 
 ```caddyfile
 r4c.app {
     reverse_proxy 127.0.0.1:4100
 
-    # Les en-têtes de sécurité viennent de l'application (src/proxy.ts et next.config.ts).
-    # Ne rien redéfinir ici : deux valeurs pour un même en-tête, et selon lequel, le
-    # navigateur retient la plus restrictive — ou aucune.
-
     log {
-        # Les journaux d'accès contiennent des adresses IP et des chemins. Une sortie
-        # apparaît dans une URL de type /sortie/<identifiant> : garder ces journaux
-        # longtemps reviendrait à garder une trace des sorties consultées, ce que la page
-        # d'information exclut. Sept jours suffisent à diagnostiquer une panne.
         output file /var/log/caddy/r4c.log {
             roll_size 20MiB
             roll_keep_for 168h
