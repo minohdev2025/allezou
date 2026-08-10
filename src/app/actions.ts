@@ -34,13 +34,17 @@ import {
   cutLink,
   leaveCircle,
   rejectJoin,
+  removeMember,
   requestJoin,
   restoreLink,
+  revokeInvite,
+  setRole,
 } from "@/lib/circles";
 import { heureDeGeneve } from "@/lib/heure";
 import { correctAndPublish, rejectEvent } from "@/lib/ingest/run";
 import {
   muteMember,
+  notifyJoinRequest,
   notifyPublication,
   pauseCircle,
   setPrefs,
@@ -248,7 +252,52 @@ export async function demanderAdhesion(formData: FormData) {
   const account = await requireAccount();
   const jeton = String(formData.get("jeton") ?? "");
   const result = await requestJoin(account.id, jeton);
-  redirect(result.ok ? "/rejoindre/merci" : `/rejoindre/${jeton}?erreur=${result.reason}`);
+
+  if (!result.ok) redirect(`/rejoindre/${jeton}?erreur=${result.reason}`);
+
+  // Sans ce signal, la demande dort jusqu'à ce qu'un administrateur pense à ouvrir la page.
+  const circleId = result.value.circleId;
+  after(async () => {
+    try {
+      await notifyJoinRequest(circleId, await webPushSender());
+    } catch {
+      // Une notification qui ne part pas ne doit pas remettre la demande en cause.
+    }
+  });
+
+  redirect("/rejoindre/merci");
+}
+
+/* ------------------------------------------------- gouvernance d'un cercle */
+
+export async function revoquerInvitation(formData: FormData) {
+  const account = await requireAccount();
+  const circleId = String(formData.get("cercle") ?? "");
+  await revokeInvite(account.id, String(formData.get("invitation") ?? ""));
+  revalidatePath(`/cercles/${circleId}`);
+}
+
+export async function exclureMembre(formData: FormData) {
+  const account = await requireAccount();
+  const circleId = String(formData.get("cercle") ?? "");
+  const result = await removeMember(
+    account.id,
+    circleId,
+    String(formData.get("membre") ?? ""),
+  );
+  redirect(result.ok ? `/cercles/${circleId}` : `/cercles/${circleId}?erreur=${result.reason}`);
+}
+
+export async function changerRole(formData: FormData) {
+  const account = await requireAccount();
+  const circleId = String(formData.get("cercle") ?? "");
+  const result = await setRole(
+    account.id,
+    circleId,
+    String(formData.get("membre") ?? ""),
+    formData.get("admin") === "1" ? "member" : "admin",
+  );
+  redirect(result.ok ? `/cercles/${circleId}` : `/cercles/${circleId}?erreur=${result.reason}`);
 }
 
 /* ------------------------------------------------------------------ relecture */

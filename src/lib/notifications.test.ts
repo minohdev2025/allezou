@@ -7,6 +7,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 
 import {
   muteMember,
+  notifyJoinRequest,
   notifyPublication,
   pauseCircle,
   payloadFor,
@@ -188,6 +189,60 @@ describe("Réglages", () => {
     await unmuteMember(bob.id, classe.id, alice.id);
     const seconde = await declarePresence({ author: alice, place: parc, circles: [classe] });
     expect((await recipientsFor(seconde.id)).map((r) => r.accountId)).toEqual([bob.id]);
+  });
+});
+
+describe("Demande d'entrée dans un cercle", () => {
+  it("prévient les administrateurs, sans nommer le demandeur", async () => {
+    const alice = await createAccount("Alice");
+    const bob = await createAccount("Bob");
+    const classe = await createCircle(alice, "Classe 4P");
+    await join(classe, bob, { role: "admin" });
+    await abonner(alice);
+    await abonner(bob);
+
+    const { envois, send } = expediteur();
+    const rapport = await notifyJoinRequest(classe.id, send);
+
+    expect(rapport.recipients).toBe(2);
+    expect(rapport.sent).toBe(2);
+    expect(envois[0].payload.title).toBe("Classe 4P");
+    expect(envois[0].payload.body).toBe("Quelqu'un demande à rejoindre ce cercle");
+    expect(envois[0].payload.url).toBe(`/cercles/${classe.id}`);
+  });
+
+  it("ne prévient pas les simples membres", async () => {
+    const alice = await createAccount("Alice");
+    const bob = await createAccount("Bob");
+    const classe = await createCircle(alice, "Classe 4P");
+    await join(classe, bob);
+    await abonner(alice);
+    await abonner(bob);
+
+    const { envois, send } = expediteur();
+    await notifyJoinRequest(classe.id, send);
+
+    expect(envois.map((e) => e.accountId)).toEqual([alice.id]);
+  });
+
+  it("respecte la mise en pause du cercle", async () => {
+    const alice = await createAccount("Alice");
+    const classe = await createCircle(alice, "Classe 4P");
+    await abonner(alice);
+    await pauseCircle(alice.id, classe.id, 4);
+
+    const { send } = expediteur();
+    expect((await notifyJoinRequest(classe.id, send)).recipients).toBe(0);
+  });
+
+  it("prévient même quand les sorties sont coupées : ce n'est pas le même sujet", async () => {
+    const alice = await createAccount("Alice");
+    const classe = await createCircle(alice, "Classe 4P");
+    await abonner(alice);
+    await setPrefs(alice.id, classe.id, { onPresence: false, onAttendance: false });
+
+    const { send } = expediteur();
+    expect((await notifyJoinRequest(classe.id, send)).sent).toBe(1);
   });
 });
 

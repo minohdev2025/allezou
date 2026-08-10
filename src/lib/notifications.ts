@@ -295,6 +295,98 @@ export function payloadFor(
 
 export type NotifyReport = { sent: number; failed: number; recipients: number };
 
+/**
+ * Envoie une charge à tous les appareils d'un compte.
+ *
+ * Un abonnement qui échoue est écarté plutôt que réessayé indéfiniment : un téléphone
+ * réinitialisé ou une autorisation retirée ne doivent pas faire vivre une adresse morte.
+ */
+async function envoyerA(
+  accountId: string,
+  payload: PushPayload,
+  send: Sender,
+  report: NotifyReport,
+): Promise<void> {
+  const abonnements = await db
+    .select()
+    .from(s.pushSubscription)
+    .where(
+      and(eq(s.pushSubscription.accountId, accountId), isNull(s.pushSubscription.failedAt)),
+    );
+
+  for (const abonnement of abonnements) {
+    try {
+      await send(
+        {
+          accountId,
+          endpoint: abonnement.endpoint,
+          p256dh: abonnement.p256dh,
+          auth: abonnement.auth,
+        },
+        payload,
+      );
+      await db
+        .update(s.pushSubscription)
+        .set({ lastUsedAt: new Date() })
+        .where(eq(s.pushSubscription.id, abonnement.id));
+      report.sent += 1;
+    } catch {
+      await db
+        .update(s.pushSubscription)
+        .set({ failedAt: new Date() })
+        .where(eq(s.pushSubscription.id, abonnement.id));
+      report.failed += 1;
+    }
+  }
+}
+
+/**
+ * Prévient les administrateurs d'un cercle qu'une personne demande à y entrer.
+ *
+ * Sans cela, une demande peut dormir des jours : rien à l'écran ne la signale tant qu'on
+ * n'ouvre pas la page du cercle — juste après avoir fait scanner un code à quelqu'un.
+ *
+ * Le message ne nomme pas le demandeur, comme tous les autres : un écran verrouillé posé
+ * sur une table ne doit rien apprendre à personne. Et il respecte la mise en pause du
+ * cercle — qui a demandé le silence l'a demandé pour de bon — mais pas les réglages
+ * « sorties » et « inscriptions », qui portent sur ce que publient les familles, pas sur
+ * l'administration du cercle.
+ */
+export async function notifyJoinRequest(
+  circleId: string,
+  send: Sender,
+): Promise<NotifyReport> {
+  const admins = await db.execute<{ account_id: string; circle_name: string }>(sql`
+    select m.account_id, c.name as circle_name
+    from circle_membership m
+    join circle c on c.id = m.circle_id and c.archived_at is null
+    join account a on a.id = m.account_id and a.deleted_at is null
+    left join notification_pref np
+      on np.account_id = m.account_id and np.circle_id = m.circle_id
+    where m.circle_id = ${circleId}
+      and m.left_at is null
+      and m.role = 'admin'
+      and (np.paused_until is null or np.paused_until <= now())
+  `);
+
+  const report: NotifyReport = { sent: 0, failed: 0, recipients: admins.length };
+
+  for (const admin of admins) {
+    await envoyerA(
+      admin.account_id,
+      {
+        title: admin.circle_name,
+        body: "Quelqu'un demande à rejoindre ce cercle",
+        url: `/cercles/${circleId}`,
+      },
+      send,
+      report,
+    );
+  }
+
+  return report;
+}
+
 export async function notifyPublication(
   publicationId: string,
   send: Sender,
@@ -314,42 +406,12 @@ export async function notifyPublication(
   for (const r of recipients) if (!parCompte.has(r.accountId)) parCompte.set(r.accountId, r);
 
   for (const recipient of parCompte.values()) {
-    const abonnements = await db
-      .select()
-      .from(s.pushSubscription)
-      .where(
-        and(
-          eq(s.pushSubscription.accountId, recipient.accountId),
-          isNull(s.pushSubscription.failedAt),
-        ),
-      );
-
-    for (const abonnement of abonnements) {
-      try {
-        await send(
-          {
-            accountId: recipient.accountId,
-            endpoint: abonnement.endpoint,
-            p256dh: abonnement.p256dh,
-            auth: abonnement.auth,
-          },
-          payloadFor(publication.kind, recipient.circleName),
-        );
-        await db
-          .update(s.pushSubscription)
-          .set({ lastUsedAt: new Date() })
-          .where(eq(s.pushSubscription.id, abonnement.id));
-        report.sent += 1;
-      } catch {
-        // Un abonnement mort (téléphone réinitialisé, autorisation retirée) est écarté
-        // plutôt que réessayé indéfiniment.
-        await db
-          .update(s.pushSubscription)
-          .set({ failedAt: new Date() })
-          .where(eq(s.pushSubscription.id, abonnement.id));
-        report.failed += 1;
-      }
-    }
+    await envoyerA(
+      recipient.accountId,
+      payloadFor(publication.kind, recipient.circleName),
+      send,
+      report,
+    );
   }
 
   return report;

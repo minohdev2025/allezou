@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { listPendingRequests } from "@/lib/circles";
+import { listInvites, listPendingRequests } from "@/lib/circles";
 import { mutedIn } from "@/lib/notifications";
 import { defaultAudience } from "@/lib/publications";
 import { COOKIE_INVITATION, requireAccount } from "@/lib/session";
@@ -12,12 +12,23 @@ import {
   basculerDefaut,
   basculerLien,
   basculerSourdine,
+  changerRole,
   creerInvitation,
+  exclureMembre,
   quitterCercle,
   refuserDemande,
+  revoquerInvitation,
 } from "../../actions";
 import { CodeQR } from "../../qr";
-import { Alerte, Bouton, Carte, Jeton, Pastille, teinte } from "../../ui";
+import { Alerte, Bouton, Carte, Jeton, Pastille, jourCourt, teinte } from "../../ui";
+
+const MESSAGES: Record<string, string> = {
+  pas_admin: "Seul un administrateur peut faire cela.",
+  cible_inconnue: "Cette personne n'est plus membre du cercle.",
+  action_sur_soi: "Pour partir, utilisez « Quitter ce cercle ».",
+  pas_membre: "Vous ne faites pas partie de ce cercle.",
+  invitation_inconnue: "Cette invitation n'existe plus.",
+};
 
 export default async function Cercle({
   params,
@@ -46,6 +57,7 @@ export default async function Cercle({
   const cocheParDefaut = defauts.some((c) => c.id === id);
 
   const demandes = admin ? await listPendingRequests(account.id, id) : null;
+  const invitations = await listInvites(account.id, id);
   const appUrl = process.env.APP_URL ?? "http://localhost:3000";
   const couleur = teinte(id);
 
@@ -67,7 +79,7 @@ export default async function Cercle({
         ) : null}
       </header>
 
-      {erreur ? <Alerte ton="erreur">L&apos;invitation n&apos;a pas pu être créée.</Alerte> : null}
+      {erreur ? <Alerte ton="erreur">{MESSAGES[erreur] ?? "Cela n'a pas marché."}</Alerte> : null}
 
       {lien ? (
         <Alerte ton="succes">
@@ -132,10 +144,11 @@ export default async function Cercle({
         {membres.map((membre) => (
           <li
             key={membre.accountId}
-            className={`flex items-center gap-3 rounded-2xl bg-[color:var(--color-surface)] px-4 py-3 ring-2 ring-[color:var(--color-trait)] ${
+            className={`rounded-2xl bg-[color:var(--color-surface)] px-4 py-3 ring-2 ring-[color:var(--color-trait)] ${
               membre.linkCut ? "opacity-55" : ""
             }`}
           >
+            <div className="flex items-center gap-3">
             <Jeton nom={membre.displayName} id={membre.accountId} taille={36} />
             <span className="min-w-0 flex-1">
               <span className="block font-bold leading-tight">
@@ -147,7 +160,7 @@ export default async function Cercle({
             </span>
 
             {membre.accountId === account.id ? null : (
-              <div className="flex shrink-0 gap-2">
+              <div className="flex shrink-0 items-center gap-2">
                 {/* Sourdine : on continue de la voir, elle ne fait plus sonner le téléphone. */}
                 <form action={basculerSourdine}>
                   <input type="hidden" name="cercle" value={id} />
@@ -197,6 +210,55 @@ export default async function Cercle({
                 </form>
               </div>
             )}
+            </div>
+
+            {/*
+              Les deux gestes d'administration sont repliés : ils sont rares, et un bouton
+              « exclure » à portée de pouce se touche par accident sur un téléphone.
+            */}
+            {admin && membre.accountId !== account.id ? (
+              <details className="mt-2">
+                <summary className="cursor-pointer py-1 text-sm font-bold text-[color:var(--color-doux)]">
+                  Administrer cette personne
+                </summary>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <form action={changerRole}>
+                    <input type="hidden" name="cercle" value={id} />
+                    <input type="hidden" name="membre" value={membre.accountId} />
+                    <input
+                      type="hidden"
+                      name="admin"
+                      value={membre.role === "admin" ? "1" : "0"}
+                    />
+                    <button
+                      className="rounded-[var(--radius-pilule)] px-4 py-2 text-sm font-bold"
+                      style={{
+                        background: "var(--color-bleu-doux)",
+                        color: "var(--color-bleu)",
+                      }}
+                    >
+                      {membre.role === "admin"
+                        ? "Retirer le rôle d'administrateur"
+                        : "Nommer administrateur"}
+                    </button>
+                  </form>
+
+                  <form action={exclureMembre}>
+                    <input type="hidden" name="cercle" value={id} />
+                    <input type="hidden" name="membre" value={membre.accountId} />
+                    <button
+                      className="rounded-[var(--radius-pilule)] px-4 py-2 text-sm font-bold"
+                      style={{
+                        background: "var(--color-corail-doux)",
+                        color: "var(--color-corail)",
+                      }}
+                    >
+                      Retirer du cercle
+                    </button>
+                  </form>
+                </div>
+              </details>
+            ) : null}
           </li>
         ))}
       </ul>
@@ -219,6 +281,55 @@ export default async function Cercle({
           </Bouton>
         </form>
       </Carte>
+
+      {/*
+        Un lien d'invitation qu'on ne peut plus révoquer est une porte laissée ouverte :
+        il vaut 14 jours et 20 usages, et il circule par message, donc hors de tout contrôle.
+      */}
+      {invitations.ok && invitations.value.length > 0 ? (
+        <Carte className="mb-5" accent="ambre">
+          <h2 className="titre mb-1 text-lg font-bold">
+            {invitations.value.length === 1
+              ? "Un lien d'invitation est actif"
+              : `${invitations.value.length} liens d'invitation sont actifs`}
+          </h2>
+          <p className="mb-4 text-sm leading-snug text-[color:var(--color-doux)]">
+            Tant qu&apos;un lien vit, quiconque l&apos;a reçu peut demander à entrer. Révoquez
+            celui qui a circulé trop loin.
+          </p>
+          <ul className="space-y-2">
+            {invitations.value.map((invitation) => (
+              <li key={invitation.id} className="flex items-center gap-3">
+                <span className="min-w-0 flex-1 text-sm">
+                  <span className="block font-bold">
+                    {invitation.useCount} entrée{invitation.useCount > 1 ? "s" : ""} sur{" "}
+                    {invitation.maxUses}
+                  </span>
+                  <span className="text-[color:var(--color-doux)]">
+                    créé le {jourCourt(invitation.createdAt).nombre}{" "}
+                    {jourCourt(invitation.createdAt).mois}, expire le{" "}
+                    {jourCourt(invitation.expiresAt).nombre}{" "}
+                    {jourCourt(invitation.expiresAt).mois}
+                  </span>
+                </span>
+                <form action={revoquerInvitation}>
+                  <input type="hidden" name="cercle" value={id} />
+                  <input type="hidden" name="invitation" value={invitation.id} />
+                  <button
+                    className="shrink-0 rounded-[var(--radius-pilule)] px-4 py-2 text-sm font-bold"
+                    style={{
+                      background: "var(--color-corail-doux)",
+                      color: "var(--color-corail)",
+                    }}
+                  >
+                    Révoquer
+                  </button>
+                </form>
+              </li>
+            ))}
+          </ul>
+        </Carte>
+      ) : null}
 
       <form action={creerInvitation} className="mb-3">
         <input type="hidden" name="cercle" value={id} />

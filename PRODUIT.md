@@ -196,6 +196,16 @@ précisément pourquoi la minimisation n'est pas une posture ici.
 - **Le service worker ne met rien en cache.** L'application dit qui est dehors *maintenant* ;
   servir une version périmée serait pire qu'afficher une erreur de réseau. Il n'existe que
   parce que les notifications l'exigent.
+- **Une demande d'entrée réveille les administrateurs.** Sans ce signal, elle dormait jusqu'à
+  ce que quelqu'un pense à ouvrir la page du cercle. Le message ne nomme pas le demandeur,
+  comme tous les autres, et respecte la mise en pause du cercle — mais pas les réglages
+  « sorties » et « inscriptions » : administrer un cercle n'est pas le même sujet que suivre
+  ce qu'y publient les familles.
+- **Un lien d'invitation se liste et se révoque.** Il vaut quatorze jours et vingt usages, et
+  il circule par message, donc hors de tout contrôle : ne pas pouvoir le rappeler serait une
+  porte laissée ouverte. Exclure quelqu'un et nommer un second administrateur sont repliés
+  derrière « Administrer cette personne » — ces gestes sont rares, et un bouton « exclure » à
+  portée de pouce se touche par accident.
 - **Les liens à partager portent un code QR**, généré sur le serveur et sans aucun appel
   extérieur : confier un lien d'invitation à un service de génération d'images reviendrait à
   lui confier la clé d'entrée d'un cercle. Deux parents à la sortie de l'école se montrent un
