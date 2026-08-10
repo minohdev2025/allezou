@@ -196,6 +196,12 @@ précisément pourquoi la minimisation n'est pas une posture ici.
 - **Le service worker ne met rien en cache.** L'application dit qui est dehors *maintenant* ;
   servir une version périmée serait pire qu'afficher une erreur de réseau. Il n'existe que
   parce que les notifications l'exigent.
+- **Les tâches tournent dans le serveur, pas dans un cron du système.** L'hébergement visé
+  est un serveur Node ordinaire : une planification interne se déplace avec l'application au
+  lieu de dépendre de la machine. Chaque tâche se réserve sous un verrou Postgres, et
+  enregistre son heure de départ *avant* de s'exécuter — une tâche interrompue par un
+  plantage ne repart donc pas en boucle. Leur dernier passage s'affiche sur l'écran de
+  relecture : une promesse d'effacement automatique sans trace vérifiable n'en est pas une.
 - **Une demande d'entrée réveille les administrateurs.** Sans ce signal, elle dormait jusqu'à
   ce que quelqu'un pense à ouvrir la page du cercle. Le message ne nomme pas le demandeur,
   comme tous les autres, et respecte la mise en pause du cercle — mais pas les réglages

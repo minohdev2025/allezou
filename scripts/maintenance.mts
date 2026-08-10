@@ -1,23 +1,32 @@
 /**
- * Effacement automatique quotidien.
+ * Exécution manuelle des tâches planifiées.
  *
- *   npm run maintenance
+ *   npm run maintenance          les tâches dues
+ *   npm run maintenance -- tout  toutes, sans attendre leur tour
  *
- * À brancher sur une tâche planifiée. Ce qui est effacé ici est exactement ce que la page
- * d'information promet aux parents.
+ * En marche normale, le serveur les lance lui-même (voir src/lib/scheduler.ts). Ce script
+ * sert à les déclencher à la main : au premier démarrage, après un incident, ou pour voir
+ * ce qu'elles font.
  */
 
 import { config } from "dotenv";
 
 config({ path: ".env.local" });
 
-const { purgeAll } = await import("../src/lib/maintenance.ts");
+const { tick, jobStatus } = await import("../src/lib/scheduler.ts");
 
-const rapport = await purgeAll();
+const force = process.argv[2] === "tout";
+const faites = await tick(force);
 
-console.log("Effacements :");
-for (const [quoi, combien] of Object.entries(rapport)) {
-  console.log(`  ${combien.toString().padStart(5)} ${quoi}`);
+console.log(faites.length > 0 ? `Exécutées : ${faites.join(", ")}` : "Aucune tâche due.");
+console.log("");
+
+for (const job of await jobStatus()) {
+  const quand = job.lastOkAt
+    ? job.lastOkAt.toLocaleString("fr-CH", { timeZone: "Europe/Zurich" })
+    : "jamais";
+  console.log(`${job.enRetard ? "⚠ " : "  "}${job.libelle.padEnd(32)} ${quand}`);
+  if (job.lastError) console.log(`   dernière erreur : ${job.lastError}`);
 }
 
 process.exit(0);

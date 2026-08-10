@@ -1,9 +1,10 @@
 import Link from "next/link";
 
 import { pendingReview, sourceHealth } from "@/lib/ingest/run";
+import { jobStatus } from "@/lib/scheduler";
 import { requireRelecteur } from "@/lib/session";
 import { ecarterActivite, publierActivite } from "../actions";
-import { Bouton, Carte, Pastille, Titre, Vide, jourCourt, teinte } from "../ui";
+import { Bouton, Carte, Pastille, Titre, Vide, heureCourte, jourCourt, teinte } from "../ui";
 
 /** « 2026-08-11T22:00 », le format attendu par un champ datetime-local, à l'heure de Genève. */
 function pourChamp(date: Date | null): string {
@@ -34,7 +35,11 @@ const champ =
  */
 export default async function Relecture() {
   await requireRelecteur();
-  const [attente, sante] = await Promise.all([pendingReview(50), sourceHealth()]);
+  const [attente, sante, taches] = await Promise.all([
+    pendingReview(50),
+    sourceHealth(),
+    jobStatus(),
+  ]);
 
   return (
     <main className="apparait">
@@ -44,6 +49,36 @@ export default async function Relecture() {
       >
         À relire
       </Titre>
+
+      <section className="mb-8">
+        <h2 className="titre mb-3 text-lg font-bold">Tâches automatiques</h2>
+        <ul className="space-y-2">
+          {taches.map((tache) => (
+            <li
+              key={tache.name}
+              className="rounded-2xl bg-[color:var(--color-surface)] px-4 py-3 ring-2 ring-[color:var(--color-trait)]"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <span className="font-bold">{tache.libelle}</span>
+                <Pastille couleur={tache.enRetard ? "corail" : "vert"}>
+                  {tache.lastOkAt
+                    ? `${jourCourt(tache.lastOkAt).nombre} ${jourCourt(tache.lastOkAt).mois} à ${heureCourte(tache.lastOkAt)}`
+                    : "jamais exécutée"}
+                </Pastille>
+              </div>
+              {tache.lastError ? (
+                <p className="mt-1 text-sm text-[color:var(--color-corail)]">
+                  {tache.lastError}
+                </p>
+              ) : null}
+            </li>
+          ))}
+        </ul>
+        <p className="mt-2 text-sm text-[color:var(--color-doux)]">
+          C&apos;est ici qu&apos;on vérifie que l&apos;effacement quotidien promis aux parents a
+          bien lieu.
+        </p>
+      </section>
 
       <section className="mb-8">
         <h2 className="titre mb-3 text-lg font-bold">Santé des sources</h2>

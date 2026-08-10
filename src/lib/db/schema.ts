@@ -543,6 +543,22 @@ export const session = pgTable(
 );
 
 /**
+ * Passages des tâches planifiées.
+ *
+ * Sert autant à décider quand relancer qu'à répondre à une question qu'on doit pouvoir se
+ * poser : l'effacement quotidien promis aux parents a-t-il vraiment eu lieu ? Une promesse
+ * d'automatisme sans trace vérifiable n'en est pas une.
+ */
+export const jobRun = pgTable("job_run", {
+  name: varchar({ length: 60 }).primaryKey(),
+  /** Début de la dernière exécution. Posé avant de lancer, pour ne pas relancer en boucle. */
+  lastRunAt: timestamp({ withTimezone: true }),
+  lastOkAt: timestamp({ withTimezone: true }),
+  lastError: varchar({ length: 500 }),
+  lastReport: jsonb(),
+});
+
+/**
  * Traçabilité des actes sensibles : rôles, invitations, exclusions, suppressions.
  *
  * Aucune publication n'entre ici, jamais. Un journal qui enregistrerait les présences
