@@ -81,7 +81,7 @@ export default async function Cercles({
 
   return (
     <main className="apparait">
-      <Titre emoji="🫂" sous="Une classe, une école, un voisinage : des gens que vous connaissez déjà.">
+      <Titre emoji="👥" sous="Une classe, une école, un voisinage : des gens que vous connaissez déjà.">
         Vos cercles
       </Titre>
 
@@ -95,7 +95,7 @@ export default async function Cercles({
           au sortir de l'inscription n'a encore rien vu de l'application : l'écran doit dire
           ce qu'est un cercle, et pourquoi il ne se passera rien tant qu'il n'en a pas.
         */
-        <Vide emoji="🫂" titre="Vous n'avez encore aucun cercle">
+        <Vide emoji="👥" titre="Vous n'avez encore aucun cercle">
           <p className="leading-snug">
             Un cercle, c&apos;est une classe, une école, un voisinage : les familles à qui
             vos sorties seront visibles. Tant qu&apos;il n&apos;y en a aucun, personne ne

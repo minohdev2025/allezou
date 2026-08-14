@@ -157,7 +157,7 @@ export default async function Accueil({
  */
 const GESTES: { emoji: string; accent: Teinte; titre: string; texte: string }[] = [
   {
-    emoji: "🫂",
+    emoji: "👥",
     accent: "corail",
     titre: "Créer vos cercles",
     texte:

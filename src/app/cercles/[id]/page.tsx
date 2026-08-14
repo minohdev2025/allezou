@@ -77,7 +77,7 @@ export default async function Cercle({
           className="mb-3 inline-flex h-14 w-14 items-center justify-center rounded-full text-2xl"
           style={{ background: `var(--color-${couleur}-doux)` }}
         >
-          🫂
+          👥
         </div>
         <h1 className="text-[1.75rem] font-bold leading-tight">{cercle.name}</h1>
         {admin ? (

@@ -243,7 +243,7 @@ export default async function Agenda({
                 href={lien(params, { cercle: avecMonCercle ? undefined : "1" })}
                 actif={avecMonCercle}
               >
-                🫂 Où va quelqu&apos;un de mes cercles
+                👥 Où va quelqu&apos;un de mes cercles
               </Puce>
             </Rangee>
           </div>

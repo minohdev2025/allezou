@@ -151,7 +151,7 @@ export default async function Reglages({
       <h2 className="titre mb-3 text-lg font-bold">Vos cercles</h2>
 
       {cercles.length === 0 ? (
-        <Vide emoji="🫂" titre="Aucun cercle">
+        <Vide emoji="👥" titre="Aucun cercle">
           Les réglages apparaîtront ici dès que vous ferez partie d&apos;un cercle.
         </Vide>
       ) : (
