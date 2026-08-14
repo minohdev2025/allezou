@@ -51,6 +51,12 @@ L'objectif 5 fait sauter cette limite, ce qui change l'ordre : chercher les sour
 avoir remplacé la relecture, pas avant. Chercher d'abord les flux structurés (JSON-LD, iCal,
 RSS), qui ne coûtent ni appel au modèle ni doute.
 
+Une chose à regarder au passage : depuis la correction du 14 août, **Lancy ne plante plus mais
+ne rapporte rien** — la source passe « ok » avec zéro activité, là où Onex en ramène vingt-sept
+sur le même mécanisme. C'est l'état que le README appelle *muet*, et il ne se diagnostique pas
+comme une panne : soit les pages lues n'annoncent rien pour les familles, soit le découpage en
+pages tombe à côté. Trois pages sont demandées ; Onex en demande six.
+
 ## 5. Remplacer la relecture humaine par des contrôles
 
 Le plus délicat des sept, parce qu'il touche une promesse écrite. Le [README](README.md) dit
