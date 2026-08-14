@@ -54,8 +54,8 @@ export default async function Accueil({
           plus tôt.
         </p>
         <p className="mt-3 font-bold leading-relaxed">
-          J&apos;ai créé Allezou pour ça : que nos enfants retrouvent dehors des enfants
-          qu&apos;ils connaissent.
+          J&apos;ai créé Allezou pour ça : que nos enfants retrouvent le plaisir de jouer
+          dehors, entourés d&apos;enfants avec qui ils se sentent bien.
         </p>
       </Carte>
 
