@@ -33,6 +33,7 @@ que cette page existe.
 | Vos sorties : un lieu choisi dans une liste, une heure de fin, éventuellement un mot de 140 caractères | C'est ce que vous partagez | **Effacée 24 heures après son heure de fin** | Uniquement les cercles que vous avez choisis au moment de publier |
 | Vos inscriptions aux activités de l'agenda | Pour que d'autres sachent que leur enfant y retrouvera quelqu'un | Jusqu'à 90 jours après l'activité | Uniquement les cercles que vous avez choisis |
 | Vos réglages de notification | Pour ne vous déranger que quand vous l'avez demandé | Tant que votre compte existe | Vous seul·e |
+| Les mots que vous surveillez à l'agenda : « piscine », « judo » | Pour vous prévenir quand une activité publiée en contient un | Tant que vous les gardez | Vous seul·e. Ils ne sont montrés à personne et ne servent à rien d'autre |
 | L'adresse technique de votre téléphone pour les notifications | Pour vous envoyer les notifications | Tant que vous les acceptez | Personne : c'est un identifiant technique |
 | Un journal des changements de droits (qui a fait entrer qui dans un cercle, qui a exclu qui) | Pour pouvoir comprendre un problème de sécurité | **12 mois** | Le responsable, en cas d'incident |
 
@@ -79,6 +80,10 @@ Ce qui en découle :
   quelque chose que vous ne verriez pas à l'écran. Et le message envoyé à votre téléphone ne
   dit ni qui, ni où, seulement le nom du cercle, pour qu'un écran verrouillé posé sur une table
   ne raconte rien.
+- Les **alertes de l'agenda** sont à part, parce que l'agenda est public : tout le monde voit
+  les mêmes activités. Ce qui se calcule là, ce n'est pas qui a le droit de savoir, c'est qui
+  a demandé à l'être. Le message nomme alors le mot que vous surveillez, qui est le vôtre, et
+  jamais le titre de l'activité.
 
 Cette règle est écrite à un seul endroit du code, et vérifiée par une série de tests qui
 énumèrent les cas un par un. C'est une démonstration, qui peut être montrée sur demande.

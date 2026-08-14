@@ -14,6 +14,7 @@
  * pas du texte de la page : domaine, durée, doublon, titre de rubrique.
  */
 
+import { contient, normaliser } from "../texte";
 import type { RawEvent, Source } from "./types";
 
 export type CodeControle =
@@ -102,34 +103,6 @@ const MOTS_VIDES = new Set([
   "votre",
   "vous",
 ]);
-
-/**
- * Ramène un texte à ce qui compte pour une comparaison : minuscules, sans accents, sans
- * ponctuation, espaces réduits. Une page écrit « Fête de l'Escalade », le modèle rend
- * « Fete de l'escalade ». C'est le même titre, et aucun des deux ne doit être pris en
- * défaut pour ça.
- */
-export function normaliser(texte: string): string {
-  return texte
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/œ/g, "oe")
-    .replace(/æ/g, "ae")
-    .replace(/[^a-z0-9]+/g, " ")
-    .trim();
-}
-
-/**
- * Cherche `aiguille` dans `meule`, en exigeant un début de mot.
- *
- * Sans cette précaution, « 4 janvier » se trouvait dans « 14 janvier » : le contrôle des
- * dates validait le lendemain de ce qu'il vérifiait, une fois sur dix.
- */
-function contient(meule: string, aiguille: string): boolean {
-  if (!aiguille) return false;
-  return ` ${meule} `.includes(` ${aiguille}`);
-}
 
 /**
  * Part des mots significatifs d'un extrait qu'on retrouve dans la page.

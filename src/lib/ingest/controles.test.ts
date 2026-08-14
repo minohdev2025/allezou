@@ -13,9 +13,9 @@ import {
   ecrituresDeLaDate,
   ecrituresDeLHeure,
   memeDomaine,
-  normaliser,
   type ContexteControle,
 } from "@/lib/ingest/controles";
+import { normaliser } from "@/lib/texte";
 import type { RawEvent } from "@/lib/ingest/types";
 
 const SOURCE_LUE = { url: "https://www.lancy.ch/agenda", kind: "html_ai" as const };

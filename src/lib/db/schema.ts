@@ -46,6 +46,14 @@ export const account = pgTable(
     displayName: varchar({ length: 60 }).notNull(),
     createdAt: timestamp({ withTimezone: true }).notNull().default(now),
     lastSeenAt: timestamp({ withTimezone: true }),
+    /**
+     * Prévenu dès qu'une activité sur inscription paraît à l'agenda.
+     *
+     * Éteint par défaut, comme tout ce qui fait sonner un téléphone. Ce réglage ne vit pas
+     * dans `notification_pref`, qui se règle cercle par cercle : une activité de l'agenda
+     * est publique et n'appartient à aucun cercle.
+     */
+    alerteInscription: boolean().notNull().default(false),
     /** Compte supprimé : invisible partout, y compris dans les cercles. */
     deletedAt: timestamp({ withTimezone: true }),
   },
@@ -364,6 +372,13 @@ export const event = pgTable(
     controles: jsonb(),
     /** Écarté à la relecture. Ne réapparaît pas au passage suivant de la source. */
     rejectedAt: timestamp({ withTimezone: true }),
+    /**
+     * Quand les alertes ont été envoyées pour cette activité.
+     *
+     * Une source repasse toutes les six heures et met à jour ce qu'elle a déjà publié : sans
+     * cette date, chaque passage réveillerait les mêmes téléphones pour la même activité.
+     */
+    notifiedAt: timestamp({ withTimezone: true }),
     createdAt: timestamp({ withTimezone: true }).notNull().default(now),
     updatedAt: timestamp({ withTimezone: true }).notNull().default(now),
   },
@@ -496,6 +511,29 @@ export const notificationPref = pgTable(
     pausedUntil: timestamp({ withTimezone: true }),
   },
   (t) => [primaryKey({ columns: [t.accountId, t.circleId] })],
+);
+
+/**
+ * Les mots qu'un compte surveille à l'agenda : « piscine », « judo », « contes ».
+ *
+ * Un parent ne lit pas l'agenda tous les jours, et une activité qui l'intéressait paraît
+ * pendant qu'il pense à autre chose. Le mot-clé est ce qui rattrape ça.
+ *
+ * Deux colonnes pour un même mot : `word` sert à comparer, sans accents ni majuscules, et
+ * `label` est ce que la personne a tapé, pour le lui réafficher tel quel. Sans le second,
+ * « Théâtre » lui reviendrait en « theatre » et elle croirait à une faute de l'application.
+ */
+export const agendaKeyword = pgTable(
+  "agenda_keyword",
+  {
+    accountId: uuid()
+      .notNull()
+      .references(() => account.id, { onDelete: "cascade" }),
+    word: varchar({ length: 40 }).notNull(),
+    label: varchar({ length: 40 }).notNull(),
+    createdAt: timestamp({ withTimezone: true }).notNull().default(now),
+  },
+  (t) => [primaryKey({ columns: [t.accountId, t.word] })],
 );
 
 /** Ne plus être notifié d'une personne, sans couper le lien ni le lui signaler. */

@@ -13,11 +13,12 @@
  *    Le détail s'affiche à l'ouverture de l'application.
  */
 
-import { and, eq, isNull, sql } from "drizzle-orm";
+import { and, asc, eq, isNotNull, isNull, sql } from "drizzle-orm";
 
 import { db } from "./db";
 import { asDateOrNull } from "./db/rows";
 import * as s from "./db/schema";
+import { contient, normaliser } from "./texte";
 import { readersOfPublication } from "./visibility";
 
 export type PushPayload = {
@@ -437,4 +438,170 @@ export async function webPushSender(): Promise<Sender> {
       JSON.stringify(payload),
     );
   };
+}
+
+/* ------------------------------------------------- alertes de l'agenda */
+
+/**
+ * Deux façons d'être prévenu qu'une activité paraît : un mot qu'on surveille, et
+ * l'inscription.
+ *
+ * La règle de visibilité ne s'applique pas ici, et c'est voulu : une activité de l'agenda
+ * est publique, tout le monde voit la même. Ce qui se calcule dans cette section, ce n'est
+ * pas qui a le droit de savoir, c'est qui a demandé à l'être. Les inscriptions des familles,
+ * elles, restent régies par `notifyPublication` et par la règle.
+ *
+ * Le message nomme le mot-clé, qui appartient à la personne, jamais le titre de l'activité.
+ * Un écran verrouillé posé sur une table apprend au mieux qu'on surveille « piscine ».
+ *
+ * L'alerte part à la publication, pas la veille de l'activité : pour une sortie sur
+ * inscription, être prévenu tard revient à ne pas l'être.
+ */
+
+export type MotCle = { word: string; label: string };
+
+/** Au-delà, ce n'est plus une veille, c'est un abonnement à tout l'agenda. */
+export const MOTS_CLES_MAX = 10;
+
+/** Moins de trois lettres, et le mot remonterait la moitié du calendrier. */
+const LONGUEUR_MINIMALE = 3;
+
+export async function mesMotsCles(accountId: string): Promise<MotCle[]> {
+  return db
+    .select({ word: s.agendaKeyword.word, label: s.agendaKeyword.label })
+    .from(s.agendaKeyword)
+    .where(eq(s.agendaKeyword.accountId, accountId))
+    .orderBy(asc(s.agendaKeyword.label));
+}
+
+export type AjoutMotCle =
+  | { ok: true }
+  | { ok: false; reason: "mot_trop_court" | "trop_de_mots" };
+
+export async function ajouterMotCle(accountId: string, saisie: string): Promise<AjoutMotCle> {
+  const label = saisie.trim().slice(0, 40);
+  const word = normaliser(label);
+  if (word.length < LONGUEUR_MINIMALE) return { ok: false, reason: "mot_trop_court" };
+
+  const deja = await mesMotsCles(accountId);
+  if (deja.some((mot) => mot.word === word)) return { ok: true };
+  if (deja.length >= MOTS_CLES_MAX) return { ok: false, reason: "trop_de_mots" };
+
+  await db.insert(s.agendaKeyword).values({ accountId, word, label }).onConflictDoNothing();
+  return { ok: true };
+}
+
+export async function retirerMotCle(accountId: string, word: string): Promise<void> {
+  await db
+    .delete(s.agendaKeyword)
+    .where(and(eq(s.agendaKeyword.accountId, accountId), eq(s.agendaKeyword.word, word)));
+}
+
+export async function reglerAlerteInscription(
+  accountId: string,
+  actif: boolean,
+): Promise<void> {
+  await db
+    .update(s.account)
+    .set({ alerteInscription: actif })
+    .where(eq(s.account.id, accountId));
+}
+
+export async function alerteInscriptionActive(accountId: string): Promise<boolean> {
+  const [compte] = await db
+    .select({ actif: s.account.alerteInscription })
+    .from(s.account)
+    .where(eq(s.account.id, accountId))
+    .limit(1);
+  return compte?.actif ?? false;
+}
+
+/**
+ * Prévient pour les activités publiées depuis le dernier passage, et une seule fois.
+ *
+ * Une activité déjà commencée n'est pas annoncée : prévenir d'une sortie qu'on a manquée
+ * n'apporte rien et sonne comme un reproche.
+ */
+export async function notifyNewlyPublished(send: Sender, limit = 50): Promise<NotifyReport> {
+  const report: NotifyReport = { sent: 0, failed: 0, recipients: 0 };
+
+  const activites = await db
+    .select({
+      id: s.event.id,
+      title: s.event.title,
+      description: s.event.description,
+      acces: s.event.acces,
+    })
+    .from(s.event)
+    .where(
+      and(
+        isNotNull(s.event.publishedAt),
+        isNull(s.event.notifiedAt),
+        sql`${s.event.startsAt} > now()`,
+      ),
+    )
+    .orderBy(asc(s.event.startsAt))
+    .limit(limit);
+
+  if (activites.length === 0) return report;
+
+  const mots = await db
+    .select({
+      accountId: s.agendaKeyword.accountId,
+      word: s.agendaKeyword.word,
+      label: s.agendaKeyword.label,
+    })
+    .from(s.agendaKeyword)
+    .innerJoin(
+      s.account,
+      and(eq(s.account.id, s.agendaKeyword.accountId), isNull(s.account.deletedAt)),
+    );
+
+  const guetteurs = await db
+    .select({ id: s.account.id })
+    .from(s.account)
+    .where(and(eq(s.account.alerteInscription, true), isNull(s.account.deletedAt)));
+
+  for (const activite of activites) {
+    const texte = normaliser(`${activite.title} ${activite.description ?? ""}`);
+    const aPrevenir = new Map<string, PushPayload>();
+
+    for (const mot of mots) {
+      if (aPrevenir.has(mot.accountId)) continue;
+      if (contient(texte, mot.word)) {
+        aPrevenir.set(mot.accountId, {
+          title: "Agenda",
+          body: `Une activité correspond à « ${mot.label} »`,
+          url: `/agenda/${activite.id}`,
+        });
+      }
+    }
+
+    // Un mot-clé qui a déjà parlé garde la parole : il dit pourquoi, l'autre dit seulement
+    // qu'il y a quelque chose.
+    if (activite.acces === "inscription") {
+      for (const guetteur of guetteurs) {
+        if (aPrevenir.has(guetteur.id)) continue;
+        aPrevenir.set(guetteur.id, {
+          title: "Agenda",
+          body: "Une activité sur inscription vient de paraître",
+          url: `/agenda/${activite.id}`,
+        });
+      }
+    }
+
+    report.recipients += aPrevenir.size;
+    for (const [accountId, payload] of aPrevenir) {
+      await envoyerA(accountId, payload, send, report);
+    }
+
+    // Marquée même quand personne n'était concerné : sans quoi la même activité serait
+    // relue à chaque passage des sources jusqu'à sa date.
+    await db
+      .update(s.event)
+      .set({ notifiedAt: sql`now()` })
+      .where(eq(s.event.id, activite.id));
+  }
+
+  return report;
 }

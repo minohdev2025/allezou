@@ -43,9 +43,13 @@ import {
 import { heureDeGeneve } from "@/lib/heure";
 import { correctAndPublish, rejectEvent } from "@/lib/ingest/run";
 import {
+  ajouterMotCle,
   muteMember,
   notifyJoinRequest,
+  notifyNewlyPublished,
   notifyPublication,
+  reglerAlerteInscription,
+  retirerMotCle,
   pauseCircle,
   setPrefs,
   subscribe,
@@ -417,7 +421,37 @@ export async function publierActivite(formData: FormData) {
     maxAge: age("ageMax"),
   });
 
+  // Une activité relue à la main paraît comme les autres : ceux qui la guettaient doivent
+  // l'apprendre au même moment.
+  after(async () => {
+    try {
+      await notifyNewlyPublished(await webPushSender());
+    } catch {
+      // Une alerte qui ne part pas ne remet pas la publication en cause.
+    }
+  });
+
   revalidatePath("/relecture");
+}
+
+/* ------------------------------------------------------ alertes de l'agenda */
+
+export async function ajouterMotCleAgenda(formData: FormData) {
+  const account = await requireAccount();
+  const result = await ajouterMotCle(account.id, String(formData.get("mot") ?? ""));
+  redirect(result.ok ? "/reglages" : `/reglages?erreur=${result.reason}`);
+}
+
+export async function retirerMotCleAgenda(formData: FormData) {
+  const account = await requireAccount();
+  await retirerMotCle(account.id, String(formData.get("mot") ?? ""));
+  redirect("/reglages");
+}
+
+export async function basculerAlerteInscription(formData: FormData) {
+  const account = await requireAccount();
+  await reglerAlerteInscription(account.id, formData.get("actif") === "1");
+  redirect("/reglages");
 }
 
 export async function ecarterActivite(formData: FormData) {

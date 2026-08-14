@@ -20,6 +20,7 @@ import { purgePastEvents } from "./calendar";
 import { db } from "./db";
 import { runAllSources } from "./ingest/run";
 import { purgeAll } from "./maintenance";
+import { notifyNewlyPublished, webPushSender } from "./notifications";
 
 export type Job = {
   name: string;
@@ -43,7 +44,18 @@ export const JOBS: Job[] = [
     run: async () => {
       const rapport = await runAllSources();
       const effacees = await purgePastEvents();
-      return { sources: rapport, activitesEffacees: effacees };
+
+      // Les alertes partent dans la foulée : c'est le passage des sources qui publie, et
+      // une activité sur inscription annoncée six heures trop tard est annoncée pour rien.
+      // Un envoi qui échoue ne doit pas faire échouer l'ingestion, qui a déjà eu lieu.
+      let alertes = null;
+      try {
+        alertes = await notifyNewlyPublished(await webPushSender());
+      } catch {
+        // Pas de clés VAPID, ou push injoignable : l'agenda est à jour, c'est l'essentiel.
+      }
+
+      return { sources: rapport, activitesEffacees: effacees, alertes };
     },
   },
 ];
