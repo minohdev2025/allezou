@@ -49,12 +49,11 @@ export default async function Accueil({
         </p>
         <p className="mt-3 leading-relaxed">
           Le samedi matin au parc, on croise souvent des familles qu&apos;on connaît, et on se
-          dit qu&apos;on aurait pu se donner rendez-vous. Le groupe WhatsApp de la classe est
-          trop bruyant pour qu&apos;on y écrive ça.
+          dit qu&apos;on aurait pu se donner rendez-vous.
         </p>
         <p className="mt-3 font-bold leading-relaxed">
-          J&apos;ai fait Allezou pour ça : dire où on est, aux gens avec qui nos enfants
-          aiment jouer.
+          J&apos;ai créé Allezou pour ça : dire où on est, aux gens avec qui nos enfants
+          aiment passer du temps.
         </p>
       </Carte>
 
@@ -77,25 +76,26 @@ export default async function Accueil({
 
       <h2 className="titre mb-2 text-xl font-bold">L&apos;ajouter à votre téléphone</h2>
       <p className="mb-4 leading-relaxed text-[color:var(--color-doux)]">
-        Allezou est un site web, pas une application à télécharger depuis un magasin. Vous
-        pouvez l&apos;ajouter à votre écran d&apos;accueil : elle s&apos;ouvre alors comme une
-        application, en plein écran. Sur iPhone, c&apos;est aussi la seule façon de recevoir
-        les notifications.
+        Allezou est un site web, pas une vraie application à télécharger dans un magasin.
+        Selon votre navigateur, il vous proposera peut-être de l&apos;installer tout seul.
+        Vous pouvez accepter : c&apos;est un raccourci vers cette page, qui l&apos;ouvre en
+        plein écran et vous évite de vous reconnecter à chaque fois.
       </p>
       <Carte className="mb-10">
         <ul className="space-y-3">
           <li>
-            <p className="font-bold">Sur iPhone</p>
+            <p className="font-bold">Si rien ne vous est proposé</p>
             <p className="leading-relaxed text-[color:var(--color-doux)]">
-              Ouvrez Allezou dans Safari, touchez le bouton Partager en bas de l&apos;écran,
-              puis « Sur l&apos;écran d&apos;accueil ».
+              Cherchez « Installer l&apos;application » dans le menu de votre navigateur,
+              souvent en haut à droite.
             </p>
           </li>
           <li>
-            <p className="font-bold">Sur Android</p>
+            <p className="font-bold">Sur iPhone</p>
             <p className="leading-relaxed text-[color:var(--color-doux)]">
-              Ouvrez le menu de Chrome, en haut à droite, puis « Installer
-              l&apos;application ».
+              Touchez le bouton Partager, en bas de l&apos;écran, puis « Sur l&apos;écran
+              d&apos;accueil ». C&apos;est aussi la seule façon d&apos;y recevoir les
+              notifications.
             </p>
           </li>
         </ul>
