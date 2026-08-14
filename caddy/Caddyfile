@@ -6,6 +6,16 @@
 # en-tête et le navigateur n'en retient qu'une, ou aucune.
 
 allezou.ch {
+	# Le port 80 est fermé : inutile de laisser Caddy tenter le défi HTTP à chaque
+	# renouvellement, il échoue par construction et retarde le défi qui marche. Et nommer
+	# l'émetteur écarte le repli ZeroSSL, dont le service d'inscription réclamé par Caddy 2.6
+	# a été retiré (« caddy_legacy_user_removed »).
+	tls {
+		issuer acme {
+			disable_http_challenge
+		}
+	}
+
 	reverse_proxy 127.0.0.1:4100
 
 	# Sept jours au plus : une sortie apparaît dans une URL /sortie/<identifiant>, et des
