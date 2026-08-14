@@ -39,5 +39,10 @@ www.allezou.ch {
 		}
 	}
 
+	# Seul endroit où l'en-tête est écrit ici plutôt que par l'application : `www` ne traverse
+	# aucune application, et une redirection sans HSTS laisse la première visite sur `www`
+	# sans protection tant que le domaine n'est pas préchargé. Même valeur qu'en next.config.ts.
+	header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+
 	redir https://allezou.ch{uri} permanent
 }

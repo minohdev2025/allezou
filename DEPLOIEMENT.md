@@ -17,7 +17,15 @@ Domaine : **allezou.ch**, déjà pointé sur le VPS. Contrairement à un `.app`,
 préchargé HSTS en bloc : le domaine est à soumettre une fois à
 [hstspreload.org](https://hstspreload.org), l'en-tête étant déjà conforme. Voir
 [PRODUCTION.md §1](PRODUCTION.md). C'est la seule adresse de l'application — il n'y en a plus
-d'autre à tenir à jour.
+d'autre à tenir à jour. `www.allezou.ch` pointe sur la même machine et n'y fait qu'une
+redirection permanente.
+
+> **Modifier un enregistrement chez Infomaniak ne suffit pas toujours à le publier.** L'apex et
+> `www` ont été changés à la même seconde ; seul l'apex est parti. Pendant une heure, la zone
+> affichait la bonne valeur pour `www` et les serveurs de noms en servaient une autre — le
+> numéro de série de la zone, lui, n'avait pas bougé. Supprimer l'enregistrement puis le
+> recréer a forcé la republication. En cas de doute, c'est le numéro de série qui tranche, pas
+> ce qu'affiche l'interface : `nslookup -type=SOA allezou.ch ns11.infomaniak.ch`.
 
 Devant, un proxy inverse : **nginx** ou **Caddy**, au choix — l'instance est neuve, rien
 n'impose l'un ou l'autre. Dans l'écosystème LiNX, nginx sert sur les VPS de cabinet et Caddy
