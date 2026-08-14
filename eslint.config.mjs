@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Les copies de travail des agents : c'est le même dépôt, avec ses dépendances
+    // installées. Les laisser passer faisait analyser le projet trois fois, plus le
+    // contenu de node_modules.
+    ".claude/worktrees/**",
   ]),
 ]);
 

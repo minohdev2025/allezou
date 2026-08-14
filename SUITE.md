@@ -64,8 +64,25 @@ que de résumer ; il faut regarder au prochain passage si elle suffit.
 - **Onex** n'a pas été revue depuis les contrôles. Elle rapportait vingt-sept activités ;
   combien en passent maintenant, on ne le saura qu'au prochain passage.
 
-### Le premier vrai passage n'a pas eu lieu
+### Ce qu'a donné le premier passage
 
-Tout ce qui précède a été vérifié pièce par pièce, en tests et sur des pages réelles, mais
-`npm run sources:run` n'a pas été lancé sur les sept sources depuis la fin. C'est le premier
-geste à faire, et c'est lui qui dira si la file est bien devenue l'exception.
+Fait le 14 août 2026, sur les six sources actives. Cent vingt-trois activités trouvées, dont
+cent deux nouvelles : quatre-vingt-cinq sont entrées seules au calendrier, dix-sept sont
+retombées en file.
+
+| Source | trouvées | publiées | en file |
+|---|---|---|---|
+| Ville de Genève (JSON-LD) | 30 | 9 nouvelles | 0 |
+| Chêne-Bougeries (iCal) | 21 | 21 | 0 |
+| Laconnex (iCal) | 12 | 12 | 0 |
+| Lancy (modèle) | 24 | 19 | 5 |
+| Onex (modèle) | 26 | 20 | 6 |
+| Vernier (modèle) | 10 | 4 | 6 |
+
+Les deux flux structurés passent entiers, ce qui était attendu : il n'y a rien à confronter.
+Lancy, muette la veille, rapporte vingt-quatre activités.
+
+**Vernier est l'exception qui reste** : six sur dix retenues, pour date absente, heure absente
+et titre reformulé. Sa liste écrit des titres sur deux lignes que le modèle recolle à sa façon.
+C'est la source à reprendre en premier, et probablement une question de découpage de page plus
+que de consigne.

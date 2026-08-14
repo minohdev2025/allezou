@@ -161,8 +161,9 @@ export default async function Relecture() {
                     </ul>
                   ) : (
                     <p className="mb-3 text-sm text-[color:var(--color-doux)]">
-                      Aucun contrôle en défaut : cette source passe encore tout par la file, le
-                      temps qu&apos;on regarde ce qu&apos;elle rapporte.
+                      Aucun contrôle en défaut. Soit la source passe encore tout par la file, le
+                      temps qu&apos;on regarde ce qu&apos;elle rapporte, soit l&apos;activité y
+                      attendait déjà avant que les contrôles existent.
                     </p>
                   )}
 
