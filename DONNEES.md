@@ -6,16 +6,12 @@ de cette page, pas de votre attention.
 
 ## Qui est responsable
 
-**Michael Urbina**, en son nom propre. Une personne physique décide de ce qui est collecté et
-en répond. Ni une entreprise, ni l'association de parents d'élèves qui vous a transmis
-l'invitation.
+**Michael Urbina**, domicilié au Petit-Lancy.
 
 Pour toute question ou demande :
 
 > [contact@allezou.ch](mailto:contact@allezou.ch)  
-> Michael Urbina  
-> Chemin du Gué 69  
-> 1213 Petit-Lancy
+> Michael Urbina
 
 Le traitement est soumis à la loi fédérale suisse sur la protection des données (nLPD).
 
@@ -111,9 +107,8 @@ Vous pouvez à tout moment :
 - **retirer** un enfant, ce qui efface son prénom ;
 - **demander des explications** sur n'importe quel point de cette page.
 
-Écrivez à [contact@allezou.ch](mailto:contact@allezou.ch), ou à l'adresse postale indiquée en
-haut de cette page. Vous avez également le droit de vous adresser au Préposé fédéral à la
-protection des données et à la transparence.
+Écrivez à [contact@allezou.ch](mailto:contact@allezou.ch). Vous avez également le droit de
+vous adresser au Préposé fédéral à la protection des données et à la transparence.
 
 ## Si cette page change
 

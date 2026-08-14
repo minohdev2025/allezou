@@ -12,6 +12,10 @@ import { Bouton, Carte, type Teinte } from "./ui";
  * le lien n'a pas de compte et n'a rien lu. La faire tomber sur un formulaire de connexion
  * lui demandait son adresse électronique avant de lui avoir dit à quoi elle sert.
  *
+ * Elle commence par quelqu'un, pas par un produit. Un parent qui confie le prénom de sa
+ * fille à un site veut savoir qui est derrière, et « Michael, papa de deux filles au
+ * Petit-Lancy » répond mieux que n'importe quelle phrase sur la protection des données.
+ *
  * Qui est déjà connecté n'a rien à faire ici et repart vers l'écran des sorties. Qui a
  * coché « ne plus afficher » aussi : la page a fait son travail une fois, et on ne redemande
  * pas à quelqu'un de relire une présentation à chaque connexion. `/?revoir=1` la ramène.
@@ -40,12 +44,17 @@ export default async function Accueil({
 
       <Carte accent="ambre" className="mb-9">
         <p className="leading-relaxed">
-          Samedi matin, vous êtes au parc du Gué avec vos enfants. Deux familles de la classe
-          y seraient bien allées aussi. Personne ne le sait, et le groupe WhatsApp de la
-          classe est trop bruyant pour qu&apos;on y écrive ça.
+          Bonjour, je m&apos;appelle Michael. Je suis papa de deux petites filles scolarisées
+          au Petit-Lancy.
+        </p>
+        <p className="mt-3 leading-relaxed">
+          Le samedi matin au parc, on croise souvent des familles qu&apos;on connaît, et on se
+          dit qu&apos;on aurait pu se donner rendez-vous. Le groupe WhatsApp de la classe est
+          trop bruyant pour qu&apos;on y écrive ça.
         </p>
         <p className="mt-3 font-bold leading-relaxed">
-          Allezou sert à dire où vous êtes, à des gens qui vous connaissent déjà.
+          J&apos;ai fait Allezou pour ça : dire où on est, aux gens avec qui nos enfants
+          aiment jouer.
         </p>
       </Carte>
 
@@ -66,6 +75,32 @@ export default async function Accueil({
         ))}
       </ul>
 
+      <h2 className="titre mb-2 text-xl font-bold">L&apos;ajouter à votre téléphone</h2>
+      <p className="mb-4 leading-relaxed text-[color:var(--color-doux)]">
+        Allezou est un site web, pas une application à télécharger depuis un magasin. Vous
+        pouvez l&apos;ajouter à votre écran d&apos;accueil : elle s&apos;ouvre alors comme une
+        application, en plein écran. Sur iPhone, c&apos;est aussi la seule façon de recevoir
+        les notifications.
+      </p>
+      <Carte className="mb-10">
+        <ul className="space-y-3">
+          <li>
+            <p className="font-bold">Sur iPhone</p>
+            <p className="leading-relaxed text-[color:var(--color-doux)]">
+              Ouvrez Allezou dans Safari, touchez le bouton Partager en bas de l&apos;écran,
+              puis « Sur l&apos;écran d&apos;accueil ».
+            </p>
+          </li>
+          <li>
+            <p className="font-bold">Sur Android</p>
+            <p className="leading-relaxed text-[color:var(--color-doux)]">
+              Ouvrez le menu de Chrome, en haut à droite, puis « Installer
+              l&apos;application ».
+            </p>
+          </li>
+        </ul>
+      </Carte>
+
       <h2 className="titre mb-2 text-xl font-bold">Ce qu&apos;Allezou ne fait pas</h2>
       <p className="mb-4 leading-relaxed text-[color:var(--color-doux)]">
         Une application qui parle d&apos;enfants doit dire où elle s&apos;arrête.
@@ -81,11 +116,11 @@ export default async function Accueil({
         </ul>
       </Carte>
 
-      <h2 className="titre mb-2 text-xl font-bold">Qui tient ce site</h2>
+      <h2 className="titre mb-2 text-xl font-bold">Gratuit, et hébergé en Suisse</h2>
       <p className="mb-10 leading-relaxed text-[color:var(--color-doux)]">
-        Michael Urbina, en son nom propre, depuis Petit-Lancy. Il n&apos;y a pas
-        d&apos;entreprise derrière et rien n&apos;est payant. Les serveurs sont en Suisse.
-        L&apos;agenda se remplit tout seul depuis les sites des communes genevoises.
+        Il n&apos;y a pas d&apos;entreprise derrière Allezou et rien n&apos;est payant. Les
+        serveurs sont en Suisse. L&apos;agenda se remplit tout seul depuis les sites des
+        communes genevoises.
       </p>
 
       <Carte accent="vert">
@@ -96,9 +131,7 @@ export default async function Accueil({
               name="ne_plus_afficher"
               className="mt-0.5 h-6 w-6 shrink-0 accent-[color:var(--color-vert)]"
             />
-            <span className="leading-snug">
-              Ne plus afficher cette page sur cet appareil
-            </span>
+            <span className="leading-snug">Ne plus afficher cette page sur cet appareil</span>
           </label>
           <Bouton type="submit">Entrer</Bouton>
         </form>
@@ -116,20 +149,33 @@ export default async function Accueil({
   );
 }
 
+/**
+ * Les cercles en premier.
+ *
+ * Sans eux, les trois autres gestes n'ont personne à qui parler : une sortie publiée dans le
+ * vide ne sert à rien, et c'est la première chose à faire en arrivant.
+ */
 const GESTES: { emoji: string; accent: Teinte; titre: string; texte: string }[] = [
+  {
+    emoji: "🫂",
+    accent: "corail",
+    titre: "Créer vos cercles",
+    texte:
+      "Vous réunissez les familles avec qui vos enfants aiment passer du temps : la classe, le voisinage. Vous les invitez avec un lien, par WhatsApp ou par message. Rien de ce que vous publiez ne sort de ces cercles.",
+  },
   {
     emoji: "🌳",
     accent: "vert",
-    titre: "Dire qu'on est dehors",
+    titre: "Dire que vous sortez",
     texte:
-      "Vous touchez un lieu et une heure de fin. Les parents de vos cercles le voient tout de suite. La sortie s'efface toute seule une fois l'heure passée.",
+      "Vous choisissez un parc dans la liste et l'heure à laquelle vous repartez. Les familles de vos cercles le voient aussitôt. La sortie s'efface toute seule une fois l'heure passée.",
   },
   {
-    emoji: "👀",
+    emoji: "🛝",
     accent: "bleu",
-    titre: "Voir qui est sorti",
+    titre: "Voir qui est dehors",
     texte:
-      "La liste des familles dehors en ce moment, avec le prénom des enfants qui y sont. Vous les rejoignez d'un geste, et votre nom s'ajoute à la sortie.",
+      "Vous voyez qui est sorti en ce moment, et vous les rejoignez en un clic si vous en avez envie.",
   },
   {
     emoji: "📅",
@@ -137,13 +183,6 @@ const GESTES: { emoji: string; accent: Teinte; titre: string; texte: string }[] 
     titre: "Suivre l'agenda du canton",
     texte:
       "Les activités pour les familles à Genève et dans les communes. Vous cochez celles où vous irez, et vous voyez qui de vos cercles y sera aussi.",
-  },
-  {
-    emoji: "🫂",
-    accent: "corail",
-    titre: "Choisir qui vous lit",
-    texte:
-      "Un cercle, c'est une classe ou un voisinage. On y entre par un lien que vous envoyez vous-même, et un administrateur du cercle valide l'entrée.",
   },
 ];
 
@@ -155,7 +194,7 @@ const ABSENCES: { titre: string; texte: string }[] = [
   {
     titre: "Pas de position GPS",
     texte:
-      "Un lieu se choisit dans une liste. L'application ne demande jamais à votre téléphone où vous êtes.",
+      "Vous choisissez un lieu dans une liste. L'application ne demande jamais à votre téléphone où vous êtes.",
   },
   {
     titre: "Pas d'historique",
