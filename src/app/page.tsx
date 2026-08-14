@@ -48,9 +48,9 @@ export default async function Accueil({
           au Petit-Lancy.
         </p>
         <p className="mt-3 leading-relaxed">
-          Un samedi sur deux, on arrive au parc et il n&apos;y a personne que mes filles
-          connaissent. Elles jouent dix minutes, puis viennent demander quand on rentre. Les
-          copains de la classe étaient peut-être au parc d&apos;à côté, ou passés une heure
+          Un parc peut être plein de monde sans qu&apos;un enfant y trouve quelqu&apos;un
+          qu&apos;il connaît. Il joue dix minutes, puis vient demander quand on rentre. Les
+          copains de sa classe étaient peut-être au parc d&apos;à côté, ou passés une heure
           plus tôt.
         </p>
         <p className="mt-3 font-bold leading-relaxed">
