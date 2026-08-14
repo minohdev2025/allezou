@@ -48,12 +48,14 @@ export default async function Accueil({
           au Petit-Lancy.
         </p>
         <p className="mt-3 leading-relaxed">
-          Le samedi matin au parc, on croise souvent des familles qu&apos;on connaît, et on se
-          dit qu&apos;on aurait pu se donner rendez-vous.
+          Un samedi sur deux, on arrive au parc et il n&apos;y a personne que mes filles
+          connaissent. Elles jouent dix minutes, puis viennent demander quand on rentre. Les
+          copains de la classe étaient peut-être au parc d&apos;à côté, ou passés une heure
+          plus tôt.
         </p>
         <p className="mt-3 font-bold leading-relaxed">
-          J&apos;ai créé Allezou pour ça : dire où on est, aux gens avec qui nos enfants
-          aiment passer du temps.
+          J&apos;ai créé Allezou pour ça : que nos enfants retrouvent dehors des enfants
+          qu&apos;ils connaissent.
         </p>
       </Carte>
 
