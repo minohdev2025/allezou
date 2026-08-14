@@ -106,8 +106,31 @@ millisecondes d'écart suffisent à faire sortir un membre avant son entrée, ou
 Vérifiées le 9 août 2026.
 
 - **Ville de Genève**, filtre « Enfants et famille » : chaque fiche expose du schema.org
-  `Event` en JSON-LD. Publication automatique : rien n'est interprété.
+  `Event` en JSON-LD. Rien n'y est interprété.
 - **Lancy, Onex** : aucun flux structuré (ni JSON-LD, ni iCal, ni RSS). Lecture par
-  MiniMax M3, mise en file de relecture. Rien n'est publié sans validation humaine.
+  MiniMax M3.
 
 Une source qui répond correctement mais ne rapporte plus rien est signalée comme muette.
+
+### Ce qui remplace la relecture
+
+Avant d'entrer au calendrier, chaque activité est confrontée à la page dont elle sort
+(`src/lib/ingest/controles.ts`) : la date et l'heure sont-elles écrites en clair sur cette
+page, le titre est-il recopié ou reformulé, le lieu et la tranche d'âge s'y trouvent-ils, la
+fiche est-elle bien sur le domaine de la source, une autre source annonce-t-elle déjà la même
+chose à la même heure.
+
+Ce qui passe tous les contrôles est publié sans que personne n'intervienne. Ce qui en échoue
+un seul attend sur `/relecture`, qui affiche le motif. La file existe toujours ; elle est
+devenue l'exception.
+
+Deux règles tiennent le reste :
+
+- les contrôles de fidélité ne s'appliquent pas aux flux structurés, qui n'interprètent
+  rien ;
+- le contenu d'une activité déjà publiée n'est remplacé que par une lecture qui repasse les
+  contrôles. Une source qui se met à mal lire ne peut pas réécrire en silence ce qui a été
+  vérifié.
+
+Une source qu'on vient d'ajouter garde `autoPublish: false` le temps qu'on regarde ce
+qu'elle rapporte : tout passe alors par la file, contrôles ou pas.

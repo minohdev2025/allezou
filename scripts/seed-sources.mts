@@ -3,16 +3,20 @@
  *
  *   npm run sources:seed
  *
- * Une seule source se publie seule : celle de la Ville de Genève, parce qu'elle expose du
- * schema.org `Event` en JSON-LD sur chaque fiche (titre, dates, lieu, adresse). Rien n'y est
- * interprété, donc rien n'y est inventé.
+ * La Ville de Genève expose du schema.org `Event` en JSON-LD sur chaque fiche (titre, dates,
+ * lieu, adresse). Rien n'y est interprété, donc rien n'y est inventé.
  *
  * Les communes (Lancy, Onex, Carouge) n'exposent ni JSON-LD, ni iCal, ni RSS — vérifié.
- * Elles passent donc par une lecture MiniMax M3 et attendent une relecture humaine.
- * Leurs agendas paginent en `?page=N` à partir de zéro : `maxPages` dit combien de pages
- * lire, réunies en un seul appel au modèle.
- * Deux communes suffisent pour un quart d'heure de relecture par semaine ; en ajouter
- * demande d'abord d'augmenter ce budget, jamais l'inverse.
+ * Elles passent donc par une lecture MiniMax M3. Leurs agendas paginent en `?page=N` à partir
+ * de zéro : `maxPages` dit combien de pages lire, réunies en un seul appel au modèle.
+ *
+ * `autoPublish: true` ne veut pas dire « publier les yeux fermés » : chaque activité passe
+ * les contrôles de `src/lib/ingest/controles.ts`, et ce qui en échoue un seul retombe en
+ * file. C'est ce qui a levé la limite de deux communes inscrite ici jusqu'au 14 août 2026 :
+ * le coût d'une commune de plus ne se compte plus en minutes de relecture hebdomadaire.
+ *
+ * Une source qu'on vient d'ajouter reste à `autoPublish: false` le temps de regarder ce
+ * qu'elle rapporte vraiment. C'est le seul cas où tout passe par la file.
  */
 
 import { config } from "dotenv";
@@ -37,7 +41,7 @@ const SOURCES = [
     url: "https://www.lancy.ch/agenda",
     kind: "html_ai" as const,
     commune: "Lancy",
-    autoPublish: false,
+    autoPublish: true,
     config: { maxPages: 3 },
   },
   {
@@ -45,7 +49,7 @@ const SOURCES = [
     url: "https://www.onex.ch/mes-loisirs/agenda/",
     kind: "html_ai" as const,
     commune: "Onex",
-    autoPublish: false,
+    autoPublish: true,
     // Treize pages de neuf entrées, dont la première ne contient guère que des cours de
     // fitness pour adultes : s'arrêter là donnait une source « ok » qui ne rapportait rien.
     // Six pages couvrent environ deux mois, ce que la relecture hebdomadaire peut absorber.

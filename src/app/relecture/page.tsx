@@ -26,12 +26,29 @@ function pourChamp(date: Date | null): string {
 const champ =
   "w-full rounded-xl bg-[color:var(--color-fond)] px-3 py-2 text-base ring-2 ring-[color:var(--color-trait)] outline-none focus:ring-[color:var(--color-vert)]";
 
+/** Le motif, en deux mots, avant le détail que le contrôle a écrit. */
+const MOTIFS: Record<string, string> = {
+  date_absente: "Date",
+  heure_absente: "Heure",
+  titre_reformule: "Titre",
+  titre_generique: "Rubrique",
+  lieu_absent: "Lieu",
+  age_absent: "Âge",
+  description_inventee: "Description",
+  url_hors_domaine: "Lien",
+  duree_invraisemblable: "Durée",
+  doublon: "Doublon",
+};
+
 /**
  * La file de relecture.
  *
- * Sans cet écran, tout ce que MiniMax extrait reste invisible pour toujours. Et accepter ou
- * refuser ne suffit pas : une activité réelle mal datée doit pouvoir être corrigée, sinon la
- * seule issue est de la jeter.
+ * Depuis que les contrôles automatiques décident de la publication, cet écran ne reçoit plus
+ * le tout-venant de l'agenda : il reçoit ce qui a échoué à un contrôle. Chaque fiche dit
+ * lequel, sinon relire consiste à chercher soi-même ce qu'on reproche à l'activité.
+ *
+ * Accepter ou refuser ne suffit pas : une activité réelle mal datée doit pouvoir être
+ * corrigée, sinon la seule issue devant elle est de la jeter.
  */
 export default async function Relecture() {
   await requireRelecteur();
@@ -45,7 +62,7 @@ export default async function Relecture() {
     <main className="apparait">
       <Titre
         emoji="🧐"
-        sous="Ce que l'IA a extrait des sites communaux, avant que les parents ne le voient."
+        sous="Ce que les contrôles automatiques n'ont pas laissé passer. Le reste est déjà au calendrier."
       >
         À relire
       </Titre>
@@ -113,8 +130,9 @@ export default async function Relecture() {
       </h2>
 
       {attente.length === 0 ? (
-        <Vide emoji="✅" titre="Tout est relu">
-          Repassez après le prochain passage des sources.
+        <Vide emoji="✅" titre="Rien n'a bloqué">
+          Les activités du dernier passage ont toutes passé les contrôles. Repassez après le
+          prochain.
         </Vide>
       ) : (
         <ul className="space-y-4">
@@ -123,9 +141,30 @@ export default async function Relecture() {
             return (
               <li key={activite.id}>
                 <Carte accent={teinte(activite.id)}>
-                  <p className="mb-1 text-sm text-[color:var(--color-doux)]">
+                  <p className="mb-2 text-sm text-[color:var(--color-doux)]">
                     {activite.sourceName} · {date.jour} {date.nombre} {date.mois}
                   </p>
+
+                  {activite.controles.length > 0 ? (
+                    <ul
+                      className="mb-3 space-y-1 rounded-2xl px-4 py-3 text-sm leading-snug"
+                      style={{ background: "var(--color-corail-doux)" }}
+                    >
+                      {activite.controles.map((controle) => (
+                        <li key={controle.code}>
+                          <span className="font-bold">
+                            {MOTIFS[controle.code] ?? controle.code}
+                          </span>{" "}
+                          : {controle.detail}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="mb-3 text-sm text-[color:var(--color-doux)]">
+                      Aucun contrôle en défaut : cette source passe encore tout par la file, le
+                      temps qu&apos;on regarde ce qu&apos;elle rapporte.
+                    </p>
+                  )}
 
                   <form action={publierActivite} className="space-y-3">
                     <input type="hidden" name="activite" value={activite.id} />

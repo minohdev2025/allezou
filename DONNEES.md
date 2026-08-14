@@ -92,7 +92,9 @@ Deux exceptions techniques, qui ne concernent aucune donnée personnelle :
 - l'agenda est alimenté depuis des sites publics genevois (Ville de Genève, communes) ;
 - les pages de ces sites qui ne publient pas d'agenda structuré sont lues par un service
   d'intelligence artificielle pour en extraire les dates. **Seules des pages web publiques lui
-  sont envoyées**, jamais une donnée vous concernant.
+  sont envoyées**, jamais une donnée vous concernant. Ce qu'il en tire est ensuite confronté à
+  la page d'origine : une date, un titre ou un lieu qui ne s'y retrouve pas n'apparaît pas à
+  l'agenda et attend une vérification à la main.
 
 ## Vos droits
 

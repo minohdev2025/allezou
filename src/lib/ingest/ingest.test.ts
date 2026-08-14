@@ -1,7 +1,9 @@
 /**
- * Ce que ces tests garantissent : seuls les flux structurés se publient seuls, ce qui vient
- * d'une lecture par l'IA attend une relecture, un événement écarté ne revient pas, et une
- * source en panne est signalée au lieu de disparaître en silence.
+ * Ce que ces tests garantissent : une activité ne rejoint le calendrier que si elle passe les
+ * contrôles, ce qui en échoue un retombe en file avec son motif, un événement écarté ne
+ * revient pas, et une source en panne est signalée au lieu de disparaître en silence.
+ *
+ * Les contrôles eux-mêmes sont vérifiés un par un dans `controles.test.ts`.
  */
 
 import { sql } from "drizzle-orm";
@@ -45,6 +47,28 @@ const unEvenement = (overrides: Partial<RawEvent> = {}): RawEvent => ({
   url: "https://example.test/agenda/atelier",
   ...overrides,
 });
+
+/**
+ * Une page d'agenda qui annonce vraiment ce que la lecture prétend y avoir lu : c'est le cas
+ * normal, celui où plus personne n'a besoin de relire.
+ */
+function pageQuiDitTout(event: RawEvent): string {
+  const jour = new Intl.DateTimeFormat("fr-CH", {
+    timeZone: "Europe/Zurich",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(event.startsAt);
+
+  const heure = new Intl.DateTimeFormat("fr-CH", {
+    timeZone: "Europe/Zurich",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(event.startsAt);
+
+  return `Agenda communal. ${jour}, ${heure} : ${event.title}. ${event.placeLabel}.`;
+}
 
 beforeEach(async () => {
   await resetDatabase();
@@ -328,21 +352,89 @@ describe("Passage d'une source", () => {
     expect(await pendingReview()).toEqual([]);
   });
 
-  it("un événement publié à la relecture le reste", async () => {
+  it("un événement publié à la relecture le reste, avec ce qui a été validé", async () => {
     const source = await createSource({ kind: "html_ai" });
 
     await runSource(source.id, adaptateur([unEvenement()]));
     const attente = await pendingReview();
     await publishEvent(attente[0].id);
 
+    // La source relit et change le titre, mais sans la page d'origine les contrôles n'ont
+    // rien à confronter. Ce qui est publié ne se laisse pas réécrire par une lecture qu'on
+    // ne sait pas vérifier : sinon une source qui se met à mal lire remplacerait en silence
+    // une activité relue par une activité douteuse.
     await runSource(source.id, adaptateur([unEvenement({ title: "Atelier chocolat, 15h" })]));
 
     expect(await pendingReview()).toEqual([]);
     const rows = await db.execute<{ title: string; published_at: Date | null }>(
       sql`select title, published_at from event`,
     );
-    expect(rows[0].title).toBe("Atelier chocolat, 15h");
+    expect(rows[0].title).toBe("Atelier chocolat");
     expect(rows[0].published_at).not.toBeNull();
+  });
+});
+
+describe("Les contrôles à la place de la relecture", () => {
+  it("une lecture que la page confirme se publie sans passer par personne", async () => {
+    const source = await createSource({ kind: "html_ai", autoPublish: true });
+    const event = unEvenement();
+
+    const rapport = await runSource(
+      source.id,
+      adaptateur([{ ...event, texteSource: pageQuiDitTout(event) }]),
+    );
+
+    expect(rapport.published).toBe(1);
+    expect(rapport.held).toBe(0);
+    expect(await pendingReview()).toEqual([]);
+  });
+
+  it("une lecture que la page ne confirme pas retombe en file, avec son motif", async () => {
+    const source = await createSource({ kind: "html_ai", autoPublish: true });
+
+    const rapport = await runSource(
+      source.id,
+      adaptateur([
+        unEvenement({ texteSource: "Cette page ne parle pas de cette activité-là." }),
+      ]),
+    );
+
+    expect(rapport.published).toBe(0);
+    expect(rapport.held).toBe(1);
+
+    const attente = await pendingReview();
+    expect(attente[0].controles.map((c) => c.code)).toContain("date_absente");
+  });
+
+  it("la même activité annoncée par deux sources part en file", async () => {
+    const premiere = await createSource({ kind: "html_ai", autoPublish: true });
+    const seconde = await createSource({
+      name: "Autre agenda de test",
+      url: "https://example.test/autre-agenda",
+      kind: "html_ai",
+      autoPublish: true,
+    });
+
+    const event = unEvenement();
+    const lecture = { ...event, texteSource: pageQuiDitTout(event) };
+
+    await runSource(premiere.id, adaptateur([lecture]));
+    await runSource(seconde.id, adaptateur([lecture]));
+
+    const attente = await pendingReview();
+    expect(attente.map((e) => e.controles.map((c) => c.code))).toEqual([["doublon"]]);
+  });
+
+  it("une relecture humaine efface les contrôles en défaut", async () => {
+    const source = await createSource({ kind: "html_ai", autoPublish: true });
+    await runSource(source.id, adaptateur([unEvenement({ texteSource: "page muette" })]));
+
+    const attente = await pendingReview();
+    expect(attente[0].controles.length).toBeGreaterThan(0);
+    await publishEvent(attente[0].id);
+
+    const rows = await db.execute<{ controles: unknown }>(sql`select controles from event`);
+    expect(rows[0].controles).toBeNull();
   });
 });
 

@@ -17,6 +17,14 @@ export type RawEvent = {
   /** Tranche d'âge, uniquement si la source l'annonce explicitement. */
   minAge?: number;
   maxAge?: number;
+  /**
+   * Le texte de la page d'où l'activité a été lue, tel qu'il a été donné au modèle.
+   *
+   * Il ne va pas en base : il sert le temps d'un passage, aux contrôles qui vérifient que
+   * chaque valeur annoncée figure bien sur la page. Un flux structuré ne le renseigne pas,
+   * il n'interprète rien.
+   */
+  texteSource?: string;
 };
 
 /** Lit « dès 5 ans », « 3-6 ans », « 7 à 12 ans » tels que les sources les écrivent. */

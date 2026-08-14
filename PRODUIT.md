@@ -41,10 +41,11 @@ enfants — c'est le « +2 » affiché à côté de la sortie, qui se déplie en
 **Lieu** — catalogue commun à tous. N'importe qui ajoute un lieu ; un renommage prend effet
 quand plusieurs personnes le valident. La correction collective remplace la modération centrale.
 
-**Calendrier** — canton de Genève. Les flux officiels structurés sont publiés automatiquement ;
-les pages interprétées par l'IA passent par une relecture humaine avant publication. Chaque
-entrée affiche sa source et sa fraîcheur. Une source en panne est **signalée**, jamais masquée
-en silence.
+**Calendrier** — canton de Genève. Les flux officiels structurés sont publiés automatiquement.
+Ce que l'IA lit sur une page communale est confronté à cette page avant publication : la date,
+l'heure, le titre, le lieu et l'âge doivent s'y retrouver. Ce qui échoue un contrôle attend une
+relecture humaine. Chaque entrée affiche sa source et sa fraîcheur. Une source en panne est
+**signalée**, jamais masquée en silence.
 
 ## La règle de visibilité
 
@@ -223,6 +224,12 @@ précisément pourquoi la minimisation n'est pas une posture ici.
   extérieur : confier un lien d'invitation à un service de génération d'images reviendrait à
   lui confier la clé d'entrée d'un cercle. Deux parents à la sortie de l'école se montrent un
   écran plutôt que d'épeler une adresse.
+- **La relecture humaine de l'agenda est remplacée par des contrôles.** Relire à la main tout
+  ce qu'une commune publie plafonnait l'agenda à deux communes, et le faisait dépendre de la
+  disponibilité d'une personne : une semaine sans relecture, et le calendrier ne montrait plus
+  que la Ville de Genève. Chaque activité est désormais confrontée à la page dont elle sort.
+  La file n'est pas supprimée pour autant — c'est elle qui reçoit ce que la machine ne sait
+  pas vérifier — mais elle cesse d'être le passage obligé.
 - **Une activité de l'agenda a sa page** : description, lien vers le site de l'organisateur,
   qui de vos cercles y va, et inscription avec choix des cercles destinataires. Une
   inscription se modifie sans être republiée — changer de destinataires n'est pas une

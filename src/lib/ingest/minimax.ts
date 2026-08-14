@@ -235,7 +235,12 @@ export async function extractEventsWithMiniMax(
   const content = body.choices?.[0]?.message?.content;
   if (!content) throw new Error("MiniMax : réponse vide");
 
-  return eventsFromPayload(parseModelJson(content), pageUrl);
+  // La page lue repart avec chaque activité : c'est elle que les contrôles reliront pour
+  // vérifier que la date, le titre et le lieu annoncés y figurent vraiment.
+  return eventsFromPayload(parseModelJson(content), pageUrl).map((event) => ({
+    ...event,
+    texteSource: pageText,
+  }));
 }
 
 /**

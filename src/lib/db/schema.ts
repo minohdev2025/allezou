@@ -274,8 +274,12 @@ export const placeRenameVote = pgTable(
 export const sourceKind = pgEnum("source_kind", ["ical", "jsonld", "html_ai"]);
 
 /**
- * Source du calendrier genevois. `autoPublish` n'est vrai que pour les flux officiels
- * structurés ; ce qui passe par l'IA attend une relecture humaine.
+ * Source du calendrier genevois.
+ *
+ * `autoPublish` autorise la source à publier seule ce qui passe les contrôles de
+ * `ingest/controles.ts`. Ce qui échoue un contrôle retombe dans la file de relecture, quelle
+ * que soit la valeur de ce drapeau. Une source qui vient d'être ajoutée reste à `false` le
+ * temps qu'on regarde ce qu'elle rapporte : c'est le seul cas où tout passe par la file.
  */
 export const source = pgTable("source", {
   id: uuid().primaryKey().defaultRandom(),
@@ -338,6 +342,14 @@ export const event = pgTable(
     createdBy: uuid().references(() => account.id, { onDelete: "set null" }),
     /** Nul = en attente de relecture, invisible au calendrier. */
     publishedAt: timestamp({ withTimezone: true }),
+    /**
+     * Les contrôles qui ne sont pas passés, sous la forme `[{ code, detail }]`.
+     *
+     * Nul quand tout est passé. C'est ce qui explique, sur l'écran de relecture, pourquoi
+     * une activité y est arrivée plutôt que d'être publiée : sans cette colonne, la file
+     * redevient une pile de fiches sans motif, qu'il faut rouvrir une par une.
+     */
+    controles: jsonb(),
     /** Écarté à la relecture. Ne réapparaît pas au passage suivant de la source. */
     rejectedAt: timestamp({ withTimezone: true }),
     createdAt: timestamp({ withTimezone: true }).notNull().default(now),

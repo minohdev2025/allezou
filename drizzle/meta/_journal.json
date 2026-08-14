@@ -71,6 +71,13 @@
       "when": 1786384719626,
       "tag": "0009_shiny_thunderbolt",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1786721691930,
+      "tag": "0010_worthless_quasar",
+      "breakpoints": true
     }
   ]
 }
