@@ -64,6 +64,7 @@ src/app/
   compte/       nom, enfants, second parent, suppression du compte
   relecture/    file de l'agenda pour qui figure dans ADMIN_EMAILS
   donnees/      rend DONNEES.md : une seule source pour le dépôt et les parents
+  page.tsx      l'accueil public, pour qui arrive sans compte
   actions.ts    toutes les mutations, chacune ouverte par requireAccount()
   icon.tsx      l'icône, dessinée plutôt qu'embarquée en binaire
 
@@ -76,9 +77,15 @@ src/lib/
   circles.ts    cercles, invitations, rôles, liens coupés
   publications.ts présence, participation, « rejoindre une sortie »
   places.ts     catalogue de lieux, renommage validé à plusieurs
-  calendar.ts   lecture du calendrier
-  notifications.ts destinataires, réglages, envoi
+  calendar.ts   lecture du calendrier, filtres compris
+  notifications.ts destinataires, réglages, envoi, alertes de l'agenda
+  texte.ts      comparer du français sans se faire prendre par un accent
   ingest/       sources de l'agenda genevois
+    ical.ts     agendas WordPress publiés en .ics
+    jsonld.ts   fiches schema.org
+    minimax.ts  pages sans données structurées
+    controles.ts ce qui remplace la relecture humaine
+    tarif.ts    prix et inscription, lus par mots exacts
   audit.ts      journal des actes sensibles (liste blanche)
   maintenance.ts effacements automatiques
 ```

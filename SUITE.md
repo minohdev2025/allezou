@@ -1,97 +1,71 @@
 # Ce qui vient ensuite
 
-> Écrit le 14 août 2026, à la clôture de la mise en ligne. Sept objectifs, dans l'ordre où ils
-> ont été posés. Chacun dit ce qu'il touche déjà dans le dépôt : trois d'entre eux entrent en
-> collision avec quelque chose de déjà écrit, et mieux vaut le voir avant que pendant.
+> Réécrit le 14 août 2026, après les sept objectifs posés à la clôture de la mise en ligne.
+> Ils sont faits. Ce fichier dit maintenant ce qu'ils ont laissé derrière eux : les choses
+> qu'on ne saura qu'en regardant tourner, et celles qu'on a vues sans les traiter.
 
-## 1. Une page d'accueil qui explique
+## Ce qui a été fait
 
-Aujourd'hui `/` ne montre rien : [page.tsx](src/app/page.tsx) redirige vers `/maintenant` si on
-est connecté, vers `/connexion` sinon. Quelqu'un à qui on parle d'Allezou arrive donc devant un
-formulaire, sans avoir lu ce que c'est.
+1. **Une page d'accueil publique.** `/` ne renvoie plus les visiteurs anonymes vers le
+   formulaire de connexion. Une case « ne plus afficher » range la page une fois lue, et
+   `/?revoir=1` la ramène.
+2. **La page données, réécrite.** Les phrases qui commençaient par la négation ont été
+   retournées. Le plan n'a pas bougé.
+3. **Les tirets cadratins**, dans les écrans, DONNEES.md et le README. Les documents internes
+   et les commentaires gardent les leurs : c'est de la typographie française ordinaire, et
+   personne ne les lit à l'écran.
+4. **Dix contrôles automatiques** à la place de la relecture humaine
+   ([controles.ts](src/lib/ingest/controles.ts)). Ce qui échoue retombe en file avec son
+   motif, affiché sur `/relecture`.
+5. **Un adaptateur iCalendar**, plus Chêne-Bougeries, Laconnex et Vernier. Le tour du canton
+   et ce qu'il a écarté sont en tête de [seed-sources.mts](scripts/seed-sources.mts).
+6. **Le prix et l'inscription**, lus par mots exacts, filtrables à l'agenda, « non défini »
+   compris.
+7. **Les alertes de l'agenda** : un mot qu'on surveille, et les activités sur inscription,
+   annoncées à la publication.
 
-Il faut une page publique qui dise le pourquoi, ce qu'on peut faire, et ce que ça ne fait pas.
-La matière existe dans [PRODUIT.md](PRODUIT.md), mais elle est écrite pour moi ; l'écran est
-pour un parent qui n'a pas trente secondes. Le premier arbitrage est là : `/` cesse de rediriger
-les visiteurs anonymes, et la connexion devient un lien sur cette page.
+## Ce qui reste ouvert
 
-## 2. Les tirets cadratins
+### Les activités sans horaire sortent à minuit
 
-À délimiter avant de commencer : le `—` est de la typographie française ordinaire, et il est
-partout dans les documents écrits avant août 2026, y compris ceux que personne ne lit à l'écran.
-Ce qui sonne artificiel n'est pas le signe, c'est le rythme qu'il installe — une incise à chaque
-phrase. Deux périmètres possibles :
+Une exposition annoncée « 21 juin - 21 septembre » n'a pas d'heure, et une feuille iCalendar
+qui la décrit en journée entière la place à minuit. L'agenda affiche donc « 00:00 », ce qui
+est faux à la lecture. Il manque la notion de journée entière, en base et à l'écran. C'est
+visible dès la première activité de Chêne-Bougeries.
 
-- **Le texte vu par les parents seulement** : écrans, courriels, DONNEES.md. Le reste est de la
-  documentation interne, et le tiret n'y gêne personne.
-- **Tout le dépôt**, commentaires et documents compris.
+### Les seuils des contrôles sont des paris
 
-Le premier est défendable, le second est cohérent. Trancher, puis remplacer par `:` quand le
-tiret introduit une explication, par `-` ou une virgule quand il n'est qu'une pause, et supprimer
-l'incise quand elle ne portait rien.
+`couverture ≥ 0.8` pour le lieu, `≥ 0.75` pour la description : deux nombres choisis sans
+données. Ce qui les corrigera, c'est la file elle-même. Si elle se remplit de descriptions
+jugées inventées alors qu'elles ne le sont pas, c'est le seuil qu'il faut bouger, pas le
+contrôle.
 
-## 3. La page données, en français parlé
+### Une activité publiée dont la relecture échoue ne se voit nulle part
 
-[DONNEES.md](DONNEES.md) est rendue telle quelle par `/donnees` : une seule source pour le dépôt
-et pour les parents, et donc une seule chose à réécrire.
+Le contenu d'une activité déjà publiée n'est remplacé que par une lecture qui repasse les
+contrôles : c'est ce qui empêche une source devenue mauvaise de réécrire en silence ce qui a
+été vérifié. Mais l'échec n'apparaît alors sur aucun écran, puisque `/relecture` ne montre
+que ce qui n'est pas publié. Une source qui se dérègle passerait donc inaperçue jusqu'à ce
+que quelqu'un compare avec le site de la commune.
 
-Le défaut à traquer : dire ce que la chose n'est pas avant de dire ce qu'elle est. Un parent
-veut savoir ce qui est enregistré, pas ce qui ne l'est pas. La section « Ce qu'Allezou
-n'enregistre pas » garde sa raison d'être sur une page de protection des données — c'est au
-niveau de la phrase que le tic se corrige, pas du plan.
+### Les descriptions inventées de Lancy et Vernier
 
-## 4. D'autres sources pour le canton
+Les listes d'agenda de Lancy et Vernier ne portent pas de description. Le modèle en écrivait
+une, que le contrôle attrape. La consigne lui demande maintenant d'omettre le champ plutôt
+que de résumer ; il faut regarder au prochain passage si elle suffit.
 
-[seed-sources.mts](scripts/seed-sources.mts) en compte trois : Ville de Genève (JSON-LD, publiée
-sans relecture), Lancy et Onex (lues par le modèle). Carouge a été vérifiée : aucun flux
-structuré. Le fichier porte une limite explicite — deux communes tiennent dans un quart d'heure
-de relecture par semaine, en ajouter demande d'abord d'augmenter ce budget.
+### Les sources laissées de côté
 
-L'objectif 5 fait sauter cette limite, ce qui change l'ordre : chercher les sources **après**
-avoir remplacé la relecture, pas avant. Chercher d'abord les flux structurés (JSON-LD, iCal,
-RSS), qui ne coûtent ni appel au modèle ni doute.
+- **Chancy** et **Soral** exposent bien un `?ical=1`, mais leur feuille est vide. À reprendre
+  si elle se remplit.
+- **Carouge** et **Meyrin** composent leur agenda dans le navigateur : la page servie ne
+  contient aucune activité, ni pour nous ni pour le modèle. Il faudrait lire l'API que leur
+  page interroge, ou renoncer.
+- **Onex** n'a pas été revue depuis les contrôles. Elle rapportait vingt-sept activités ;
+  combien en passent maintenant, on ne le saura qu'au prochain passage.
 
-Une chose à regarder au passage : depuis la correction du 14 août, **Lancy ne plante plus mais
-ne rapporte rien** — la source passe « ok » avec zéro activité, là où Onex en ramène vingt-sept
-sur le même mécanisme. C'est l'état que le README appelle *muet*, et il ne se diagnostique pas
-comme une panne : soit les pages lues n'annoncent rien pour les familles, soit le découpage en
-pages tombe à côté. Trois pages sont demandées ; Onex en demande six.
+### Le premier vrai passage n'a pas eu lieu
 
-## 5. Remplacer la relecture humaine par des contrôles
-
-Le plus délicat des sept, parce qu'il touche une promesse écrite. Le [README](README.md) dit
-« Rien n'est publié sans validation humaine », et [DONNEES.md](DONNEES.md) explique aux parents
-comment l'agenda se remplit. Supprimer la file de relecture oblige à réécrire ces deux phrases
-en même temps que le code, sans quoi le dépôt promet ce qu'il ne fait plus.
-
-Le levier existe déjà : `autoPublish` par source. Ce qui manque, ce sont les contrôles qui
-prennent la place de l'œil humain, activité par activité. Quelques-uns qui se défendent :
-
-- la date lue existe-t-elle sur la page d'origine, en clair ;
-- le titre apparaît-il dans le texte source, ou le modèle l'a-t-il reformulé ;
-- l'URL de la fiche appartient-elle bien au domaine de la source ;
-- deux activités identiques à la même heure dans deux communes : signe de recopie ;
-- un champ absent de la page mais présent dans la réponse — l'hallucination la plus courante.
-
-Ce qui échoue un contrôle ne disparaît pas : il retombe dans une file, qui devient l'exception
-plutôt que le passage obligé.
-
-## 6. Être prévenu quand une activité paraît
-
-Deux besoins distincts : un mot-clé qui apparaît dans une activité publiée, et les activités
-**sur inscription**, où être prévenu tard revient à ne pas être prévenu.
-
-Le socle est là — [notifications.ts](src/lib/notifications.ts), les abonnements push, les
-réglages par cercle. Ce qui manque : des mots-clés attachés au compte, et un déclenchement au
-moment de la publication plutôt qu'au moment de la sortie.
-
-## 7. Filtrer les activités
-
-`/agenda` filtre déjà par fenêtre, âge, commune et cercle ([calendar.ts](src/lib/calendar.ts)).
-Les axes demandés — gratuit, payant, non défini, sur inscription, entrée libre — demandent
-d'abord une donnée qui n'est pas collectée : ni le prix ni l'inscription ne figurent
-aujourd'hui dans `RawEvent` ni dans la table `event`.
-
-L'ordre est donc imposé : extraire ces champs à l'ingestion, migrer la table, puis filtrer.
-Et prévoir « non défini » comme une valeur à part entière — sur une page communale, l'absence
-de prix affiché ne veut pas dire gratuit.
+Tout ce qui précède a été vérifié pièce par pièce, en tests et sur des pages réelles, mais
+`npm run sources:run` n'a pas été lancé sur les sept sources depuis la fin. C'est le premier
+geste à faire, et c'est lui qui dira si la file est bien devenue l'exception.
