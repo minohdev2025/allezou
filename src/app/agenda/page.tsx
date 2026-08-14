@@ -408,9 +408,13 @@ function LigneActivite({
             n'annoncent pas leur prix, et une pastille grise sur une ligne sur deux dirait
             surtout que l'agenda ne sait rien. C'est aux filtres de servir à ça.
           */}
-          {entree.ageLabel || entree.commune || entree.tarif !== "inconnu" ||
-          entree.acces === "inscription" ? (
+          {entree.ageLabel || entree.commune || entree.retiree ||
+          entree.tarif !== "inconnu" || entree.acces === "inscription" ? (
             <span className="mt-1.5 flex flex-wrap gap-1.5">
+              {/* En tête des étiquettes : c'est ce qui change tout pour qui comptait y aller. */}
+              {entree.retiree ? (
+                <Pastille couleur="corail">Plus annoncée</Pastille>
+              ) : null}
               {entree.tarif !== "inconnu" ? (
                 <Pastille couleur={entree.tarif === "gratuit" ? "vert" : "violet"}>
                   {LIBELLES_TARIF[entree.tarif]}

@@ -24,6 +24,28 @@
 7. **Les alertes de l'agenda** : un mot qu'on surveille, et les activités sur inscription,
    annoncées à la publication.
 
+## Ce qui a été repris ensuite
+
+Trois défauts sont apparus en regardant ce que le passage des sources fait aux activités
+**déjà publiées**, toutes les six heures. Ils tenaient à une même question qu'on ne posait
+pas : qu'est-ce que la source annonce *encore* ?
+
+- **Une activité annulée restait à l'agenda.** Disparaître de la page de la commune ne
+  produisait aucun signal, et une famille pouvait se déplacer pour une sortie qui n'existait
+  plus. `last_seen_at` retient le dernier passage où la source l'annonçait ; après trois
+  absences d'affilée (dix-huit heures), elle sort de l'agenda. Une absence isolée ne fait
+  rien, une commune qui réannonce la remet, et un passage en échec ne retire jamais rien.
+- **Une date corrigée créait un doublon** sur les sources lues par le modèle, dont l'identité
+  contenait l'heure. Elle ne contient plus que le titre normalisé et le jour. Et le contrôle
+  `doublon` regarde désormais aussi la même source, pas seulement les autres.
+- **L'échec d'une relecture sur une activité publiée ne se voyait nulle part.** `/relecture`
+  porte maintenant une section « publiées que la source ne confirme plus », en tête, avec deux
+  gestes : « elle est juste » efface le signalement, « la retirer » la sort de l'agenda.
+
+Une activité retirée n'est jamais effacée : les familles inscrites gardent leur inscription
+et continuent de la voir, avec la mention qui va bien. L'effacer emporterait leur inscription
+en silence, par la cascade.
+
 ## Ce qui reste ouvert
 
 ### Les activités sans horaire sortent à minuit
@@ -39,14 +61,6 @@ visible dès la première activité de Chêne-Bougeries.
 données. Ce qui les corrigera, c'est la file elle-même. Si elle se remplit de descriptions
 jugées inventées alors qu'elles ne le sont pas, c'est le seuil qu'il faut bouger, pas le
 contrôle.
-
-### Une activité publiée dont la relecture échoue ne se voit nulle part
-
-Le contenu d'une activité déjà publiée n'est remplacé que par une lecture qui repasse les
-contrôles : c'est ce qui empêche une source devenue mauvaise de réécrire en silence ce qui a
-été vérifié. Mais l'échec n'apparaît alors sur aucun écran, puisque `/relecture` ne montre
-que ce qui n'est pas publié. Une source qui se dérègle passerait donc inaperçue jusqu'à ce
-que quelqu'un compare avec le site de la commune.
 
 ### Les descriptions inventées de Lancy et Vernier
 

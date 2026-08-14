@@ -23,6 +23,7 @@ import { join } from "node:path";
 
 import { z } from "zod";
 
+import { normaliser } from "../texte";
 import { lireTarifEtAcces } from "./tarif";
 import { clamp, parseAgeRange, USER_AGENT, type Adapter, type RawEvent } from "./types";
 
@@ -254,6 +255,28 @@ export async function extractEventsWithMiniMax(
   }));
 }
 
+/** Le jour d'une date à l'heure de Genève : « 2026-09-12 ». */
+function jourGenevois(date: Date): string {
+  return new Intl.DateTimeFormat("sv-SE", {
+    timeZone: "Europe/Zurich",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(date);
+}
+
+/**
+ * L'identité d'une activité chez une source sans identifiant.
+ *
+ * Le titre normalisé et le jour, sans l'heure. Une commune qui corrige un horaire, une
+ * majuscule ou un accent parle de la même sortie : la faire entrer sous une nouvelle
+ * identité créerait un doublon et laisserait l'ancienne version publiée à côté. Le jour
+ * suffit à séparer deux occurrences d'un rendez-vous hebdomadaire.
+ */
+export function identiteLue(titre: string, debut: Date): string {
+  return clamp(`${normaliser(titre)}|${jourGenevois(debut)}`, 200)!;
+}
+
 /**
  * Valide ce que le modèle a rendu, puis le met en forme. Fonction pure : c'est elle que
  * les tests verrouillent.
@@ -300,9 +323,9 @@ export function eventsFromPayload(
     if ((endsAt ?? startsAt).getTime() - maintenant < -FENETRE_PASSE_MS) continue;
 
     events.push({
-      // Le titre et la date font l'identité : beaucoup de pages d'agenda communal
+      // Le titre et le jour font l'identité : beaucoup de pages d'agenda communal
       // renvoient la même URL pour tous leurs événements, qui s'écraseraient sinon.
-      externalId: clamp(`${evenement.titre}|${startsAt.toISOString()}`, 200)!,
+      externalId: identiteLue(evenement.titre, startsAt),
       title: clamp(evenement.titre, 120)!,
       description: clamp(evenement.description, 280),
       startsAt,

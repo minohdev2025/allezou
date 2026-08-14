@@ -111,6 +111,18 @@ export default async function Activite({
         <Alerte ton="erreur">{MESSAGES[erreur] ?? "L'inscription n'a pas pu être faite."}</Alerte>
       ) : null}
 
+      {/*
+        Une activité retirée reste lisible, et reste sur l'écran de qui s'y était inscrit.
+        La faire disparaître sans un mot serait la pire façon d'annoncer une annulation.
+      */}
+      {activite.retiree ? (
+        <Alerte ton="erreur">
+          <strong className="mb-1 block text-lg">Elle n&apos;est plus annoncée</strong>
+          L&apos;organisateur ne la publie plus sur son site. Elle a sans doute été annulée ou
+          déplacée. Vérifiez sur sa page avant de vous déplacer.
+        </Alerte>
+      ) : null}
+
       {activite.description ? (
         <Carte className="mb-5">
           <p className="leading-snug">{activite.description}</p>
@@ -147,7 +159,17 @@ export default async function Activite({
         </Carte>
       ) : null}
 
-      {cercles.length === 0 ? (
+      {activite.retiree ? (
+        inscription ? (
+          <Carte accent="corail">
+            <p className="leading-snug">
+              Vous étiez inscrit·e. Votre inscription reste visible de vos cercles, pour que
+              personne ne se déplace en croyant vous y retrouver. Retirez-la si vous n&apos;y
+              allez plus.
+            </p>
+          </Carte>
+        ) : null
+      ) : cercles.length === 0 ? (
         <Carte>
           <p className="text-[color:var(--color-doux)]">
             Rejoignez un cercle pour pouvoir dire que vous y allez.

@@ -35,6 +35,14 @@ export type CalendarEntry = {
   acces: Acces;
   /** Déjà commencé et pas terminé : une exposition, un festival, un été d'animations. */
   enCours: boolean;
+  /**
+   * Hors agenda : la source ne l'annonce plus, ou un relecteur l'a retirée.
+   *
+   * Les deux se distinguent en base — `withdrawn_at` est une observation de la machine, que
+   * le passage suivant défait si la source réannonce ; `rejected_at` est une décision humaine,
+   * qu'aucun passage ne défait. À l'écran, un parent n'a que faire de la nuance.
+   */
+  retiree: boolean;
   /** Les personnes inscrites que ce lecteur a le droit de voir. */
   attendees: { publicationId: string; accountId: string; displayName: string }[];
 };
@@ -141,6 +149,16 @@ export async function upcomingCalendar(
     .filter(([, inscrits]) => inscrits.some((i) => i.accountId !== actorId))
     .map(([eventId]) => eventId);
 
+  /**
+   * Ce à quoi cette personne s'est inscrite, retiré ou non.
+   *
+   * Une activité que la source n'annonce plus sort de l'agenda, mais pas de l'écran de qui
+   * comptait y aller : la faire disparaître sans un mot serait la pire façon de l'annuler.
+   */
+  const mesInscriptions = [...parEvenement.entries()]
+    .filter(([, inscrits]) => inscrits.some((i) => i.accountId === actorId))
+    .map(([eventId]) => eventId);
+
   if (filtre.avecMonCercle && idsAvecMonCercle.length === 0) return [];
 
   const conditions: SQL[] = [
@@ -148,6 +166,10 @@ export async function upcomingCalendar(
     // Ce qui est terminé n'a plus lieu d'apparaître, quelle que soit la fenêtre demandée.
     sql`coalesce(e.ends_at, e.starts_at + interval '2 hours') >= now()`,
     fenetreSql(filtre.quand ?? "quinzaine"),
+    mesInscriptions.length > 0
+      ? sql`(e.withdrawn_at is null and e.rejected_at is null
+             or e.id = any(${sql.param(mesInscriptions)}::uuid[]))`
+      : sql`e.withdrawn_at is null and e.rejected_at is null`,
   ];
 
   if (filtre.age !== undefined) {
@@ -192,11 +214,13 @@ export async function upcomingCalendar(
     tarif: Tarif;
     acces: Acces;
     en_cours: boolean;
+    retiree: boolean;
   }>(sql`
     select
       e.id, e.title, e.description, e.starts_at, e.ends_at, e.url, e.origin, e.updated_at,
       e.min_age, e.max_age, e.commune, e.tarif, e.acces,
       (e.starts_at <= now()) as en_cours,
+      (e.withdrawn_at is not null or e.rejected_at is not null) as retiree,
       coalesce(pl.name, e.place_label) as place,
       src.name as source_name
     from event e
@@ -232,6 +256,7 @@ export async function upcomingCalendar(
     tarif: r.tarif,
     acces: r.acces,
     enCours: r.en_cours,
+    retiree: r.retiree,
     attendees: parEvenement.get(r.id) ?? [],
   }));
 }
@@ -258,11 +283,13 @@ export async function calendarEntry(
     tarif: Tarif;
     acces: Acces;
     en_cours: boolean;
+    retiree: boolean;
   }>(sql`
     select
       e.id, e.title, e.description, e.starts_at, e.ends_at, e.url, e.origin, e.updated_at,
       e.min_age, e.max_age, e.commune, e.tarif, e.acces,
       (e.starts_at <= now()) as en_cours,
+      (e.withdrawn_at is not null or e.rejected_at is not null) as retiree,
       coalesce(pl.name, e.place_label) as place,
       src.name as source_name
     from event e
@@ -297,6 +324,7 @@ export async function calendarEntry(
     tarif: r.tarif,
     acces: r.acces,
     enCours: r.en_cours,
+    retiree: r.retiree,
     attendees: participations.map((p) => ({
       publicationId: p.id,
       accountId: p.authorId,
@@ -311,6 +339,8 @@ export async function communesDisponibles(): Promise<string[]> {
     select distinct commune
     from event
     where published_at is not null
+      and withdrawn_at is null
+      and rejected_at is null
       and commune is not null
       and coalesce(ends_at, starts_at + interval '2 hours') >= now()
     order by commune asc

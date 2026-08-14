@@ -25,6 +25,16 @@ import { clamp, type Adapter, type RawEvent, type Source } from "./types";
 /** Au-delà de ce délai sans succès, la source est signalée dans l'interface. */
 export const SEUIL_SOURCE_MUETTE_JOURS = 7;
 
+/**
+ * Combien de temps une activité peut manquer à l'appel avant d'être retirée de l'agenda.
+ *
+ * Trois passages, à six heures d'intervalle. Une page communale qui bafouille le temps d'un
+ * rafraîchissement, une pagination qui saute, un serveur qui répond à moitié : rien de tout
+ * cela ne doit retirer une sortie à laquelle des familles se sont inscrites. Trois absences
+ * d'affilée, en revanche, ne sont plus un accident.
+ */
+export const DELAI_DISPARITION_HEURES = 18;
+
 export type Adapters = Partial<Record<(typeof s.sourceKind.enumValues)[number], Adapter>>;
 
 export const defaultAdapters: Adapters = {
@@ -44,6 +54,8 @@ export type IngestReport = {
   published: number;
   /** Nouvelles activités retenues en file : au moins un contrôle a échoué. */
   held: number;
+  /** Activités retirées de l'agenda parce que la source ne les annonce plus. */
+  withdrawn: number;
   error?: string;
 };
 
@@ -63,6 +75,7 @@ export async function runSource(
     updated: 0,
     published: 0,
     held: 0,
+    withdrawn: 0,
   };
 
   const adapter = adapters[source.kind];
@@ -104,6 +117,9 @@ export async function runSource(
         // L'état de relecture ne bouge jamais ici : un événement déjà relu ne repart pas en
         // file, un événement écarté ne réapparaît pas.
         //
+        // `withdrawnAt` est remis à zéro : une commune qui réannonce une activité qu'elle
+        // avait retirée la remet à l'agenda, sans qu'on ait à s'en occuper.
+        //
         // Le contenu, lui, n'est remplacé que par une lecture qui passe les contrôles. Sans
         // cette réserve, une source qui se met à mal lire réécrirait en silence une activité
         // vérifiée par une activité douteuse, sans repasser devant personne.
@@ -114,6 +130,8 @@ export async function runSource(
           .set({
             ...(remplacable ? contenu : {}),
             controles: echecs.length > 0 ? echecs : null,
+            lastSeenAt: sql`now()`,
+            withdrawnAt: null,
             updatedAt: new Date(),
           })
           .where(eq(s.event.id, existing.id));
@@ -128,12 +146,15 @@ export async function runSource(
           externalId: event.externalId,
           publishedAt: publiable ? new Date() : null,
           controles: echecs.length > 0 ? echecs : null,
+          lastSeenAt: sql`now()`,
         });
         report.created += 1;
         if (publiable) report.published += 1;
         else report.held += 1;
       }
     }
+
+    report.withdrawn = await retirerLesDisparues(source.id);
 
     return finish(source, { ...report, ok: true });
   } catch (error) {
@@ -145,15 +166,47 @@ export async function runSource(
 }
 
 /**
- * Cherche la même activité chez une autre source.
+ * Retire de l'agenda ce que la source n'annonce plus.
+ *
+ * Une activité annulée disparaît de la page de la commune sans autre forme de procès. Tant
+ * qu'on ne comparait qu'à ce que la page annonce, elle restait publiée jusqu'à sa date, et
+ * une famille pouvait se déplacer pour une sortie qui n'existait plus.
+ *
+ * On ne touche qu'au futur : ce qui a déjà eu lieu a eu lieu, et le sortir de l'agenda
+ * effacerait la trace d'une sortie à laquelle des familles sont allées.
+ *
+ * `updated_at` sert de repli pour les activités entrées avant que cette colonne existe :
+ * sans lui, tout l'agenda serait retiré au premier passage.
+ */
+async function retirerLesDisparues(sourceId: string): Promise<number> {
+  const rows = await db.execute<{ id: string }>(sql`
+    update event
+    set withdrawn_at = now()
+    where source_id = ${sourceId}
+      and published_at is not null
+      and withdrawn_at is null
+      and starts_at > now()
+      and coalesce(last_seen_at, updated_at)
+          < now() - make_interval(hours => ${DELAI_DISPARITION_HEURES})
+    returning id
+  `);
+
+  return rows.length;
+}
+
+/**
+ * Cherche la même activité ailleurs, ou deux fois chez la même source.
  *
  * Deux communes qui annoncent le même titre à la même heure recopient l'une sur l'autre, ou
- * relaient un événement cantonal. Dans les deux cas le calendrier afficherait deux fois la
- * même sortie à un parent : c'est une erreur visible, et elle mérite un œil.
+ * relaient un événement cantonal. Une source qui l'annonce deux fois a changé sa façon de
+ * l'écrire entre deux passages, et l'ancienne version est restée. Dans les deux cas le
+ * calendrier montrerait deux fois la même sortie à un parent.
+ *
+ * On exclut la ligne de l'activité elle-même, et elle seule.
  */
 async function chercherDoublon(event: RawEvent, sourceId: string): Promise<Echec[]> {
   const rows = await db
-    .select({ commune: s.event.commune })
+    .select({ commune: s.event.commune, sourceId: s.event.sourceId })
     .from(s.event)
     .where(
       and(
@@ -161,19 +214,25 @@ async function chercherDoublon(event: RawEvent, sourceId: string): Promise<Echec
         // `cast` explicite : sans lui, Postgres ne sait pas de quel type est le paramètre
         // qu'on lui demande de mettre en minuscules, et refuse la requête entière.
         sql`lower(${s.event.title}) = lower(cast(${event.title} as text))`,
-        sql`${s.event.sourceId} is distinct from cast(${sourceId} as uuid)`,
+        sql`not (${s.event.sourceId} is not distinct from cast(${sourceId} as uuid)
+                 and ${s.event.externalId} is not distinct from cast(${event.externalId} as text))`,
         isNull(s.event.rejectedAt),
+        isNull(s.event.withdrawnAt),
       ),
     )
     .limit(1);
 
   if (rows.length === 0) return [];
 
+  const memeSource = rows[0].sourceId === sourceId;
   const ailleurs = rows[0].commune ? ` (${rows[0].commune})` : "";
+
   return [
     {
       code: "doublon",
-      detail: `Une autre source annonce déjà « ${event.title} » à la même heure${ailleurs}.`,
+      detail: memeSource
+        ? `Cette source annonce déjà « ${event.title} » à la même heure sous une autre forme.`
+        : `Une autre source annonce déjà « ${event.title} » à la même heure${ailleurs}.`,
     },
   ];
 }
@@ -385,6 +444,72 @@ export async function publishEvent(eventId: string): Promise<void> {
     .update(s.event)
     .set({ publishedAt: new Date(), rejectedAt: null, controles: null })
     .where(and(eq(s.event.id, eventId), isNull(s.event.publishedAt)));
+}
+
+/* --------------------------------------------------- publiées, mais signalées */
+
+export type FlaggedEvent = {
+  id: string;
+  title: string;
+  startsAt: Date;
+  url: string | null;
+  sourceName: string | null;
+  controles: Echec[];
+};
+
+/**
+ * Ce qui est publié mais dont la dernière lecture ne passe plus les contrôles.
+ *
+ * Le contenu affiché reste celui qui avait été vérifié : c'est ce qui empêche une source
+ * devenue mauvaise de réécrire en silence une activité validée. Mais sans cet écran, la
+ * dérive ne se voyait nulle part, `pendingReview` ne listant que le non-publié. Une commune
+ * qui refait son site passerait inaperçue jusqu'à ce que quelqu'un compare à la main.
+ */
+export async function flaggedPublished(limit = 50): Promise<FlaggedEvent[]> {
+  const rows = await db.execute<{
+    id: string;
+    title: string;
+    starts_at: Date;
+    url: string | null;
+    source_name: string | null;
+    controles: Echec[] | null;
+  }>(sql`
+    select e.id, e.title, e.starts_at, e.url, e.controles, src.name as source_name
+    from event e
+    left join source src on src.id = e.source_id
+    where e.published_at is not null
+      and e.rejected_at is null
+      and e.withdrawn_at is null
+      and e.controles is not null
+      and e.starts_at > now()
+    order by e.starts_at asc
+    limit ${limit}
+  `);
+
+  return rows.map((r) => ({
+    id: r.id,
+    title: r.title,
+    startsAt: asDate(r.starts_at),
+    url: r.url,
+    sourceName: r.source_name,
+    controles: r.controles ?? [],
+  }));
+}
+
+/** « J'ai regardé, elle est juste. » Le signalement s'efface, l'activité reste publiée. */
+export async function clearWarnings(eventId: string): Promise<void> {
+  await db.update(s.event).set({ controles: null }).where(eq(s.event.id, eventId));
+}
+
+/**
+ * Retirer de l'agenda une activité publiée.
+ *
+ * On pose `rejectedAt` et non `withdrawnAt` : le second est une observation de la machine,
+ * que le passage suivant défait si la source réannonce l'activité. Une décision prise par
+ * quelqu'un ne doit pas se faire défaire six heures plus tard.
+ */
+export async function withdrawEvent(eventId: string): Promise<void> {
+  await db.update(s.event).set({ rejectedAt: new Date() }).where(eq(s.event.id, eventId));
 }
 
 export async function rejectEvent(eventId: string): Promise<void> {

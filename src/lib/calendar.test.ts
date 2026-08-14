@@ -150,6 +150,50 @@ describe("Filtres", () => {
   });
 });
 
+describe("Une activité que la source n'annonce plus", () => {
+  it("sort de l'agenda", async () => {
+    const alice = await createAccount("Alice");
+    await createEvent({ title: "Fête annulée", retiree: true });
+    await createEvent({ title: "Fête maintenue" });
+
+    expect((await upcomingCalendar(alice.id)).map((e) => e.title)).toEqual([
+      "Fête maintenue",
+    ]);
+  });
+
+  it("reste sous les yeux de qui s'y était inscrit", async () => {
+    const alice = await createAccount("Alice");
+    // Une inscription sans destinataire ne serait visible de personne, pas même de son auteur.
+    const classe = await createCircle(alice);
+    const annulee = await createEvent({ title: "Fête annulée", retiree: true });
+    await declareAttendance(alice.id, { eventId: annulee.id, circleIds: [classe.id] });
+
+    const [entree] = await upcomingCalendar(alice.id);
+    expect(entree.title).toBe("Fête annulée");
+    // La faire disparaître sans un mot serait la pire façon d'annoncer une annulation.
+    expect(entree.retiree).toBe(true);
+  });
+
+  it("ne réapparaît pas chez les autres pour autant", async () => {
+    const alice = await createAccount("Alice");
+    const bob = await createAccount("Bob");
+    const classe = await createCircle(alice);
+    await join(classe, bob);
+
+    const annulee = await createEvent({ title: "Fête annulée", retiree: true });
+    await declareAttendance(alice.id, { eventId: annulee.id, circleIds: [classe.id] });
+
+    expect(await upcomingCalendar(bob.id)).toEqual([]);
+  });
+
+  it("ne compte plus parmi les communes proposées", async () => {
+    await createEvent({ title: "Fête annulée", commune: "Soral", retiree: true });
+    await createEvent({ title: "Fête maintenue", commune: "Lancy" });
+
+    expect(await communesDisponibles()).toEqual(["Lancy"]);
+  });
+});
+
 describe("Filtres prix et inscription", () => {
   it("sépare gratuit, payant et non défini", async () => {
     const alice = await createAccount("Alice");

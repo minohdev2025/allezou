@@ -127,6 +127,8 @@ export async function createEvent(
     commune?: string;
     tarif?: "gratuit" | "payant" | "inconnu";
     acces?: "libre" | "inscription" | "inconnu";
+    /** La source ne l'annonce plus. */
+    retiree?: boolean;
   } = {},
 ): Promise<Event> {
   const startsAt = options.startsAt ?? minutesFromNow(60);
@@ -141,6 +143,7 @@ export async function createEvent(
       commune: options.commune,
       tarif: options.tarif,
       acces: options.acces,
+      withdrawnAt: options.retiree ? new Date() : undefined,
       origin: "parent",
       createdBy: options.by?.id,
       publishedAt: new Date(),

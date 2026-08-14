@@ -41,7 +41,7 @@ import {
   setRole,
 } from "@/lib/circles";
 import { heureDeGeneve } from "@/lib/heure";
-import { correctAndPublish, rejectEvent } from "@/lib/ingest/run";
+import { clearWarnings, correctAndPublish, rejectEvent, withdrawEvent } from "@/lib/ingest/run";
 import {
   ajouterMotCle,
   muteMember,
@@ -457,6 +457,20 @@ export async function basculerAlerteInscription(formData: FormData) {
 export async function ecarterActivite(formData: FormData) {
   await requireRelecteur();
   await rejectEvent(String(formData.get("activite") ?? ""));
+  revalidatePath("/relecture");
+}
+
+/** « J'ai regardé la page d'origine, l'activité est juste. » */
+export async function confirmerActivite(formData: FormData) {
+  await requireRelecteur();
+  await clearWarnings(String(formData.get("activite") ?? ""));
+  revalidatePath("/relecture");
+}
+
+/** Sortir de l'agenda une activité déjà publiée, sans effacer les inscriptions prises. */
+export async function retirerActivite(formData: FormData) {
+  await requireRelecteur();
+  await withdrawEvent(String(formData.get("activite") ?? ""));
   revalidatePath("/relecture");
 }
 

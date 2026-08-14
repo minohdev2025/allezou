@@ -373,6 +373,23 @@ export const event = pgTable(
     /** Écarté à la relecture. Ne réapparaît pas au passage suivant de la source. */
     rejectedAt: timestamp({ withTimezone: true }),
     /**
+     * Dernier passage où la source annonçait encore cette activité.
+     *
+     * C'est ce qui distingue une activité maintenue d'une activité annulée : on ne compare
+     * qu'à ce que la page dit aujourd'hui, et disparaître d'une page ne produisait jusqu'ici
+     * aucun signal.
+     */
+    lastSeenAt: timestamp({ withTimezone: true }),
+    /**
+     * Retirée de l'agenda : la source ne l'annonce plus depuis plusieurs passages, ou un
+     * relecteur l'a retirée à la main.
+     *
+     * Elle n'est pas effacée. Les familles qui s'y étaient inscrites gardent leur
+     * inscription et continuent de la voir, avec la mention qui va bien : effacer la ligne
+     * emporterait leur inscription en silence, par la cascade.
+     */
+    withdrawnAt: timestamp({ withTimezone: true }),
+    /**
      * Quand les alertes ont été envoyées pour cette activité.
      *
      * Une source repasse toutes les six heures et met à jour ce qu'elle a déjà publié : sans

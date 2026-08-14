@@ -1,9 +1,14 @@
 import Link from "next/link";
 
-import { pendingReview, sourceHealth } from "@/lib/ingest/run";
+import { flaggedPublished, pendingReview, sourceHealth } from "@/lib/ingest/run";
 import { jobStatus } from "@/lib/scheduler";
 import { requireRelecteur } from "@/lib/session";
-import { ecarterActivite, publierActivite } from "../actions";
+import {
+  confirmerActivite,
+  ecarterActivite,
+  publierActivite,
+  retirerActivite,
+} from "../actions";
 import { Bouton, Carte, Pastille, Titre, Vide, heureCourte, jourCourt, teinte } from "../ui";
 
 /** « 2026-08-11T22:00 », le format attendu par un champ datetime-local, à l'heure de Genève. */
@@ -52,8 +57,9 @@ const MOTIFS: Record<string, string> = {
  */
 export default async function Relecture() {
   await requireRelecteur();
-  const [attente, sante, taches] = await Promise.all([
+  const [attente, signalees, sante, taches] = await Promise.all([
     pendingReview(50),
+    flaggedPublished(50),
     sourceHealth(),
     jobStatus(),
   ]);
@@ -122,6 +128,82 @@ export default async function Relecture() {
           ))}
         </ul>
       </section>
+
+      {/*
+        Les signalées d'abord : elles sont déjà à l'agenda, donc déjà sous les yeux des
+        parents. Une activité en attente, elle, n'a encore trompé personne.
+      */}
+      {signalees.length > 0 ? (
+        <section className="mb-8">
+          <h2 className="titre mb-1 text-lg font-bold">
+            {signalees.length === 1
+              ? "1 publiée que la source ne confirme plus"
+              : `${signalees.length} publiées que la source ne confirme plus`}
+          </h2>
+          <p className="mb-3 text-sm leading-snug text-[color:var(--color-doux)]">
+            Elles restent affichées telles qu&apos;elles ont été vérifiées : la nouvelle lecture
+            n&apos;a pas remplacé l&apos;ancienne. Ouvrez la page d&apos;origine pour trancher.
+          </p>
+
+          <ul className="space-y-3">
+            {signalees.map((activite) => {
+              const date = jourCourt(activite.startsAt);
+              return (
+                <li key={activite.id}>
+                  <Carte accent="ambre">
+                    <p className="mb-1 text-sm text-[color:var(--color-doux)]">
+                      {activite.sourceName} · {date.jour} {date.nombre} {date.mois}
+                    </p>
+                    <p className="titre mb-2 font-bold leading-tight">{activite.title}</p>
+
+                    <ul
+                      className="mb-3 space-y-1 rounded-2xl px-4 py-3 text-sm leading-snug"
+                      style={{ background: "var(--color-ambre-doux)" }}
+                    >
+                      {activite.controles.map((controle) => (
+                        <li key={controle.code}>
+                          <span className="font-bold">
+                            {MOTIFS[controle.code] ?? controle.code}
+                          </span>{" "}
+                          : {controle.detail}
+                        </li>
+                      ))}
+                    </ul>
+
+                    {activite.url ? (
+                      <p className="mb-3 text-sm">
+                        <a
+                          href={activite.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="underline underline-offset-4"
+                        >
+                          Voir la page d&apos;origine ↗
+                        </a>
+                      </p>
+                    ) : null}
+
+                    <div className="flex gap-2">
+                      <form action={confirmerActivite} className="flex-1">
+                        <input type="hidden" name="activite" value={activite.id} />
+                        <Bouton variante="second" className="!py-2.5 !text-base">
+                          Elle est juste
+                        </Bouton>
+                      </form>
+                      <form action={retirerActivite} className="flex-1">
+                        <input type="hidden" name="activite" value={activite.id} />
+                        <Bouton variante="second" className="!py-2.5 !text-base">
+                          La retirer
+                        </Bouton>
+                      </form>
+                    </div>
+                  </Carte>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      ) : null}
 
       <h2 className="titre mb-3 text-lg font-bold">
         {attente.length === 0
