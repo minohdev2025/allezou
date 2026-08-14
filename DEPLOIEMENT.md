@@ -60,14 +60,10 @@ et [hstspreload.org](https://hstspreload.org) n'exige de redirection que si le p
 
 À installer : Docker avec le module Compose, et Caddy.
 
-**Avant Caddy, libérer le 443.** L'image du VPS y répond déjà, avec un certificat auto-signé
-`CN=localhost` — c'est ce qui fait échouer la vérification d'éligibilité de hstspreload.org
-([PRODUCTION.md §1](PRODUCTION.md)). Voir qui occupe le port, puis l'arrêter :
-
-```bash
-sudo ss -lntp | grep :443
-sudo systemctl disable --now nginx    # ou apache2, selon ce que la commande révèle
-```
+Le VPS n'écoute que sur **22** : ni 80 ni 443 ne répondent tant que Caddy n'est pas installé,
+et c'est l'état voulu. Si un jour Caddy n'obtient pas son certificat, la première question est
+celle-là — `sudo ss -lntp | grep -E ':(80|443)'` dit qui occupe les ports, et deux services sur
+443 suffisent à faire échouer le défi TLS-ALPN.
 
 ## 1. Variables
 

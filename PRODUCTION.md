@@ -72,12 +72,13 @@ ligne. Les conditions sont remplies par la configuration prévue :
   ([DEPLOIEMENT.md](DEPLOIEMENT.md)), ce qui satisfait la condition sans rien faire, et
   n'empêche pas Caddy d'obtenir son certificat (défi TLS-ALPN sur 443).
 
-**Soumettre avant le déploiement ne sert à rien** : le formulaire répond aujourd'hui « Invalid
-Certificate Chain », parce que ce qui écoute sur le 443 du VPS est le serveur par défaut de
-l'image, avec un certificat auto-signé `CN=localhost`. Rien à corriger côté application — il
-faut simplement libérer le port et laisser Caddy demander le sien. L'ordre est donc : arrêter ce
-qui occupe 443, déployer, vérifier la chaîne (`openssl s_client -connect allezou.ch:443
--servername allezou.ch`, ou [SSL Labs](https://www.ssllabs.com/ssltest/)), et soumettre ensuite.
+**Soumettre avant le déploiement ne sert à rien**, et le message d'erreur induit en erreur :
+« Invalid Certificate Chain » ne parle pas du VPS. `allezou.ch` résout encore vers un
+hébergement Infomaniak — un Apache qui présente un certificat auto-signé `CN=localhost` —
+tandis que le VPS n'écoute que sur 22. L'ordre est donc : repointer la zone sur le VPS,
+déployer derrière Caddy, vérifier la chaîne (`openssl s_client -connect allezou.ch:443
+-servername allezou.ch`, ou [SSL Labs](https://www.ssllabs.com/ssltest/)), et soumettre
+ensuite.
 
 Entre la mise en ligne et l'entrée effective dans les navigateurs — quelques semaines —
 la toute première visite d'un parent reste théoriquement interceptable. Sur un pilote de
