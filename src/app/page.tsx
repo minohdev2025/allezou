@@ -182,7 +182,14 @@ const GESTES: { emoji: string; accent: Teinte; titre: string; texte: string }[] 
     accent: "violet",
     titre: "Suivre l'agenda du canton",
     texte:
-      "Les activités pour les familles à Genève et dans les communes. Vous cochez celles où vous irez, et vous voyez qui de vos cercles y sera aussi.",
+      "Les activités pour les familles à Genève et dans les communes. Leurs sites sont relevés plusieurs fois par jour, vous n'avez rien à surveiller. Vous cochez celles où vous irez, et vous voyez qui de vos cercles y sera aussi.",
+  },
+  {
+    emoji: "🔔",
+    accent: "rose",
+    titre: "Être prévenu de ce qui vous intéresse",
+    texte:
+      "Vous choisissez vos mots : « piscine », « contes », « judo ». Dès qu'une activité qui en contient un paraît à l'agenda, votre téléphone vous le dit. Vous pouvez aussi demander à être averti de toutes les activités sur inscription, où s'y prendre tard revient souvent à ne pas y aller.",
   },
 ];
 
