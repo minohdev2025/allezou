@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { currentAccount } from "@/lib/session";
-import { Carte, LienBouton, type Teinte } from "./ui";
+import { accueilMasque, currentAccount } from "@/lib/session";
+import { entrer } from "./actions";
+import { Bouton, Carte, type Teinte } from "./ui";
 
 /**
  * L'accueil public.
@@ -11,10 +12,19 @@ import { Carte, LienBouton, type Teinte } from "./ui";
  * le lien n'a pas de compte et n'a rien lu. La faire tomber sur un formulaire de connexion
  * lui demandait son adresse électronique avant de lui avoir dit à quoi elle sert.
  *
- * Qui est déjà connecté n'a rien à faire ici et repart vers l'écran des sorties.
+ * Qui est déjà connecté n'a rien à faire ici et repart vers l'écran des sorties. Qui a
+ * coché « ne plus afficher » aussi : la page a fait son travail une fois, et on ne redemande
+ * pas à quelqu'un de relire une présentation à chaque connexion. `/?revoir=1` la ramène.
  */
-export default async function Accueil() {
+export default async function Accueil({
+  searchParams,
+}: {
+  searchParams: Promise<{ revoir?: string }>;
+}) {
   if (await currentAccount()) redirect("/maintenant");
+
+  const { revoir } = await searchParams;
+  if (!revoir && (await accueilMasque())) redirect("/connexion");
 
   return (
     <main className="apparait">
@@ -78,9 +88,21 @@ export default async function Accueil() {
         L&apos;agenda se remplit tout seul depuis les sites des communes genevoises.
       </p>
 
-      <LienBouton href="/connexion" variante="principal">
-        Entrer
-      </LienBouton>
+      <Carte accent="vert">
+        <form action={entrer} className="space-y-4">
+          <label className="flex cursor-pointer items-start gap-3">
+            <input
+              type="checkbox"
+              name="ne_plus_afficher"
+              className="mt-0.5 h-6 w-6 shrink-0 accent-[color:var(--color-vert)]"
+            />
+            <span className="leading-snug">
+              Ne plus afficher cette page sur cet appareil
+            </span>
+          </label>
+          <Bouton type="submit">Entrer</Bouton>
+        </form>
+      </Carte>
 
       <p className="mt-8 text-center text-sm">
         <Link

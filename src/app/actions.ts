@@ -80,11 +80,25 @@ import {
   COOKIE_DEFI,
   COOKIE_INVITATION,
   clearSessionCookie,
+  masquerAccueil,
   readSessionToken,
   requireAccount,
   requireRelecteur,
   setSessionCookie,
 } from "@/lib/session";
+
+/* -------------------------------------------------------------------- accueil */
+
+/**
+ * Quitter l'accueil pour la connexion, en retenant au passage qu'on ne veut plus le revoir.
+ *
+ * La case est dans le même formulaire que le bouton : cochée seule, elle n'aurait rien
+ * enregistré sans JavaScript, et l'application doit tenir sans lui.
+ */
+export async function entrer(formData: FormData) {
+  if (formData.get("ne_plus_afficher")) await masquerAccueil();
+  redirect("/connexion");
+}
 
 /* ------------------------------------------------------------------ connexion */
 

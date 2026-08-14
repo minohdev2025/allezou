@@ -27,7 +27,33 @@ export const COOKIE_INVITATION = "totir_invitation";
  */
 export const COOKIE_DEFI = "totir_defi";
 
+/**
+ * Marque que l'accueil a été lu et qu'on ne veut plus le revoir.
+ *
+ * Il n'y a pas de compte à ce moment-là : la personne n'est pas connectée, c'est justement
+ * pourquoi elle voit cette page. Le réglage vit donc dans un témoin de navigation, propre à
+ * cet appareil, et `/?revoir=1` ramène la page à qui la redemande.
+ */
+export const COOKIE_ACCUEIL = "totir_accueil";
+
 const SIX_MOIS_EN_SECONDES = 180 * 24 * 60 * 60;
+const UN_AN_EN_SECONDES = 365 * 24 * 60 * 60;
+
+export async function masquerAccueil(): Promise<void> {
+  const store = await cookies();
+  store.set(COOKIE_ACCUEIL, "lu", {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: UN_AN_EN_SECONDES,
+  });
+}
+
+export async function accueilMasque(): Promise<boolean> {
+  const store = await cookies();
+  return store.get(COOKIE_ACCUEIL)?.value === "lu";
+}
 
 export async function setSessionCookie(token: string): Promise<void> {
   const store = await cookies();

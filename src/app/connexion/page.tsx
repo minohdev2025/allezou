@@ -85,14 +85,26 @@ export default async function Connexion({
         </form>
       </Carte>
 
-      <p className="mt-8 text-center text-sm">
-        <Link
-          href="/donnees"
-          className="font-semibold text-[color:var(--color-doux)] underline underline-offset-4"
-        >
-          Ce qu&apos;Allezou enregistre, et qui peut le voir
-        </Link>
-      </p>
+      <div className="mt-8 space-y-3 text-center text-sm">
+        {/* `revoir` passe outre la case « ne plus afficher » : rien de ce qu'on coche ici
+            ne doit fermer une porte définitivement. */}
+        <p>
+          <Link
+            href="/?revoir=1"
+            className="font-semibold text-[color:var(--color-doux)] underline underline-offset-4"
+          >
+            À quoi sert Allezou ?
+          </Link>
+        </p>
+        <p>
+          <Link
+            href="/donnees"
+            className="font-semibold text-[color:var(--color-doux)] underline underline-offset-4"
+          >
+            Ce qu&apos;Allezou enregistre, et qui peut le voir
+          </Link>
+        </p>
+      </div>
     </main>
   );
 }
