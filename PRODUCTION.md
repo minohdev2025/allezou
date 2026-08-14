@@ -80,6 +80,12 @@ déployer derrière Caddy, vérifier la chaîne (`openssl s_client -connect alle
 -servername allezou.ch`, ou [SSL Labs](https://www.ssllabs.com/ssltest/)), et soumettre
 ensuite.
 
+**En ligne depuis le 14 août 2026** : certificat Let's Encrypt obtenu par défi TLS-ALPN, chaîne
+complète jusqu'à ISRG Root X2, `Verify return code: 0`. Il reste `www.allezou.ch`, qui pointe
+encore sur l'ancien hébergement : l'en-tête porte `includeSubDomains`, et préchargerait donc une
+promesse que ce sous-domaine ne tient pas. Le faire pointer sur le VPS, où
+[caddy/Caddyfile](caddy/Caddyfile) le redirige vers l'apex, **avant** de soumettre.
+
 Entre la mise en ligne et l'entrée effective dans les navigateurs — quelques semaines —
 la toute première visite d'un parent reste théoriquement interceptable. Sur un pilote de
 quelques classes, c'est un risque de laboratoire ; il cesse d'en être un si l'usage s'étend.

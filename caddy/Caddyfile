@@ -27,3 +27,17 @@ allezou.ch {
 		}
 	}
 }
+
+# `www` ne sert à rien d'autre qu'à ne pas casser : l'en-tête HSTS porte `includeSubDomains`,
+# et une fois le domaine préchargé, un `www` sans HTTPS valide devient une impasse pour qui
+# l'a tapé par habitude. Ce bloc ne prend que lorsque `www.allezou.ch` pointe sur le VPS —
+# sinon Caddy échoue à obtenir son certificat et réessaie en boucle.
+www.allezou.ch {
+	tls {
+		issuer acme {
+			disable_http_challenge
+		}
+	}
+
+	redir https://allezou.ch{uri} permanent
+}

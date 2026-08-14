@@ -70,6 +70,13 @@ sudo ufw allow 22/tcp && sudo ufw allow 443/tcp && sudo ufw --force enable
 
 Ouvrir 22 **avant** d'activer le pare-feu, sinon la session en cours est la dernière.
 
+**Et il y a un second pare-feu.** ufw ne filtre que sur la machine ; le VPS Infomaniak en a un
+autre en amont, dans le manager — *VPS → allezou → Firewall* — qui ne laisse passer que 22 à la
+livraison. Un port fermé là se manifeste par un **délai d'attente**, jamais par un refus : c'est
+ce qui a fait échouer les premiers défis ACME alors que `ss` montrait Caddy à l'écoute et que
+`ufw status` autorisait le 443. Ajouter une règle **TCP 443, toutes les IP**, en choisissant
+« Sélection manuelle » — un préréglage applicatif ouvrirait le 80 avec.
+
 Le VPS n'écoute que sur **22** : ni 80 ni 443 ne répondent tant que Caddy n'est pas installé,
 et c'est l'état voulu. Si un jour Caddy n'obtient pas son certificat, la première question est
 celle-là — `sudo ss -lntp | grep -E ':(80|443)'` dit qui occupe les ports, et deux services sur
