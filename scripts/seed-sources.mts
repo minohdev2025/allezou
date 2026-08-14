@@ -9,6 +9,8 @@
  *
  * Les communes (Lancy, Onex, Carouge) n'exposent ni JSON-LD, ni iCal, ni RSS — vérifié.
  * Elles passent donc par une lecture MiniMax M3 et attendent une relecture humaine.
+ * Leurs agendas paginent en `?page=N` à partir de zéro : `maxPages` dit combien de pages
+ * lire, réunies en un seul appel au modèle.
  * Deux communes suffisent pour un quart d'heure de relecture par semaine ; en ajouter
  * demande d'abord d'augmenter ce budget, jamais l'inverse.
  */
@@ -36,7 +38,7 @@ const SOURCES = [
     kind: "html_ai" as const,
     commune: "Lancy",
     autoPublish: false,
-    config: null,
+    config: { maxPages: 3 },
   },
   {
     name: "Onex — agenda communal",
@@ -44,7 +46,10 @@ const SOURCES = [
     kind: "html_ai" as const,
     commune: "Onex",
     autoPublish: false,
-    config: null,
+    // Treize pages de neuf entrées, dont la première ne contient guère que des cours de
+    // fitness pour adultes : s'arrêter là donnait une source « ok » qui ne rapportait rien.
+    // Six pages couvrent environ deux mois, ce que la relecture hebdomadaire peut absorber.
+    config: { maxPages: 6 },
   },
 ];
 

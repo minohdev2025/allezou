@@ -9,7 +9,12 @@ import { beforeEach, describe, expect, it } from "vitest";
 
 import { db } from "@/lib/db";
 import { eventsFromHtml } from "@/lib/ingest/jsonld";
-import { htmlToText } from "@/lib/ingest/minimax";
+import {
+  eventsFromPayload,
+  htmlToText,
+  parseModelJson,
+  sansPartieCommune,
+} from "@/lib/ingest/minimax";
 import {
   pendingReview,
   publishEvent,
@@ -110,10 +115,10 @@ describe("Lecture du JSON-LD (format réel de geneve.ch)", () => {
     expect(event.minAge).toBe(3);
     expect(event.maxAge).toBe(8);
   });
+});
 
-  it("extrait le JSON d'une réponse de modèle bavard", async () => {
-    const { parseModelJson } = await import("@/lib/ingest/minimax");
-
+describe("Lecture d'une page par MiniMax", () => {
+  it("extrait le JSON d'une réponse de modèle bavard", () => {
     // Bloc de raisonnement avant, phrase après, accolade dans le texte : tout doit tomber.
     const reponse = `<think>Je regarde la page…</think>
       \`\`\`json
@@ -129,6 +134,137 @@ describe("Lecture du JSON-LD (format réel de geneve.ch)", () => {
   it("réduit une page à son texte pour la lecture par l'IA", () => {
     const texte = htmlToText("<div><script>var a=1</script><h1>Atelier</h1><p>14h00</p></div>");
     expect(texte).toBe("Atelier 14h00");
+  });
+
+  /*
+    Ce qui a mis Lancy en échec en production : le modèle avait répondu par le tableau nu,
+    forme que le schéma accepte pourtant. Ne chercher que l'accolade rendait le premier
+    événement du tableau, et plus rien ne pouvait le valider.
+  */
+  it("lit un tableau nu autant que l'objet attendu", () => {
+    const reponse = `<think>Voyons…</think>
+      [{"titre":"Aquafitness","debut":"2026-07-06T00:00:00+02:00"},
+       {"titre":"Biblio-Bingo","debut":"2026-08-20T10:00:00+02:00"}]`;
+
+    expect(parseModelJson(reponse)).toEqual([
+      { titre: "Aquafitness", debut: "2026-07-06T00:00:00+02:00" },
+      { titre: "Biblio-Bingo", debut: "2026-08-20T10:00:00+02:00" },
+    ]);
+  });
+
+  it("passe outre une énumération en prose avant la réponse", () => {
+    // Un crochet ouvert par le texte n'est pas un tableau : s'y arrêter ferait échouer
+    // toute la page pour une tournure de phrase.
+    const reponse = `Voici [les activités] retenues :
+      {"evenements":[{"titre":"Atelier","debut":"2026-01-04T14:00:00+01:00"}]}`;
+
+    expect(parseModelJson(reponse)).toEqual({
+      evenements: [{ titre: "Atelier", debut: "2026-01-04T14:00:00+01:00" }],
+    });
+  });
+
+  it("distingue une réponse tronquée d'une réponse vide", () => {
+    // Le raisonnement de M3 mange l'essentiel du quota de sortie : une réponse coupée en
+    // route est un cas courant, et ne se corrige pas comme une page sans événement.
+    expect(() => parseModelJson('{"evenements":[{"titre":"Atelier",')).toThrow(
+      /incomplet/,
+    );
+    expect(() => parseModelJson("La page ne liste aucun événement.")).toThrow(
+      /aucun objet JSON dans la réponse/,
+    );
+  });
+
+  /*
+    Le raisonnement de M3 pèse dix fois la réponse et contient ses brouillons — trente-six
+    objets `titre` pour une page lancéenne. Quand la balise ouvrante manque, c'est un
+    brouillon qui était lu à la place de la réponse.
+  */
+  it("écarte le raisonnement même sans balise ouvrante", () => {
+    const reponse = `Je liste les activités : {"titre":"brouillon","debut":"2026-01-01"}
+      </think>
+      {"evenements":[{"titre":"Atelier","debut":"2026-01-04T14:00:00+01:00"}]}`;
+
+    expect(parseModelJson(reponse)).toEqual({
+      evenements: [{ titre: "Atelier", debut: "2026-01-04T14:00:00+01:00" }],
+    });
+  });
+});
+
+describe("Mise en forme de ce que le modèle a rendu", () => {
+  const MAINTENANT = Date.UTC(2026, 7, 14, 12, 0);
+  const evenements = (brut: unknown) =>
+    eventsFromPayload(brut, "https://www.lancy.ch/agenda", MAINTENANT);
+
+  it("accepte les trois formes de réponse du modèle", () => {
+    const evenement = { titre: "Atelier", debut: "2026-08-20T14:00:00+02:00" };
+
+    expect(evenements({ evenements: [evenement] })).toHaveLength(1);
+    expect(evenements([evenement])).toHaveLength(1);
+    // Une page qui n'annonce qu'une activité se voit répondre par l'objet seul.
+    expect(evenements(evenement)).toHaveLength(1);
+  });
+
+  /*
+    Une exposition ouverte depuis juin, un marché hebdomadaire, un cours qui court jusqu'en
+    septembre : leur début est passé, pas leur intérêt. Mesurer la fenêtre sur le début
+    écartait treize des dix-sept activités lancéennes, dont neuf encore ouvertes.
+  */
+  it("garde une activité commencée mais pas terminée", () => {
+    const [event] = evenements([
+      {
+        titre: "La Maison illustrée",
+        debut: "2026-06-21T00:00:00+02:00",
+        fin: "2026-09-21T00:00:00+02:00",
+      },
+    ]);
+
+    expect(event.title).toBe("La Maison illustrée");
+    expect(event.startsAt.toISOString()).toBe("2026-06-20T22:00:00.000Z");
+  });
+
+  it("écarte ce qui est terminé, sans date, ou trop loin", () => {
+    expect(
+      evenements([
+        { titre: "Fête passée", debut: "2026-06-01T10:00:00+02:00", fin: "2026-08-10T18:00:00+02:00" },
+        { titre: "Sans fin annoncée", debut: "2026-08-10T10:00:00+02:00" },
+        { titre: "Date illisible", debut: "un samedi de septembre" },
+        { titre: "Trop loin", debut: "2028-01-01T10:00:00+01:00" },
+      ]),
+    ).toEqual([]);
+  });
+
+  /*
+    « Invalid input » est tout ce que zod dit d'une union dont aucune branche n'a pris :
+    le message doit nommer la forme reçue, sinon il n'y a rien à chercher.
+  */
+  it("nomme la forme reçue quand la réponse est hors format", () => {
+    expect(() => evenements({ resultats: [] })).toThrow(/objet \{resultats\}/);
+    expect(() => evenements("des activités")).toThrow(/reçu string/);
+  });
+});
+
+describe("Pagination des agendas communaux", () => {
+  // Onex n'affiche que neuf entrées sur cent quinze : le menu, répété à chaque page, pèse
+  // plus lourd que la liste elle-même.
+  const page = (liste: string) => `Menu Accueil Agenda ${liste} Dernière modification`;
+
+  it("ne garde d'une page que ce qui la distingue de la première", () => {
+    expect(sansPartieCommune(page("Atelier du 14"), page("Concert du 20"))).toBe(
+      "Concert du 20",
+    );
+  });
+
+  it("ne coupe pas au milieu d'un mot", () => {
+    // « Aquafitness » et « Aquabike » partagent quatre lettres : couper au caractère près
+    // laisserait « bike » au modèle.
+    expect(
+      sansPartieCommune(page("Atelier Aquafitness"), page("Atelier Aquabike")),
+    ).toBe("Aquabike");
+  });
+
+  it("rend une chaîne vide quand la page ne dit rien de neuf", () => {
+    // Un site qui ignore le paramètre `page`, ou une pagination épuisée : on s'arrête là.
+    expect(sansPartieCommune(page("Atelier du 14"), page("Atelier du 14"))).toBe("");
   });
 });
 

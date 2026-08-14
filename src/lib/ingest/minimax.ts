@@ -21,7 +21,11 @@ import { clamp, parseAgeRange, USER_AGENT, type Adapter, type RawEvent } from ".
 const MINIMAX_URL = "https://api.minimax.io/v1/chat/completions";
 const MINIMAX_MODEL = "MiniMax-M3";
 
-/** Fenêtre de plausibilité : hier au plus tôt, un an au plus tard. */
+/**
+ * Fenêtre de plausibilité. Le futur se mesure sur le début — rien ne commence dans deux
+ * ans. Le passé se mesure sur la fin : une activité commencée en juin et ouverte jusqu'en
+ * septembre est en cours, pas périmée.
+ */
 const FENETRE_PASSE_MS = 24 * 3_600_000;
 const FENETRE_FUTUR_MS = 365 * 24 * 3_600_000;
 
@@ -59,6 +63,10 @@ const extractedPayload = z
     z.object({ événements: listeEvenements }),
     z.object({ events: listeEvenements }),
     listeEvenements.transform((evenements) => ({ evenements })),
+    // Une page qui n'annonce qu'un événement se voit répondre par l'objet seul, sans
+    // enveloppe ni tableau. Placée en dernier, cette forme n'éclipse aucune des autres :
+    // elle exige `titre` et `debut`, qu'aucune enveloppe ne porte à sa racine.
+    extractedEvent.transform((evenement) => ({ evenements: [evenement] })),
   ])
   .transform((v) =>
     "evenements" in v
@@ -99,22 +107,67 @@ export function htmlToText(html: string, max = 30_000): string {
 export function parseModelJson(content: string): unknown {
   const nettoye = content
     .replace(/<think>[\s\S]*?<\/think>/gi, "")
+    // La balise ouvrante manque parfois, la fermante reste. Sans cette ligne, le raisonnement
+    // survit au nettoyage — et il pèse dix fois la réponse, brouillons JSON compris : c'est
+    // un brouillon qui serait lu à la place de la réponse.
+    .replace(/^[\s\S]*?<\/think>/i, "")
     .replace(/<think>[\s\S]*/i, "")
     .replace(/```(?:json)?/gi, "")
     .trim();
 
-  const debut = nettoye.indexOf("{");
-  if (debut === -1) throw new Error("MiniMax : aucun objet JSON dans la réponse");
+  // Le modèle répond tantôt par l'objet demandé, tantôt par le tableau nu — forme que le
+  // schéma accepte plus bas. Ne chercher que l'accolade rendait alors le premier événement
+  // du tableau, que plus rien ne pouvait valider.
+  //
+  // On essaie chaque ouvrant dans l'ordre et on garde le premier qui se lit vraiment : une
+  // énumération en prose (« voici [les activités] : ») ouvre un crochet qui n'est pas du
+  // JSON, et s'arrêter au premier ouvrant venu ferait échouer la page entière sur ce détail.
+  let ouvrants = 0;
+  let complets = 0;
 
-  // On suit la profondeur des accolades plutôt que de prendre jusqu'à la dernière : le
-  // modèle ajoute parfois une phrase après l'objet, et une accolade dans cette phrase
-  // suffisait à rendre l'extraction invalide. Les accolades entre guillemets sont ignorées.
+  for (let debut = 0; debut < nettoye.length; debut += 1) {
+    const ouvrant = nettoye[debut];
+    if (ouvrant !== "{" && ouvrant !== "[") continue;
+
+    const bloc = blocEquilibre(nettoye, debut);
+    if (bloc) {
+      complets += 1;
+      try {
+        return JSON.parse(bloc);
+      } catch {
+        // Du texte qui ressemblait à du JSON : on continue plus loin.
+      }
+    }
+
+    ouvrants += 1;
+    // Garde-fou : un raisonnement qui aurait échappé au nettoyage contient des dizaines de
+    // brouillons, et chaque tentative relit la réponse. Au-delà, ce n'est plus une réponse.
+    if (ouvrants > 20) break;
+  }
+
+  // Les trois cas ne se diagnostiquent pas pareil : rien à lire, une réponse coupée en
+  // route — le raisonnement de M3 mange l'essentiel du quota de sortie —, ou du texte qui
+  // ouvrait une accolade sans jamais former du JSON.
+  if (ouvrants === 0) throw new Error("MiniMax : aucun objet JSON dans la réponse");
+  if (complets === 0) {
+    throw new Error("MiniMax : objet JSON incomplet dans la réponse — réponse coupée ?");
+  }
+  throw new Error("MiniMax : aucun objet JSON lisible dans la réponse");
+}
+
+/**
+ * Rend le bloc JSON qui s'ouvre à `debut`, accolades et crochets équilibrés, ou `null` s'il
+ * ne se referme jamais. On suit la profondeur plutôt que de prendre jusqu'au dernier
+ * caractère : le modèle ajoute parfois une phrase après l'objet, et une accolade dans cette
+ * phrase suffisait à rendre l'extraction invalide. Ce qui est entre guillemets est ignoré.
+ */
+function blocEquilibre(texte: string, debut: number): string | null {
   let profondeur = 0;
   let dansUneChaine = false;
   let echappe = false;
 
-  for (let i = debut; i < nettoye.length; i += 1) {
-    const c = nettoye[i];
+  for (let i = debut; i < texte.length; i += 1) {
+    const c = texte[i];
 
     if (dansUneChaine) {
       if (echappe) echappe = false;
@@ -124,14 +177,14 @@ export function parseModelJson(content: string): unknown {
     }
 
     if (c === '"') dansUneChaine = true;
-    else if (c === "{") profondeur += 1;
-    else if (c === "}") {
+    else if (c === "{" || c === "[") profondeur += 1;
+    else if (c === "}" || c === "]") {
       profondeur -= 1;
-      if (profondeur === 0) return JSON.parse(nettoye.slice(debut, i + 1));
+      if (profondeur === 0) return texte.slice(debut, i + 1);
     }
   }
 
-  throw new Error("MiniMax : objet JSON incomplet dans la réponse");
+  return null;
 }
 
 const SYSTEME = [
@@ -182,50 +235,158 @@ export async function extractEventsWithMiniMax(
   const content = body.choices?.[0]?.message?.content;
   if (!content) throw new Error("MiniMax : réponse vide");
 
-  const brut = parseModelJson(content);
+  return eventsFromPayload(parseModelJson(content), pageUrl);
+}
+
+/**
+ * Valide ce que le modèle a rendu, puis le met en forme. Fonction pure : c'est elle que
+ * les tests verrouillent.
+ */
+export function eventsFromPayload(
+  brut: unknown,
+  pageUrl: string,
+  maintenant = Date.now(),
+): RawEvent[] {
   const parsed = extractedPayload.safeParse(brut);
   if (!parsed.success) {
-    // L'extrait rend l'erreur exploitable : sans lui, on ne sait pas ce que le modèle a dit.
-    const extrait = JSON.stringify(brut).slice(0, 200);
+    // Sans extrait, on ignore ce que le modèle a dit ; sans la forme reçue, on ignore où
+    // regarder. « Invalid input » est tout ce que zod dit d'une union dont aucune branche
+    // n'a pris, et ne distingue pas une enveloppe absente d'un champ fautif.
+    const forme = Array.isArray(brut)
+      ? `tableau de ${brut.length}`
+      : brut && typeof brut === "object"
+        ? `objet {${Object.keys(brut).slice(0, 8).join(", ")}}`
+        : typeof brut;
+    const detail = parsed.error.issues
+      .slice(0, 3)
+      .map((i) => `${i.path.join(".") || "racine"} : ${i.message}`)
+      .join(" ; ");
     throw new Error(
-      `MiniMax : réponse hors format (${parsed.error.issues[0]?.message}) — ${extrait}`,
+      `MiniMax : réponse hors format — reçu ${forme} — ${detail} — ` +
+        JSON.stringify(brut).slice(0, 500),
     );
   }
 
-  const maintenant = Date.now();
   const events: RawEvent[] = [];
 
-  for (const brut of parsed.data.evenements) {
-    const startsAt = new Date(brut.debut);
+  for (const evenement of parsed.data.evenements) {
+    const startsAt = new Date(evenement.debut);
     if (Number.isNaN(startsAt.getTime())) continue;
+    if (startsAt.getTime() - maintenant > FENETRE_FUTUR_MS) continue;
 
-    const ecart = startsAt.getTime() - maintenant;
-    if (ecart < -FENETRE_PASSE_MS || ecart > FENETRE_FUTUR_MS) continue;
+    const fin = evenement.fin ? new Date(evenement.fin) : undefined;
+    const endsAt = fin && !Number.isNaN(fin.getTime()) ? fin : undefined;
 
-    const endsAt = brut.fin ? new Date(brut.fin) : undefined;
+    // Le passé se mesure sur la fin. Écarter tout ce qui a commencé hier vidait l'agenda
+    // de ses activités régulières : sur dix-sept activités lancéennes, treize tombaient,
+    // dont neuf encore ouvertes — expositions, marchés hebdomadaires, cours de l'année.
+    // Le calendrier sait déjà les présenter comme « en cours ».
+    if ((endsAt ?? startsAt).getTime() - maintenant < -FENETRE_PASSE_MS) continue;
 
     events.push({
       // Le titre et la date font l'identité : beaucoup de pages d'agenda communal
       // renvoient la même URL pour tous leurs événements, qui s'écraseraient sinon.
-      externalId: clamp(`${brut.titre}|${startsAt.toISOString()}`, 200)!,
-      title: clamp(brut.titre, 120)!,
-      description: clamp(brut.description, 280),
+      externalId: clamp(`${evenement.titre}|${startsAt.toISOString()}`, 200)!,
+      title: clamp(evenement.titre, 120)!,
+      description: clamp(evenement.description, 280),
       startsAt,
-      endsAt: endsAt && !Number.isNaN(endsAt.getTime()) ? endsAt : undefined,
-      placeLabel: clamp(brut.lieu, 120),
-      url: clamp(brut.url ?? pageUrl, 500),
-      ...parseAgeRange(brut.age),
+      endsAt,
+      placeLabel: clamp(evenement.lieu, 120),
+      url: clamp(evenement.url ?? pageUrl, 500),
+      ...parseAgeRange(evenement.age),
     });
   }
 
   return events;
 }
 
-export const minimaxAdapter: Adapter = async (source) => {
-  const html = await fetch(source.url, { headers: { "User-Agent": USER_AGENT } }).then((r) => {
-    if (!r.ok) throw new Error(`${source.url} : HTTP ${r.status}`);
-    return r.text();
-  });
+type MiniMaxConfig = {
+  /**
+   * Nombre de pages de liste à lire. Les pages sont réunies en un seul appel au modèle :
+   * une page de plus coûte quelques milliers de caractères de contexte, pas un appel.
+   */
+  maxPages?: number;
+};
 
-  return extractEventsWithMiniMax(htmlToText(html), source.url);
+/**
+ * Ne garde d'une page que ce qui la distingue de la première. Menu de navigation et pied
+ * de page se répètent à l'identique et pèsent plus lourd que la liste d'événements
+ * elle-même ; les répéter noierait les activités dans le décor du site.
+ *
+ * Rend une chaîne vide quand la page n'apporte rien de neuf — c'est ainsi qu'on reconnaît
+ * un site qui ignore le paramètre `page`, ou une pagination épuisée.
+ */
+export function sansPartieCommune(reference: string, texte: string): string {
+  let debut = 0;
+  while (debut < reference.length && debut < texte.length && reference[debut] === texte[debut]) {
+    debut += 1;
+  }
+
+  let fin = 0;
+  while (
+    fin < reference.length - debut &&
+    fin < texte.length - debut &&
+    reference[reference.length - 1 - fin] === texte[texte.length - 1 - fin]
+  ) {
+    fin += 1;
+  }
+
+  // Page identique à la première : rien de neuf, et rien à reculer.
+  if (debut >= texte.length - fin) return "";
+
+  // Les deux coupes reculent jusqu'au blanc le plus proche. « Aquafitness » et « Aquabike »
+  // partagent quatre lettres, que la coupe au caractère près retirerait au titre de la
+  // seconde page : garder un mot de trop ne coûte rien, en amputer un fait lire une
+  // activité de travers.
+  while (debut > 0 && !/\s/.test(texte[debut - 1])) debut -= 1;
+  while (fin > 0 && !/\s/.test(texte[texte.length - fin])) fin -= 1;
+
+  return texte.slice(debut, texte.length - fin).trim();
+}
+
+/**
+ * Les agendas communaux paginent : Onex n'affiche que neuf entrées sur cent quinze, Lancy
+ * en garde autant pour la page suivante. Lire la seule première page revenait à ignorer
+ * l'essentiel de l'agenda — et, à Onex, à ne voir qu'une page de cours de fitness pour
+ * adultes que le modèle écarte à raison, d'où une source « ok » qui ne rapportait rien.
+ */
+async function lirePages(url: string, maxPages: number): Promise<string> {
+  const pages: string[] = [];
+
+  for (let page = 0; page < maxPages; page += 1) {
+    const pageUrl = new URL(url);
+    // Convention des deux communes, et déjà celle de l'adaptateur JSON-LD : la première
+    // page est l'URL nue, les suivantes portent ?page=1, ?page=2…
+    if (page > 0) pageUrl.searchParams.set("page", String(page));
+
+    // La première page fait la source : si elle tombe, la source a échoué. Les suivantes
+    // sont un supplément — une pagination épuisée ne répond pas toujours par un 200, et un
+    // réseau capricieux ne doit pas faire perdre les pages déjà lues.
+    let reponse: Response;
+    try {
+      reponse = await fetch(pageUrl, { headers: { "User-Agent": USER_AGENT } });
+    } catch (erreur) {
+      if (page === 0) throw erreur;
+      break;
+    }
+
+    if (!reponse.ok) {
+      if (page === 0) throw new Error(`${url} : HTTP ${reponse.status}`);
+      break;
+    }
+
+    const texte = htmlToText(await reponse.text());
+    const utile = page === 0 ? texte : sansPartieCommune(pages[0], texte);
+    if (!utile) break;
+    pages.push(utile);
+  }
+
+  return pages.join("\n\n---\n\n").slice(0, 30_000);
+}
+
+export const minimaxAdapter: Adapter = async (source) => {
+  const config = (source.config ?? {}) as MiniMaxConfig;
+  const maxPages = Math.min(Math.max(config.maxPages ?? 3, 1), 15);
+
+  return extractEventsWithMiniMax(await lirePages(source.url, maxPages), source.url);
 };
