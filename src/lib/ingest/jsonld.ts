@@ -7,6 +7,7 @@
  * la donnée structurée — aucune interprétation, aucune date inventée.
  */
 
+import { lireTarifEtAcces, type Tarif } from "./tarif";
 import { clamp, parseAgeRange, USER_AGENT, type Adapter, type RawEvent } from "./types";
 
 type JsonLdConfig = {
@@ -15,6 +16,8 @@ type JsonLdConfig = {
   /** Nombre de pages de liste à parcourir. Volontairement bas : on veut les prochains jours. */
   maxPages?: number;
 };
+
+type Offre = { price?: string | number; priceCurrency?: string };
 
 type JsonLdEvent = {
   "@type"?: string;
@@ -25,7 +28,27 @@ type JsonLdEvent = {
   url?: string;
   typicalAgeRange?: string;
   location?: { name?: string; address?: { streetAddress?: string } };
+  isAccessibleForFree?: boolean;
+  offers?: Offre | Offre[];
 };
+
+/**
+ * Ce que schema.org déclare du prix, quand il le déclare. Rend `null` quand la fiche n'en
+ * dit rien : c'est alors au texte de répondre, et à lui seul.
+ */
+function tarifDeclare(event: JsonLdEvent): Tarif | null {
+  if (typeof event.isAccessibleForFree === "boolean") {
+    return event.isAccessibleForFree ? "gratuit" : "payant";
+  }
+
+  const montants = [event.offers ?? []]
+    .flat()
+    .map((offre) => Number(offre?.price))
+    .filter((montant) => Number.isFinite(montant));
+
+  if (montants.length === 0) return null;
+  return montants.some((montant) => montant > 0) ? "payant" : "gratuit";
+}
 
 function extractJsonLd(html: string): unknown[] {
   const blocks = html.matchAll(
@@ -83,6 +106,8 @@ function toRawEvent(event: JsonLdEvent, pageUrl: string): RawEvent | null {
     ? parseAgeRange(event.typicalAgeRange)
     : parseAgeRange(event.description);
 
+  const lu = lireTarifEtAcces(event.name, event.description);
+
   return {
     externalId: event.url ?? pageUrl,
     title: clamp(event.name, 120)!,
@@ -92,6 +117,9 @@ function toRawEvent(event: JsonLdEvent, pageUrl: string): RawEvent | null {
     placeLabel: clamp(lieu, 120),
     url: clamp(event.url ?? pageUrl, 500),
     ...age,
+    // Ce que la fiche déclare l'emporte sur ce que sa description raconte.
+    tarif: tarifDeclare(event) ?? lu.tarif,
+    acces: lu.acces,
   };
 }
 

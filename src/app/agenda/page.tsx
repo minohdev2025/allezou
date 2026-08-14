@@ -9,6 +9,14 @@ import {
   type CalendarEntry,
   type Fenetre,
 } from "@/lib/calendar";
+import {
+  ACCES,
+  LIBELLES_ACCES,
+  LIBELLES_TARIF,
+  TARIFS,
+  type Acces,
+  type Tarif,
+} from "@/lib/ingest/tarif";
 import { requireAccount } from "@/lib/session";
 import {
   Jeton,
@@ -24,7 +32,14 @@ import {
   teinte,
 } from "../ui";
 
-type Params = { quand?: string; age?: string; commune?: string; cercle?: string };
+type Params = {
+  quand?: string;
+  age?: string;
+  commune?: string;
+  cercle?: string;
+  tarif?: string;
+  acces?: string;
+};
 
 /** Chaque filtre est un lien : l'agenda reste utilisable sans JavaScript, et se partage. */
 function lien(actuel: Params, changement: Partial<Params>): string {
@@ -88,6 +103,12 @@ export default async function Agenda({
     : "quinzaine";
   const age = params.age ? Number(params.age) : undefined;
   const avecMonCercle = params.cercle === "1";
+  const tarif = (TARIFS as readonly string[]).includes(params.tarif ?? "")
+    ? (params.tarif as Tarif)
+    : undefined;
+  const acces = (ACCES as readonly string[]).includes(params.acces ?? "")
+    ? (params.acces as Acces)
+    : undefined;
 
   const [entrees, communes] = await Promise.all([
     upcomingCalendar(account.id, {
@@ -95,6 +116,8 @@ export default async function Agenda({
       age: Number.isFinite(age) ? age : undefined,
       commune: params.commune,
       avecMonCercle,
+      tarif,
+      acces,
     }),
     communesDisponibles(),
   ]);
@@ -140,9 +163,17 @@ export default async function Agenda({
           qu'on ne devine pas. Et le bloc s'ouvre de lui-même dès qu'un de ces filtres est
           actif : on ne cache jamais un filtre en cours.
         */}
-        <details open={age !== undefined || Boolean(params.commune) || avecMonCercle}>
+        <details
+          open={
+            age !== undefined ||
+            Boolean(params.commune) ||
+            avecMonCercle ||
+            Boolean(tarif) ||
+            Boolean(acces)
+          }
+        >
           <summary className="cursor-pointer py-1 text-sm font-bold text-[color:var(--color-doux)]">
-            Âge, commune, qui y va
+            Âge, commune, prix, qui y va
           </summary>
 
           <div className="mt-2 space-y-2">
@@ -178,6 +209,35 @@ export default async function Agenda({
           </Rangee>
         ) : null}
 
+            {/*
+              Le prix et l'inscription se filtrent séparément : « gratuit » ne dit rien de
+              l'inscription, et une activité gratuite sur inscription se rate aussi bien
+              qu'une payante. « Non défini » est une puce comme les autres, parce que c'est
+              l'état d'une bonne moitié des activités communales et qu'un parent doit pouvoir
+              aller y voir plutôt que de les croire gratuites.
+            */}
+            <Rangee>
+              <Puce href={lien(params, { tarif: undefined })} actif={!tarif}>
+                Tous les prix
+              </Puce>
+              {TARIFS.map((t) => (
+                <Puce key={t} href={lien(params, { tarif: t })} actif={tarif === t}>
+                  {LIBELLES_TARIF[t]}
+                </Puce>
+              ))}
+            </Rangee>
+
+            <Rangee>
+              <Puce href={lien(params, { acces: undefined })} actif={!acces}>
+                Avec ou sans inscription
+              </Puce>
+              {ACCES.map((a) => (
+                <Puce key={a} href={lien(params, { acces: a })} actif={acces === a}>
+                  {LIBELLES_ACCES[a]}
+                </Puce>
+              ))}
+            </Rangee>
+
             <Rangee>
               <Puce
                 href={lien(params, { cercle: avecMonCercle ? undefined : "1" })}
@@ -196,7 +256,7 @@ export default async function Agenda({
 
       {entrees.length === 0 ? (
         <Vide emoji="🗓️" titre="Rien ne correspond">
-          {avecMonCercle || age !== undefined || params.commune ? (
+          {avecMonCercle || age !== undefined || params.commune || tarif || acces ? (
             <p>
               Essayez d&apos;élargir les filtres, ou{" "}
               <Link href="/agenda" className="font-bold underline underline-offset-4">
@@ -343,8 +403,22 @@ function LigneActivite({
             </span>
           ) : null}
 
-          {entree.ageLabel || entree.commune ? (
+          {/*
+            « Non défini » ne porte pas d'étiquette : la moitié des activités communales
+            n'annoncent pas leur prix, et une pastille grise sur une ligne sur deux dirait
+            surtout que l'agenda ne sait rien. C'est aux filtres de servir à ça.
+          */}
+          {entree.ageLabel || entree.commune || entree.tarif !== "inconnu" ||
+          entree.acces === "inscription" ? (
             <span className="mt-1.5 flex flex-wrap gap-1.5">
+              {entree.tarif !== "inconnu" ? (
+                <Pastille couleur={entree.tarif === "gratuit" ? "vert" : "violet"}>
+                  {LIBELLES_TARIF[entree.tarif]}
+                </Pastille>
+              ) : null}
+              {entree.acces === "inscription" ? (
+                <Pastille couleur="corail">Sur inscription</Pastille>
+              ) : null}
               {entree.ageLabel ? <Pastille couleur="ambre">{entree.ageLabel}</Pastille> : null}
               {entree.commune ? <Pastille couleur="bleu">{entree.commune}</Pastille> : null}
             </span>

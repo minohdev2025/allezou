@@ -23,6 +23,7 @@ import { join } from "node:path";
 
 import { z } from "zod";
 
+import { lireTarifEtAcces } from "./tarif";
 import { clamp, parseAgeRange, USER_AGENT, type Adapter, type RawEvent } from "./types";
 
 const MINIMAX_URL = "https://api.minimax.io/v1/chat/completions";
@@ -309,6 +310,9 @@ export function eventsFromPayload(
       placeLabel: clamp(evenement.lieu, 120),
       url: clamp(evenement.url ?? pageUrl, 500),
       ...parseAgeRange(evenement.age),
+      // Lu dans ce que le modèle a recopié, par mots exacts. Le modèle n'a pas son mot à
+      // dire sur le prix : on ne lui demande pas de conclure, on relit ce qu'il a copié.
+      ...lireTarifEtAcces(evenement.titre, evenement.description),
     });
   }
 

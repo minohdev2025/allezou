@@ -150,6 +150,66 @@ describe("Filtres", () => {
   });
 });
 
+describe("Filtres prix et inscription", () => {
+  it("sépare gratuit, payant et non défini", async () => {
+    const alice = await createAccount("Alice");
+    await createEvent({ title: "Concert de l'Escalade", tarif: "gratuit" });
+    await createEvent({ title: "Cirque de Noël", tarif: "payant" });
+    await createEvent({ title: "Vide-greniers du village" });
+
+    const gratuites = await upcomingCalendar(alice.id, { tarif: "gratuit" });
+    expect(gratuites.map((e) => e.title)).toEqual(["Concert de l'Escalade"]);
+
+    const payantes = await upcomingCalendar(alice.id, { tarif: "payant" });
+    expect(payantes.map((e) => e.title)).toEqual(["Cirque de Noël"]);
+
+    // « Non défini » se demande comme les deux autres : c'est l'état d'une bonne moitié des
+    // activités communales, et le cacher reviendrait à les faire passer pour gratuites.
+    const inconnues = await upcomingCalendar(alice.id, { tarif: "inconnu" });
+    expect(inconnues.map((e) => e.title)).toEqual(["Vide-greniers du village"]);
+  });
+
+  it("une activité sans prix annoncé n'est pas gratuite", async () => {
+    const alice = await createAccount("Alice");
+    await createEvent({ title: "Atelier sans prix affiché" });
+
+    expect(await upcomingCalendar(alice.id, { tarif: "gratuit" })).toEqual([]);
+  });
+
+  it("sépare l'inscription de l'entrée libre", async () => {
+    const alice = await createAccount("Alice");
+    await createEvent({ title: "Atelier poterie", acces: "inscription" });
+    await createEvent({ title: "Marché de Noël", acces: "libre" });
+
+    const surInscription = await upcomingCalendar(alice.id, { acces: "inscription" });
+    expect(surInscription.map((e) => e.title)).toEqual(["Atelier poterie"]);
+
+    const libres = await upcomingCalendar(alice.id, { acces: "libre" });
+    expect(libres.map((e) => e.title)).toEqual(["Marché de Noël"]);
+  });
+
+  it("croise les deux axes, qui ne disent pas la même chose", async () => {
+    const alice = await createAccount("Alice");
+    await createEvent({ title: "Atelier gratuit sur inscription", tarif: "gratuit", acces: "inscription" });
+    await createEvent({ title: "Concert gratuit et libre", tarif: "gratuit", acces: "libre" });
+
+    const trouvees = await upcomingCalendar(alice.id, {
+      tarif: "gratuit",
+      acces: "inscription",
+    });
+    expect(trouvees.map((e) => e.title)).toEqual(["Atelier gratuit sur inscription"]);
+  });
+
+  it("porte le prix et l'inscription sur chaque entrée", async () => {
+    const alice = await createAccount("Alice");
+    await createEvent({ title: "Cirque de Noël", tarif: "payant", acces: "inscription" });
+
+    const [entree] = await upcomingCalendar(alice.id);
+    expect(entree.tarif).toBe("payant");
+    expect(entree.acces).toBe("inscription");
+  });
+});
+
 describe("Filtre par âge, choisi à l'écran", () => {
   it("écarte ce qui ne convient manifestement pas, garde ce qu'on ignore", async () => {
     const alice = await createAccount("Alice");

@@ -15,6 +15,7 @@ import { z } from "zod";
 
 import { db } from "./db";
 import * as s from "./db/schema";
+import { lireTarifEtAcces } from "./ingest/tarif";
 import {
   canSeePublication,
   visiblePublications,
@@ -616,6 +617,9 @@ export async function createEventAndAttend(
       placeLabel: input.placeLabel,
       commune: lieu?.commune ?? null,
       origin: "parent",
+      // Un parent qui écrit « atelier gratuit » dans son titre l'a dit : on le lit comme on
+      // lirait la page d'une commune, avec les mêmes mots et la même prudence.
+      ...lireTarifEtAcces(title.data),
       createdBy: actorId,
       // Saisie par un parent : publiée immédiatement, pas de file de relecture.
       publishedAt: sql`now()`,

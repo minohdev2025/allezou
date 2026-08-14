@@ -13,6 +13,7 @@ import { sql, type SQL } from "drizzle-orm";
 
 import { db } from "./db";
 import { asDate, asDateOrNull } from "./db/rows";
+import type { Acces, Tarif } from "./ingest/tarif";
 import { visiblePublications } from "./visibility";
 
 export type CalendarEntry = {
@@ -29,6 +30,9 @@ export type CalendarEntry = {
   updatedAt: Date;
   /** « dès 5 ans », « 3-8 ans » — tel que l'organisateur l'annonce, ou null. */
   ageLabel: string | null;
+  /** Ce que la source dit du prix et de l'inscription. « inconnu » quand elle n'en dit rien. */
+  tarif: Tarif;
+  acces: Acces;
   /** Déjà commencé et pas terminé : une exposition, un festival, un été d'animations. */
   enCours: boolean;
   /** Les personnes inscrites que ce lecteur a le droit de voir. */
@@ -60,6 +64,13 @@ export type FiltreAgenda = {
   commune?: string;
   /** Ne garder que les activités où une famille de mes cercles est déjà inscrite. */
   avecMonCercle?: boolean;
+  /**
+   * Prix et inscription. `inconnu` se demande comme les autres : c'est ce qu'on choisit
+   * quand on veut voir ce que les communes n'ont pas pris la peine d'annoncer, et non un
+   * fourre-tout qu'on cacherait.
+   */
+  tarif?: Tarif;
+  acces?: Acces;
   limit?: number;
 };
 
@@ -152,6 +163,14 @@ export async function upcomingCalendar(
     conditions.push(sql`e.commune = ${filtre.commune}`);
   }
 
+  if (filtre.tarif) {
+    conditions.push(sql`e.tarif = ${filtre.tarif}`);
+  }
+
+  if (filtre.acces) {
+    conditions.push(sql`e.acces = ${filtre.acces}`);
+  }
+
   if (filtre.avecMonCercle) {
     conditions.push(sql`e.id = any(${sql.param(idsAvecMonCercle)}::uuid[])`);
   }
@@ -170,11 +189,13 @@ export async function upcomingCalendar(
     updated_at: Date;
     min_age: number | null;
     max_age: number | null;
+    tarif: Tarif;
+    acces: Acces;
     en_cours: boolean;
   }>(sql`
     select
       e.id, e.title, e.description, e.starts_at, e.ends_at, e.url, e.origin, e.updated_at,
-      e.min_age, e.max_age, e.commune,
+      e.min_age, e.max_age, e.commune, e.tarif, e.acces,
       (e.starts_at <= now()) as en_cours,
       coalesce(pl.name, e.place_label) as place,
       src.name as source_name
@@ -208,6 +229,8 @@ export async function upcomingCalendar(
     sourceName: r.source_name,
     updatedAt: asDate(r.updated_at),
     ageLabel: libelleAge(r.min_age, r.max_age),
+    tarif: r.tarif,
+    acces: r.acces,
     enCours: r.en_cours,
     attendees: parEvenement.get(r.id) ?? [],
   }));
@@ -232,11 +255,13 @@ export async function calendarEntry(
     updated_at: Date;
     min_age: number | null;
     max_age: number | null;
+    tarif: Tarif;
+    acces: Acces;
     en_cours: boolean;
   }>(sql`
     select
       e.id, e.title, e.description, e.starts_at, e.ends_at, e.url, e.origin, e.updated_at,
-      e.min_age, e.max_age, e.commune,
+      e.min_age, e.max_age, e.commune, e.tarif, e.acces,
       (e.starts_at <= now()) as en_cours,
       coalesce(pl.name, e.place_label) as place,
       src.name as source_name
@@ -269,6 +294,8 @@ export async function calendarEntry(
     sourceName: r.source_name,
     updatedAt: asDate(r.updated_at),
     ageLabel: libelleAge(r.min_age, r.max_age),
+    tarif: r.tarif,
+    acces: r.acces,
     enCours: r.en_cours,
     attendees: participations.map((p) => ({
       publicationId: p.id,

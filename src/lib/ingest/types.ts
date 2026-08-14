@@ -1,6 +1,7 @@
 /** Contrat commun à tous les adaptateurs de source. */
 
 import type * as s from "../db/schema";
+import type { Acces, Tarif } from "./tarif";
 
 export type Source = typeof s.source.$inferSelect;
 
@@ -17,6 +18,9 @@ export type RawEvent = {
   /** Tranche d'âge, uniquement si la source l'annonce explicitement. */
   minAge?: number;
   maxAge?: number;
+  /** Ce que la page dit du prix et de l'inscription. « inconnu » quand elle n'en dit rien. */
+  tarif?: Tarif;
+  acces?: Acces;
   /**
    * Le texte de la page d'où l'activité a été lue, tel qu'il a été donné au modèle.
    *

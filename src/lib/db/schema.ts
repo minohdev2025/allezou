@@ -311,6 +311,16 @@ export const source = pgTable("source", {
 export const eventOrigin = pgEnum("event_origin", ["parent", "feed", "ai"]);
 
 /**
+ * Prix et inscription, tels que la source les écrit.
+ *
+ * `inconnu` est une valeur à part entière, et la valeur par défaut : sur une page communale,
+ * l'absence de prix affiché veut dire que personne ne l'a écrit, pas que c'est offert. La
+ * confondre avec « gratuit » ferait arriver une famille sans argent devant une caisse.
+ */
+export const eventTarif = pgEnum("event_tarif", ["gratuit", "payant", "inconnu"]);
+export const eventAcces = pgEnum("event_acces", ["libre", "inscription", "inconnu"]);
+
+/**
  * Entrée du calendrier. Une activité n'a pas de visibilité propre : elle est publique.
  * Ce sont les participations (`publication`) qui portent la visibilité.
  */
@@ -336,6 +346,8 @@ export const event = pgTable(
     minAge: smallint(),
     maxAge: smallint(),
     origin: eventOrigin().notNull(),
+    tarif: eventTarif().notNull().default("inconnu"),
+    acces: eventAcces().notNull().default("inconnu"),
     sourceId: uuid().references(() => source.id, { onDelete: "set null" }),
     /** Identifiant chez la source, pour ne pas dupliquer à chaque passage. */
     externalId: varchar({ length: 200 }),

@@ -11,6 +11,7 @@
  * pas remplir un agenda de familles avec l'ordre du jour de la mairie.
  */
 
+import { lireTarifEtAcces } from "./tarif";
 import { clamp, parseAgeRange, USER_AGENT, type Adapter, type RawEvent } from "./types";
 
 /** Les feuilles genevoises ne déclarent pas toujours leur fuseau. Ici, c'est celui-là. */
@@ -222,6 +223,7 @@ function versRawEvent(
     placeLabel: lieu(valeur("LOCATION")),
     url: clamp(valeur("URL") ?? sourceUrl, 500),
     ...parseAgeRange(description),
+    ...lireTarifEtAcces(titre, description),
   };
 }
 

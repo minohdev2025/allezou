@@ -125,6 +125,8 @@ export async function createEvent(
     minAge?: number;
     maxAge?: number;
     commune?: string;
+    tarif?: "gratuit" | "payant" | "inconnu";
+    acces?: "libre" | "inscription" | "inconnu";
   } = {},
 ): Promise<Event> {
   const startsAt = options.startsAt ?? minutesFromNow(60);
@@ -137,6 +139,8 @@ export async function createEvent(
       minAge: options.minAge,
       maxAge: options.maxAge,
       commune: options.commune,
+      tarif: options.tarif,
+      acces: options.acces,
       origin: "parent",
       createdBy: options.by?.id,
       publishedAt: new Date(),

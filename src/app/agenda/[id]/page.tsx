@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 
 import { calendarEntry } from "@/lib/calendar";
 import { myChildren } from "@/lib/children";
+import { LIBELLES_ACCES, LIBELLES_TARIF } from "@/lib/ingest/tarif";
 import { defaultAudience, myAttendance } from "@/lib/publications";
 import { requireAccount } from "@/lib/session";
 import { readerCircles } from "@/lib/visibility";
@@ -89,7 +90,18 @@ export default async function Activite({
           <p className="mt-2 text-[color:var(--color-doux)]">📍 {activite.place}</p>
         ) : null}
 
+        {/*
+          Ici « non défini » s'affiche, contrairement à la liste. Sur la page d'une activité,
+          un parent décide s'il y va : lui dire qu'on ignore le prix vaut mieux que de le
+          laisser supposer, et le lien vers le site de l'organisateur est juste en dessous.
+        */}
         <div className="mt-3 flex flex-wrap gap-2">
+          <Pastille couleur={activite.tarif === "gratuit" ? "vert" : "violet"}>
+            {LIBELLES_TARIF[activite.tarif]}
+          </Pastille>
+          <Pastille couleur={activite.acces === "inscription" ? "corail" : "bleu"}>
+            {LIBELLES_ACCES[activite.acces]}
+          </Pastille>
           {activite.ageLabel ? <Pastille couleur="ambre">{activite.ageLabel}</Pastille> : null}
           {activite.commune ? <Pastille couleur="bleu">{activite.commune}</Pastille> : null}
         </div>

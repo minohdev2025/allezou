@@ -117,6 +117,35 @@ describe("Lecture du JSON-LD (format réel de geneve.ch)", () => {
     expect(eventsFromHtml('<script type="application/ld+json">{oops</script>', "x")).toEqual([]);
   });
 
+  it("croit le prix déclaré par la fiche plutôt que sa description", () => {
+    const fiche = `<script type="application/ld+json">
+      {"@type":"Event","name":"Cirque de Noël","startDate":"2026-12-20T15:00:00+01:00",
+       "description":"Entrée libre pour les enfants accompagnés",
+       "offers":{"@type":"Offer","price":"25","priceCurrency":"CHF"}}
+    </script>`;
+    const [event] = eventsFromHtml(fiche, "https://exemple.test/fiche");
+    expect(event.tarif).toBe("payant");
+    // La description, elle, reste la seule à parler de l'accès.
+    expect(event.acces).toBe("libre");
+  });
+
+  it("lit isAccessibleForFree quand la fiche le déclare", () => {
+    const fiche = `<script type="application/ld+json">
+      {"@type":"Event","name":"Conte au parc","startDate":"2026-12-20T15:00:00+01:00",
+       "isAccessibleForFree":true}
+    </script>`;
+    expect(eventsFromHtml(fiche, "https://exemple.test/fiche")[0].tarif).toBe("gratuit");
+  });
+
+  it("laisse non défini ce qu'aucune fiche ne déclare", () => {
+    const fiche = `<script type="application/ld+json">
+      {"@type":"Event","name":"Marché du village","startDate":"2026-12-20T15:00:00+01:00"}
+    </script>`;
+    const [event] = eventsFromHtml(fiche, "https://exemple.test/fiche");
+    expect(event.tarif).toBe("inconnu");
+    expect(event.acces).toBe("inconnu");
+  });
+
   it("lit la tranche d'âge quand elle est écrite, et rien sinon", async () => {
     const { parseAgeRange } = await import("@/lib/ingest/types");
 

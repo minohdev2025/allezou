@@ -131,6 +131,27 @@ describe("Une feuille qui n'en est pas une", () => {
   });
 });
 
+describe("Prix et inscription d'une feuille communale", () => {
+  const feuille = (description: string) => `BEGIN:VEVENT
+DTSTART;TZID=Europe/Zurich:20261010T140000
+UID:tarif@test
+SUMMARY:Fête du village
+DESCRIPTION:${description}
+END:VEVENT`;
+
+  it("lit ce que la commune écrit dans sa description", () => {
+    const [event] = eventsFromIcs(feuille("Entrée libre, buvette sur place."), SOURCE);
+    expect(event.tarif).toBe("gratuit");
+    expect(event.acces).toBe("libre");
+  });
+
+  it("laisse non défini ce qu'aucune description n'annonce", () => {
+    const [event] = eventsFromIcs(feuille("Rendez-vous sur la place."), SOURCE);
+    expect(event.tarif).toBe("inconnu");
+    expect(event.acces).toBe("inconnu");
+  });
+});
+
 describe("Le passage à l'heure d'hiver", () => {
   it("ne décale pas une activité de novembre", () => {
     const feuille = String.raw`BEGIN:VEVENT

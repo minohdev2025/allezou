@@ -78,6 +78,13 @@
       "when": 1786721691930,
       "tag": "0010_worthless_quasar",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1786724152006,
+      "tag": "0011_pale_boomer",
+      "breakpoints": true
     }
   ]
 }

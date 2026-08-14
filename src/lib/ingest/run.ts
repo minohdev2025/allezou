@@ -89,6 +89,8 @@ export async function runSource(
         url: event.url,
         minAge: event.minAge,
         maxAge: event.maxAge,
+        tarif: event.tarif ?? "inconnu",
+        acces: event.acces ?? "inconnu",
         commune: source.commune,
       };
 
