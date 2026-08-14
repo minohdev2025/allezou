@@ -46,7 +46,7 @@ export default async function NouvelleActivite({
     <main className="apparait">
       <Titre
         emoji="📅"
-        sous="Un atelier, une fête de quartier, une sortie au musée — ce que l'agenda du canton ne connaît pas."
+        sous="Un atelier, une fête de quartier, une sortie au musée : ce que l'agenda du canton ne connaît pas."
       >
         Proposer une activité
       </Titre>
@@ -90,7 +90,7 @@ export default async function NouvelleActivite({
                 Un lieu du catalogue, ou écrivez-le en dessous s&apos;il n&apos;y est pas.
               </span>
               <select name="lieu" className={champ} defaultValue="">
-                <option value="">— choisir un lieu —</option>
+                <option value="">Choisir un lieu</option>
                 {lieux.map((lieu) => (
                   <option key={lieu.id} value={lieu.id}>
                     {lieu.name}

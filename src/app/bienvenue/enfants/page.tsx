@@ -16,7 +16,7 @@ export default async function Enfants({
     <main className="apparait">
       <Titre
         emoji="🧒"
-        sous="Leur prénom sert à dire qui est présent à une sortie. Allezou n'enregistre rien d'autre à leur sujet — ni âge, ni nom de famille."
+        sous="Leur prénom sert à dire qui est présent à une sortie. Allezou n'enregistre rien d'autre à leur sujet : ni âge, ni nom de famille."
       >
         Vos enfants
       </Titre>

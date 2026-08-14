@@ -16,7 +16,7 @@ export default async function NouveauLieu({
     <main className="apparait">
       <Titre
         emoji="📍"
-        sous="Il rejoint le catalogue commun. Si son nom est mal écrit, n'importe qui pourra proposer une correction — elle s'applique quand trois personnes l'ont validée."
+        sous="Il rejoint le catalogue commun. Si son nom est mal écrit, n'importe qui pourra proposer une correction : elle s'applique quand trois personnes l'ont validée."
       >
         Ajouter un lieu
       </Titre>

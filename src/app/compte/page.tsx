@@ -173,7 +173,7 @@ export default async function Compte({
       <Carte className="mb-5" accent="vert">
         <h2 className="titre mb-2 text-lg font-bold">Revenir sans courriel</h2>
         <p className="mb-4 text-sm leading-snug text-[color:var(--color-doux)]">
-          Enregistrez cet appareil et vous entrerez ensuite comme vous le déverrouillez —
+          Enregistrez cet appareil et vous entrerez ensuite comme vous le déverrouillez :
           empreinte, visage ou code, selon votre téléphone. Rien de tout cela ne nous est
           transmis : l&apos;appareil garde une clé qu&apos;il ne révèle à personne, et nous
           n&apos;en connaissons que la moitié publique. Le lien par courriel reste là si vous

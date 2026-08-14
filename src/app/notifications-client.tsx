@@ -163,7 +163,7 @@ export function ActiverNotifications({
         <p className="mb-2 font-bold">Les notifications sont bloquées</p>
         <p className="text-sm leading-snug text-[color:var(--color-doux)]">
           Vous les avez refusées pour ce site. Il faut les réautoriser dans les réglages du
-          navigateur — nous ne pouvons pas le faire à votre place.
+          navigateur : nous ne pouvons pas le faire à votre place.
         </p>
       </div>
     );

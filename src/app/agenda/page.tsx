@@ -198,7 +198,7 @@ export default async function Agenda({
         <Vide emoji="🗓️" titre="Rien ne correspond">
           {avecMonCercle || age !== undefined || params.commune ? (
             <p>
-              Essayez d&apos;élargir les filtres —{" "}
+              Essayez d&apos;élargir les filtres, ou{" "}
               <Link href="/agenda" className="font-bold underline underline-offset-4">
                 tout voir
               </Link>

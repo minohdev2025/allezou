@@ -52,12 +52,12 @@ docker exec totir-db psql -U totir -c "CREATE DATABASE totir_test OWNER totir;"
 
 ```
 src/app/
-  connexion/    lien magique — le jeton est consommé par un Route Handler, pas une page
+  connexion/    lien magique : le jeton est consommé par un Route Handler, pas une page
   bienvenue/    nom affiché, puis enfants
   maintenant/   qui est dehors, avec le « +n » dépliable
   sortir/       deux gestes : arriver ici, toucher un lieu
   cercles/      liste, création, membres, invitations, demandes en attente
-  rejoindre/    suivre une invitation — dépose une demande, ne fait entrer personne
+  rejoindre/    suivre une invitation : dépose une demande, ne fait entrer personne
   sortie/       détail d'une sortie : qui vient, un mot, une heure de plus
   agenda/       activités du canton et qui de vos cercles y va
   reglages/     notifications par cercle, abonnement push de cet appareil
@@ -69,7 +69,7 @@ src/app/
 
 src/lib/
   db/           schéma, connexion, conversion des lignes brutes
-  visibility.ts LA règle — point de passage unique de toute lecture
+  visibility.ts LA règle : point de passage unique de toute lecture
   auth.ts       accès sans mot de passe (lien magique)
   account.ts    suppression d'un compte
   children.ts   enfants (un prénom) et lien entre co-parents
@@ -88,7 +88,7 @@ src/lib/
 **Toute lecture de publication passe par `src/lib/visibility.ts`.** Aucune autre partie du
 code ne doit interroger la table `publication` directement. Le prédicat y est écrit une seule
 fois et sert dans les deux sens : « que voit cette personne » et « qui voit cette
-publication » — c'est ce qui garantit qu'une notification ne part jamais vers quelqu'un qui
+publication ». C'est ce qui garantit qu'une notification ne part jamais vers quelqu'un qui
 ne verrait pas la sortie à l'écran.
 
 Les tests de `visibility.test.ts` sont la démonstration exigée par PRODUIT.md, pas un filet
@@ -105,9 +105,9 @@ millisecondes d'écart suffisent à faire sortir un membre avant son entrée, ou
 
 Vérifiées le 9 août 2026.
 
-- **Ville de Genève**, filtre « Enfants et famille » — chaque fiche expose du schema.org
+- **Ville de Genève**, filtre « Enfants et famille » : chaque fiche expose du schema.org
   `Event` en JSON-LD. Publication automatique : rien n'est interprété.
-- **Lancy, Onex** — aucun flux structuré (ni JSON-LD, ni iCal, ni RSS). Lecture par
+- **Lancy, Onex** : aucun flux structuré (ni JSON-LD, ni iCal, ni RSS). Lecture par
   MiniMax M3, mise en file de relecture. Rien n'est publié sans validation humaine.
 
 Une source qui répond correctement mais ne rapporte plus rien est signalée comme muette.

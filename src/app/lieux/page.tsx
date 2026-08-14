@@ -51,7 +51,7 @@ export default async function Lieux({
       {propose && !applique ? (
         <Alerte>
           Votre correction est proposée. Elle s&apos;appliquera quand {VALIDATIONS_RENOMMAGE}{" "}
-          personnes l&apos;auront validée — la vôtre compte déjà.
+          personnes l&apos;auront validée, et la vôtre compte déjà.
         </Alerte>
       ) : null}
 

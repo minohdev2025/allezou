@@ -50,7 +50,7 @@ export default async function Sortir({
 
   return (
     <main className="apparait">
-      <Titre emoji="🌳" sous="Touchez le lieu où vous êtes — ou où vous serez.">
+      <Titre emoji="🌳" sous="Touchez le lieu où vous êtes, ou où vous serez.">
         Nous sortons
       </Titre>
 
@@ -60,7 +60,7 @@ export default async function Sortir({
 
       {derniere ? (
         <form action={refaireDerniereSortie} className="mb-5">
-          <Bouton>Comme la dernière fois — {derniere.placeName}</Bouton>
+          <Bouton>Comme la dernière fois : {derniere.placeName}</Bouton>
         </form>
       ) : null}
 

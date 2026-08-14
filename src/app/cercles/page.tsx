@@ -35,7 +35,7 @@ function CarteInvitation({ mise = "second" }: { mise?: "principal" | "second" })
       <form action={rejoindreParLien} className="space-y-5">
         <Champ
           label="J'ai reçu une invitation"
-          aide="Collez le lien reçu par message — ou seulement le code qu'il contient."
+          aide="Collez le lien reçu par message, ou seulement le code qu'il contient."
           name="lien"
           required
           autoComplete="off"
@@ -81,7 +81,7 @@ export default async function Cercles({
 
   return (
     <main className="apparait">
-      <Titre emoji="🫂" sous="Une classe, une école, un voisinage — des gens que vous connaissez déjà.">
+      <Titre emoji="🫂" sous="Une classe, une école, un voisinage : des gens que vous connaissez déjà.">
         Vos cercles
       </Titre>
 
