@@ -192,9 +192,15 @@ tient, et ce qui a de la valeur est sauvegardé quand même. Une minuterie syste
 [scripts/sauvegarde.sh](scripts/sauvegarde.sh) chaque nuit sur le serveur ; détail dans
 [DEPLOIEMENT.md §4](DEPLOIEMENT.md).
 
-Reste la destination : les copies sont sur le disque du serveur, donc une panne de ce disque
-les emporte avec la base. Les pousser vers S3 Swiss Backup demande les identifiants du compte,
-et c'est la dernière marche avant que le mot « sauvegarde » soit mérité.
+Reste la destination, et elle est **reportée sciemment** : les copies sont sur le disque du
+serveur, donc une panne de ce disque les emporte avec la base. Le pari tient tant que le pilote
+tourne — ce qui existe aujourd'hui se recrée en une soirée. Il cesse de tenir au premier groupe
+de parents : à partir de là, perdre le disque, c'est demander à des familles de tout refaire,
+réinvitations comprises. C'est le moment convenu pour brancher S3 Swiss Backup, et il demande
+les identifiants du compte.
+
+À noter quand même : la sauvegarde locale nocturne couvre déjà l'accident le plus probable —
+une migration ratée, un effacement de trop. Seule la panne du disque lui-même reste à découvert.
 
 ### g. Journaux d'accès du proxy : sept jours au plus
 
@@ -373,19 +379,21 @@ l'agenda — les événements déjà publiés restent publiés, seule la file de
    coûte une réinscription à tout le monde.
 2. `SCHEDULER=1`, et vérifier le lendemain que les tâches ont tourné (écran de relecture).
 3. SMTP + SPF/DKIM/DMARC, testés vers Gmail et Outlook.
-4. Pousser les sauvegardes vers S3 Swiss Backup — l'exclusion des publications est faite,
-   la copie hors machine non —, rotation des journaux à
-   sept jours.
+4. Rotation des journaux du proxy à sept jours.
 5. Créer et relever la boîte `contact@allezou.ch`, déjà annoncée dans
    [DONNEES.md](DONNEES.md), et la phrase sur la boîte aux lettres comme clé du compte.
 6. Vérifier qu'une notification arrive vraiment sur un téléphone.
 
 **Dans les premières semaines :**
 
-7. Amorcer le catalogue de lieux par commune.
-8. Relever le plafond d'envoi de liens avant toute invitation de masse.
-9. Export « mes données » en un geste ; liste et fermeture des sessions ouvertes.
-10. Dédoublonnage entre sources, et pagination des agendas communaux.
+7. **Pousser les sauvegardes hors de la machine**, vers S3 Swiss Backup. Reporté sciemment le
+   14 août 2026 : tant que le pilote tourne, ce qu'une panne de disque emporterait se recrée en
+   une soirée. Ça cesse d'être vrai dès le premier groupe de parents — c'est le moment convenu
+   pour le faire, et il arrive avant que la perte ne devienne coûteuse, pas après.
+8. Amorcer le catalogue de lieux par commune.
+9. Relever le plafond d'envoi de liens avant toute invitation de masse.
+10. Export « mes données » en un geste ; liste et fermeture des sessions ouvertes.
+11. Dédoublonnage entre sources, et pagination des agendas communaux.
 
 **Quand la première classe fonctionne sans moi :**
 
