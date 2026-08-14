@@ -17,6 +17,7 @@ import { db } from "../db";
 import { asDate, asDateOrNull } from "../db/rows";
 import * as s from "../db/schema";
 import { controler, type Echec } from "./controles";
+import { icalAdapter } from "./ical";
 import { jsonLdAdapter } from "./jsonld";
 import { minimaxAdapter } from "./minimax";
 import { clamp, type Adapter, type RawEvent, type Source } from "./types";
@@ -27,9 +28,9 @@ export const SEUIL_SOURCE_MUETTE_JOURS = 7;
 export type Adapters = Partial<Record<(typeof s.sourceKind.enumValues)[number], Adapter>>;
 
 export const defaultAdapters: Adapters = {
+  ical: icalAdapter,
   jsonld: jsonLdAdapter,
   html_ai: minimaxAdapter,
-  // `ical` reste à écrire : aucune source genevoise vérifiée n'en expose pour l'instant.
 };
 
 export type IngestReport = {

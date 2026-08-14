@@ -6,8 +6,15 @@
  * jamais directement : tout ce qui en sort attend une relecture humaine. Une date inventée
  * qui atteindrait le calendrier coûterait plus cher que l'absence de la source.
  *
- * Deux garde-fous en plus de la relecture : la réponse est validée par un schéma strict,
- * et toute date hors d'une fenêtre plausible est écartée avant même d'arriver en file.
+ * Deux garde-fous devant les contrôles : la réponse est validée par un schéma strict, et
+ * toute date hors d'une fenêtre plausible est écartée avant même d'entrer en base.
+ *
+ * L'année manquante se déduit désormais de la date du jour, au lieu de faire écarter
+ * l'événement. C'est ce qui rendait Lancy muette : sa liste écrit « Vendredi 14 août, 21h00 »
+ * sans année, et la consigne d'alors interdisait de rendre un événement dont l'année n'était
+ * pas écrite. Six activités sur dix-sept passaient, toutes celles dont le titre portait un
+ * millésime. Ce relâchement n'est tenable que depuis les contrôles : le jour et le mois, eux,
+ * doivent figurer en clair sur la page.
  */
 
 import { readFileSync } from "node:fs";
@@ -192,10 +199,13 @@ const SYSTEME = [
   "Réponds uniquement par un objet JSON, sans texte autour, de la forme :",
   '{"evenements":[{"titre":"...","description":"...","debut":"2026-01-04T14:00:00+01:00","fin":"...","lieu":"...","url":"..."}]}',
   "Règles strictes :",
-  "- N'invente jamais une date. Si la date d'un événement est absente ou ambiguë, ne le retourne pas.",
+  "- N'invente jamais une date. Si le jour ou le mois d'un événement est absent, ne le retourne pas.",
   "- Les dates sont au format ISO 8601 avec fuseau horaire, heure de Genève (+01:00 en hiver, +02:00 en été).",
-  "- Si l'année n'est pas écrite sur la page, ne retourne pas l'événement.",
+  "- Si l'année n'est pas écrite à côté de la date, déduis-la de la date du jour : prends la",
+  "  prochaine occurrence du jour et du mois annoncés.",
   "- Ne retourne que des événements ouverts au public, susceptibles d'intéresser des familles avec enfants.",
+  "- La description recopie une phrase de la page. Si la page n'en donne pas, omets le champ :",
+  "  ne résume pas, ne complète pas de mémoire.",
   "- Le champ « age » recopie mot pour mot la tranche d'âge écrite sur la page (« dès 5 ans »,",
   "  « 3-6 ans »). Si la page n'en indique pas, omets le champ : ne l'estime jamais.",
   "- Si la page ne contient aucun événement exploitable, réponds {\"evenements\":[]}.",

@@ -103,14 +103,24 @@ millisecondes d'écart suffisent à faire sortir un membre avant son entrée, ou
 
 ## Sources de l'agenda
 
-Vérifiées le 9 août 2026.
+Le canton a été passé en revue le 14 août 2026.
 
 - **Ville de Genève**, filtre « Enfants et famille » : chaque fiche expose du schema.org
   `Event` en JSON-LD. Rien n'y est interprété.
-- **Lancy, Onex** : aucun flux structuré (ni JSON-LD, ni iCal, ni RSS). Lecture par
-  MiniMax M3.
+- **Chêne-Bougeries, Laconnex** : agenda WordPress avec le greffon « The Events Calendar »,
+  qui publie tout en iCalendar derrière `?ical=1`. C'est la meilleure source possible, et
+  `categoriesIgnorees` écarte les séances du Conseil municipal et les levées d'encombrants.
+- **Vernier, Lancy, Onex** : aucun flux structuré. Lecture par MiniMax M3.
+
+Ce que le tour du canton a écarté, et pourquoi, est écrit en tête de
+[seed-sources.mts](scripts/seed-sources.mts).
 
 Une source qui répond correctement mais ne rapporte plus rien est signalée comme muette.
+C'était le cas de Lancy : sa liste écrit « Vendredi 14 août, 21h00 » sans année, et la
+consigne donnée au modèle lui interdisait de rendre un événement dont l'année n'était pas
+écrite. Seules passaient les six activités dont le titre portait un millésime. L'année
+manquante se déduit maintenant de la date du jour ; le jour et le mois, eux, doivent
+toujours figurer en clair sur la page, et les contrôles le vérifient.
 
 ### Ce qui remplace la relecture
 

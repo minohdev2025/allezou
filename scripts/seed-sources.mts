@@ -1,5 +1,5 @@
 /**
- * Sources de l'agenda genevois — état vérifié le 9 août 2026.
+ * Sources de l'agenda genevois — état vérifié le 14 août 2026.
  *
  *   npm run sources:seed
  *
@@ -17,6 +17,21 @@
  *
  * Une source qu'on vient d'ajouter reste à `autoPublish: false` le temps de regarder ce
  * qu'elle rapporte vraiment. C'est le seul cas où tout passe par la file.
+ *
+ * Plusieurs communes tiennent leur agenda sous WordPress avec le greffon « The Events
+ * Calendar », qui publie tout en iCalendar derrière `?ical=1`. C'est la meilleure source
+ * possible : rien à interpréter, un identifiant stable, un fuseau déclaré.
+ *
+ * Le tour du canton, fait le 14 août 2026, et ce qu'il a écarté :
+ *
+ * - Chancy et Soral exposent `?ical=1`, mais leur feuille est vide ce jour-là. À reprendre
+ *   si elle se remplit ; une source qui ne rapporte rien serait signalée muette.
+ * - Carouge et Meyrin composent leur agenda dans le navigateur : la page servie ne contient
+ *   aucune activité, ni pour nous ni pour le modèle.
+ * - Anières, Thônex et Troinex publient un flux RSS de leur agenda, mais un RSS ne porte que
+ *   la date de publication de l'article, pas celle de l'activité. Rien de gagné sur du HTML.
+ * - Le flux `ge.ch/rss/evenement` de l'État est institutionnel (ventes de parcelles,
+ *   consultations) et ne s'adresse pas aux familles.
  */
 
 import { config } from "dotenv";
@@ -43,6 +58,36 @@ const SOURCES = [
     commune: "Lancy",
     autoPublish: true,
     config: { maxPages: 3 },
+  },
+  {
+    name: "Chêne-Bougeries — agenda communal",
+    url: "https://chene-bougeries.ch/evenements/?ical=1",
+    kind: "ical" as const,
+    commune: "Chêne-Bougeries",
+    autoPublish: true,
+    // Le greffon range les séances du Conseil municipal avec le reste de l'agenda. Un
+    // parent qui cherche une sortie de samedi n'a rien à faire de l'ordre du jour de la
+    // mairie.
+    config: { categoriesIgnorees: ["Séances Conseil municipal"] },
+  },
+  {
+    name: "Laconnex — agenda communal",
+    url: "https://www.laconnex.ch/agenda/?ical=1",
+    kind: "ical" as const,
+    commune: "Laconnex",
+    autoPublish: true,
+    // « Politique » couvre les séances du Conseil, « Ferraille » les levées d'encombrants.
+    config: { categoriesIgnorees: ["Politique", "Ferraille"] },
+  },
+  {
+    name: "Vernier — agenda communal",
+    url: "https://www.vernier.ch/evenements",
+    kind: "html_ai" as const,
+    commune: "Vernier",
+    autoPublish: true,
+    // La plus grande commune du canton après la Ville, et aucun flux structuré. Quatre pages
+    // de liste, qui paginent en `?page=N` comme les autres.
+    config: { maxPages: 4 },
   },
   {
     name: "Onex — agenda communal",
