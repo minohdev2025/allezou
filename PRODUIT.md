@@ -127,9 +127,9 @@ Ordre de construction : **tout le socle avant l'interface.**
 
 ## Responsable des données
 
-**Michael Urbina**, en son nom propre — ni une entreprise, ni l'association de parents qui
-relaie l'invitation. Adresse de contact : Chemin du Gué 69, 1213 Petit-Lancy. Le cadre est la
-**nLPD suisse**. La page destinée aux parents est [DONNEES.md](DONNEES.md).
+**Michael Urbina**, domicilié au Petit-Lancy, en son nom propre — ni une entreprise, ni
+l'association de parents qui relaie l'invitation. Contact : contact@allezou.ch. Le cadre est
+la **nLPD suisse**. La page destinée aux parents est [DONNEES.md](DONNEES.md).
 
 Ce que cela implique, et qui n'est pas rien : Allezou traite bien des données personnelles
 réelles — adresses électroniques, noms affichés, prénoms et années de naissance d'enfants,
