@@ -185,12 +185,16 @@ s'inflige à soi-même : le vingt-et-unième parent voit « service saturé » e
 demande par minute et par adresse) **plus** un plafond global nettement relevé, ou une file
 d'attente d'envoi.
 
-### f. Les sauvegardes — décision à prendre, pas à reporter
+### f. Les sauvegardes — tranché
 
-Traitée en détail dans [DEPLOIEMENT.md §4](DEPLOIEMENT.md). En un mot : une sauvegarde
-nocturne conservée trente jours **contredit** la promesse d'effacement. La sortie recommandée
-est d'exclure les tables de publications du `pg_dump`. À trancher avant les premiers vrais
-parents, pas après le premier incident.
+Les tables de publications sont exclues du `pg_dump` : la promesse d'effacement de DONNEES.md
+tient, et ce qui a de la valeur est sauvegardé quand même. Une minuterie systemd lance
+[scripts/sauvegarde.sh](scripts/sauvegarde.sh) chaque nuit sur le serveur ; détail dans
+[DEPLOIEMENT.md §4](DEPLOIEMENT.md).
+
+Reste la destination : les copies sont sur le disque du serveur, donc une panne de ce disque
+les emporte avec la base. Les pousser vers S3 Swiss Backup demande les identifiants du compte,
+et c'est la dernière marche avant que le mot « sauvegarde » soit mérité.
 
 ### g. Journaux d'accès du proxy : sept jours au plus
 
@@ -369,7 +373,8 @@ l'agenda — les événements déjà publiés restent publiés, seule la file de
    coûte une réinscription à tout le monde.
 2. `SCHEDULER=1`, et vérifier le lendemain que les tâches ont tourné (écran de relecture).
 3. SMTP + SPF/DKIM/DMARC, testés vers Gmail et Outlook.
-4. Trancher les sauvegardes (exclusion des tables de publications), rotation des journaux à
+4. Pousser les sauvegardes vers S3 Swiss Backup — l'exclusion des publications est faite,
+   la copie hors machine non —, rotation des journaux à
    sept jours.
 5. Créer et relever la boîte `contact@allezou.ch`, déjà annoncée dans
    [DONNEES.md](DONNEES.md), et la phrase sur la boîte aux lettres comme clé du compte.

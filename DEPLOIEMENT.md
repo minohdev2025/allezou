@@ -206,30 +206,44 @@ allezou.ch {
 }
 ```
 
-## 4. Sauvegardes — le point qui demande une décision
+## 4. Sauvegardes
 
-Une sauvegarde nocturne conservée trente jours **contredit ce que [DONNEES.md](DONNEES.md)
+Une sauvegarde nocturne conservée trente jours **contredirait ce que [DONNEES.md](DONNEES.md)
 promet aux parents** : « une présence expirée disparaît, y compris des journaux techniques et
-des sauvegardes ». Restaurer une sauvegarde de la semaine dernière ferait réapparaître les
-sorties de la semaine dernière.
+des sauvegardes ». Restaurer celle de la semaine dernière ferait réapparaître les sorties de la
+semaine dernière — exactement l'historique de déplacement que PRODUIT.md interdit.
 
-Trois façons de tenir la promesse, à trancher avant les premiers vrais parents :
+**Décision : les tables de publications ne sont pas sauvegardées.** Ce qui a de la valeur et
+vieillit bien — comptes, enfants, cercles, appartenances, lieux, sources d'agenda — l'est ;
+les sorties, non. Elles ne valent que quelques heures de toute façon. Les deux autres sorties
+envisagées étaient une rétention de deux jours pour toute la base, et la réécriture de la
+phrase de DONNEES.md — celle-là en dernier recours seulement, c'est la page que lira
+l'association de parents.
 
-1. **Exclure les tables éphémères de la sauvegarde.** `pg_dump --exclude-table=publication
-   --exclude-table=publication_circle --exclude-table=publication_participant
-   --exclude-table=publication_participant_child --exclude-table=publication_hidden_from`.
-   Ce qui compte vraiment — comptes, enfants, cercles, appartenances, lieux — est sauvegardé ;
-   les sorties, non. Elles ne valent que quelques heures de toute façon.
-2. **Rétention de sauvegarde courte**, deux jours au plus, pour toute la base.
-3. **Réécrire la phrase** de DONNEES.md. À n'envisager qu'en dernier recours : c'est la page
-   que lira l'association de parents.
+C'est [scripts/sauvegarde.sh](scripts/sauvegarde.sh), déposé à côté du `docker-compose.prod.yml`
+et lancé chaque nuit vers 03h30 par une minuterie systemd (`allezou-sauvegarde.timer`). Trente
+jours de rétention, fichiers en 600 dans `sauvegardes/`, et une écriture en deux temps : le
+fichier ne prend son nom définitif qu'une fois complet, pour qu'un disque plein ne laisse pas
+un fichier tronqué qui ressemble à une sauvegarde.
 
-La première est la plus honnête : elle protège ce qui a de la valeur sans conserver
-d'historique de déplacement.
+Une nuance par rapport à ce que ce document recommandait : `--exclude-table-data` et non
+`--exclude-table`. La structure des tables reste dans le fichier, seules les lignes
+disparaissent — une restauration rend ainsi une base utilisable tout de suite, là où des tables
+absentes laisseraient l'application en erreur jusqu'à la migration suivante.
 
-Pour la destination, l'écosystème LiNX sauvegarde déjà sur **S3 Swiss Backup d'Infomaniak** :
-les copies restent en Suisse, comme la base. Autant y ajouter Allezou plutôt que d'inventer un
-second chemin.
+**Ce qui manque encore : la destination distante.** Les copies vivent sur le disque du serveur,
+donc une panne de ce disque emporte la base *et* ses sauvegardes. L'écosystème LiNX sauvegarde
+déjà sur **S3 Swiss Backup d'Infomaniak** — les copies restent en Suisse, comme la base. Autant
+y ajouter Allezou plutôt que d'inventer un second chemin ; il faut pour cela les identifiants
+du compte.
+
+Vérifier une sauvegarde plutôt que la supposer :
+
+```bash
+ssh allezou "zcat \$(ls -t ~/allezou/sauvegardes/*.sql.gz | head -1) | grep -c '^COPY public.publication'"
+```
+
+La réponse doit être `0`.
 
 ## 5. Ce qui reste à vérifier une fois en ligne
 
