@@ -1,31 +1,32 @@
-# Vos données dans Totir
+# Vos données dans Allezou
 
-Cette page dit, en français ordinaire, ce que Totir enregistre, pourquoi, combien de temps, et
+Cette page dit, en français ordinaire, ce qu'Allezou enregistre, pourquoi, combien de temps, et
 qui peut le voir. Elle est écrite pour être lue en entier : si quelque chose n'y est pas
 clair, c'est un défaut de cette page, pas de votre attention.
 
 ## Qui est responsable
 
-**Michael Urbina**, en son nom propre. Totir n'est pas porté par une entreprise ni par
+**Michael Urbina**, en son nom propre. Allezou n'est pas porté par une entreprise ni par
 l'association de parents d'élèves qui vous a transmis l'invitation : c'est une personne
 physique qui décide de ce qui est collecté et qui en répond.
 
 Pour toute question ou demande :
 
+> [contact@allezou.ch](mailto:contact@allezou.ch)  
 > Michael Urbina  
 > Chemin du Gué 69  
 > 1213 Petit-Lancy
 
 Le traitement est soumis à la loi fédérale suisse sur la protection des données (nLPD).
 
-## Ce que Totir enregistre
+## Ce qu'Allezou enregistre
 
-Oui, Totir traite des données personnelles — y compris des données concernant des enfants.
+Oui, Allezou traite des données personnelles — y compris des données concernant des enfants.
 C'est justement pourquoi cette page existe.
 
 | Donnée | Pourquoi elle existe | Combien de temps | Qui la voit |
 |---|---|---|---|
-| Votre adresse électronique | C'est votre seule façon de vous connecter : Totir n'a pas de mot de passe | Tant que votre compte existe | Vous seul·e. Elle n'est jamais montrée aux autres membres |
+| Votre adresse électronique | C'est votre seule façon de vous connecter : Allezou n'a pas de mot de passe | Tant que votre compte existe | Vous seul·e. Elle n'est jamais montrée aux autres membres |
 | Le nom que vous choisissez d'afficher | Pour que les autres vous reconnaissent. Vous l'écrivez librement : « Sophie », « Maman de Léa », ce que vous voulez | Tant que votre compte existe | Les membres de vos cercles |
 | Le **prénom** de vos enfants — et rien d'autre | Pour dire qui est présent à une sortie : « nous sommes au parc avec Matéo » | Tant que vous le gardez déclaré | Les membres de vos cercles, quand vous déclarez l'enfant présent |
 | Vos cercles et qui en fait partie | C'est le cœur du produit | Tant que le cercle existe | Les membres du cercle concerné |
@@ -35,13 +36,13 @@ C'est justement pourquoi cette page existe.
 | L'adresse technique de votre téléphone pour les notifications | Pour vous envoyer les notifications | Tant que vous les acceptez | Personne — c'est un identifiant technique |
 | Un journal des changements de droits (qui a fait entrer qui dans un cercle, qui a exclu qui) | Pour pouvoir comprendre un problème de sécurité | **12 mois** | Le responsable, en cas d'incident |
 
-## Ce que Totir n'enregistre pas
+## Ce qu'Allezou n'enregistre pas
 
 Ce ne sont pas des intentions, ce sont des absences vérifiables dans le code.
 
 - **Aucun mot de passe.** Il n'en existe nulle part, donc aucun ne peut fuiter.
 - **Aucune position GPS, jamais.** Une sortie est un lieu que vous choisissez dans une liste,
-  avec une heure de fin. Totir ne sait pas où vous êtes et ne le demande jamais à votre
+  avec une heure de fin. Allezou ne sait pas où vous êtes et ne le demande jamais à votre
   téléphone, ni au premier plan ni en arrière-plan.
 - **Aucun historique de déplacement.** Une sortie passée est effacée, pas archivée. Il
   n'existe aucune façon, même pour le responsable, de reconstituer où une famille est allée
@@ -104,8 +105,9 @@ Vous pouvez à tout moment :
 - **retirer** un enfant, ce qui efface son prénom ;
 - **demander des explications** sur n'importe quel point de cette page.
 
-Écrivez à l'adresse indiquée en haut de cette page. Vous avez également le droit de vous
-adresser au Préposé fédéral à la protection des données et à la transparence.
+Écrivez à [contact@allezou.ch](mailto:contact@allezou.ch), ou à l'adresse postale indiquée en
+haut de cette page. Vous avez également le droit de vous adresser au Préposé fédéral à la
+protection des données et à la transparence.
 
 ## Si cette page change
 
@@ -115,4 +117,4 @@ en silence.
 
 ---
 
-*Dernière mise à jour : 10 août 2026.*
+*Dernière mise à jour : 14 août 2026.*

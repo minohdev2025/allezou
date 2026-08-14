@@ -32,7 +32,7 @@ export default async function Connexion({
         <div aria-hidden className="mb-3 text-6xl leading-none">
           🌳
         </div>
-        <h1 className="text-4xl font-bold tracking-tight">Totir</h1>
+        <h1 className="text-4xl font-bold tracking-tight">Allezou</h1>
         <p className="mx-auto mt-3 max-w-xs leading-snug text-[color:var(--color-doux)]">
           Savoir qui est dehors, parmi les gens qu&apos;on connaît déjà.
         </p>
@@ -90,7 +90,7 @@ export default async function Connexion({
           href="/donnees"
           className="font-semibold text-[color:var(--color-doux)] underline underline-offset-4"
         >
-          Ce que Totir enregistre, et qui peut le voir
+          Ce qu&apos;Allezou enregistre, et qui peut le voir
         </Link>
       </p>
     </main>

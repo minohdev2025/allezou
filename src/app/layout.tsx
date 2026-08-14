@@ -20,7 +20,7 @@ const texte = Nunito({
 });
 
 export const metadata: Metadata = {
-  title: "Totir",
+  title: "Allezou",
   description: "Savoir qui est dehors, parmi les gens qu'on connaît déjà.",
 };
 

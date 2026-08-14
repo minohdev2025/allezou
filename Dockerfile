@@ -13,6 +13,13 @@ RUN npm ci
 FROM node:${NODE_VERSION}-alpine AS builder
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
+
+# `next build` importe les modules de page pour les analyser, et src/lib/db refuse de se
+# charger sans DATABASE_URL. Aucune connexion n'est ouverte ici : `postgres()` est paresseux,
+# et toutes les pages lisent les cookies, donc aucune n'est prérendue. Cette valeur ne sert
+# qu'à laisser le module se charger — elle ne survit pas à l'étage suivant.
+ENV DATABASE_URL=postgresql://build:build@127.0.0.1:5432/build
+
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npm run build

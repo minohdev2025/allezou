@@ -12,7 +12,7 @@ import { NextResponse, type NextRequest } from "next/server";
  * de valoir une injection de script — le compromis est du bon côté.
  *
  * `Permissions-Policy: geolocation=()` n'est pas une précaution de forme : c'est la promesse
- * de PRODUIT.md rendue opposable par le navigateur. Totir ne peut pas demander la position,
+ * de PRODUIT.md rendue opposable par le navigateur. Allezou ne peut pas demander la position,
  * même si quelqu'un ajoutait le code pour le faire.
  */
 export function proxy(request: NextRequest) {

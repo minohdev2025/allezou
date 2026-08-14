@@ -1,6 +1,10 @@
-# Déploiement de Totir sur son instance dédiée. Voir DEPLOIEMENT.md.
+# Déploiement d'Allezou sur son VPS. Voir DEPLOIEMENT.md.
 #
-#   docker compose -f docker-compose.prod.yml up -d --build
+#   docker compose -f docker-compose.prod.yml up -d
+#
+# Sans `--build` : l'image est construite ailleurs puis chargée sur la machine
+# (DEPLOIEMENT.md §2), parce qu'un `next build` ne tient pas dans les 2 Go du VPS. Le `build:`
+# ci-dessous ne sert qu'en développement.
 #
 # Aucun port de base de données n'est publié, et l'application n'écoute que sur la boucle
 # locale : Caddy est le seul chemin d'entrée, et il termine le TLS.

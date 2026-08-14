@@ -11,7 +11,7 @@ self.addEventListener("install", () => self.skipWaiting());
 self.addEventListener("activate", (event) => event.waitUntil(self.clients.claim()));
 
 self.addEventListener("push", (event) => {
-  let contenu = { title: "Totir", body: "Du nouveau dans un de vos cercles", url: "/maintenant" };
+  let contenu = { title: "Allezou", body: "Du nouveau dans un de vos cercles", url: "/maintenant" };
 
   try {
     if (event.data) contenu = { ...contenu, ...event.data.json() };

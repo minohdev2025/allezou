@@ -67,7 +67,7 @@ export async function sendMail(mail: Mail): Promise<void> {
   }
 
   await getTransporter().sendMail({
-    from: process.env.SMTP_FROM ?? "Totir <ne-pas-repondre@example.ch>",
+    from: process.env.SMTP_FROM ?? "Allezou <contact@allezou.ch>",
     to: mail.to,
     subject: mail.subject,
     text: mail.text,
@@ -77,11 +77,11 @@ export async function sendMail(mail: Mail): Promise<void> {
 export function sendLoginLink(email: string, url: string): Promise<void> {
   return sendMail({
     to: email,
-    subject: "Votre lien de connexion à Totir",
+    subject: "Votre lien de connexion à Allezou",
     text: [
       "Bonjour,",
       "",
-      "Voici votre lien pour vous connecter à Totir :",
+      "Voici votre lien pour vous connecter à Allezou :",
       url,
       "",
       "Ce lien est valable 15 minutes et ne fonctionne qu'une fois.",

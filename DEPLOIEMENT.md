@@ -1,4 +1,4 @@
-# Déploiement de Totir
+# Déploiement d'Allezou
 
 > **Pour une démonstration**, rien de tout ceci n'est nécessaire : voir
 > [« Montrer l'app sans la déployer »](#montrer-lapp-sans-la-déployer) à la fin.
@@ -10,14 +10,14 @@
 ---
 
 
-Cible : une **instance dédiée sur Infomaniak Public Cloud** (Suisse), provisionnée comme les
-autres — Terraform / OpenStack, le même projet que la flotte LiNX. Séparée du VPS éditeur :
-Totir bougera souvent, et il n'a rien à faire sur la machine qui sert des cabinets qui paient.
+Cible : un **VPS Infomaniak** (Suisse), séparé du VPS éditeur — Allezou bougera souvent, et il
+n'a rien à faire sur la machine qui sert des cabinets qui paient.
 
-Domaine : **totir.ch**. Contrairement à un `.app`, le TLD n'est pas préchargé HSTS en bloc :
-le domaine est à soumettre une fois à [hstspreload.org](https://hstspreload.org), l'en-tête
-étant déjà conforme. Voir [PRODUCTION.md §1](PRODUCTION.md). `r4c.app` reste l'adresse de
-démonstration servie par tunnel, et rien d'autre.
+Domaine : **allezou.ch**, déjà pointé sur le VPS. Contrairement à un `.app`, le TLD n'est pas
+préchargé HSTS en bloc : le domaine est à soumettre une fois à
+[hstspreload.org](https://hstspreload.org), l'en-tête étant déjà conforme. Voir
+[PRODUCTION.md §1](PRODUCTION.md). C'est la seule adresse de l'application — il n'y en a plus
+d'autre à tenir à jour.
 
 Devant, un proxy inverse : **nginx** ou **Caddy**, au choix — l'instance est neuve, rien
 n'impose l'un ou l'autre. Dans l'écosystème LiNX, nginx sert sur les VPS de cabinet et Caddy
@@ -28,17 +28,46 @@ publie aucun port.
 
 ## 0. L'instance
 
-Une petite instance suffit : un pilote de quelques classes, c'est une poignée de requêtes par
-jour. Deux vCPU et 4 Go de mémoire laissent de la marge pour construire l'image sur place.
+**Commandée : 1 vCPU, 2 Go de mémoire, 20 Go de disque.** Pour *servir*, c'est confortable :
+un pilote de quelques classes, c'est une poignée de requêtes par jour, et Next.js en production
+à côté de Postgres tient sans peine dans 2 Go.
+
+**Pour *construire*, non.** `next build` réclame couramment plus d'un gigaoctet à lui seul ;
+avec Postgres à côté sur une machine de 2 Go, la marge est nulle et le noyau finit par tuer le
+processus — au plus mauvais moment, celui d'une mise à jour, quand le service est déjà arrêté.
+L'image se construit donc ailleurs et voyage jusqu'au serveur (§2). Le `build:` de
+[docker-compose.prod.yml](docker-compose.prod.yml) reste bon sur une machine de développement ;
+sur le serveur, **`up -d` sans `--build`**.
+
+Les 20 Go demandent la même discipline : chaque version livrée laisse ses couches Docker
+derrière elle. Un `docker image prune -f` après chaque déploiement, et le disque ne dérive pas.
+
+Elle tourne sous **Ubuntu**, et l'accès se fait par clé, sous l'utilisateur `ubuntu` :
+
+```bash
+ssh -i <chemin-de-la-clé> ubuntu@allezou.ch
+```
+
+Le nom pointant déjà sur la machine, il n'y a pas d'adresse IP à retenir — la console
+Infomaniak la donne, si le DNS n'est pas encore propagé chez toi.
 
 Le pare-feu n'ouvre que **22** et **443**. Ni 5432 : Postgres ne sort pas de la machine. Ni 80,
 et c'est un choix : un port 80 fermé ne peut rien laisser passer en clair, là où un port 80 qui
 redirige offre une première requête à intercepter. Les navigateurs actuels essaient HTTPS
 d'eux-mêmes pour une adresse tapée à la main, et les invitations circulent en `https://` — mais
-un lien écrit `http://totir.ch` par quelqu'un échouera franchement. C'est le compromis retenu,
+un lien écrit `http://allezou.ch` par quelqu'un échouera franchement. C'est le compromis retenu,
 et [hstspreload.org](https://hstspreload.org) n'exige de redirection que si le port 80 écoute.
 
 À installer : Docker avec le module Compose, et Caddy.
+
+**Avant Caddy, libérer le 443.** L'image du VPS y répond déjà, avec un certificat auto-signé
+`CN=localhost` — c'est ce qui fait échouer la vérification d'éligibilité de hstspreload.org
+([PRODUCTION.md §1](PRODUCTION.md)). Voir qui occupe le port, puis l'arrêter :
+
+```bash
+sudo ss -lntp | grep :443
+sudo systemctl disable --now nginx    # ou apache2, selon ce que la commande révèle
+```
 
 ## 1. Variables
 
@@ -49,7 +78,7 @@ renseigner :
 |---|---|
 | `POSTGRES_PASSWORD` | `openssl rand -base64 32` — différent de celui de LiNX |
 | `SESSION_SECRET` | `openssl rand -base64 32` — **jamais** celui du développement |
-| `APP_URL` | `https://totir.ch` — en changer plus tard invalide les clés d'accès et les abonnements push ([PRODUCTION.md §1](PRODUCTION.md)) |
+| `APP_URL` | `https://allezou.ch` — en changer plus tard invalide les clés d'accès et les abonnements push ([PRODUCTION.md §1](PRODUCTION.md)) |
 | `SMTP_*` | Compte d'envoi Infomaniak. Sans lui, personne ne se connecte |
 | `VAPID_*` | `npx web-push generate-vapid-keys` |
 | `ADMIN_EMAILS` | Les adresses qui accèdent à `/relecture` |
@@ -60,11 +89,38 @@ démarrer qu'un service qui tourne avec un secret par défaut.
 
 ## 2. Lancer
 
+Une commande, depuis le dépôt, sur ta machine :
+
 ```bash
-docker compose -f docker-compose.prod.yml up -d --build
+./scripts/deploy.sh
+```
+
+Elle construit l'image, l'envoie par `ssh`, redémarre le service et applique les migrations.
+Un registre ferait le même travail que le `docker save | ssh`, mais tant qu'il n'y a qu'un
+serveur, `ssh` suffit et n'ajoute aucun compte à gérer. `SERVEUR` et `RACINE` se surchargent
+par variable d'environnement.
+
+Ce qu'elle fait, si tu préfères le faire à la main :
+
+```bash
+docker build --platform linux/amd64 -t totir:latest .
+docker save totir:latest | gzip | ssh ubuntu@allezou.ch 'gunzip | docker load'
+```
+
+L'image, les conteneurs et la base gardent le nom `totir` : ce sont des identifiants internes,
+que personne ne lit, et les renommer coûterait une migration de base pour rien.
+
+Puis sur le serveur, `up -d` **sans** `--build` — l'image est déjà là :
+
+```bash
+docker compose -f docker-compose.prod.yml up -d
 docker compose -f docker-compose.prod.yml exec app npx drizzle-kit migrate
 docker compose -f docker-compose.prod.yml exec app npm run sources:seed
+docker image prune -f
 ```
+
+Le premier déploiement demande d'abord de déposer `docker-compose.prod.yml` et le `.env`
+rempli dans `RACINE` sur le serveur — c'est le seul passage qui ne se rejoue pas.
 
 ## 3. Le proxy inverse
 
@@ -84,12 +140,12 @@ Le certificat vient de certbot, à installer et à renouveler.
 server {
     listen 443 ssl;
     http2 on;
-    server_name totir.ch;
+    server_name allezou.ch;
 
-    ssl_certificate     /etc/letsencrypt/live/totir.ch/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/totir.ch/privkey.pem;
+    ssl_certificate     /etc/letsencrypt/live/allezou.ch/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/allezou.ch/privkey.pem;
 
-    access_log /var/log/nginx/totir.access.log;
+    access_log /var/log/nginx/allezou.access.log;
 
     location / {
         proxy_pass http://127.0.0.1:4100;
@@ -111,15 +167,17 @@ Le port 80 n'est pas ouvert. Certbot doit donc utiliser le défi DNS
 
 ### Caddy
 
-Le certificat et son renouvellement sont automatiques, et le défi DNS n'est pas nécessaire :
-le port 80 étant fermé, Caddy obtient son certificat par le défi TLS-ALPN sur 443.
+C'est le choix retenu, et la configuration est au dépôt : [caddy/Caddyfile](caddy/Caddyfile),
+à déposer en `/etc/caddy/Caddyfile`. Le certificat et son renouvellement sont automatiques, et
+le défi DNS n'est pas nécessaire : le port 80 étant fermé, Caddy obtient son certificat par le
+défi TLS-ALPN sur 443.
 
 ```caddyfile
-totir.ch {
+allezou.ch {
     reverse_proxy 127.0.0.1:4100
 
     log {
-        output file /var/log/caddy/totir.log {
+        output file /var/log/caddy/allezou.log {
             roll_size 20MiB
             roll_keep_for 168h
         }
@@ -149,7 +207,7 @@ La première est la plus honnête : elle protège ce qui a de la valeur sans con
 d'historique de déplacement.
 
 Pour la destination, l'écosystème LiNX sauvegarde déjà sur **S3 Swiss Backup d'Infomaniak** :
-les copies restent en Suisse, comme la base. Autant y ajouter Totir plutôt que d'inventer un
+les copies restent en Suisse, comme la base. Autant y ajouter Allezou plutôt que d'inventer un
 second chemin.
 
 ## 5. Ce qui reste à vérifier une fois en ligne
@@ -157,8 +215,9 @@ second chemin.
 - Une notification push qui **arrive vraiment** sur un téléphone. Jamais testé jusqu'ici :
   il faut HTTPS, et sur iPhone l'application ajoutée à l'écran d'accueil.
 - Un lien de connexion qui arrive par courriel, et pas dans les indésirables.
-- L'adresse de contact de DONNEES.md — aujourd'hui une adresse postale seulement. Un parent
-  qui veut corriger une donnée doit écrire une lettre.
+- `contact@allezou.ch` : la boîte existe chez Infomaniak, reçoit, et quelqu'un la relève.
+  [DONNEES.md](DONNEES.md) l'annonce aux parents, l'écran « Vous » y renvoie, et c'est elle qui
+  envoie les liens de connexion (`SMTP_FROM`).
 
 ---
 
@@ -169,29 +228,30 @@ aucune donnée réelle n'existe, et il n'y a rien à héberger. Il faut juste du
 ni les notifications ni l'installation sur l'écran d'accueil ne fonctionnent, et ce sont
 justement les deux choses qu'on veut montrer.
 
-Un tunnel Cloudflare depuis ta machine suffit. **`r4c.app` est en place** : la zone est chez
-Cloudflare, le tunnel nommé y répond, l'adresse est stable — une application ajoutée à un
-écran d'accueil le reste, et les codes QR restent valables d'une fois sur l'autre.
+Depuis qu'`allezou.ch` pointe sur le VPS, le plus court est souvent de déployer et de montrer le
+vrai site. Ce qui suit sert quand le serveur n'est pas prêt, ou pour montrer une version qui n'y
+est pas encore.
 
-Deux terminaux :
+`npm run demo:tunnel` ouvre un tunnel éphémère en `*.trycloudflare.com` vers ta machine. Deux
+terminaux :
 
 ```bash
-npm run demo:tunnel:nomme
+npm run demo:tunnel
 ```
 
 ```bash
 npm run demo:start
 ```
 
+L'adresse du tunnel change à chaque lancement : il faut la reporter dans l'`APP_URL` de
+`.env.local` **avant** de démarrer l'application, sinon les liens et les codes QR pointent
+ailleurs. Et une application ajoutée à un écran d'accueil depuis cette adresse ne survit pas au
+lancement suivant — la stabilité du nom, c'est `allezou.ch` qui la porte maintenant, sur le
+serveur.
+
 `demo:start` construit et sert en mode production : les cookies passent en `secure`, la
-politique de sécurité perd son `unsafe-eval`, et ce que tu montres ressemble à ce qui
-tournera vraiment. `.env.local` doit contenir `APP_URL=https://r4c.app`.
-
-### Le repli sans DNS
-
-`npm run demo:tunnel` ouvre un tunnel éphémère en `*.trycloudflare.com`, utile si la zone est
-indisponible. L'adresse change à chaque lancement : il faut alors la reporter dans `APP_URL`
-**avant** de démarrer l'application, sinon les liens et les codes QR pointent ailleurs.
+politique de sécurité perd son `unsafe-eval`, et ce que tu montres ressemble à ce qui tournera
+vraiment.
 
 > **Ne jamais lancer `cloudflared tunnel --url` seul.** Sans `--config`, cloudflared lit
 > `~/.cloudflared/config.yml`, celui de `linq-a.ch` : sa règle finale

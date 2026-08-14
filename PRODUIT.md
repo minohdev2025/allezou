@@ -1,4 +1,4 @@
-# Totir — modèle produit
+# Allezou — modèle produit
 
 > Statut : validé le 9 août 2026. Ce document remplace le brief initial.
 > Il fixe **quoi** et **pourquoi**. Toute décision technique qui entre en tension avec
@@ -10,7 +10,7 @@ Un parent sort avec ses enfants un samedi matin. L'information « nous sommes au
 jusqu'à midi » existe, mais ne circule nulle part : le groupe WhatsApp de la classe est le
 mauvais canal pour ça — trop de monde, trop de bruit.
 
-Totir diffuse deux signaux, et rien d'autre :
+Allezou diffuse deux signaux, et rien d'autre :
 
 - **« nous sommes là, maintenant »** — une présence qui expire toute seule ;
 - **« nous y serons »** — une inscription à une activité datée.
@@ -130,7 +130,7 @@ Ordre de construction : **tout le socle avant l'interface.**
 relaie l'invitation. Adresse de contact : Chemin du Gué 69, 1213 Petit-Lancy. Le cadre est la
 **nLPD suisse**. La page destinée aux parents est [DONNEES.md](DONNEES.md).
 
-Ce que cela implique, et qui n'est pas rien : Totir traite bien des données personnelles
+Ce que cela implique, et qui n'est pas rien : Allezou traite bien des données personnelles
 réelles — adresses électroniques, noms affichés, prénoms et années de naissance d'enfants,
 déclarations de présence en temps quasi réel. Une personne physique en répond. C'est
 précisément pourquoi la minimisation n'est pas une posture ici.

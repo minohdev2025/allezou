@@ -163,7 +163,7 @@ export async function inviterAutreParent() {
 /**
  * Le code d'un lien, qu'on ait collé le lien entier ou seulement le code.
  *
- * Ce qu'on reçoit par message, c'est « https://totir.ch/rejoindre/ab12… », souvent avec une
+ * Ce qu'on reçoit par message, c'est « https://allezou.ch/rejoindre/ab12… », souvent avec une
  * ponctuation collée au bout par la messagerie. Exiger le code nu ferait échouer le geste le
  * plus naturel — coller ce qu'on a reçu — et l'erreur n'en dirait pas la raison.
  */

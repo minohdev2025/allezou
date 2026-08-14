@@ -138,7 +138,7 @@ export function ActiverNotifications({
   if (etat === "installer_dabord") {
     return (
       <div>
-        <p className="mb-2 font-bold">Ajoutez d&apos;abord Totir à votre écran d&apos;accueil</p>
+        <p className="mb-2 font-bold">Ajoutez d&apos;abord Allezou à votre écran d&apos;accueil</p>
         <p className="text-sm leading-snug text-[color:var(--color-doux)]">
           Sur iPhone, les notifications ne fonctionnent que depuis l&apos;application
           installée. Touchez le bouton de partage en bas de Safari, puis « Sur l&apos;écran

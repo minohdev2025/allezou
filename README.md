@@ -1,4 +1,4 @@
-# Totir
+# Allezou
 
 Coordination entre parents : « nous sommes au parc du Gué jusqu'à midi » et « nous serons à
 la visite du Muséum », diffusés à des cercles de confiance qui existent déjà hors de l'app.

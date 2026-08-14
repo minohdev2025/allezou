@@ -1,0 +1,24 @@
+# Ce qui ne doit pas entrer dans le contexte de construction.
+#
+# `node_modules` surtout : l'étage `deps` l'installe pour Linux, et le laisser passer depuis un
+# poste Windows écraserait cette installation par des binaires natifs de la mauvaise plateforme.
+node_modules
+.next
+.git
+.gitignore
+.claude
+.hermes
+cloudflared
+
+# Secrets : rien de ce qui ressemble à un environnement ne monte dans une image.
+.env
+.env.*
+
+# Inutiles au `next build`, et qui invalideraient le cache à chaque édition.
+Dockerfile
+.dockerignore
+docker-compose*.yml
+tsconfig.tsbuildinfo
+*.log
+
+# DONNEES.md reste, lui : le serveur le lit à l'exécution pour la page /donnees.

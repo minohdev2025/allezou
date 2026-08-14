@@ -50,7 +50,7 @@ export function parseAgeRange(text: string | undefined): {
 
 export type Adapter = (source: Source) => Promise<RawEvent[]>;
 
-export const USER_AGENT = "Totir/0.1 (agenda familial genevois)";
+export const USER_AGENT = "Allezou/0.1 (agenda familial genevois)";
 
 /** Coupe une chaîne à la longueur admise en base, sans couper au milieu d'un mot si possible. */
 export function clamp(text: string | undefined, max: number): string | undefined {

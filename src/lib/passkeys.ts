@@ -35,7 +35,7 @@ const ok = <T>(value: T): Result<T> => ({ ok: true, value });
 const ko = <T>(reason: PasskeyError): Result<T> => ({ ok: false, reason });
 
 /** Nom affiché par l'appareil au moment d'enregistrer la clé. */
-const NOM_DU_SITE = "Totir";
+const NOM_DU_SITE = "Allezou";
 
 /**
  * Le domaine auquel la clé est liée.

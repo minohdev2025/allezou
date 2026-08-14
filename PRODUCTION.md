@@ -1,6 +1,6 @@
 # Passer en production
 
-> Note écrite le 10 août 2026, à l'issue du pilote local et de la démonstration sur `r4c.app`.
+> Note écrite le 10 août 2026, à l'issue du pilote local et de la démonstration par tunnel.
 >
 > [DEPLOIEMENT.md](DEPLOIEMENT.md) dit **comment** installer l'application sur une machine.
 > Ce document dit **ce qui doit être vrai avant que de vrais parents s'en servent**, et ce qui
@@ -15,22 +15,26 @@ dont des familles dépendent.
 
 ## 1. Le nom de domaine
 
-**Décision : `totir.ch`.** À vérifier disponible chez Infomaniak, qui vend le `.ch` et où les
-zones sont déjà gérées.
+**Décision : `allezou.ch`**, pris chez Infomaniak — qui vend le `.ch` et où les zones sont déjà
+gérées — et **déjà pointé sur le VPS**.
 
-`sortir.fun` était réservé, et `sortir.app` a été envisagé pour son préchargement HSTS. Deux
-raisons de préférer le `.ch` :
+`sortir.fun` était réservé, `sortir.app` a été envisagé pour son préchargement HSTS, et
+`totir.ch` a été la décision précédente — du temps où l'application s'appelait Totir. Elle
+s'appelle Allezou : le domaine dit désormais le nom, exactement, et plus personne n'a de
+correction à faire en le répétant.
 
-- **L'avantage du `.app` s'obtient sur `.ch` ; l'inverse est faux.** Le préchargement HSTS d'un
-  `.app` est acquis d'office, mais sur `.ch` il coûte *une* soumission (voir plus bas). Un
-  `.app`, lui, ne dira jamais « Suisse » dans la barre d'adresse — et c'est le seul argument
-  que Totir possède face à une association de parents. La barre d'adresse est lue par tout le
-  monde ; [DONNEES.md](DONNEES.md) par presque personne.
-- **L'application s'appelle Totir**, sur l'écran de connexion comme dans tous les documents.
-  Un domaine en « sortir » coûte une correction à chaque fois que quelqu'un répète le nom.
+Reste l'arbitrage du `.ch` contre le `.app`, et il tient en une phrase : **l'avantage du `.app`
+s'obtient sur `.ch` ; l'inverse est faux.** Le préchargement HSTS d'un `.app` est acquis
+d'office, alors que sur `.ch` il coûte *une* soumission (voir plus bas). Un `.app`, lui, ne dira
+jamais « Suisse » dans la barre d'adresse — et c'est le seul argument qu'Allezou possède face à
+une association de parents. La barre d'adresse est lue par tout le monde ;
+[DONNEES.md](DONNEES.md) par presque personne.
 
-`r4c.app` reste ce qu'il est : l'adresse de démonstration, servie par un tunnel depuis un poste.
-Il n'a pas vocation à recevoir de vrais parents.
+L'adresse de démonstration par tunnel nommé est abandonnée, et le tunnel avec elle :
+`allezou.ch` pointe sur le VPS, et un même nom ne peut pas être servi des deux côtés. Une
+démonstration depuis un poste passe désormais par un tunnel éphémère
+([DEPLOIEMENT.md](DEPLOIEMENT.md)). Une seule adresse, donc, et définitive — la section suivante
+dit ce que coûterait d'en changer.
 
 ### Changer de domaine invalide des choses, silencieusement
 
@@ -45,14 +49,12 @@ changement :
 | **L'app ajoutée à l'écran d'accueil** | Elle pointe sur l'ancienne origine | Une icône qui ouvre un site mort |
 | **Les codes QR et liens d'invitation déjà partagés** | Ils portent l'ancienne adresse en clair | Un lien qui ne mène nulle part |
 
-**Conséquence pratique : `totir.ch` est le dernier changement d'adresse.** Il doit être fait
-*avant* la première invitation à de vrais parents ; après, chaque bascule coûte une
+**Conséquence pratique : `allezou.ch` est définitif.** Le changement se fait aujourd'hui sans
+rien coûter — les seuls comptes existants sont des comptes de démonstration — et il doit être le
+dernier : passé la première invitation à de vrais parents, chaque bascule coûte une
 réinscription à tout le monde. Et si une bascule devenait inévitable un jour, garder l'ancien
 domaine en redirection permanente et prévenir dans l'application : une redirection 301 sauve
 les liens, pas les clés d'accès ni les notifications.
-
-Le passage de `r4c.app` à `totir.ch` ne coûte rien aujourd'hui — les seuls comptes existants
-sont des comptes de démonstration.
 
 ### HSTS : une soumission à faire, une seule fois
 
@@ -61,14 +63,21 @@ L'en-tête `Strict-Transport-Security` est déjà servi avec les bonnes valeurs
 Sur `.app` il était décoratif — le TLD entier est préchargé dans les navigateurs. **Sur `.ch`,
 il devient la protection réelle**, et un en-tête ne protège qu'à partir de la *deuxième* visite.
 
-Il faut donc soumettre `totir.ch` à [hstspreload.org](https://hstspreload.org) une fois en
-ligne. Les conditions sont déjà remplies par la configuration prévue :
+Il faut donc soumettre `allezou.ch` à [hstspreload.org](https://hstspreload.org) une fois en
+ligne. Les conditions sont remplies par la configuration prévue :
 
-- certificat valide et service en HTTPS ✔
+- certificat valide et service en HTTPS — **après déploiement seulement** (voir plus bas)
 - en-tête conforme sur le domaine apex ✔
 - redirection depuis HTTP **seulement si le port 80 écoute** — or il reste fermé
   ([DEPLOIEMENT.md](DEPLOIEMENT.md)), ce qui satisfait la condition sans rien faire, et
   n'empêche pas Caddy d'obtenir son certificat (défi TLS-ALPN sur 443).
+
+**Soumettre avant le déploiement ne sert à rien** : le formulaire répond aujourd'hui « Invalid
+Certificate Chain », parce que ce qui écoute sur le 443 du VPS est le serveur par défaut de
+l'image, avec un certificat auto-signé `CN=localhost`. Rien à corriger côté application — il
+faut simplement libérer le port et laisser Caddy demander le sien. L'ordre est donc : arrêter ce
+qui occupe 443, déployer, vérifier la chaîne (`openssl s_client -connect allezou.ch:443
+-servername allezou.ch`, ou [SSL Labs](https://www.ssllabs.com/ssltest/)), et soumettre ensuite.
 
 Entre la mise en ligne et l'entrée effective dans les navigateurs — quelques semaines —
 la toute première visite d'un parent reste théoriquement interceptable. Sur un pilote de
@@ -131,7 +140,7 @@ et la plus silencieuse.
 
 Avec une connexion par lien magique, **quiconque lit la boîte électronique d'un parent entre
 dans son compte**. C'est la réponse honnête à « c'est sécurisé ? » : le niveau de sécurité de
-Totir est celui de la messagerie du parent, pas le nôtre.
+Allezou est celui de la messagerie du parent, pas le nôtre.
 
 Les clés d'accès réduisent la surface — un habitué n'utilise plus le courriel — mais la
 récupération reste la boîte aux lettres, et c'est intentionnel : un téléphone perdu ne doit pas
@@ -145,9 +154,13 @@ fermer un compte. Ce qu'il reste à faire :
 
 ### d. Une adresse de contact réelle
 
-[DONNEES.md](DONNEES.md) n'indique aujourd'hui qu'une **adresse postale**. Un parent qui veut
-corriger une donnée doit écrire une lettre. Une adresse électronique sur le domaine suffit, et
-c'est une condition de crédibilité de la page autant qu'une obligation.
+**Fait : `contact@allezou.ch`**, dans [DONNEES.md](DONNEES.md) et derrière « Nous écrire », au
+bas de l'écran « Vous ». C'est aussi l'expéditeur des liens de connexion (`SMTP_FROM`) : une
+seule boîte, sans adresse « ne pas répondre » — un parent qui répond au courriel qui l'a fait
+entrer écrit donc à quelqu'un.
+
+Il reste à la créer chez Infomaniak et à la relever. Une adresse annoncée qui ne répond pas est
+pire que l'adresse postale qu'elle remplace, parce qu'elle promet une réponse rapide.
 
 Dans le même mouvement : le droit d'accès est aujourd'hui satisfait *écran par écran* (compte,
 cercles, réglages). Il n'existe pas d'export en un geste. Un bouton « télécharger mes données »
@@ -280,7 +293,7 @@ Cela a une conséquence directe sur ce que « croiser les données » peut voulo
 le croisement va **du public vers le catalogue**, jamais l'inverse. On peut relier une activité
 communale à un lieu du catalogue ; on ne peut pas envoyer à un modèle « voici où vont les
 familles de la classe 4P, propose-leur quelque chose ». Cette seconde chose serait le
-meilleur produit et la fin du seul argument que Totir possède.
+meilleur produit et la fin du seul argument qu'Allezou possède.
 
 ### Ce qui manque, dans l'ordre où ça vaut la peine
 
@@ -328,7 +341,7 @@ des trois, puisqu'il n'interprète rien.
 
 **8. Le pied juridique du moissonnage.** À mettre en ordre avant d'élargir à vingt communes,
 pas après : respecter `robots.txt`, garder un `User-Agent` identifiant avec une adresse de
-contact (aujourd'hui `Totir/0.1 (agenda familial genevois)`, sans contact), espacer les
+contact (aujourd'hui `Allezou/0.1 (agenda familial genevois)`, sans contact), espacer les
 requêtes, afficher systématiquement la source et un lien vers elle — ce qui est déjà le cas —
 et retirer sans discuter une commune qui le demande. Écrire à deux ou trois communes pour
 annoncer ce qu'on fait coûte un courriel et transforme un moissonnage subi en partenariat.
@@ -344,14 +357,15 @@ l'agenda — les événements déjà publiés restent publiés, seule la file de
 
 **Avant la première invitation à de vrais parents :**
 
-1. Acheter `totir.ch`, le renseigner dans `APP_URL`, et le soumettre à hstspreload.org.
-   Ne plus en changer ensuite : chaque bascule coûte une réinscription à tout le monde.
+1. Renseigner `allezou.ch` dans `APP_URL` — le domaine est pris et pointé — puis le soumettre à
+   hstspreload.org une fois le service en ligne. Ne plus en changer ensuite : chaque bascule
+   coûte une réinscription à tout le monde.
 2. `SCHEDULER=1`, et vérifier le lendemain que les tâches ont tourné (écran de relecture).
 3. SMTP + SPF/DKIM/DMARC, testés vers Gmail et Outlook.
 4. Trancher les sauvegardes (exclusion des tables de publications), rotation des journaux à
    sept jours.
-5. Adresse électronique de contact dans [DONNEES.md](DONNEES.md), et la phrase sur la boîte aux
-   lettres comme clé du compte.
+5. Créer et relever la boîte `contact@allezou.ch`, déjà annoncée dans
+   [DONNEES.md](DONNEES.md), et la phrase sur la boîte aux lettres comme clé du compte.
 6. Vérifier qu'une notification arrive vraiment sur un téléphone.
 
 **Dans les premières semaines :**

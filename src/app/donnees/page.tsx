@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { marked } from "marked";
 import Link from "next/link";
 
-export const metadata = { title: "Vos données dans Totir" };
+export const metadata = { title: "Vos données dans Allezou" };
 
 /**
  * Rendue à chaque requête, comme le reste : la politique de sécurité du contenu porte un

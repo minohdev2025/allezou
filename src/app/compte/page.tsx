@@ -255,8 +255,16 @@ export default async function Compte({
             href="/donnees"
             className="font-semibold text-[color:var(--color-doux)] underline underline-offset-4"
           >
-            Ce que Totir enregistre
+            Ce qu&apos;Allezou enregistre
           </Link>
+        </p>
+        <p>
+          <a
+            href="mailto:contact@allezou.ch"
+            className="font-semibold text-[color:var(--color-doux)] underline underline-offset-4"
+          >
+            Nous écrire
+          </a>
         </p>
         <form action={seDeconnecter}>
           <button className="text-[color:var(--color-doux)] underline underline-offset-4">

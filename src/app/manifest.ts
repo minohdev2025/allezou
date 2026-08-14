@@ -10,8 +10,8 @@ import type { MetadataRoute } from "next";
  */
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Totir",
-    short_name: "Totir",
+    name: "Allezou",
+    short_name: "Allezou",
     description: "Savoir qui est dehors, parmi les gens qu'on connaît déjà.",
     lang: "fr",
     start_url: "/maintenant",
