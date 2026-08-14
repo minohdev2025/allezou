@@ -25,7 +25,14 @@ import { z } from "zod";
 
 import { normaliser } from "../texte";
 import { lireTarifEtAcces } from "./tarif";
-import { clamp, parseAgeRange, USER_AGENT, type Adapter, type RawEvent } from "./types";
+import {
+  clamp,
+  lireTexte,
+  parseAgeRange,
+  USER_AGENT,
+  type Adapter,
+  type RawEvent,
+} from "./types";
 
 const MINIMAX_URL = "https://api.minimax.io/v1/chat/completions";
 const MINIMAX_MODEL = "MiniMax-M3";
@@ -238,7 +245,7 @@ export async function extractEventsWithMiniMax(
   });
 
   if (!response.ok) {
-    throw new Error(`MiniMax : HTTP ${response.status} ${await response.text()}`);
+    throw new Error(`MiniMax : HTTP ${response.status} ${await lireTexte(response, 500)}`);
   }
 
   const body = (await response.json()) as {
@@ -417,7 +424,7 @@ async function lirePages(url: string, maxPages: number): Promise<string> {
       break;
     }
 
-    const texte = htmlToText(await reponse.text());
+    const texte = htmlToText(await lireTexte(reponse));
     const utile = page === 0 ? texte : sansPartieCommune(pages[0], texte);
     if (!utile) break;
     pages.push(utile);

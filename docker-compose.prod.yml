@@ -66,6 +66,11 @@ services:
       SCHEDULER: ${SCHEDULER:-1}
     ports:
       - "127.0.0.1:4100:4100"
+    # Le planificateur tourne dans ce processus, et il lit des sites qu'on ne tient pas. Une
+    # lecture qui déraperait redémarre le conteneur au lieu d'emporter la machine, base de
+    # données comprise. Les adaptateurs plafonnent déjà ce qu'ils lisent : ceci est la
+    # seconde barrière, celle qui ne dépend pas du code.
+    mem_limit: 1g
     networks:
       - totir-net
 

@@ -25,8 +25,30 @@ import {
   sourceHealth,
   type Adapters,
 } from "@/lib/ingest/run";
-import type { RawEvent } from "@/lib/ingest/types";
+import { lireTexte, type RawEvent } from "@/lib/ingest/types";
 import { createSource, minutesFromNow, resetDatabase } from "@/test/helpers";
+
+describe("Lire une réponse sans se laisser noyer", () => {
+  it("rend le corps entier quand il tient", async () => {
+    expect(await lireTexte(new Response("bonjour"), 100)).toBe("bonjour");
+  });
+
+  it("s'arrête au plafond", async () => {
+    expect(await lireTexte(new Response("a".repeat(5_000)), 100)).toHaveLength(100);
+  });
+
+  it("coupe un flux qui ne se termine jamais", async () => {
+    // Sans plafond, cette lecture ne rendrait pas la main, et le serveur web avec elle :
+    // le planificateur tourne dans le même processus.
+    const sansFin = new ReadableStream({
+      pull(controleur) {
+        controleur.enqueue(new TextEncoder().encode("a".repeat(1_000)));
+      },
+    });
+
+    expect(await lireTexte(new Response(sansFin), 2_000)).toHaveLength(2_000);
+  });
+});
 
 /** Adaptateurs de test : aucun accès réseau. */
 function adaptateur(events: RawEvent[] | Error): Adapters {

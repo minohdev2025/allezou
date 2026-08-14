@@ -12,7 +12,14 @@
  */
 
 import { lireTarifEtAcces } from "./tarif";
-import { clamp, parseAgeRange, USER_AGENT, type Adapter, type RawEvent } from "./types";
+import {
+  clamp,
+  lireTexte,
+  parseAgeRange,
+  USER_AGENT,
+  type Adapter,
+  type RawEvent,
+} from "./types";
 
 /** Les feuilles genevoises ne déclarent pas toujours leur fuseau. Ici, c'est celui-là. */
 const ZONE_PAR_DEFAUT = "Europe/Zurich";
@@ -233,5 +240,5 @@ export const icalAdapter: Adapter = async (source) => {
   const reponse = await fetch(source.url, { headers: { "User-Agent": USER_AGENT } });
   if (!reponse.ok) throw new Error(`${source.url} : HTTP ${reponse.status}`);
 
-  return eventsFromIcs(await reponse.text(), source.url, config.categoriesIgnorees ?? []);
+  return eventsFromIcs(await lireTexte(reponse), source.url, config.categoriesIgnorees ?? []);
 };

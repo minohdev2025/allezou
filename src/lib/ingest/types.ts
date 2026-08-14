@@ -64,6 +64,48 @@ export type Adapter = (source: Source) => Promise<RawEvent[]>;
 
 export const USER_AGENT = "Allezou/0.1 (agenda familial genevois)";
 
+/**
+ * Ce qu'on accepte de lire d'un site qu'on ne tient pas.
+ *
+ * Deux mégaoctets : la plus grosse feuille communale rencontrée en fait quarante. Le
+ * planificateur tourne dans le processus du serveur web, et le conteneur n'a pas de mémoire
+ * infinie : une commune dont le flux enfle, ou dont le site est repris par quelqu'un d'autre,
+ * ne doit pas pouvoir emporter Allezou avec elle.
+ */
+export const TAILLE_MAX_REPONSE = 2_000_000;
+
+/**
+ * Lit le corps d'une réponse en s'arrêtant à `max` caractères, et coupe la connexion.
+ *
+ * `reponse.text()` charge tout avant de rendre la main : la taille se découvre une fois qu'il
+ * est trop tard. Ici on lit par morceaux et on referme dès qu'on en a assez, ce qui borne
+ * aussi le temps passé.
+ */
+export async function lireTexte(
+  reponse: Response,
+  max = TAILLE_MAX_REPONSE,
+): Promise<string> {
+  const corps = reponse.body;
+  if (!corps) return (await reponse.text()).slice(0, max);
+
+  const lecteur = corps.getReader();
+  const decodeur = new TextDecoder();
+  let texte = "";
+
+  try {
+    while (texte.length < max) {
+      const { done, value } = await lecteur.read();
+      if (done) break;
+      texte += decodeur.decode(value, { stream: true });
+    }
+  } finally {
+    // Referme la connexion : sans ça, le reste du corps continue d'arriver pour rien.
+    await lecteur.cancel().catch(() => undefined);
+  }
+
+  return texte.slice(0, max);
+}
+
 /** Coupe une chaîne à la longueur admise en base, sans couper au milieu d'un mot si possible. */
 export function clamp(text: string | undefined, max: number): string | undefined {
   if (!text) return undefined;

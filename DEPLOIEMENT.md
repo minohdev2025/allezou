@@ -135,7 +135,7 @@ Puis sur le serveur, `up -d` **sans** `--build` — l'image est déjà là :
 
 ```bash
 docker compose -f docker-compose.prod.yml up -d
-docker compose -f docker-compose.prod.yml exec app npx drizzle-kit migrate
+docker compose -f docker-compose.prod.yml exec app node scripts/migrer.mjs
 docker compose -f docker-compose.prod.yml exec app npm run sources:seed
 docker image prune -f
 ```

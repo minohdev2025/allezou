@@ -10,6 +10,15 @@ RUN apk add --no-cache libc6-compat
 COPY package.json package-lock.json ./
 RUN npm ci
 
+# Les seules dépendances dont l'exécution a besoin. L'étage `deps` ci-dessus en contient
+# bien davantage, et cette chaîne de construction n'a rien à faire dans l'image finale : elle
+# n'y sert à rien et y traîne ses propres avertissements de sécurité.
+FROM node:${NODE_VERSION}-alpine AS deps-prod
+WORKDIR /app
+RUN apk add --no-cache libc6-compat
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev
+
 FROM node:${NODE_VERSION}-alpine AS builder
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
@@ -36,7 +45,7 @@ RUN apk add --no-cache libc6-compat \
  && adduser -S -u 1001 -G nodejs nextjs
 
 COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
+COPY --from=deps-prod --chown=nextjs:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
 COPY --from=builder --chown=nextjs:nodejs /app/next.config.ts ./next.config.ts
 COPY --from=builder --chown=nextjs:nodejs /app/tsconfig.json ./tsconfig.json

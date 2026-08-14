@@ -8,7 +8,23 @@
  */
 
 import { lireTarifEtAcces, type Tarif } from "./tarif";
-import { clamp, parseAgeRange, USER_AGENT, type Adapter, type RawEvent } from "./types";
+import {
+  clamp,
+  lireTexte,
+  parseAgeRange,
+  USER_AGENT,
+  type Adapter,
+  type RawEvent,
+} from "./types";
+
+/**
+ * Combien de fiches on accepte de suivre en un passage.
+ *
+ * Une page de liste donne une trentaine de liens ; une page reprise par quelqu'un d'autre
+ * pourrait en donner dix mille, et on les demanderait un par un. Ce qui est laissé de côté
+ * est dit à voix haute : un plafond silencieux se lit comme une couverture complète.
+ */
+const FICHES_MAX = 200;
 
 type JsonLdConfig = {
   /** Fragment que doit contenir un lien pour être considéré comme une fiche d'événement. */
@@ -149,7 +165,7 @@ export const jsonLdAdapter: Adapter = async (source) => {
 
     const html = await fetch(listUrl, { headers: { "User-Agent": USER_AGENT } }).then((r) => {
       if (!r.ok) throw new Error(`liste ${listUrl} : HTTP ${r.status}`);
-      return r.text();
+      return lireTexte(r);
     });
 
     const avant = liens.size;
@@ -162,11 +178,19 @@ export const jsonLdAdapter: Adapter = async (source) => {
     if (liens.size === avant) break;
   }
 
+  const aSuivre = [...liens].slice(0, FICHES_MAX);
+  if (liens.size > FICHES_MAX) {
+    console.warn(
+      `${source.name} : ${liens.size} fiches annoncées, ${FICHES_MAX} suivies. ` +
+        "Le motif de lien attrape peut-être plus que des activités.",
+    );
+  }
+
   const events: RawEvent[] = [];
-  for (const lien of liens) {
+  for (const lien of aSuivre) {
     try {
       const html = await fetch(lien, { headers: { "User-Agent": USER_AGENT } }).then((r) =>
-        r.ok ? r.text() : "",
+        r.ok ? lireTexte(r) : "",
       );
       if (!html) continue;
       events.push(...eventsFromHtml(html, lien));

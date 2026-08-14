@@ -46,6 +46,33 @@ Une activité retirée n'est jamais effacée : les familles inscrites gardent le
 et continuent de la voir, avec la mention qui va bien. L'effacer emporterait leur inscription
 en silence, par la cascade.
 
+## Ce qu'un audit de sécurité a donné
+
+Fait le 14 août 2026, sur le code, la configuration et les dépendances. L'authentification
+tient : lien magique à usage unique sous verrou, clé d'accès dont l'origine et le domaine
+sont vérifiés, session hachée et revérifiée à chaque lecture. Les gardes d'autorisation sont
+en place partout, aucune requête SQL n'est construite par concaténation, Postgres n'est pas
+publié et les sauvegardes excluent bien les sorties.
+
+Trois choses en sont sorties, toutes corrigées :
+
+- **Ce qu'on lit d'un site communal n'avait pas de plafond.** Le planificateur tourne dans le
+  processus du serveur web : un flux qui enfle n'aurait pas fait échouer l'ingestion, il
+  aurait emporté le site. `lireTexte` s'arrête à deux mégaoctets et referme la connexion, et
+  le conteneur porte désormais une limite de mémoire, qui ne dépend pas du code.
+- **Le nombre de fiches suivies n'en avait pas non plus.** Deux cents au maximum, et ce qui
+  est laissé de côté est dit dans le journal.
+- **La chaîne de développement voyageait dans l'image de production.** Les migrations
+  passaient par `drizzle-kit`, un outil de développement, ce qui obligeait à embarquer tout le
+  reste avec lui. `scripts/migrer.mjs` fait le même travail avec le migrateur de
+  `drizzle-orm`, qui est une dépendance de production. L'image perd 340 Mo et les quatre
+  avertissements qui venaient de là.
+
+Deux points laissés tels quels, et notés ici pour qu'on ne les redécouvre pas : `/donnees`
+rend du Markdown non assaini, mais il vient d'un fichier du dépôt et la politique de sécurité
+du contenu bloquerait un script injecté ; et il manque `Cross-Origin-Opener-Policy`, alors que
+`frame-ancestors 'none'` couvre déjà le cadrage.
+
 ## Ce qui reste ouvert
 
 ### Les activités sans horaire sortent à minuit

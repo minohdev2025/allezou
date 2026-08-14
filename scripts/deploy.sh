@@ -17,6 +17,6 @@ echo "→ transfert vers $SERVEUR"
 docker save "$IMAGE" | gzip | ssh "$SERVEUR" 'gunzip | docker load'
 
 echo "→ démarrage et migrations"
-ssh "$SERVEUR" "cd '$RACINE' && $COMPOSE up -d && $COMPOSE exec -T app npx drizzle-kit migrate && docker image prune -f"
+ssh "$SERVEUR" "cd '$RACINE' && $COMPOSE up -d && $COMPOSE exec -T app node scripts/migrer.mjs && docker image prune -f"
 
 echo "✓ en ligne — https://allezou.ch"
