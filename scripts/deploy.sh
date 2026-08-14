@@ -14,6 +14,10 @@ echo "→ construction de $IMAGE (linux/amd64)"
 docker build --platform linux/amd64 -t "$IMAGE" .
 
 echo "→ transfert vers $SERVEUR"
+# Le fichier compose vit en double : ici et sur le serveur. Le transférer à chaque fois évite
+# qu'une limite ou une variable ajoutée dans le dépôt n'arrive jamais à destination. Le `.env`
+# du serveur, lui, n'est pas touché : c'est là que vivent les secrets.
+scp -q docker-compose.prod.yml "$SERVEUR:$RACINE/docker-compose.prod.yml"
 docker save "$IMAGE" | gzip | ssh "$SERVEUR" 'gunzip | docker load'
 
 echo "→ démarrage et migrations"
