@@ -58,7 +58,17 @@ d'eux-mêmes pour une adresse tapée à la main, et les invitations circulent en
 un lien écrit `http://allezou.ch` par quelqu'un échouera franchement. C'est le compromis retenu,
 et [hstspreload.org](https://hstspreload.org) n'exige de redirection que si le port 80 écoute.
 
-À installer : Docker avec le module Compose, et Caddy.
+À installer : Docker avec le module Compose, et Caddy. Tout vient des dépôts Ubuntu — ni script
+distant tubé dans un shell, ni dépôt tiers à faire confiance :
+
+```bash
+sudo apt-get update
+sudo apt-get install -y docker.io docker-compose-v2 caddy
+sudo usermod -aG docker ubuntu          # se reconnecter pour que le groupe prenne
+sudo ufw allow 22/tcp && sudo ufw allow 443/tcp && sudo ufw --force enable
+```
+
+Ouvrir 22 **avant** d'activer le pare-feu, sinon la session en cours est la dernière.
 
 Le VPS n'écoute que sur **22** : ni 80 ni 443 ne répondent tant que Caddy n'est pas installé,
 et c'est l'état voulu. Si un jour Caddy n'obtient pas son certificat, la première question est
@@ -72,7 +82,7 @@ renseigner :
 
 | Variable | Comment l'obtenir |
 |---|---|
-| `POSTGRES_PASSWORD` | `openssl rand -base64 32` — différent de celui de LiNX |
+| `POSTGRES_PASSWORD` | `openssl rand -hex 32` — **pas** de base64 : ce mot de passe entre dans `DATABASE_URL`, et un `/` ou un `+` y coupe l'URL en deux ([docker-compose.prod.yml](docker-compose.prod.yml)). Différent de celui de LiNX |
 | `SESSION_SECRET` | `openssl rand -base64 32` — **jamais** celui du développement |
 | `APP_URL` | `https://allezou.ch` — en changer plus tard invalide les clés d'accès et les abonnements push ([PRODUCTION.md §1](PRODUCTION.md)) |
 | `SMTP_*` | Compte d'envoi Infomaniak. Sans lui, personne ne se connecte |
