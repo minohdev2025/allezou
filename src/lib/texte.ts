@@ -37,3 +37,15 @@ export function contient(meule: string, aiguille: string): boolean {
   if (!aiguille) return false;
   return ` ${meule} `.includes(` ${aiguille}`);
 }
+
+/**
+ * Une énumération française : « Léa », « Léa et Matéo », « Léa, Matéo et Jules ».
+ *
+ * `join(" et ")` marche jusqu'à deux, et une famille de trois lisait « Léa et Matéo et
+ * Jules » sur chacune de ses sorties. Le défaut n'existe pas dans le monde d'un parent de
+ * deux enfants, ce qui explique qu'il ait tenu jusqu'ici.
+ */
+export function listeFr(elements: string[]): string {
+  if (elements.length <= 1) return elements[0] ?? "";
+  return `${elements.slice(0, -1).join(", ")} et ${elements[elements.length - 1]}`;
+}

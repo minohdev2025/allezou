@@ -4,6 +4,7 @@ import { upcomingCalendar } from "@/lib/calendar";
 import { myChildren } from "@/lib/children";
 import { currentlyOut, upcomingOutings } from "@/lib/publications";
 import { requireAccount } from "@/lib/session";
+import { listeFr } from "@/lib/texte";
 import { readerCircles, visibleParticipants, type VisiblePublication } from "@/lib/visibility";
 import { rejoindreSortie, retirerSortie } from "../actions";
 import {
@@ -222,7 +223,7 @@ async function LigneSortie({
           <p className="font-bold leading-tight">{cestMoi ? "Vous" : sortie.authorName}</p>
           {sortie.authorChildren.length > 0 ? (
             <p className="text-sm text-[color:var(--color-doux)]">
-              avec {sortie.authorChildren.join(" et ")}
+              avec {listeFr(sortie.authorChildren)}
             </p>
           ) : null}
         </div>
@@ -283,7 +284,7 @@ async function LigneSortie({
                   {p.children.length > 0 ? (
                     <span className="text-[color:var(--color-doux)]">
                       {" "}
-                      avec {p.children.join(" et ")}
+                      avec {listeFr(p.children)}
                     </span>
                   ) : null}
                 </span>

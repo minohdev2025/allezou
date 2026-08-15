@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { myChildren } from "@/lib/children";
 import { myChildrenOnPublication } from "@/lib/publications";
 import { requireAccount } from "@/lib/session";
+import { listeFr } from "@/lib/texte";
 import {
   canSeePublication,
   visibleParticipants,
@@ -136,7 +137,7 @@ export default async function Sortie({
               </span>
               {p.children.length > 0 ? (
                 <span className="text-sm text-[color:var(--color-doux)]">
-                  avec {p.children.join(" et ")}
+                  avec {listeFr(p.children)}
                 </span>
               ) : null}
             </span>
