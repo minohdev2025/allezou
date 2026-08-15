@@ -477,7 +477,8 @@ export async function readerCircles(
   }>(sql`
     select
       c.id,
-      c.name,
+      -- Le nom que cette personne a choisi de voir, sinon celui du cercle.
+      coalesce(m.alias, c.name) as name,
       m.role,
       (
         select count(*)

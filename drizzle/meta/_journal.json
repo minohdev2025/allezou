@@ -134,6 +134,13 @@
       "when": 1786807080430,
       "tag": "0018_silky_bucky",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1786807810018,
+      "tag": "0019_cloudy_wraith",
+      "breakpoints": true
     }
   ]
 }

@@ -26,6 +26,7 @@ import {
   quitterCercle,
   rattacherEnfantCercle,
   refuserDemande,
+  renommerPourMoi,
   remplacerInvitation,
   revoquerInvitation,
 } from "../../actions";
@@ -349,6 +350,34 @@ export default async function Cercle({
           </li>
         ))}
       </ul>
+
+      {/*
+        Le nom du cercle, chez moi.
+
+        Celui qui le crée le nomme pour lui-même. « Classe 4P » dit quelque chose au parent
+        délégué et rien à celui qui a trois enfants dans trois classes.
+      */}
+      <Carte className="mb-5">
+        <form action={renommerPourMoi} className="space-y-3">
+          <input type="hidden" name="cercle" value={id} />
+          <label className="block">
+            <span className="mb-1 block font-bold">Comment vous l&apos;appelez</span>
+            <span className="mb-2 block text-sm leading-snug text-[color:var(--color-doux)]">
+              Ce nom n&apos;est visible que de vous. Laissez-le tel quel pour garder celui du
+              cercle, qui suivra si son administrateur le change.
+            </span>
+            <input
+              name="alias"
+              defaultValue={cercle.name}
+              maxLength={60}
+              className="w-full rounded-2xl bg-[color:var(--color-fond)] px-4 py-3 text-base ring-2 ring-[color:var(--color-trait)] outline-none focus:ring-[color:var(--color-vert)]"
+            />
+          </label>
+          <Bouton variante="second" className="!py-2.5 !text-base">
+            Enregistrer
+          </Bouton>
+        </form>
+      </Carte>
 
       {/*
         Pourquoi je suis dans ce cercle.

@@ -141,6 +141,18 @@ export const circleMembership = pgTable(
     role: circleRole().notNull().default("member"),
     /** Ce cercle est-il coché par défaut au moment de publier ? Réglage personnel. */
     defaultAudience: boolean().notNull().default(true),
+    /**
+     * Comment cette personne appelle ce cercle, si elle l'appelle autrement.
+     *
+     * Celui qui crée un cercle le nomme pour lui-même : « Classe 4P » dit quelque chose au
+     * parent délégué, et rien à celui qui a trois enfants dans trois classes et voudrait lire
+     * « Classe de Jules ». Le nom d'origine reste celui du cercle ; chacun peut poser le sien
+     * par-dessus, et personne d'autre ne le voit.
+     *
+     * Nul quand on garde le nom d'origine : un cercle renommé par son administrateur suit
+     * alors, au lieu de rester figé sur une copie faite un jour.
+     */
+    alias: varchar({ length: 60 }),
     joinedAt: timestamp({ withTimezone: true }).notNull().default(now),
     leftAt: timestamp({ withTimezone: true }),
   },

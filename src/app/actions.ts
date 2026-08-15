@@ -39,6 +39,7 @@ import {
   requestJoin,
   restoreLink,
   revokeInvite,
+  setCircleAlias,
   setRole,
 } from "@/lib/circles";
 import { heureDeGeneve } from "@/lib/heure";
@@ -475,6 +476,20 @@ export async function publierActivite(formData: FormData) {
  * classe. Le dire permet à l'écran de sortie de ne plus adresser au cercle de l'aînée une
  * sortie où seul le petit est venu.
  */
+/** Comment cette personne appelle ce cercle. Personne d'autre ne le voit. */
+export async function renommerPourMoi(formData: FormData) {
+  const account = await requireAccount();
+  const circleId = String(formData.get("cercle") ?? "");
+
+  const result = await setCircleAlias(
+    account.id,
+    circleId,
+    String(formData.get("alias") ?? ""),
+  );
+
+  redirect(result.ok ? `/cercles/${circleId}` : `/cercles/${circleId}?erreur=${result.reason}`);
+}
+
 export async function rattacherEnfantCercle(formData: FormData) {
   const account = await requireAccount();
   const cercle = String(formData.get("cercle") ?? "");

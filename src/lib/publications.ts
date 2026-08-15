@@ -75,7 +75,7 @@ export async function defaultAudience(
   actorId: string,
 ): Promise<{ id: string; name: string }[]> {
   const rows = await db.execute<{ id: string; name: string }>(sql`
-    select c.id, c.name
+    select c.id, coalesce(m.alias, c.name) as name
     from circle_membership m
     join circle c on c.id = m.circle_id and c.archived_at is null
     where m.account_id = ${actorId}

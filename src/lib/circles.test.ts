@@ -23,11 +23,14 @@ import {
   restoreLink,
   revokeInvite,
   setRole,
+  setCircleAlias,
 } from "@/lib/circles";
 import { db } from "@/lib/db";
+import { prefsParCercle } from "@/lib/notifications";
 import {
   isActiveMember,
   isCircleAdmin,
+  readerCircles,
   visibleCircleMembers,
   visiblePublications,
 } from "@/lib/visibility";
@@ -476,5 +479,75 @@ describe("Le journal d'audit", () => {
     const apres = await db.execute(sql`select count(*)::int as n from audit_log`);
 
     expect(apres[0]).toEqual(avant[0]);
+  });
+});
+
+describe("Le nom d'un cercle, chez chacun", () => {
+  /** Fait entrer quelqu'un, comme les autres tests de ce fichier. */
+  async function faireEntrer(admin: Account, membre: Account, circleId: string) {
+    await requestJoin(membre.id, await unLien(admin, circleId));
+    const attente = await listPendingRequests(admin.id, circleId);
+    if (!attente.ok) throw new Error(attente.reason);
+    await approveJoin(admin.id, attente.value[0].id);
+  }
+
+  it("chacun voit le nom qu'il a posé", async () => {
+    const alice = await createAccount("Alice");
+    const bob = await createAccount("Bob");
+    const circleId = await unCercle(alice, "Classe 4P");
+    await faireEntrer(alice, bob, circleId);
+
+    await setCircleAlias(bob.id, circleId, "Classe de Jules");
+
+    expect((await readerCircles(bob.id))[0].name).toBe("Classe de Jules");
+    // Celui d'à côté ne voit rien de ce changement.
+    expect((await readerCircles(alice.id))[0].name).toBe("Classe 4P");
+  });
+
+  it("efface l'alias quand il redit le nom d'origine", async () => {
+    const alice = await createAccount("Alice");
+    const circleId = await unCercle(alice, "Classe 4P");
+
+    await setCircleAlias(alice.id, circleId, "  Classe 4P  ");
+
+    // Sans cet effacement, un renommage ultérieur laisserait une copie figée de l'ancien nom.
+    const rows = await db.execute<{ alias: string | null }>(
+      sql`select alias from circle_membership`,
+    );
+    expect(rows[0].alias).toBeNull();
+  });
+
+  it("revient au nom du cercle quand on vide le champ", async () => {
+    const alice = await createAccount("Alice");
+    const circleId = await unCercle(alice, "Classe 4P");
+
+    await setCircleAlias(alice.id, circleId, "Chez nous");
+    await setCircleAlias(alice.id, circleId, "");
+
+    expect((await readerCircles(alice.id))[0].name).toBe("Classe 4P");
+  });
+
+  it("refuse à qui n'est pas membre", async () => {
+    const alice = await createAccount("Alice");
+    const bob = await createAccount("Bob");
+    const circleId = await unCercle(alice, "Classe 4P");
+
+    expect(await setCircleAlias(bob.id, circleId, "Chez moi")).toEqual({
+      ok: false,
+      reason: "pas_membre",
+    });
+  });
+
+  it("porte aussi sur ce que la notification annonce", async () => {
+    const alice = await createAccount("Alice");
+    const bob = await createAccount("Bob");
+    const circleId = await unCercle(alice, "Classe 4P");
+    await faireEntrer(alice, bob, circleId);
+
+    await setCircleAlias(bob.id, circleId, "Classe de Jules");
+
+    // Le titre d'une notification est un nom de cercle : celui de qui la reçoit.
+    const prefs = await prefsParCercle(bob.id);
+    expect(prefs[0].circleName).toBe("Classe de Jules");
   });
 });

@@ -38,6 +38,7 @@ export const circleNameSchema = z.string().trim().min(1).max(60);
 export type CircleError =
   | "nom_invalide"
   | "pas_membre"
+  | "cercle_inconnu"
   | "pas_admin"
   | "invitation_inconnue"
   | "invitation_revoquee"
@@ -399,6 +400,50 @@ export async function leaveCircle(actorId: string, circleId: string): Promise<Re
     await ensureAdminSuccession(tx, circleId, actorId);
     return ok(undefined as void);
   });
+}
+
+/**
+ * Comment cette personne appelle ce cercle.
+ *
+ * Celui qui crée un cercle le nomme pour lui-même. « Classe 4P » dit quelque chose au parent
+ * délégué et rien à celui qui a trois enfants dans trois classes et voudrait lire « Classe de
+ * Jules ». Le nom d'origine ne bouge pas : chacun pose le sien par-dessus, et personne
+ * d'autre ne le voit.
+ *
+ * Un alias identique au nom d'origine est effacé plutôt que gardé. Sans cela, le cercle
+ * renommé plus tard par son administrateur laisserait derrière lui des copies figées du nom
+ * d'avant, chez ceux qui n'avaient rien voulu changer.
+ */
+export async function setCircleAlias(
+  actorId: string,
+  circleId: string,
+  saisie: string,
+): Promise<Result<void>> {
+  if (!(await isActiveMember(actorId, circleId))) return ko("pas_membre");
+
+  const [cercle] = await db
+    .select({ name: s.circle.name })
+    .from(s.circle)
+    .where(and(eq(s.circle.id, circleId), isNull(s.circle.archivedAt)))
+    .limit(1);
+
+  if (!cercle) return ko("cercle_inconnu");
+
+  const alias = saisie.trim().slice(0, 60);
+  const garde = alias && alias !== cercle.name ? alias : null;
+
+  await db
+    .update(s.circleMembership)
+    .set({ alias: garde })
+    .where(
+      and(
+        eq(s.circleMembership.accountId, actorId),
+        eq(s.circleMembership.circleId, circleId),
+        isNull(s.circleMembership.leftAt),
+      ),
+    );
+
+  return ok(undefined as void);
 }
 
 export async function removeMember(

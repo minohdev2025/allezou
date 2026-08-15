@@ -98,7 +98,7 @@ export async function prefsParCercle(accountId: string): Promise<ReglageCercle[]
   }>(sql`
     select
       c.id as circle_id,
-      c.name as circle_name,
+      coalesce(m.alias, c.name) as circle_name,
       coalesce(np.on_presence, true) as on_presence,
       coalesce(np.on_attendance, true) as on_attendance,
       np.paused_until
@@ -238,7 +238,9 @@ export async function recipientsFor(publicationId: string): Promise<Recipient[]>
     select distinct
       m.account_id,
       c.id as circle_id,
-      c.name as circle_name
+      -- Le titre de la notification est un nom de cercle : celui du destinataire, pas
+      -- celui de l'auteur. Les deux peuvent différer, et c'est tout l'objet de l'alias.
+      coalesce(m.alias, c.name) as circle_name
     from publication p
     join publication_circle pc on pc.publication_id = p.id
     join circle c on c.id = pc.circle_id and c.archived_at is null
@@ -358,7 +360,7 @@ export async function notifyJoinRequest(
   send: Sender,
 ): Promise<NotifyReport> {
   const admins = await db.execute<{ account_id: string; circle_name: string }>(sql`
-    select m.account_id, c.name as circle_name
+    select m.account_id, coalesce(m.alias, c.name) as circle_name
     from circle_membership m
     join circle c on c.id = m.circle_id and c.archived_at is null
     join account a on a.id = m.account_id and a.deleted_at is null
