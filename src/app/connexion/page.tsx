@@ -20,8 +20,15 @@ const MESSAGES: Record<string, string> = {
  * Ce qui attend quelqu'un qui n'est jamais venu.
  *
  * Trois choses qu'un formulaire ne dit pas, et qui font hésiter : il n'y a pas de compte à
- * créer, on ne demandera presque rien, et l'application ne sert à rien tant qu'on n'est pas
- * dans un cercle.
+ * créer, on ne demandera presque rien, et ce qu'on voit le premier jour dépend des cercles
+ * qu'on a — sauf l'agenda du canton, qui n'en demande aucun.
+ *
+ * La troisième étape disait « seul, Allezou ne montre rien ». C'était vrai le jour où elle a
+ * été écrite, et ça ne l'est plus depuis que l'écran des sorties montre les prochaines
+ * activités du canton à qui n'a pas encore de cercle. C'était surtout une phrase de
+ * découragement au dernier écran avant l'engagement, juste au-dessus du bouton : elle
+ * demandait de créer un compte en prévenant qu'il ne servirait à rien. Ce qui reste vrai est
+ * dit sans détour — les sorties, elles, attendent des cercles.
  */
 const ETAPES = [
   {
@@ -37,7 +44,7 @@ const ETAPES = [
   {
     titre: "Vous entrez dans un cercle, ou vous créez le vôtre",
     texte:
-      "Si un parent vous a envoyé un lien d'invitation, il vous y fait entrer. Sinon vous créez votre cercle et vous invitez qui vous voulez. Seul, Allezou ne montre rien.",
+      "Si un parent vous a envoyé un lien d'invitation, il vous y fait entrer. Sinon vous créez votre cercle et vous invitez qui vous voulez. En attendant, l'agenda du canton est déjà là : il ne dépend d'aucun cercle. Les sorties, elles, attendent les vôtres.",
   },
 ];
 
