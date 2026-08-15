@@ -73,11 +73,38 @@ rend du Markdown non assaini, mais il vient d'un fichier du dépôt et la politi
 du contenu bloquerait un script injecté ; et il manque `Cross-Origin-Opener-Policy`, alors que
 `frame-ancestors 'none'` couvre déjà le cadrage.
 
-## Ce que le premier passage en production a appris
+## Ce que les premiers passages en production ont appris
 
-Nuit du 14 au 15 août 2026, six sources. Cent quarante-trois activités publiées, cinquante
-retenues en file. Les trois sources structurées passent entières ; les cinquante viennent
-toutes des trois communes lues par le modèle.
+Deux relevés, dans l'ordre où ils ont eu lieu. Ils ne comptent pas la même chose, et c'est
+la première leçon : le prochain devra écrire ce qu'il compte avant d'aligner des nombres.
+
+### 14 août 2026 — le premier passage des six sources
+
+Cent vingt-trois activités trouvées, dont cent deux nouvelles : quatre-vingt-cinq sont
+entrées seules au calendrier, dix-sept sont retombées en file.
+
+| Source | trouvées | publiées | en file |
+|---|---|---|---|
+| Ville de Genève (JSON-LD) | 30 | 9 nouvelles | 0 |
+| Chêne-Bougeries (iCal) | 21 | 21 | 0 |
+| Laconnex (iCal) | 12 | 12 | 0 |
+| Lancy (modèle) | 24 | 19 | 5 |
+| Onex (modèle) | 26 | 20 | 6 |
+| Vernier (modèle) | 10 | 4 | 6 |
+
+Les deux flux structurés passent entiers, ce qui était attendu : il n'y a rien à confronter.
+Lancy, muette la veille, rapporte vingt-quatre activités.
+
+### Nuit du 14 au 15 août 2026 — ce que l'agenda portait alors
+
+Cent quarante-trois activités publiées, cinquante retenues en file. Les trois sources
+structurées passent entières ; les cinquante viennent toutes des trois communes lues par le
+modèle.
+
+Ces nombres ne se soustraient pas à ceux de la veille : le relevé du 14 dit ce qu'un passage
+a trouvé et créé, celui-ci ce que l'agenda contenait après plusieurs passages — c'est le même
+corpus de cent quarante-trois que compte le commit qui a réparé les liens de fiches. Les lire
+comme deux moissons ferait croire à une explosion qui n'a pas eu lieu.
 
 **Trente-neuf des cinquante échouaient au même contrôle, `heure_absente`**, et c'était le
 trou noté la veille : une exposition ou un marché n'a pas d'horaire, le modèle sort minuit
@@ -137,25 +164,32 @@ que de résumer ; il faut regarder au prochain passage si elle suffit.
 - **Onex** n'a pas été revue depuis les contrôles. Elle rapportait vingt-sept activités ;
   combien en passent maintenant, on ne le saura qu'au prochain passage.
 
-### Ce qu'a donné le premier passage
+### Vernier, l'exception qui reste
 
-Fait le 14 août 2026, sur les six sources actives. Cent vingt-trois activités trouvées, dont
-cent deux nouvelles : quatre-vingt-cinq sont entrées seules au calendrier, dix-sept sont
-retombées en file.
-
-| Source | trouvées | publiées | en file |
-|---|---|---|---|
-| Ville de Genève (JSON-LD) | 30 | 9 nouvelles | 0 |
-| Chêne-Bougeries (iCal) | 21 | 21 | 0 |
-| Laconnex (iCal) | 12 | 12 | 0 |
-| Lancy (modèle) | 24 | 19 | 5 |
-| Onex (modèle) | 26 | 20 | 6 |
-| Vernier (modèle) | 10 | 4 | 6 |
-
-Les deux flux structurés passent entiers, ce qui était attendu : il n'y a rien à confronter.
-Lancy, muette la veille, rapporte vingt-quatre activités.
-
-**Vernier est l'exception qui reste** : six sur dix retenues, pour date absente, heure absente
-et titre reformulé. Sa liste écrit des titres sur deux lignes que le modèle recolle à sa façon.
+Six activités sur dix retenues au passage du 14 août, pour date absente, heure absente et
+titre reformulé. Sa liste écrit des titres sur deux lignes que le modèle recolle à sa façon.
 C'est la source à reprendre en premier, et probablement une question de découpage de page plus
-que de consigne.
+que de consigne — le même découpage qui permettrait de confronter chaque activité à son propre
+bloc plutôt qu'à la page entière.
+
+### Questions produit ouvertes
+
+Elles ne se règlent pas en écrivant du code, et aucune n'a de réponse aujourd'hui. Les noter
+ici évite qu'elles reviennent comme des surprises.
+
+- **Ce que deviennent les données si le responsable arrête.** Allezou n'est pas porté par une
+  entreprise, et c'est ce qui rassure ; l'envers est qu'un parent confie les prénoms de ses
+  enfants et son réseau réel à une personne seule, sans savoir ce qui se passe si elle
+  s'arrête. DONNEES.md ne le dit nulle part. Une phrase suffirait, et elle doit être vraie :
+  ce qui est promis là engage un effacement, pas une intention.
+- **Les enfants qui sortent sans leurs parents.** Le vocabulaire, l'illustration et le modèle
+  de publication supposent un parent qui déclare une sortie et qui y est. À onze ou treize
+  ans, l'enfant sort seul et c'est le parent qui aimerait savoir qui d'autre est dehors.
+  Faut-il pouvoir déclarer une sortie où l'on n'est pas soi-même ? La réponse touche à
+  l'invariant « pas d'inconnus » et ne se tranche pas à la légère.
+- **Ce qu'il faut observer sur l'amorçage d'un cercle.** Le produit se transmet de famille en
+  famille : le premier parent d'un cercle fait le travail le plus ingrat, inviter et attendre.
+  On ne sait pas encore combien de familles il faut réunir pour qu'un cercle vive, ni combien
+  de jours s'écoulent entre la création et la première sortie visible par quelqu'un d'autre.
+  Ce sont les deux nombres à regarder en premier quand de vraies familles arriveront, et rien
+  aujourd'hui ne les mesure.
