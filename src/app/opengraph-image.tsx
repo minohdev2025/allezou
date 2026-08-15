@@ -10,7 +10,7 @@ import { ImageResponse } from "next/og";
  * expliqué. L'aperçu doit donc porter le nom et la promesse, pas une capture d'écran de
  * l'application que personne ne déchiffrera sur une vignette.
  */
-export const alt = "Allezou : savoir qui est dehors, parmi les gens qu'on connaît déjà";
+export const alt = "Allezou : pour que nos enfants se retrouvent dehors";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -38,7 +38,7 @@ export default function Image() {
         </svg>
         <div style={{ fontSize: 104, fontWeight: 700, marginTop: 24 }}>Allezou</div>
         <div style={{ marginTop: 18, opacity: 0.92 }}>
-          Savoir qui est dehors, parmi les gens qu&apos;on connaît déjà
+          Pour que nos enfants se retrouvent dehors
         </div>
       </div>
     ),

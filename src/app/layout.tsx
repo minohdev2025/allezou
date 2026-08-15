@@ -29,7 +29,7 @@ const texte = Nunito({
  */
 const ADRESSE = process.env.APP_URL ?? "http://localhost:3000";
 const PROMESSE =
-  "Savoir qui est dehors, parmi les gens qu'on connaît déjà. " +
+  "Pour que nos enfants se retrouvent dehors. " +
   "Sorties partagées et agenda des familles genevoises.";
 
 export const metadata: Metadata = {

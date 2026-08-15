@@ -12,7 +12,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Allezou",
     short_name: "Allezou",
-    description: "Savoir qui est dehors, parmi les gens qu'on connaît déjà.",
+    description: "Pour que nos enfants se retrouvent dehors.",
     lang: "fr",
     start_url: "/maintenant",
     scope: "/",

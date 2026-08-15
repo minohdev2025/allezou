@@ -86,7 +86,7 @@ export default async function Connexion({
         </div>
         <h1 className="text-4xl font-bold tracking-tight">Allezou</h1>
         <p className="mx-auto mt-3 max-w-xs leading-snug text-[color:var(--color-doux)]">
-          Savoir qui est dehors, parmi les gens qu&apos;on connaît déjà.
+          Pour que nos enfants se retrouvent dehors.
         </p>
       </header>
 
