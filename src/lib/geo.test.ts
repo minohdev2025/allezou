@@ -11,7 +11,12 @@ import { sql } from "drizzle-orm";
 import { beforeEach, describe, expect, it } from "vitest";
 
 import { db } from "@/lib/db";
-import { geocoderCeQuiManque, requeteDeLieu, type Coordonnees } from "@/lib/geo";
+import {
+  geocoderCeQuiManque,
+  requeteDeLieu,
+  variantesDeRequete,
+  type Coordonnees,
+} from "@/lib/geo";
 import { createPlace } from "@/lib/places";
 import { createAccount, createEvent, resetDatabase } from "@/test/helpers";
 
@@ -46,6 +51,40 @@ describe("Ce qu'on donne à chercher", () => {
   it("se passe de ce qui manque", () => {
     expect(requeteDeLieu("Parc du Gué", null, "Petit-Lancy")).toBe("Parc du Gué, Petit-Lancy");
     expect(requeteDeLieu("Parc du Gué")).toBe("Parc du Gué");
+  });
+});
+
+describe("Chercher une seconde fois sans le sigle", () => {
+  it("propose la forme sans parenthèses", () => {
+    expect(variantesDeRequete("Musée d'ethnographie de Genève (MEG), Genève")).toEqual([
+      "Musée d'ethnographie de Genève (MEG), Genève",
+      "Musée d'ethnographie de Genève, Genève",
+    ]);
+  });
+
+  it("ne propose rien de plus quand il n'y a pas de sigle", () => {
+    expect(variantesDeRequete("Parc du Gué, Petit-Lancy")).toEqual(["Parc du Gué, Petit-Lancy"]);
+  });
+
+  it("ne coûte une requête de plus que sur ce qu'on aurait manqué", async () => {
+    const alice = await createAccount("Alice");
+    await createPlace(alice.id, { name: "Musée d'ethnographie de Genève (MEG)" });
+
+    const demandes: string[] = [];
+    const rapport = await geocoderCeQuiManque({
+      pause: 0,
+      chercher: async (requete) => {
+        demandes.push(requete);
+        // Le sigle fait échouer la première forme, comme chez Nominatim.
+        return requete.includes("(") ? null : GUE;
+      },
+    });
+
+    expect(demandes).toEqual([
+      "Musée d'ethnographie de Genève (MEG)",
+      "Musée d'ethnographie de Genève",
+    ]);
+    expect(rapport).toEqual({ demandes: 1, trouves: 1 });
   });
 });
 

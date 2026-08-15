@@ -70,6 +70,23 @@ export async function geocoder(requete: string): Promise<Coordonnees | null> {
   return { lat, lon };
 }
 
+/**
+ * Les formes sous lesquelles on cherche un même lieu, dans l'ordre.
+ *
+ * Un sigle entre parenthèses suffit à ne rien trouver : « Musée d'ethnographie de Genève
+ * (MEG) » ne rend rien, « Musée d'ethnographie de Genève » rend le boulevard Carl-Vogt. La
+ * seconde forme n'est demandée que si la première a échoué : elle ne coûte donc une requête
+ * que sur les lieux qu'on aurait manqués.
+ */
+export function variantesDeRequete(requete: string): string[] {
+  const sansSigle = requete
+    .replace(/\s*\([^)]*\)/g, "")
+    .replace(/\s+,/g, ",")
+    .trim();
+
+  return sansSigle && sansSigle !== requete ? [requete, sansSigle] : [requete];
+}
+
 export type RapportGeocodage = { demandes: number; trouves: number };
 
 const attendre = (ms: number) => new Promise((suite) => setTimeout(suite, ms));
@@ -162,9 +179,14 @@ async function tenter(
   chercher: (requete: string) => Promise<Coordonnees | null>,
   requete: string,
 ): Promise<Coordonnees | null> {
-  try {
-    return await chercher(requete);
-  } catch {
-    return null;
+  for (const variante of variantesDeRequete(requete)) {
+    try {
+      const trouve = await chercher(variante);
+      if (trouve) return trouve;
+    } catch {
+      return null;
+    }
   }
+
+  return null;
 }

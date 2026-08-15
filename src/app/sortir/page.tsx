@@ -6,7 +6,16 @@ import { defaultAudience, dureesProposees, lastOuting } from "@/lib/publications
 import { requireAccount } from "@/lib/session";
 import { readerCircles } from "@/lib/visibility";
 import { declarerSortie, refaireDerniereSortie } from "../actions";
-import { Alerte, Bouton, IconePlus, PUCE_COCHEE, Titre, Vide, teinte } from "../ui";
+import {
+  Alerte,
+  Bouton,
+  IconePlus,
+  LienBouton,
+  PUCE_COCHEE,
+  Titre,
+  Vide,
+  teinte,
+} from "../ui";
 
 const MESSAGES: Record<string, string> = {
   aucun_destinataire:
@@ -83,7 +92,22 @@ export default async function Sortir({
         </form>
       ) : null}
 
-      {lieux.length === 0 ? (
+      {/*
+        Sans cercle, toucher un lieu ne publierait rien : la sortie est refusée faute de
+        destinataire. Montrer la liste quand même, c'est tendre un piège au premier écran de
+        quelqu'un qui vient d'arriver.
+      */}
+      {cercles.length === 0 ? (
+        <Vide emoji="👥" titre="Il vous faut d'abord un cercle">
+          <p className="mb-4">
+            Une sortie s&apos;adresse aux familles d&apos;un cercle. Sans cercle, personne ne la
+            verrait, et Allezou refuse de la publier dans le vide.
+          </p>
+          <LienBouton href="/cercles" variante="principal">
+            Créer ou rejoindre un cercle
+          </LienBouton>
+        </Vide>
+      ) : lieux.length === 0 ? (
         <Vide emoji="📍" titre={recherche ? "Aucun lieu de ce nom" : "Aucun lieu dans le catalogue"}>
           {recherche ? (
             <Link href="/sortir" className="font-bold underline underline-offset-4">
@@ -129,7 +153,7 @@ export default async function Sortir({
               </div>
             ) : (
               <p className="text-sm leading-snug text-[color:var(--color-doux)]">
-                Vous n&apos;avez encore aucun cercle : personne ne verrait cette sortie.
+                Vous n&apos;avez encore aucun cercle.
               </p>
             )}
           </fieldset>
@@ -222,7 +246,17 @@ export default async function Sortir({
             </div>
           </details>
 
-          <p className="mb-2 font-bold">Où</p>
+          {/*
+            « Où » ne disait pas que la liste est l'action. Quelqu'un qui arrive cherche un
+            bouton « valider » qui n'existe pas, parce que le lieu est ce bouton. Le titre de
+            l'écran le dit déjà, mais sur un téléphone il est trois blocs plus haut.
+          */}
+          <p className="mb-2 font-bold">
+            Touchez un lieu :{" "}
+            <span className="font-normal text-[color:var(--color-doux)]">
+              la sortie part aussitôt
+            </span>
+          </p>
           <ul className="space-y-3">
             {lieux.map((lieu) => (
               <li key={lieu.id}>
