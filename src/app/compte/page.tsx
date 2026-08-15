@@ -227,6 +227,7 @@ export default async function Compte({
         <LienBouton href="/reglages">🔔 Notifications</LienBouton>
         <LienBouton href="/lieux">📍 Les lieux</LienBouton>
         {relecteur ? <LienBouton href="/relecture">🧐 Relire l&apos;agenda</LienBouton> : null}
+        {relecteur ? <LienBouton href="/mesures">📊 Quelques nombres</LienBouton> : null}
       </div>
 
       <Carte accent="corail">
