@@ -101,7 +101,12 @@ export default async function Agenda({
   const quand = (FENETRES as readonly string[]).includes(params.quand ?? "")
     ? (params.quand as Fenetre)
     : "quinzaine";
-  const age = params.age ? Number(params.age) : undefined;
+  // Plusieurs âges, séparés par des virgules dans l'adresse : une famille en a plusieurs, et
+  // l'écran doit rester partageable et utilisable sans JavaScript.
+  const ages = (params.age ?? "")
+    .split(",")
+    .map((v) => Number(v))
+    .filter((v) => Number.isFinite(v) && v >= 0 && v <= 18);
   const avecMonCercle = params.cercle === "1";
   const tarif = (TARIFS as readonly string[]).includes(params.tarif ?? "")
     ? (params.tarif as Tarif)
@@ -113,7 +118,7 @@ export default async function Agenda({
   const [entrees, communes] = await Promise.all([
     upcomingCalendar(account.id, {
       quand,
-      age: Number.isFinite(age) ? age : undefined,
+      ages,
       commune: params.commune,
       avecMonCercle,
       tarif,
@@ -165,7 +170,7 @@ export default async function Agenda({
         */}
         <details
           open={
-            age !== undefined ||
+            ages.length > 0 ||
             Boolean(params.commune) ||
             avecMonCercle ||
             Boolean(tarif) ||
@@ -178,18 +183,29 @@ export default async function Agenda({
 
           <div className="mt-2 space-y-2">
         <Rangee>
-          <Puce href={lien(params, { age: undefined })} actif={age === undefined}>
+          {/*
+            Les tranches s'ajoutent au lieu de se remplacer : un parent de trois enfants
+            cherche ce qui convient à l'un des trois, pas trois fois de suite.
+          */}
+          <Puce href={lien(params, { age: undefined })} actif={ages.length === 0}>
             Tous les âges
           </Puce>
-          {TRANCHES_AGE.map((t) => (
-            <Puce
-              key={t.valeur}
-              href={lien(params, { age: String(t.valeur) })}
-              actif={age === t.valeur}
-            >
-              {t.libelle}
-            </Puce>
-          ))}
+          {TRANCHES_AGE.map((t) => {
+            const choisi = ages.includes(t.valeur);
+            const apres = choisi
+              ? ages.filter((a) => a !== t.valeur)
+              : [...ages, t.valeur].sort((a, b) => a - b);
+
+            return (
+              <Puce
+                key={t.valeur}
+                href={lien(params, { age: apres.length > 0 ? apres.join(",") : undefined })}
+                actif={choisi}
+              >
+                {t.libelle}
+              </Puce>
+            );
+          })}
         </Rangee>
 
         {communes.length > 1 ? (
@@ -256,7 +272,7 @@ export default async function Agenda({
 
       {entrees.length === 0 ? (
         <Vide emoji="🗓️" titre="Rien ne correspond">
-          {avecMonCercle || age !== undefined || params.commune || tarif || acces ? (
+          {avecMonCercle || ages.length > 0 || params.commune || tarif || acces ? (
             <p>
               Essayez d&apos;élargir les filtres, ou{" "}
               <Link href="/agenda" className="font-bold underline underline-offset-4">

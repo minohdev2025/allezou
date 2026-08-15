@@ -74,8 +74,16 @@ export const TRANCHES_AGE = [
 
 export type FiltreAgenda = {
   quand?: Fenetre;
-  /** Âge choisi à l'écran, pour cette consultation seulement. */
-  age?: number;
+  /**
+   * Âges choisis à l'écran, pour cette consultation seulement.
+   *
+   * Plusieurs, parce qu'une famille en a plusieurs. Un filtre à une seule valeur obligeait
+   * un parent de trois enfants à chercher trois fois, ou à renoncer. Ce qu'il veut voir,
+   * c'est ce qui convient à au moins l'un des siens.
+   *
+   * Ces valeurs ne quittent jamais l'écran : aucun âge d'enfant n'est enregistré.
+   */
+  ages?: number[];
   commune?: string;
   /** Ne garder que les activités où une famille de mes cercles est déjà inscrite. */
   avecMonCercle?: boolean;
@@ -179,12 +187,15 @@ export async function upcomingCalendar(
       : sql`e.withdrawn_at is null and e.rejected_at is null`,
   ];
 
-  if (filtre.age !== undefined) {
+  if (filtre.ages && filtre.ages.length > 0) {
     // Une activité sans tranche annoncée reste affichée : on masque ce qui ne convient
     // manifestement pas, jamais ce dont on ignore s'il convient.
     conditions.push(sql`(
       e.min_age is null and e.max_age is null
-      or coalesce(e.min_age, 0) <= ${filtre.age} and coalesce(e.max_age, 18) >= ${filtre.age}
+      or exists (
+        select 1 from unnest(${sql.param(filtre.ages)}::int[]) as age
+        where coalesce(e.min_age, 0) <= age and coalesce(e.max_age, 18) >= age
+      )
     )`);
   }
 

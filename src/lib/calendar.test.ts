@@ -265,11 +265,23 @@ describe("Filtre par âge, choisi à l'écran", () => {
 
     expect(await upcomingCalendar(alice.id)).toHaveLength(4);
 
-    const pourSixAns = await upcomingCalendar(alice.id, { age: 6 });
+    const pourSixAns = await upcomingCalendar(alice.id, { ages: [6] });
     expect(pourSixAns.map((e) => e.title).sort()).toEqual([
       "Atelier 3-8 ans",
       "Fête du quartier",
     ]);
+  });
+
+  it("garde ce qui convient à au moins un des enfants", async () => {
+    const alice = await createAccount("Alice");
+    await createEvent({ title: "Bébés lecteurs", maxAge: 3 });
+    await createEvent({ title: "Atelier 6-10 ans", minAge: 6, maxAge: 10 });
+    await createEvent({ title: "Conférence dès 16 ans", minAge: 16 });
+
+    // Une famille de trois âges cherchait trois fois, ou renonçait.
+    const pourTrois = await upcomingCalendar(alice.id, { ages: [2, 8] });
+
+    expect(pourTrois.map((e) => e.title).sort()).toEqual(["Atelier 6-10 ans", "Bébés lecteurs"]);
   });
 
   it("sans âge demandé, rien n'est masqué", async () => {
