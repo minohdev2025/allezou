@@ -4,7 +4,8 @@ import { join } from "node:path";
 import { marked } from "marked";
 import Link from "next/link";
 
-export const metadata = { title: "Vos données dans Allezou" };
+// Le gabarit du layout ajoute « · Allezou » : le répéter ici le mettrait deux fois.
+export const metadata = { title: "Vos données" };
 
 /**
  * Rendue à chaque requête, comme le reste : la politique de sécurité du contenu porte un

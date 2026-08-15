@@ -19,9 +19,38 @@ const texte = Nunito({
   variable: "--font-texte",
 });
 
+/**
+ * Ce que voit quelqu'un qui n'a pas encore ouvert l'application : l'onglet de son navigateur,
+ * et l'aperçu quand le lien circule par message.
+ *
+ * `metadataBase` n'est pas une formalité : sans elle, l'adresse de l'image d'aperçu reste
+ * relative, et WhatsApp ne sait pas la résoudre. L'image elle-même vient de
+ * `opengraph-image.tsx`, que Next rattache tout seul.
+ */
+const ADRESSE = process.env.APP_URL ?? "http://localhost:3000";
+const PROMESSE =
+  "Savoir qui est dehors, parmi les gens qu'on connaît déjà. " +
+  "Sorties partagées et agenda des familles genevoises.";
+
 export const metadata: Metadata = {
-  title: "Allezou",
-  description: "Savoir qui est dehors, parmi les gens qu'on connaît déjà.",
+  metadataBase: new URL(ADRESSE),
+  // Le gabarit évite de répéter le nom du site dans chaque page, et de l'oublier dans une.
+  title: { default: "Allezou", template: "%s · Allezou" },
+  description: PROMESSE,
+  applicationName: "Allezou",
+  openGraph: {
+    type: "website",
+    locale: "fr_CH",
+    siteName: "Allezou",
+    title: "Allezou",
+    description: PROMESSE,
+    url: "/",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Allezou",
+    description: PROMESSE,
+  },
 };
 
 export const viewport: Viewport = {
