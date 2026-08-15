@@ -181,9 +181,11 @@ export async function revokeInvite(actorId: string, inviteId: string): Promise<R
  * Le nom rendu est celui d'origine, jamais un alias : l'alias est le nom qu'un membre s'est
  * donné pour lui-même, et il n'a rien à faire chez quelqu'un qui n'est pas encore entré.
  */
-export async function circleNameForInvite(token: string): Promise<string | null> {
-  const rows = await db.execute<{ name: string }>(sql`
-    select c.name
+export type InvitationLisible = { circleName: string; expiresAt: Date };
+
+export async function inviteInfoForToken(token: string): Promise<InvitationLisible | null> {
+  const rows = await db.execute<{ name: string; expires_at: Date }>(sql`
+    select c.name, i.expires_at
     from circle_invite i
     join circle c on c.id = i.circle_id and c.archived_at is null
     where i.token_hash = ${hashToken(token)}
@@ -193,7 +195,13 @@ export async function circleNameForInvite(token: string): Promise<string | null>
     limit 1
   `);
 
-  return rows[0]?.name ?? null;
+  const invite = rows[0];
+  return invite ? { circleName: invite.name, expiresAt: asDate(invite.expires_at) } : null;
+}
+
+/** Le seul nom du cercle, pour l'écran qui accueille celui qui suit le lien. */
+export async function circleNameForInvite(token: string): Promise<string | null> {
+  return (await inviteInfoForToken(token))?.circleName ?? null;
 }
 
 /**

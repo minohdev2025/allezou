@@ -7,12 +7,14 @@ import {
   DUREE_INVITATION_MAX_JOURS,
   USAGES_INVITATION_MAX,
   USAGES_INVITATION_PAR_DEFAUT,
+  inviteInfoForToken,
   listInvites,
   listPendingRequests,
 } from "@/lib/circles";
 import { childrenInCircle } from "@/lib/children";
 import { mutedIn } from "@/lib/notifications";
 import { defaultAudience } from "@/lib/publications";
+import { messageDInvitation } from "@/lib/message-invitation";
 import { COOKIE_INVITATION, requireAccount } from "@/lib/session";
 import { isCircleAdmin, readerCircles, visibleCircleMembers } from "@/lib/visibility";
 import {
@@ -80,6 +82,12 @@ export default async function Cercle({
     : 0;
   const appUrl = process.env.APP_URL ?? "http://localhost:3000";
   const couleur = teinte(id);
+
+  // La date de fin vient de l'invitation elle-même, retrouvée par son jeton : la déduire du
+  // lien le plus récent tomberait juste presque toujours, et donnerait une date fausse le
+  // jour où deux administrateurs en créent un en même temps.
+  const infoLien = lien ? await inviteInfoForToken(lien) : null;
+  const messagePret = infoLien ? messageDInvitation(infoLien, `${appUrl}/rejoindre/${lien}`) : null;
 
   return (
     <main className="apparait">
@@ -167,6 +175,41 @@ export default async function Cercle({
               {appUrl}/rejoindre/{lien}
             </code>
           </div>
+
+          {/*
+            Le message tout prêt.
+
+            Le lien seul laisse à l'administrateur le travail le plus ingrat du produit :
+            expliquer Allezou à quinze parents, un par un, dans un groupe où personne n'a rien
+            demandé. Ce texte dit ce qu'un parent veut savoir avant de cliquer — à quoi ça
+            sert, que c'est gratuit et sans publicité, qu'on n'y met qu'un prénom par enfant —
+            et il mène à la page des données, qui convainc mieux que n'importe quelle phrase
+            qu'on improviserait.
+
+            Il annonce la date de fin du lien, qui vient de la base et non d'un calcul
+            approché : elle donne la raison de s'y mettre tout de suite plutôt que « un de ces
+            jours ».
+
+            C'est une zone de texte et non un bouton : elle se sélectionne et se copie sans
+            JavaScript, sur un téléphone comme ailleurs.
+          */}
+          {messagePret ? (
+            <div className="mt-4">
+              <label
+                htmlFor="message-invitation"
+                className="mb-1 block text-sm font-bold leading-snug"
+              >
+                À envoyer par message, si vous voulez
+              </label>
+              <textarea
+                id="message-invitation"
+                readOnly
+                rows={8}
+                className="w-full rounded-xl bg-[color:var(--color-surface)] p-3 text-sm leading-snug"
+                value={messagePret}
+              />
+            </div>
+          ) : null}
         </Alerte>
       ) : null}
 
