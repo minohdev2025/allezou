@@ -15,9 +15,12 @@ import {
   removeChild,
   renameChild,
   revokeCoparentInvite,
+  childrenInCircle,
+  circlesByChild,
+  setChildInCircle,
 } from "@/lib/children";
 import { db } from "@/lib/db";
-import { createAccount, resetDatabase } from "@/test/helpers";
+import { createAccount, createCircle, join, resetDatabase } from "@/test/helpers";
 
 beforeEach(async () => {
   await resetDatabase();
@@ -178,5 +181,79 @@ describe("Retirer un enfant", () => {
     );
     expect(rows[0].deleted_at).not.toBeNull();
     expect(await isParentOf(alice.id, enfant.value.id)).toBe(false);
+  });
+});
+
+describe("Quel enfant est concerné par quel cercle", () => {
+  it("rattache un enfant, et le dit", async () => {
+    const alice = await createAccount("Alice");
+    const classe = await createCircle(alice);
+    const lea = await addChild(alice.id, { firstName: "Léa" });
+    if (!lea.ok) throw new Error("l'enfant devait être créé");
+
+    expect(await setChildInCircle(alice.id, lea.value.id, classe.id, true)).toEqual({
+      ok: true,
+      value: undefined,
+    });
+
+    const enfants = await childrenInCircle(alice.id, classe.id);
+    expect(enfants).toEqual([{ id: lea.value.id, firstName: "Léa", lie: true }]);
+  });
+
+  it("se détache aussi", async () => {
+    const alice = await createAccount("Alice");
+    const classe = await createCircle(alice);
+    const lea = await addChild(alice.id, { firstName: "Léa" });
+    if (!lea.ok) throw new Error("l'enfant devait être créé");
+
+    await setChildInCircle(alice.id, lea.value.id, classe.id, true);
+    await setChildInCircle(alice.id, lea.value.id, classe.id, false);
+
+    expect((await childrenInCircle(alice.id, classe.id))[0].lie).toBe(false);
+  });
+
+  it("refuse de rattacher l'enfant de quelqu'un d'autre", async () => {
+    const alice = await createAccount("Alice");
+    const bob = await createAccount("Bob");
+    const classe = await createCircle(alice);
+    await join(classe, bob);
+    const lea = await addChild(alice.id, { firstName: "Léa" });
+    if (!lea.ok) throw new Error("l'enfant devait être créé");
+
+    expect(await setChildInCircle(bob.id, lea.value.id, classe.id, true)).toEqual({
+      ok: false,
+      reason: "pas_parent",
+    });
+  });
+
+  it("refuse un cercle dont on n'est pas membre", async () => {
+    const alice = await createAccount("Alice");
+    const bob = await createAccount("Bob");
+    const chezBob = await createCircle(bob);
+    const lea = await addChild(alice.id, { firstName: "Léa" });
+    if (!lea.ok) throw new Error("l'enfant devait être créé");
+
+    // Sans cette garde, une requête directe apprendrait l'existence d'un cercle.
+    expect(await setChildInCircle(alice.id, lea.value.id, chezBob.id, true)).toEqual({
+      ok: false,
+      reason: "pas_membre",
+    });
+  });
+
+  it("range les cercles par enfant, pour l'écran de sortie", async () => {
+    const alice = await createAccount("Alice");
+    const classeDeLea = await createCircle(alice, "Classe de Léa");
+    const classeDeJules = await createCircle(alice, "Classe de Jules");
+    const lea = await addChild(alice.id, { firstName: "Léa" });
+    const jules = await addChild(alice.id, { firstName: "Jules" });
+    if (!lea.ok || !jules.ok) throw new Error("les enfants devaient être créés");
+
+    await setChildInCircle(alice.id, lea.value.id, classeDeLea.id, true);
+    await setChildInCircle(alice.id, jules.value.id, classeDeJules.id, true);
+
+    expect(await circlesByChild(alice.id)).toEqual({
+      [lea.value.id]: [classeDeLea.id],
+      [jules.value.id]: [classeDeJules.id],
+    });
   });
 });

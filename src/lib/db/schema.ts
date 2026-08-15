@@ -502,6 +502,31 @@ export const publication = pgTable(
   ],
 );
 
+/**
+ * Quel enfant est concerné par quel cercle.
+ *
+ * On est rarement dans un cercle pour soi : on y est parce qu'un enfant est dans cette
+ * classe. Rien ne le disait, et un parent de trois enfants dans trois classes voyait ses
+ * trois cercles cochés à chaque sortie, alors qu'un samedi au parc avec le petit ne concerne
+ * pas la classe de l'aînée. Il devait corriger deux listes à chaque fois, sur l'écran dont
+ * tout le produit promet qu'il tient en deux gestes.
+ *
+ * Le lien est personnel : il dit pourquoi *je* suis dans ce cercle, et n'apprend rien à
+ * personne d'autre. Un cercle de voisinage n'en porte aucun, et c'est normal.
+ */
+export const childCircle = pgTable(
+  "child_circle",
+  {
+    childId: uuid()
+      .notNull()
+      .references(() => child.id, { onDelete: "cascade" }),
+    circleId: uuid()
+      .notNull()
+      .references(() => circle.id, { onDelete: "cascade" }),
+  },
+  (t) => [primaryKey({ columns: [t.childId, t.circleId] })],
+);
+
 /** Cercles destinataires d'une publication. Aucun destinataire = visible de personne. */
 export const publicationCircle = pgTable(
   "publication_circle",

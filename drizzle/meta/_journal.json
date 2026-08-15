@@ -127,6 +127,13 @@
       "when": 1786800655910,
       "tag": "0017_lyrical_dakota_north",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1786807080430,
+      "tag": "0018_silky_bucky",
+      "breakpoints": true
     }
   ]
 }

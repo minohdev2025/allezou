@@ -10,6 +10,7 @@ import {
   listInvites,
   listPendingRequests,
 } from "@/lib/circles";
+import { childrenInCircle } from "@/lib/children";
 import { mutedIn } from "@/lib/notifications";
 import { defaultAudience } from "@/lib/publications";
 import { COOKIE_INVITATION, requireAccount } from "@/lib/session";
@@ -23,6 +24,7 @@ import {
   creerInvitation,
   exclureMembre,
   quitterCercle,
+  rattacherEnfantCercle,
   refuserDemande,
   remplacerInvitation,
   revoquerInvitation,
@@ -61,6 +63,8 @@ export default async function Cercle({
     mutedIn(account.id, id),
     defaultAudience(account.id),
   ]);
+
+  const enfants = await childrenInCircle(account.id, id);
 
   const cocheParDefaut = defauts.some((c) => c.id === id);
 
@@ -345,6 +349,45 @@ export default async function Cercle({
           </li>
         ))}
       </ul>
+
+      {/*
+        Pourquoi je suis dans ce cercle.
+
+        Un parent de trois enfants dans trois classes voyait ses trois cercles cochés à chaque
+        sortie. Rattacher l'enfant au cercle permet à l'écran de sortie de suivre celui qui
+        vient vraiment, au lieu de tout adresser à tout le monde.
+      */}
+      {enfants.length > 0 ? (
+        <Carte className="mb-5" accent="violet">
+          <p className="mb-1 font-bold">Qui est concerné par ce cercle</p>
+          <p className="mb-4 text-sm leading-snug text-[color:var(--color-doux)]">
+            Personne d&apos;autre ne le voit. Ça sert à ce qu&apos;une sortie sans l&apos;aîné
+            ne parte pas vers sa classe. Un cercle de voisinage peut n&apos;en concerner aucun.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {enfants.map((enfant) => (
+              <form key={enfant.id} action={rattacherEnfantCercle}>
+                <input type="hidden" name="cercle" value={id} />
+                <input type="hidden" name="enfant" value={enfant.id} />
+                <input type="hidden" name="lie" value={enfant.lie ? "0" : "1"} />
+                <button
+                  className="rounded-[var(--radius-pilule)] px-4 py-2 font-bold"
+                  style={
+                    enfant.lie
+                      ? { background: "var(--color-violet)", color: "var(--color-fond)" }
+                      : {
+                          color: "var(--color-doux)",
+                          boxShadow: "inset 0 0 0 2px var(--color-trait)",
+                        }
+                  }
+                >
+                  {enfant.firstName}
+                </button>
+              </form>
+            ))}
+          </div>
+        </Carte>
+      ) : null}
 
       <Carte className="mb-5" accent={cocheParDefaut ? "vert" : "ambre"}>
         <p className="mb-1 font-bold">

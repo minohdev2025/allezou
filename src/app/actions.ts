@@ -26,6 +26,7 @@ import {
   inviteCoparent,
   removeChild,
   renameChild,
+  setChildInCircle,
 } from "@/lib/children";
 import {
   approveJoin,
@@ -465,6 +466,27 @@ export async function publierActivite(formData: FormData) {
   });
 
   revalidatePath("/relecture");
+}
+
+/**
+ * Rattacher un enfant à un cercle, ou l'en détacher.
+ *
+ * On est rarement dans un cercle pour soi : on y est parce qu'un enfant est dans cette
+ * classe. Le dire permet à l'écran de sortie de ne plus adresser au cercle de l'aînée une
+ * sortie où seul le petit est venu.
+ */
+export async function rattacherEnfantCercle(formData: FormData) {
+  const account = await requireAccount();
+  const cercle = String(formData.get("cercle") ?? "");
+
+  const result = await setChildInCircle(
+    account.id,
+    String(formData.get("enfant") ?? ""),
+    cercle,
+    formData.get("lie") === "1",
+  );
+
+  redirect(result.ok ? `/cercles/${cercle}` : `/cercles/${cercle}?erreur=${result.reason}`);
 }
 
 /* ------------------------------------------------------ alertes de l'agenda */

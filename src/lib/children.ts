@@ -25,6 +25,7 @@ export type ChildError =
   | "prenom_invalide"
   | "enfant_inconnu"
   | "pas_parent"
+  | "pas_membre"
   | "invitation_inconnue"
   | "invitation_expiree"
   | "invitation_utilisee"
@@ -198,4 +199,92 @@ export async function revokeCoparentInvite(actorId: string): Promise<void> {
     update coparent_invite set revoked_at = now()
     where created_by = ${actorId} and used_at is null and revoked_at is null
   `);
+}
+
+/* ------------------------------------------------ quel enfant, quel cercle */
+
+/**
+ * Pourquoi je suis dans ce cercle.
+ *
+ * Presque toujours parce qu'un de mes enfants est dans cette classe. Le dire permet de ne
+ * plus adresser au cercle de l'aînée une sortie où seul le petit est venu. Le lien est
+ * personnel : il n'apprend rien aux autres membres, et un cercle de voisinage n'en porte
+ * aucun.
+ */
+export type EnfantDuCercle = { id: string; firstName: string; lie: boolean };
+
+export async function childrenInCircle(
+  actorId: string,
+  circleId: string,
+): Promise<EnfantDuCercle[]> {
+  const rows = await db.execute<{ id: string; first_name: string; lie: boolean }>(sql`
+    select ch.id, ch.first_name,
+           exists (
+             select 1 from child_circle cc
+             where cc.child_id = ch.id and cc.circle_id = ${circleId}
+           ) as lie
+    from child_parent cp
+    join child ch on ch.id = cp.child_id and ch.deleted_at is null
+    where cp.account_id = ${actorId}
+    order by ch.first_name asc
+  `);
+
+  return rows.map((r) => ({ id: r.id, firstName: r.first_name, lie: r.lie }));
+}
+
+/**
+ * Rattache ou détache un enfant d'un cercle.
+ *
+ * Deux gardes, et pas une de moins : il faut être parent de cet enfant, et membre actif de
+ * ce cercle. Une action serveur est joignable par une requête directe, et sans la seconde
+ * garde n'importe qui apprendrait l'existence d'un cercle en tentant de s'y rattacher.
+ */
+export async function setChildInCircle(
+  actorId: string,
+  childId: string,
+  circleId: string,
+  lie: boolean,
+): Promise<Result<void>> {
+  if (!(await isParentOf(actorId, childId))) return ko("pas_parent");
+
+  const [membre] = await db
+    .select({ id: s.circleMembership.accountId })
+    .from(s.circleMembership)
+    .where(
+      and(
+        eq(s.circleMembership.accountId, actorId),
+        eq(s.circleMembership.circleId, circleId),
+        isNull(s.circleMembership.leftAt),
+      ),
+    )
+    .limit(1);
+
+  if (!membre) return ko("pas_membre");
+
+  if (lie) {
+    await db.insert(s.childCircle).values({ childId, circleId }).onConflictDoNothing();
+  } else {
+    await db
+      .delete(s.childCircle)
+      .where(and(eq(s.childCircle.childId, childId), eq(s.childCircle.circleId, circleId)));
+  }
+
+  return ok(undefined as void);
+}
+
+/** Les cercles que chacun de mes enfants concerne, pour l'écran de sortie. */
+export async function circlesByChild(actorId: string): Promise<Record<string, string[]>> {
+  const rows = await db.execute<{ child_id: string; circle_id: string }>(sql`
+    select cc.child_id, cc.circle_id
+    from child_circle cc
+    join child_parent cp on cp.child_id = cc.child_id and cp.account_id = ${actorId}
+    join circle_membership m
+      on m.circle_id = cc.circle_id and m.account_id = ${actorId} and m.left_at is null
+  `);
+
+  const parEnfant: Record<string, string[]> = {};
+  for (const r of rows) {
+    parEnfant[r.child_id] = [...(parEnfant[r.child_id] ?? []), r.circle_id];
+  }
+  return parEnfant;
 }

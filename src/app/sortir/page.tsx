@@ -1,11 +1,12 @@
 import Link from "next/link";
 
-import { myChildren } from "@/lib/children";
+import { circlesByChild, myChildren } from "@/lib/children";
 import { searchPlaces } from "@/lib/places";
 import { defaultAudience, dureesProposees, lastOuting } from "@/lib/publications";
 import { requireAccount } from "@/lib/session";
 import { readerCircles } from "@/lib/visibility";
 import { declarerSortie, refaireDerniereSortie } from "../actions";
+import { LiaisonEnfantsCercles } from "./liaison-client";
 import {
   Alerte,
   Bouton,
@@ -44,12 +45,13 @@ export default async function Sortir({
   const { erreur, q } = await searchParams;
   const recherche = (q ?? "").trim();
 
-  const [lieux, cercles, defauts, enfants, derniere] = await Promise.all([
+  const [lieux, cercles, defauts, enfants, derniere, cerclesParEnfant] = await Promise.all([
     searchPlaces(recherche, 30),
     readerCircles(account.id),
     defaultAudience(account.id),
     myChildren(account.id),
     lastOuting(account.id),
+    circlesByChild(account.id),
   ]);
 
   const cerclesCoches = new Set(defauts.map((c) => c.id));
@@ -120,7 +122,8 @@ export default async function Sortir({
           )}
         </Vide>
       ) : (
-        <form action={declarerSortie}>
+        <form action={declarerSortie} data-sortie>
+          <LiaisonEnfantsCercles parEnfant={cerclesParEnfant} />
           {/*
             Le destinataire est le seul réglage qui ne se replie pas.
 
