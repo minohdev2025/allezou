@@ -57,7 +57,10 @@ const SOURCES = [
     kind: "html_ai" as const,
     commune: "Lancy",
     autoPublish: true,
-    config: { maxPages: 3 },
+    // `itemPattern` sert à retrouver le lien de chaque fiche dans la page de liste : le
+    // texte envoyé au modèle est débarrassé de ses balises, donc il n'y voit aucun `href`.
+    // Lancy écrit le titre seul dans le lien, ce qui suffit à les rapprocher.
+    config: { maxPages: 3, itemPattern: "/agenda/" },
   },
   {
     name: "Chêne-Bougeries — agenda communal",
@@ -86,8 +89,9 @@ const SOURCES = [
     commune: "Vernier",
     autoPublish: true,
     // La plus grande commune du canton après la Ville, et aucun flux structuré. Quatre pages
-    // de liste, qui paginent en `?page=N` comme les autres.
-    config: { maxPages: 4 },
+    // de liste, qui paginent en `?page=N` comme les autres. Le lien de fiche porte le titre
+    // suivi de la date, ce que la recherche par préfixe retrouve.
+    config: { maxPages: 4, itemPattern: "/evenements/" },
   },
   {
     name: "Onex — agenda communal",
@@ -97,7 +101,11 @@ const SOURCES = [
     autoPublish: true,
     // Treize pages de neuf entrées, dont la première ne contient guère que des cours de
     // fitness pour adultes : s'arrêter là donnait une source « ok » qui ne rapportait rien.
-    // Six pages couvrent environ deux mois, ce que la relecture hebdomadaire peut absorber.
+    // Six pages couvrent environ deux mois.
+    //
+    // Pas d'`itemPattern` : Onex compose ses fiches dans le navigateur, et la page servie ne
+    // porte aucun lien vers elles. Ses activités renvoient donc à l'agenda de la commune, ce
+    // qui est moins bien qu'un lien direct et mieux qu'un lien deviné.
     config: { maxPages: 6 },
   },
 ];
