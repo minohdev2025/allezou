@@ -288,17 +288,37 @@ export const place = pgTable(
 );
 
 /** Renommage d'un lieu : prend effet quand assez de personnes l'ont validé. */
-export const placeRenameProposal = pgTable("place_rename_proposal", {
-  id: uuid().primaryKey().defaultRandom(),
-  placeId: uuid()
-    .notNull()
-    .references(() => place.id, { onDelete: "cascade" }),
-  proposedName: varchar({ length: 80 }).notNull(),
-  proposedBy: uuid().references(() => account.id, { onDelete: "set null" }),
-  createdAt: timestamp({ withTimezone: true }).notNull().default(now),
-  appliedAt: timestamp({ withTimezone: true }),
-  rejectedAt: timestamp({ withTimezone: true }),
-});
+/**
+ * Une correction proposée sur un lieu commun : son nom, ou son adresse.
+ *
+ * La table garde son nom d'origine, `place_rename_proposal`, parce qu'elle garde ses lignes :
+ * la renommer coûterait une migration de plus sans rien apprendre à personne. Elle porte
+ * désormais l'un ou l'autre des deux champs, et la contrainte interdit qu'une proposition
+ * n'en porte aucun ou les deux — dans le premier cas elle ne changerait rien, dans le second
+ * on ferait voter deux corrections d'un seul geste.
+ */
+export const placeRenameProposal = pgTable(
+  "place_rename_proposal",
+  {
+    id: uuid().primaryKey().defaultRandom(),
+    placeId: uuid()
+      .notNull()
+      .references(() => place.id, { onDelete: "cascade" }),
+    proposedName: varchar({ length: 80 }),
+    /** Même plafond que `place.address` : c'est la même donnée, à un vote près. */
+    proposedAddress: varchar({ length: 160 }),
+    proposedBy: uuid().references(() => account.id, { onDelete: "set null" }),
+    createdAt: timestamp({ withTimezone: true }).notNull().default(now),
+    appliedAt: timestamp({ withTimezone: true }),
+    rejectedAt: timestamp({ withTimezone: true }),
+  },
+  (t) => [
+    check(
+      "place_rename_proposal_un_seul_champ",
+      sql`num_nonnulls(${t.proposedName}, ${t.proposedAddress}) = 1`,
+    ),
+  ],
+);
 
 export const placeRenameVote = pgTable(
   "place_rename_vote",

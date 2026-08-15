@@ -118,11 +118,10 @@ export async function searchPlaces(query = "", limit = 20): Promise<Place[]> {
 /**
  * Compléter l'adresse d'un lieu qui n'en a pas.
  *
- * On remplit un vide, on ne corrige pas. Le nom d'un lieu commun se change à plusieurs
- * (`proposeRename`), parce que c'est son identité et qu'une erreur y est visible de tous.
- * Une adresse absente ne se discute pas : la première personne qui la connaît la donne.
- * L'écraser, en revanche, redeviendrait une décision que personne ne prend seul, et c'est
- * pourquoi ce n'est pas possible ici.
+ * On remplit un vide, et ce geste-là se fait seul : la première personne qui connaît
+ * l'adresse la donne, sans rien défaire du travail de personne. Corriger une adresse déjà
+ * écrite est une autre affaire, et passe par `proposeAddress` : c'est une décision que
+ * personne ne prend seul, comme pour le nom.
  */
 export async function completerAdresse(
   placeId: string,
@@ -145,7 +144,12 @@ export type RenameProposal = {
   id: string;
   placeId: string;
   currentName: string;
-  proposedName: string;
+  /** Le nom proposé, ou null quand la proposition porte sur l'adresse. */
+  proposedName: string | null;
+  /** L'adresse proposée, ou null quand la proposition porte sur le nom. */
+  proposedAddress: string | null;
+  /** Ce que le lieu porte aujourd'hui comme adresse, pour montrer ce qui changerait. */
+  currentAddress: string | null;
   votes: number;
   needed: number;
 };
@@ -180,7 +184,11 @@ export async function proposeRename(
       ),
     );
 
-  const identique = ouvertes.find((p) => normalize(p.proposedName) === normalize(name.data));
+  // Une proposition de nom ne se compare qu'aux autres propositions de nom : depuis que la
+  // table porte aussi les adresses, les confondre reviendrait à donner sa voix à autre chose.
+  const identique = ouvertes.find(
+    (p) => p.proposedName && normalize(p.proposedName) === normalize(name.data),
+  );
   if (identique) {
     const vote = await voteRename(actorId, identique.id);
     return vote.ok ? ok(vote.value) : (vote as Result<RenameProposal>);
@@ -198,6 +206,76 @@ export async function proposeRename(
     placeId,
     currentName: place.name,
     proposedName: proposal.proposedName,
+    proposedAddress: null,
+    currentAddress: place.address,
+    votes: 1,
+    needed: VALIDATIONS_RENOMMAGE,
+  });
+}
+
+/**
+ * Propose une autre adresse pour un lieu qui en a déjà une.
+ *
+ * Une adresse fausse était définitive : on pouvait remplir un vide, jamais rectifier. Or
+ * c'est un texte libre de cent soixante caractères, lu par tout le monde, et qui décide où
+ * une famille se rend un samedi matin. L'argument qui impose un vote pour le nom vaut donc
+ * mot pour mot ici : c'est l'identité du lieu, et une erreur y est visible de tous.
+ *
+ * Même mécanisme, même seuil, mêmes voix : une seconde infrastructure de validation aurait
+ * fini par diverger de la première.
+ */
+export async function proposeAddress(
+  actorId: string,
+  placeId: string,
+  rawAddress: string,
+): Promise<Result<RenameProposal>> {
+  const analysee = addressSchema.safeParse(rawAddress);
+  if (!analysee.success || !analysee.data) return ko("adresse_invalide");
+  const adresse = analysee.data;
+
+  const [place] = await db
+    .select()
+    .from(s.place)
+    .where(and(eq(s.place.id, placeId), isNull(s.place.archivedAt)))
+    .limit(1);
+  if (!place) return ko("lieu_inconnu");
+
+  // Un lieu sans adresse n'a rien à faire voter : `completerAdresse` remplit le vide seul.
+  if (!place.address) return ko("adresse_deja_connue");
+
+  const ouvertes = await db
+    .select()
+    .from(s.placeRenameProposal)
+    .where(
+      and(
+        eq(s.placeRenameProposal.placeId, placeId),
+        isNull(s.placeRenameProposal.appliedAt),
+        isNull(s.placeRenameProposal.rejectedAt),
+      ),
+    );
+
+  const identique = ouvertes.find(
+    (p) => p.proposedAddress && normalize(p.proposedAddress) === normalize(adresse),
+  );
+  if (identique) {
+    const vote = await voteRename(actorId, identique.id);
+    return vote.ok ? ok(vote.value) : (vote as Result<RenameProposal>);
+  }
+
+  const [proposal] = await db
+    .insert(s.placeRenameProposal)
+    .values({ placeId, proposedAddress: adresse, proposedBy: actorId })
+    .returning();
+
+  await db.insert(s.placeRenameVote).values({ proposalId: proposal.id, accountId: actorId });
+
+  return ok({
+    id: proposal.id,
+    placeId,
+    currentName: place.name,
+    proposedName: null,
+    proposedAddress: proposal.proposedAddress,
+    currentAddress: place.address,
     votes: 1,
     needed: VALIDATIONS_RENOMMAGE,
   });
@@ -229,34 +307,65 @@ export async function voteRename(
       select count(*)::int as n from place_rename_vote where proposal_id = ${proposalId}
     `);
 
-    const [place] = await tx
-      .select()
-      .from(s.place)
-      .where(eq(s.place.id, proposal.placeId))
-      .limit(1);
-
+    // Le lieu se relit après coup et non avant : ce qu'on rend doit décrire son état une
+    // fois la correction appliquée, sans quoi l'écran afficherait l'ancien nom au moment
+    // même où il annonce que le nouveau est adopté.
     if (votes >= VALIDATIONS_RENOMMAGE) {
-      await tx.execute(sql`
-        update place set name = ${proposal.proposedName} where id = ${proposal.placeId}
-      `);
+      if (proposal.proposedName) {
+        await tx.execute(sql`
+          update place set name = ${proposal.proposedName} where id = ${proposal.placeId}
+        `);
+      } else {
+        /*
+          L'adresse change, donc les coordonnées ne valent plus rien.
+
+          Elles ont été demandées à OpenStreetMap pour l'ancienne adresse : les garder ferait
+          tomber le lien de carte sur l'ancien point, avec une adresse écrite juste à côté qui
+          dirait autre chose. C'est pire que pas de repère du tout, parce que personne ne
+          vérifie un point qui s'affiche. `geocoded_at` remis à zéro fait reprendre le
+          géocodage au prochain passage, qui ne traite que ce qui n'a jamais été tenté.
+        */
+        await tx.execute(sql`
+          update place
+          set address = ${proposal.proposedAddress},
+              lat = null,
+              lon = null,
+              geocoded_at = null
+          where id = ${proposal.placeId}
+        `);
+      }
       await tx.execute(sql`
         update place_rename_proposal set applied_at = now() where id = ${proposalId}
       `);
-      // Les autres propositions ouvertes sur ce lieu deviennent caduques.
+      /*
+        Les autres propositions ouvertes sur ce lieu deviennent caduques — mais seulement
+        celles qui portent sur le même champ. Une correction d'adresse ne dit rien du nom, et
+        les balayer ensemble ferait perdre des voix déjà données sur une question qu'on n'a
+        pas tranchée.
+      */
       await tx.execute(sql`
         update place_rename_proposal set rejected_at = now()
         where place_id = ${proposal.placeId}
           and id <> ${proposalId}
           and applied_at is null
           and rejected_at is null
+          and ${proposal.proposedName ? sql`proposed_name is not null` : sql`proposed_address is not null`}
       `);
     }
+
+    const [apres] = await tx
+      .select()
+      .from(s.place)
+      .where(eq(s.place.id, proposal.placeId))
+      .limit(1);
 
     return ok({
       id: proposalId,
       placeId: proposal.placeId,
-      currentName: place.name,
+      currentName: apres.name,
       proposedName: proposal.proposedName,
+      proposedAddress: proposal.proposedAddress,
+      currentAddress: apres.address,
       votes,
       needed: VALIDATIONS_RENOMMAGE,
     });
@@ -264,7 +373,8 @@ export async function voteRename(
 }
 
 /**
- * Toutes les corrections de nom en attente, avec ce que le lecteur en a déjà fait.
+ * Toutes les corrections en attente, nom comme adresse, avec ce que le lecteur en a déjà
+ * fait.
  *
  * `dejaVote` évite de proposer un bouton qui ne ferait rien : une voix est déjà comptée,
  * et rien n'est plus décourageant qu'un bouton qui ne bouge pas.
@@ -276,7 +386,9 @@ export async function openRenames(
     id: string;
     place_id: string;
     current_name: string;
-    proposed_name: string;
+    current_address: string | null;
+    proposed_name: string | null;
+    proposed_address: string | null;
     votes: number;
     deja_vote: boolean;
   }>(sql`
@@ -284,7 +396,9 @@ export async function openRenames(
       p.id,
       p.place_id,
       pl.name as current_name,
+      pl.address as current_address,
       p.proposed_name,
+      p.proposed_address,
       (select count(*)::int from place_rename_vote v where v.proposal_id = p.id) as votes,
       exists (
         select 1 from place_rename_vote v
@@ -301,27 +415,33 @@ export async function openRenames(
     id: r.id,
     placeId: r.place_id,
     currentName: r.current_name,
+    currentAddress: r.current_address,
     proposedName: r.proposed_name,
+    proposedAddress: r.proposed_address,
     votes: r.votes,
     needed: VALIDATIONS_RENOMMAGE,
     dejaVote: r.deja_vote,
   }));
 }
 
-/** Les renommages en attente de validation pour un lieu. */
+/** Les corrections en attente de validation pour un lieu. */
 export async function pendingRenames(placeId: string): Promise<RenameProposal[]> {
   const rows = await db.execute<{
     id: string;
     place_id: string;
     current_name: string;
-    proposed_name: string;
+    current_address: string | null;
+    proposed_name: string | null;
+    proposed_address: string | null;
     votes: number;
   }>(sql`
     select
       p.id,
       p.place_id,
       pl.name as current_name,
+      pl.address as current_address,
       p.proposed_name,
+      p.proposed_address,
       (select count(*)::int from place_rename_vote v where v.proposal_id = p.id) as votes
     from place_rename_proposal p
     join place pl on pl.id = p.place_id
@@ -335,7 +455,9 @@ export async function pendingRenames(placeId: string): Promise<RenameProposal[]>
     id: r.id,
     placeId: r.place_id,
     currentName: r.current_name,
+    currentAddress: r.current_address,
     proposedName: r.proposed_name,
+    proposedAddress: r.proposed_address,
     votes: r.votes,
     needed: VALIDATIONS_RENOMMAGE,
   }));

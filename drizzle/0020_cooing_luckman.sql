@@ -1,0 +1,3 @@
+ALTER TABLE "place_rename_proposal" ALTER COLUMN "proposed_name" DROP NOT NULL;--> statement-breakpoint
+ALTER TABLE "place_rename_proposal" ADD COLUMN "proposed_address" varchar(160);--> statement-breakpoint
+ALTER TABLE "place_rename_proposal" ADD CONSTRAINT "place_rename_proposal_un_seul_champ" CHECK (num_nonnulls("place_rename_proposal"."proposed_name", "place_rename_proposal"."proposed_address") = 1);

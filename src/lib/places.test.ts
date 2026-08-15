@@ -1,14 +1,18 @@
 /**
  * Ce que ces tests garantissent : le catalogue ne se remplit pas de doublons, et personne
- * ne renomme un lieu seul dans son coin.
+ * ne corrige seul dans son coin ce que tout le monde lit — ni le nom d'un lieu, ni son
+ * adresse.
  */
 
+import { sql } from "drizzle-orm";
 import { beforeEach, describe, expect, it } from "vitest";
 
+import { db } from "@/lib/db";
 import {
   VALIDATIONS_RENOMMAGE,
   createPlace,
   pendingRenames,
+  proposeAddress,
   proposeRename,
   searchPlaces,
   voteRename,
@@ -123,6 +127,100 @@ describe("L'adresse d'un lieu", () => {
       ok: false,
       reason: "adresse_invalide",
     });
+  });
+});
+
+describe("Corriger une adresse déjà écrite", () => {
+  async function unLieuAdresse() {
+    const alice = await createAccount("Alice");
+    const bob = await createAccount("Bob");
+    const carla = await createAccount("Carla");
+    const lieu = await createPlace(alice.id, {
+      name: "Maison de quartier",
+      address: "Rue Fausse 1",
+    });
+    if (!lieu.ok) throw new Error("le lieu devait être créé");
+    return { alice, bob, carla, lieuId: lieu.value.id };
+  }
+
+  it("ne prend effet qu'après validation par plusieurs personnes", async () => {
+    const { alice, bob, carla, lieuId } = await unLieuAdresse();
+
+    const proposition = await proposeAddress(alice.id, lieuId, "Avenue Juste 7");
+    if (!proposition.ok) throw new Error("la proposition devait être ouverte");
+    expect(proposition.value.votes).toBe(1);
+
+    // Une voix ne suffit pas : sinon corriger reviendrait à écraser, ce que le produit
+    // refuse depuis le début.
+    expect((await searchPlaces("Maison"))[0].address).toBe("Rue Fausse 1");
+
+    await voteRename(bob.id, proposition.value.id);
+    expect((await searchPlaces("Maison"))[0].address).toBe("Rue Fausse 1");
+
+    const derniere = await voteRename(carla.id, proposition.value.id);
+    expect(derniere.ok && derniere.value.votes).toBe(VALIDATIONS_RENOMMAGE);
+    expect((await searchPlaces("Maison"))[0].address).toBe("Avenue Juste 7");
+  });
+
+  /*
+    Le piège de ce chantier.
+
+    Les coordonnées ont été demandées à OpenStreetMap pour l'ancienne adresse. Les garder
+    ferait tomber le lien de carte sur l'ancien point, avec la nouvelle adresse écrite juste
+    à côté : une famille suivrait le repère sans jamais lire l'adresse, et se tromperait de
+    quartier. Un mauvais point est pire que pas de point.
+  */
+  it("oublie les coordonnées de l'ancienne adresse", async () => {
+    const { alice, bob, carla, lieuId } = await unLieuAdresse();
+
+    await db.execute(
+      sql`update place set lat = 46.2, lon = 6.1, geocoded_at = now() where id = ${lieuId}`,
+    );
+
+    const proposition = await proposeAddress(alice.id, lieuId, "Avenue Juste 7");
+    if (!proposition.ok) throw new Error("la proposition devait être ouverte");
+    await voteRename(bob.id, proposition.value.id);
+    await voteRename(carla.id, proposition.value.id);
+
+    const [apres] = await db.execute<{
+      lat: number | null;
+      lon: number | null;
+      geocoded_at: Date | null;
+    }>(sql`select lat, lon, geocoded_at from place where id = ${lieuId}`);
+
+    // Remis à zéro, donc le prochain passage de géocodage le reprendra : c'est lui qui ne
+    // traite que ce qui n'a jamais été tenté.
+    expect(apres.lat).toBeNull();
+    expect(apres.lon).toBeNull();
+    expect(apres.geocoded_at).toBeNull();
+  });
+
+  it("laisse le vide se remplir sans vote", async () => {
+    const alice = await createAccount("Alice");
+    const lieu = await createPlace(alice.id, { name: "Parc des Evaux" });
+    if (!lieu.ok) throw new Error("le lieu devait être créé");
+
+    // Rien à corriger tant qu'il n'y a rien d'écrit : c'est `completerAdresse` qui sert.
+    expect(await proposeAddress(alice.id, lieu.value.id, "Route de Chancy 1")).toEqual({
+      ok: false,
+      reason: "adresse_deja_connue",
+    });
+  });
+
+  it("ne balaie pas les corrections de nom en cours", async () => {
+    const { alice, bob, carla, lieuId } = await unLieuAdresse();
+
+    const surLeNom = await proposeRename(alice.id, lieuId, "Maison de quartier des Evaux");
+    const surLAdresse = await proposeAddress(alice.id, lieuId, "Avenue Juste 7");
+    if (!surLeNom.ok || !surLAdresse.ok) throw new Error("les propositions devaient s'ouvrir");
+
+    await voteRename(bob.id, surLAdresse.value.id);
+    await voteRename(carla.id, surLAdresse.value.id);
+
+    // L'adresse est tranchée ; le nom, lui, n'a pas été voté, et les voix déjà données
+    // dessus doivent survivre.
+    const restantes = await pendingRenames(lieuId);
+    expect(restantes.map((p) => p.id)).toEqual([surLeNom.value.id]);
   });
 });
 

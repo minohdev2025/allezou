@@ -2,7 +2,12 @@ import Link from "next/link";
 
 import { VALIDATIONS_RENOMMAGE, openRenames, searchPlaces } from "@/lib/places";
 import { requireAccount } from "@/lib/session";
-import { completerAdresseLieu, proposerRenommage, validerRenommage } from "../actions";
+import {
+  completerAdresseLieu,
+  proposerAdresse,
+  proposerRenommage,
+  validerRenommage,
+} from "../actions";
 import { Alerte, Carte, Navigation, Pastille, Titre, Vide, lienCarte, teinte } from "../ui";
 
 const MESSAGES: Record<string, string> = {
@@ -126,9 +131,10 @@ export default async function Lieux({
                   </div>
 
                   {/*
-                    Le nom se corrige à plusieurs, l'adresse absente se donne seul. Remplir un
-                    vide n'est pas défaire le travail de quelqu'un, et cent lieux sont entrés
-                    avant que ce champ existe : sans ce geste ils resteraient muets.
+                    Une adresse absente se donne seul : remplir un vide n'est pas défaire le
+                    travail de quelqu'un, et cent lieux sont entrés avant que ce champ existe.
+                    Une adresse déjà écrite se corrige à plusieurs, comme le nom, parce que
+                    l'écraser en est bien le contraire.
                   */}
                   {!lieu.address ? (
                     <form action={completerAdresseLieu} className="mb-2 flex gap-2">
@@ -153,8 +159,12 @@ export default async function Lieux({
                       style={{ background: "var(--color-ambre-doux)" }}
                     >
                       <span className="min-w-0 flex-1">
-                        <span className="block font-bold">« {correction.proposedName} »</span>
+                        <span className="block font-bold">
+                          « {correction.proposedName ?? correction.proposedAddress} »
+                        </span>
                         <span className="text-sm text-[color:var(--color-ambre)]">
+                          {/* Sans ce mot, deux propositions voisines se ressemblent trop. */}
+                          {correction.proposedName ? "nouveau nom" : "nouvelle adresse"} ·{" "}
                           {correction.votes} sur {correction.needed} validations
                         </span>
                       </span>
@@ -189,6 +199,31 @@ export default async function Lieux({
                       </button>
                     </form>
                   </details>
+
+                  {lieu.address ? (
+                    <details>
+                      <summary className="cursor-pointer py-1 text-sm font-bold text-[color:var(--color-doux)]">
+                        L&apos;adresse est fausse ?
+                      </summary>
+                      <p className="mt-1 text-sm leading-snug text-[color:var(--color-doux)]">
+                        Comme pour le nom, il faut {VALIDATIONS_RENOMMAGE} validations : c&apos;est
+                        elle qui envoie les familles au bon endroit.
+                      </p>
+                      <form action={proposerAdresse} className="mt-2 flex gap-2">
+                        <input type="hidden" name="lieu" value={lieu.id} />
+                        <input
+                          name="adresse"
+                          defaultValue={lieu.address}
+                          maxLength={160}
+                          required
+                          className="min-w-0 flex-1 rounded-xl bg-[color:var(--color-fond)] px-3 py-2 ring-2 ring-[color:var(--color-trait)] outline-none focus:ring-[color:var(--color-vert)]"
+                        />
+                        <button className="shrink-0 rounded-[var(--radius-pilule)] px-4 py-2 text-sm font-bold shadow-[inset_0_0_0_2px_var(--color-trait)]">
+                          Proposer
+                        </button>
+                      </form>
+                    </details>
+                  ) : null}
                 </Carte>
               </li>
             );

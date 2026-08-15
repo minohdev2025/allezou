@@ -233,6 +233,16 @@ précisément pourquoi la minimisation n'est pas une posture ici.
   quatre : sans cela, essayer des jetons au hasard apprendrait lesquels ont déjà servi. Une
   invitation morte se dit d'ailleurs enfin tout de suite, au lieu de se découvrir après la
   création d'un compte et un aller-retour par courriel.
+- **Une adresse absente se donne seul, une adresse fausse se corrige à plusieurs.** Remplir un
+  vide ne défait le travail de personne, et cent lieux sont entrés avant que ce champ existe.
+  Écraser ce que quelqu'un a écrit est le contraire, et c'est l'argument même qui impose un
+  vote pour le nom : une adresse est l'identité d'un lieu, elle est lue par tout le monde, et
+  c'est elle qui envoie une famille au bon endroit un samedi matin. Le mécanisme est celui du
+  renommage, au même seuil et sur la même table : une seconde façon de valider aurait fini
+  par diverger de la première. Quand la correction est adoptée, les coordonnées géocodées de
+  l'ancienne adresse sont oubliées et redemandées au passage suivant — un repère de carte qui
+  survivrait à l'adresse dont il est tiré serait pire que pas de repère, puisque personne ne
+  vérifie un point qui s'affiche.
 - **Les liens à partager portent un code QR**, généré sur le serveur et sans aucun appel
   extérieur : confier un lien d'invitation à un service de génération d'images reviendrait à
   lui confier la clé d'entrée d'un cercle. Deux parents à la sortie de l'école se montrent un

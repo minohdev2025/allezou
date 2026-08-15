@@ -67,7 +67,13 @@ import {
   optionsConnexion,
   optionsEnregistrement,
 } from "@/lib/passkeys";
-import { completerAdresse, createPlace, proposeRename, voteRename } from "@/lib/places";
+import {
+  completerAdresse,
+  createPlace,
+  proposeAddress,
+  proposeRename,
+  voteRename,
+} from "@/lib/places";
 import {
   createEventAndAttend,
   declareAttendance,
@@ -736,6 +742,17 @@ export async function proposerRenommage(formData: FormData) {
     account.id,
     String(formData.get("lieu") ?? ""),
     String(formData.get("nom") ?? ""),
+  );
+  redirect(result.ok ? "/lieux?propose=1" : `/lieux?erreur=${result.reason}`);
+}
+
+/** Proposer une autre adresse pour un lieu qui en a déjà une. Elle se valide à plusieurs. */
+export async function proposerAdresse(formData: FormData) {
+  const account = await requireAccount();
+  const result = await proposeAddress(
+    account.id,
+    String(formData.get("lieu") ?? ""),
+    String(formData.get("adresse") ?? ""),
   );
   redirect(result.ok ? "/lieux?propose=1" : `/lieux?erreur=${result.reason}`);
 }
