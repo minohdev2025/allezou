@@ -728,19 +728,33 @@ export const minimaxAdapter: Adapter = async (source) => {
     de la page 3 n'a jamais eu de voisine sur la page 1.
   */
   const lots = await Promise.all(
-    pages.map(async (texte, rang) => {
+    pages.map(async (texte) => {
       try {
-        return await extractEventsWithMiniMax(texte, source.url);
+        return { events: await extractEventsWithMiniMax(texte, source.url) };
       } catch (erreur) {
-        // La première page fait la source : si elle ne se lit pas, la source a échoué. Les
-        // suivantes sont un supplément, et l'une d'elles ne doit pas faire perdre le reste.
-        if (rang === 0) throw erreur;
-        return [];
+        return { erreur: erreur instanceof Error ? erreur : new Error(String(erreur)) };
       }
     }),
   );
 
-  const events = lots.flat();
+  /*
+    La source n'échoue que si aucune page ne s'est lue.
+
+    La règle était « la première page fait la source », héritée du temps où il n'y avait qu'un
+    appel. Elle a coûté Vernier entière le soir même : sa première page a rendu une réponse
+    illisible, et les cinq autres, qui avaient répondu, sont parties avec elle. C'est le
+    contraire de ce qu'on cherchait en découpant les appels.
+
+    Une lecture partielle vaut mieux qu'une source en panne, et elle ne trompe personne : ce
+    qui manque manque, et les activités déjà publiées ne sont retirées qu'après trois passages
+    sans les voir — trois passages qu'une page qui rate une fois n'atteindra pas.
+  */
+  const events = lots.flatMap((lot) => lot.events ?? []);
+  const echecs = lots.filter((lot) => lot.erreur);
+
+  if (echecs.length === lots.length && echecs.length > 0) {
+    throw echecs[0].erreur;
+  }
 
   // Le lien de la fiche remplace celui de la liste quand on l'a retrouvé. Sinon rien ne
   // change : mieux vaut la page de la commune qu'une adresse devinée.
