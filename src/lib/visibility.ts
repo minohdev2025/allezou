@@ -127,6 +127,8 @@ export type VisiblePublication = {
   authorName: string;
   placeId: string | null;
   placeName: string | null;
+  /** Où c'est, quand quelqu'un l'a renseigné. Sert à celui qui hésite à venir. */
+  placeAddress: string | null;
   eventId: string | null;
   eventTitle: string | null;
   note: string | null;
@@ -178,6 +180,7 @@ export async function visiblePublications(
     author_name: string;
     place_id: string | null;
     place_name: string | null;
+    place_address: string | null;
     event_id: string | null;
     event_title: string | null;
     note: string | null;
@@ -193,6 +196,7 @@ export async function visiblePublications(
       author.display_name as author_name,
       p.place_id,
       pl.name as place_name,
+      pl.address as place_address,
       p.event_id,
       ev.title as event_title,
       p.note,
@@ -227,6 +231,7 @@ export async function visiblePublications(
     authorName: r.author_name,
     placeId: r.place_id,
     placeName: r.place_name,
+    placeAddress: r.place_address,
     eventId: r.event_id,
     eventTitle: r.event_title,
     note: r.note,

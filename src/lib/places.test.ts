@@ -12,6 +12,7 @@ import {
   proposeRename,
   searchPlaces,
   voteRename,
+  completerAdresse,
 } from "@/lib/places";
 import { createAccount, resetDatabase } from "@/test/helpers";
 
@@ -63,6 +64,65 @@ describe("Ajouter un lieu", () => {
 
     expect((await searchPlaces("parc")).map((p) => p.name)).toEqual(["Parc du Gué"]);
     expect(await searchPlaces()).toHaveLength(2);
+  });
+});
+
+describe("L'adresse d'un lieu", () => {
+  it("s'enregistre à la création", async () => {
+    const alice = await createAccount("Alice");
+    const lieu = await createPlace(alice.id, {
+      name: "Parc du Gué",
+      commune: "Petit-Lancy",
+      address: "Chemin du Gué 12",
+    });
+
+    expect(lieu.ok && lieu.value.address).toBe("Chemin du Gué 12");
+  });
+
+  it("reste vide quand personne ne la donne", async () => {
+    const alice = await createAccount("Alice");
+    const lieu = await createPlace(alice.id, { name: "Parc des Evaux" });
+
+    expect(lieu.ok && lieu.value.address).toBeNull();
+  });
+
+  it("se complète quand elle manque", async () => {
+    const alice = await createAccount("Alice");
+    const lieu = await createPlace(alice.id, { name: "Parc des Evaux" });
+    if (!lieu.ok) throw new Error("le lieu devait être créé");
+
+    const resultat = await completerAdresse(lieu.value.id, "  Route de Chancy 1  ");
+
+    expect(resultat.ok).toBe(true);
+    const relu = await searchPlaces("Evaux");
+    expect(relu[0].address).toBe("Route de Chancy 1");
+  });
+
+  it("ne s'écrase pas une fois connue", async () => {
+    const alice = await createAccount("Alice");
+    const lieu = await createPlace(alice.id, {
+      name: "Parc du Gué",
+      address: "Chemin du Gué 12",
+    });
+    if (!lieu.ok) throw new Error("le lieu devait être créé");
+
+    // Remplir un vide n'est pas défaire le travail de quelqu'un ; corriger, si.
+    const resultat = await completerAdresse(lieu.value.id, "Ailleurs 99");
+
+    expect(resultat).toEqual({ ok: false, reason: "adresse_deja_connue" });
+    const relu = await searchPlaces("Gué");
+    expect(relu[0].address).toBe("Chemin du Gué 12");
+  });
+
+  it("refuse une saisie vide", async () => {
+    const alice = await createAccount("Alice");
+    const lieu = await createPlace(alice.id, { name: "Parc des Evaux" });
+    if (!lieu.ok) throw new Error("le lieu devait être créé");
+
+    expect(await completerAdresse(lieu.value.id, "   ")).toEqual({
+      ok: false,
+      reason: "adresse_invalide",
+    });
   });
 });
 

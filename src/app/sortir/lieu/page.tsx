@@ -21,12 +21,25 @@ export default async function NouveauLieu({
         Ajouter un lieu
       </Titre>
 
-      {erreur ? <Alerte ton="erreur">Ce nom de lieu ne convient pas.</Alerte> : null}
+      {erreur ? (
+        <Alerte ton="erreur">
+          {erreur === "adresse_invalide"
+            ? "Cette adresse est trop longue : 160 caractères au plus."
+            : "Ce nom de lieu ne convient pas."}
+        </Alerte>
+      ) : null}
 
       <Carte accent="violet">
         <form action={ajouterLieu} className="space-y-5">
           <Champ label="Nom du lieu" name="nom" required maxLength={80} placeholder="Parc du Gué" />
           <Champ label="Commune" name="commune" maxLength={60} placeholder="Petit-Lancy" />
+          <Champ
+            label="Où est-ce ?"
+            aide="Une adresse ou un repère, pour la famille qui ne connaît pas le quartier. Vous pouvez laisser vide."
+            name="adresse"
+            maxLength={160}
+            placeholder="Chemin du Gué 12, derrière l'école"
+          />
           <Bouton type="submit">Ajouter</Bouton>
         </form>
       </Carte>

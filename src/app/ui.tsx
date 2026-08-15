@@ -399,6 +399,20 @@ export function Navigation({
   );
 }
 
+/* --------------------------------------------------------------------- lieux */
+
+/**
+ * Un lien vers une carte, pour la famille qui ne connaît pas le quartier.
+ *
+ * OpenStreetMap plutôt qu'un service qui profile ses visiteurs, et un lien qu'on suit
+ * seulement si on en a besoin : rien ne part tant que personne ne clique. Notre en-tête
+ * `Referrer-Policy` étant `same-origin`, l'autre bout n'apprend même pas d'où l'on vient.
+ */
+export function lienCarte(nom: string, adresse?: string | null, commune?: string | null) {
+  const requete = [nom, adresse, commune].filter(Boolean).join(", ");
+  return `https://www.openstreetmap.org/search?query=${encodeURIComponent(requete)}`;
+}
+
 /* --------------------------------------------------------------------- dates */
 
 /** « 12:15 » — l'heure de fin est ce qui compte, pas la durée restante. */

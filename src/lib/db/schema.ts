@@ -243,6 +243,17 @@ export const place = pgTable(
     id: uuid().primaryKey().defaultRandom(),
     name: varchar({ length: 80 }).notNull(),
     commune: varchar({ length: 60 }),
+    /**
+     * Où c'est, en clair : « Chemin du Gué 12 », « derrière l'école du Bachet ».
+     *
+     * Un nom de parc suffit à celui qui le connaît déjà, et ne dit rien à la famille qui
+     * vient d'un autre quartier. C'est du texte libre parce qu'un repère vaut souvent mieux
+     * qu'un numéro de rue, et parce qu'un parc n'a pas toujours d'adresse postale.
+     *
+     * Rien à voir avec une position : c'est une information publique sur un lieu commun, pas
+     * sur une famille. Personne n'est jamais géolocalisé.
+     */
+    address: varchar({ length: 160 }),
     createdBy: uuid().references(() => account.id, { onDelete: "set null" }),
     createdAt: timestamp({ withTimezone: true }).notNull().default(now),
     archivedAt: timestamp({ withTimezone: true }),

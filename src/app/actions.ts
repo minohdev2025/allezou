@@ -64,7 +64,7 @@ import {
   optionsConnexion,
   optionsEnregistrement,
 } from "@/lib/passkeys";
-import { createPlace, proposeRename, voteRename } from "@/lib/places";
+import { completerAdresse, createPlace, proposeRename, voteRename } from "@/lib/places";
 import {
   createEventAndAttend,
   declareAttendance,
@@ -686,9 +686,25 @@ export async function ajouterLieu(formData: FormData) {
   const result = await createPlace(account.id, {
     name: String(formData.get("nom") ?? ""),
     commune: String(formData.get("commune") ?? "") || undefined,
+    address: String(formData.get("adresse") ?? "") || undefined,
   });
-  if (!result.ok) redirect("/sortir/lieu?erreur=1");
+  if (!result.ok) redirect(`/sortir/lieu?erreur=${result.reason}`);
   redirect("/sortir");
+}
+
+/**
+ * Compléter l'adresse d'un lieu qui n'en a pas.
+ *
+ * Cent lieux sont entrés avant que ce champ existe : sans ce geste, ils resteraient muets
+ * pour toujours, et l'adresse ne servirait qu'aux lieux créés à partir d'aujourd'hui.
+ */
+export async function completerAdresseLieu(formData: FormData) {
+  await requireAccount();
+  const result = await completerAdresse(
+    String(formData.get("lieu") ?? ""),
+    String(formData.get("adresse") ?? ""),
+  );
+  redirect(result.ok ? "/lieux?adresse=1" : `/lieux?erreur=${result.reason}`);
 }
 
 /* ------------------------------------------------------- activités du calendrier */

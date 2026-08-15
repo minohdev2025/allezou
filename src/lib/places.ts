@@ -24,9 +24,22 @@ export const VALIDATIONS_RENOMMAGE = 3;
 export const placeNameSchema = z.string().trim().min(2).max(80);
 export const communeSchema = z.string().trim().max(60).optional();
 
+/**
+ * L'adresse ou le repère qui permet de trouver le lieu. Vide vaut « on ne sait pas », et
+ * c'est le cas de tous les lieux entrés avant que ce champ existe.
+ */
+export const addressSchema = z
+  .string()
+  .trim()
+  .max(160)
+  .optional()
+  .transform((v) => v || undefined);
+
 export type PlaceError =
   | "nom_invalide"
   | "commune_invalide"
+  | "adresse_invalide"
+  | "adresse_deja_connue"
   | "lieu_inconnu"
   | "proposition_inconnue"
   | "proposition_close"
@@ -55,13 +68,16 @@ function normalize(name: string): string {
  */
 export async function createPlace(
   actorId: string,
-  input: { name: string; commune?: string },
+  input: { name: string; commune?: string; address?: string },
 ): Promise<Result<Place>> {
   const name = placeNameSchema.safeParse(input.name);
   if (!name.success) return ko("nom_invalide");
 
   const commune = communeSchema.safeParse(input.commune);
   if (!commune.success) return ko("commune_invalide");
+
+  const address = addressSchema.safeParse(input.address);
+  if (!address.success) return ko("adresse_invalide");
 
   const existing = await db
     .select()
@@ -73,7 +89,12 @@ export async function createPlace(
 
   const [place] = await db
     .insert(s.place)
-    .values({ name: name.data, commune: commune.data, createdBy: actorId })
+    .values({
+      name: name.data,
+      commune: commune.data,
+      address: address.data,
+      createdBy: actorId,
+    })
     .returning();
 
   return ok(place);
@@ -92,6 +113,32 @@ export async function searchPlaces(query = "", limit = 20): Promise<Place[]> {
     )
     .orderBy(s.place.name)
     .limit(limit);
+}
+
+/**
+ * Compléter l'adresse d'un lieu qui n'en a pas.
+ *
+ * On remplit un vide, on ne corrige pas. Le nom d'un lieu commun se change à plusieurs
+ * (`proposeRename`), parce que c'est son identité et qu'une erreur y est visible de tous.
+ * Une adresse absente ne se discute pas : la première personne qui la connaît la donne.
+ * L'écraser, en revanche, redeviendrait une décision que personne ne prend seul, et c'est
+ * pourquoi ce n'est pas possible ici.
+ */
+export async function completerAdresse(
+  placeId: string,
+  saisie: string,
+): Promise<Result<void>> {
+  const address = addressSchema.safeParse(saisie);
+  if (!address.success || !address.data) return ko("adresse_invalide");
+
+  const modifiees = await db
+    .update(s.place)
+    .set({ address: address.data })
+    .where(and(eq(s.place.id, placeId), isNull(s.place.address), isNull(s.place.archivedAt)))
+    .returning({ id: s.place.id });
+
+  if (modifiees.length === 0) return ko("adresse_deja_connue");
+  return ok(undefined as void);
 }
 
 export type RenameProposal = {

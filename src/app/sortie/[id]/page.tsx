@@ -26,6 +26,7 @@ import {
   Pastille,
   heureCourte,
   jourCourt,
+  lienCarte,
   teinte,
 } from "../../ui";
 
@@ -80,6 +81,24 @@ export default async function Sortie({
           📍
         </div>
         <h1 className="text-[1.75rem] font-bold leading-tight">{sortie.placeName}</h1>
+
+        {/*
+          L'adresse est ici, sur l'écran où quelqu'un décide de venir. Un nom de parc suffit
+          à qui le connaît déjà, et ne dit rien à la famille d'un autre quartier.
+        */}
+        {sortie.placeAddress ? (
+          <p className="mt-1">
+            <a
+              href={lienCarte(sortie.placeName ?? "", sortie.placeAddress)}
+              target="_blank"
+              rel="noreferrer"
+              className="text-[color:var(--color-doux)] underline underline-offset-4"
+            >
+              {sortie.placeAddress} ↗
+            </a>
+          </p>
+        ) : null}
+
         <p className="mt-2 flex items-center gap-2 text-[color:var(--color-doux)]">
           <IconeHorloge className="h-5 w-5" />
           {aVenir

@@ -2,12 +2,14 @@ import Link from "next/link";
 
 import { VALIDATIONS_RENOMMAGE, openRenames, searchPlaces } from "@/lib/places";
 import { requireAccount } from "@/lib/session";
-import { proposerRenommage, validerRenommage } from "../actions";
-import { Alerte, Carte, Navigation, Pastille, Titre, Vide, teinte } from "../ui";
+import { completerAdresseLieu, proposerRenommage, validerRenommage } from "../actions";
+import { Alerte, Carte, Navigation, Pastille, Titre, Vide, lienCarte, teinte } from "../ui";
 
 const MESSAGES: Record<string, string> = {
   nom_invalide: "Ce nom ne convient pas : de 2 à 80 caractères.",
   lieu_inconnu: "Ce lieu n'existe plus.",
+  adresse_invalide: "Cette adresse ne convient pas : 160 caractères au plus.",
+  adresse_deja_connue: "Quelqu'un vient de la donner. Rechargez pour la voir.",
   proposition_close: "Cette correction a déjà été tranchée.",
   proposition_inconnue: "Cette correction n'existe pas.",
 };
@@ -22,10 +24,16 @@ const MESSAGES: Record<string, string> = {
 export default async function Lieux({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; erreur?: string; propose?: string; applique?: string }>;
+  searchParams: Promise<{
+    q?: string;
+    erreur?: string;
+    propose?: string;
+    applique?: string;
+    adresse?: string;
+  }>;
 }) {
   const account = await requireAccount();
-  const { q, erreur, propose, applique } = await searchParams;
+  const { q, erreur, propose, applique, adresse } = await searchParams;
 
   const [lieux, corrections] = await Promise.all([
     searchPlaces(q ?? "", 100),
@@ -48,6 +56,7 @@ export default async function Lieux({
 
       {erreur ? <Alerte ton="erreur">{MESSAGES[erreur] ?? "Cela n'a pas marché."}</Alerte> : null}
       {applique ? <Alerte ton="succes">Le lieu est renommé pour tout le monde.</Alerte> : null}
+      {adresse ? <Alerte ton="succes">Merci : le lieu se trouve maintenant.</Alerte> : null}
       {propose && !applique ? (
         <Alerte>
           Votre correction est proposée. Elle s&apos;appliquera quand {VALIDATIONS_RENOMMAGE}{" "}
@@ -101,8 +110,41 @@ export default async function Lieux({
                       {lieu.commune ? (
                         <p className="text-sm text-[color:var(--color-doux)]">{lieu.commune}</p>
                       ) : null}
+                      {lieu.address ? (
+                        <p className="mt-0.5 text-sm">
+                          <a
+                            href={lienCarte(lieu.name, lieu.address, lieu.commune)}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-[color:var(--color-doux)] underline underline-offset-4"
+                          >
+                            {lieu.address} ↗
+                          </a>
+                        </p>
+                      ) : null}
                     </div>
                   </div>
+
+                  {/*
+                    Le nom se corrige à plusieurs, l'adresse absente se donne seul. Remplir un
+                    vide n'est pas défaire le travail de quelqu'un, et cent lieux sont entrés
+                    avant que ce champ existe : sans ce geste ils resteraient muets.
+                  */}
+                  {!lieu.address ? (
+                    <form action={completerAdresseLieu} className="mb-2 flex gap-2">
+                      <input type="hidden" name="lieu" value={lieu.id} />
+                      <input
+                        name="adresse"
+                        required
+                        maxLength={160}
+                        placeholder="Où est-ce ? Une adresse, un repère"
+                        className="min-w-0 flex-1 rounded-xl bg-[color:var(--color-fond)] px-3 py-2 text-sm ring-2 ring-[color:var(--color-trait)] outline-none focus:ring-[color:var(--color-vert)]"
+                      />
+                      <button className="shrink-0 rounded-[var(--radius-pilule)] px-3 py-2 text-sm font-bold text-[color:var(--color-doux)] shadow-[inset_0_0_0_2px_var(--color-trait)]">
+                        Donner
+                      </button>
+                    </form>
+                  ) : null}
 
                   {enAttente.map((correction) => (
                     <div
