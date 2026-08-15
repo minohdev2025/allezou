@@ -1,7 +1,7 @@
 import { myChildren } from "@/lib/children";
 import { requireAccount } from "@/lib/session";
-import { ajouterEnfant } from "../../actions";
-import { Alerte, Bouton, Carte, Champ, IconePlus, LienBouton, Pastille, Titre, teinte } from "../../ui";
+import { ajouterEnfant, terminerBienvenue } from "../../actions";
+import { Alerte, Bouton, Carte, Champ, IconePlus, Pastille, Titre, teinte } from "../../ui";
 
 export default async function Enfants({
   searchParams,
@@ -43,9 +43,16 @@ export default async function Enfants({
         </form>
       </Carte>
 
-      <LienBouton href="/cercles" variante="principal">
-        {enfants.length > 0 ? "C'est bon" : "Passer cette étape"}
-      </LienBouton>
+      {/*
+        Un formulaire et non un lien : c'est ici que se consomme le témoin de reprise, et un
+        témoin ne s'efface que depuis une action. Quelqu'un venu suivre une invitation la
+        retrouve donc à la dernière marche, au lieu d'atterrir sur une liste de cercles vide.
+      */}
+      <form action={terminerBienvenue}>
+        <Bouton type="submit">
+          {enfants.length > 0 ? "C'est bon" : "Passer cette étape"}
+        </Bouton>
+      </form>
     </main>
   );
 }

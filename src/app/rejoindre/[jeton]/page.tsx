@@ -23,7 +23,10 @@ export default async function Rejoindre({
   const { erreur } = await searchParams;
 
   const account = await currentAccount();
-  if (!account) redirect(`/connexion?suite=/rejoindre/${jeton}`);
+  // `premiere` parce qu'on suit une invitation : neuf fois sur dix, c'est une arrivée.
+  // `suite` est repris par le formulaire, qui le confie à un témoin : sans lui, on revenait
+  // de son courriel sur « Aucun cercle pour l'instant », l'invitation perdue en route.
+  if (!account) redirect(`/connexion?premiere=1&suite=/rejoindre/${jeton}`);
 
   return (
     <main className="apparait">

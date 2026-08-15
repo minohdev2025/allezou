@@ -9,7 +9,7 @@
 import { NextResponse } from "next/server";
 
 import { consumeMagicLink } from "@/lib/auth";
-import { COOKIE_SESSION } from "@/lib/session";
+import { COOKIE_SESSION, COOKIE_SUITE, destinationSure } from "@/lib/session";
 
 const SIX_MOIS_EN_SECONDES = 180 * 24 * 60 * 60;
 
@@ -42,9 +42,16 @@ export async function GET(
     return NextResponse.redirect(new URL(`/connexion?erreur=${result.reason}`, base));
   }
 
-  const response = NextResponse.redirect(
-    new URL(result.isNew ? "/bienvenue" : "/maintenant", base),
-  );
+  // Où l'on allait avant d'être renvoyé au formulaire. Un compte tout neuf passe d'abord
+  // par l'accueil : le témoin lui survit et sera consommé à la dernière marche.
+  const suite = destinationSure(request.headers.get("cookie")?.match(
+    new RegExp(`${COOKIE_SUITE}=([^;]+)`),
+  )?.[1]);
+
+  const destination = result.isNew ? "/bienvenue" : (suite ?? "/maintenant");
+  const response = NextResponse.redirect(new URL(destination, base));
+
+  if (suite && !result.isNew) response.cookies.delete(COOKIE_SUITE);
 
   response.cookies.set(COOKIE_SESSION, result.sessionToken, {
     httpOnly: true,

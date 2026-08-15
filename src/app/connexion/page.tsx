@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { lienDeConnexionEnDeveloppement } from "@/lib/mail";
-import { currentAccount } from "@/lib/session";
+import { currentAccount, destinationSure } from "@/lib/session";
 import { connecterParCleAcces, demanderLien, preparerConnexionCle } from "../actions";
 import { ConnexionParCleAcces } from "../passkey-client";
 import { Alerte, Bouton, Carte, Champ } from "../ui";
@@ -56,12 +56,19 @@ const ETAPES = [
 export default async function Connexion({
   searchParams,
 }: {
-  searchParams: Promise<{ envoye?: string; erreur?: string; premiere?: string }>;
+  searchParams: Promise<{
+    envoye?: string;
+    erreur?: string;
+    premiere?: string;
+    suite?: string;
+  }>;
 }) {
   if (await currentAccount()) redirect("/maintenant");
 
-  const { envoye, erreur, premiere } = await searchParams;
+  const { envoye, erreur, premiere, suite } = await searchParams;
   const premiereFois = premiere === "1";
+  // Vérifiée ici pour ne pas la réafficher telle quelle : elle vient d'une URL.
+  const reprise = destinationSure(suite);
   const lienDeDeveloppement = envoye ? lienDeConnexionEnDeveloppement() : null;
 
   return (
@@ -102,11 +109,18 @@ export default async function Connexion({
         </Alerte>
       ) : null}
 
+      {reprise ? (
+        <Alerte>
+          <strong className="mb-1 block">Une invitation vous attend 🔗</strong>
+          Connectez-vous et vous y reviendrez tout seul.
+        </Alerte>
+      ) : null}
+
       <div className="mb-6 flex gap-2">
-        <Onglet href="/connexion" actif={!premiereFois}>
+        <Onglet href={lien("/connexion", reprise)} actif={!premiereFois}>
           Je reviens
         </Onglet>
-        <Onglet href="/connexion?premiere=1" actif={premiereFois}>
+        <Onglet href={lien("/connexion?premiere=1", reprise)} actif={premiereFois}>
           C&apos;est ma première fois
         </Onglet>
       </div>
@@ -138,6 +152,7 @@ export default async function Connexion({
 
           <Carte accent="vert">
             <form action={demanderLien} className="space-y-5">
+              {reprise ? <input type="hidden" name="suite" value={reprise} /> : null}
               <Champ
                 label="Votre adresse électronique"
                 aide="C'est tout ce qu'il faut. Le lien que vous recevrez ouvrira votre compte."
@@ -162,6 +177,7 @@ export default async function Connexion({
 
           <Carte accent="vert">
             <form action={demanderLien} className="space-y-5">
+              {reprise ? <input type="hidden" name="suite" value={reprise} /> : null}
               <Champ
                 label="Votre adresse électronique"
                 aide="Pas de mot de passe à retenir : vous recevez un lien qui vous connecte."
@@ -200,6 +216,12 @@ export default async function Connexion({
       </div>
     </main>
   );
+}
+
+/** Passer d'un onglet à l'autre ne doit pas faire tomber l'invitation qu'on suivait. */
+function lien(base: string, reprise: string | undefined): string {
+  if (!reprise) return base;
+  return `${base}${base.includes("?") ? "&" : "?"}suite=${encodeURIComponent(reprise)}`;
 }
 
 /** Deux chemins, côte à côte, et celui qu'on suit se voit. */

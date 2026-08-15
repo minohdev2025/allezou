@@ -85,8 +85,11 @@ import {
   COOKIE_DEFI,
   COOKIE_INVITATION,
   clearSessionCookie,
+  destinationSure,
   masquerAccueil,
+  poserSuite,
   readSessionToken,
+  releverSuite,
   requireAccount,
   requireRelecteur,
   setSessionCookie,
@@ -108,12 +111,30 @@ export async function entrer(formData: FormData) {
 /* ------------------------------------------------------------------ connexion */
 
 export async function demanderLien(formData: FormData) {
+  // Où reprendre après le courriel. Vérifié avant d'être gardé : ce qui arrive ici vient
+  // d'une URL, donc de n'importe qui, et une destination extérieure ferait de notre
+  // connexion un tremplin d'hameçonnage.
+  const suite = destinationSure(formData.get("suite")?.toString());
+  if (suite) await poserSuite(suite);
+
   const result = await requestMagicLink(String(formData.get("email") ?? ""));
 
   if (!result.ok) {
     redirect(`/connexion?erreur=${result.reason}`);
   }
   redirect("/connexion?envoye=1");
+}
+
+/**
+ * La fin de l'accueil d'un nouveau compte.
+ *
+ * Un lien fixe vers `/cercles` renvoyait dans le vide quelqu'un qui était venu suivre une
+ * invitation : elle avait traversé le courriel et l'accueil, et se perdait à la dernière
+ * marche.
+ */
+export async function terminerBienvenue() {
+  await requireAccount();
+  redirect((await releverSuite()) ?? "/cercles");
 }
 
 export async function seDeconnecter() {

@@ -36,6 +36,57 @@ export const COOKIE_DEFI = "totir_defi";
  */
 export const COOKIE_ACCUEIL = "totir_accueil";
 
+/**
+ * Où reprendre après la connexion.
+ *
+ * Une invitation arrive par message, et celle qui la suit n'est presque jamais connectée.
+ * Sans ce témoin, elle passait par le formulaire, attendait son courriel, cliquait, et
+ * atterrissait sur « Aucun cercle pour l'instant » : l'invitation était perdue, et il fallait
+ * retourner dans WhatsApp pour recliquer. Celle qui ne comprend pas abandonne.
+ *
+ * Un quart d'heure, comme le lien de connexion qu'il accompagne.
+ */
+export const COOKIE_SUITE = "totir_suite";
+
+const UN_QUART_D_HEURE = 15 * 60;
+
+/**
+ * Une destination interne, et rien d'autre.
+ *
+ * Ce qui entre ici vient d'une URL, donc de n'importe qui. Sans cette vérification, un lien
+ * bien tourné enverrait quelqu'un vers un autre site juste après s'être connecté chez nous,
+ * ce qui est la forme la plus efficace d'hameçonnage.
+ */
+export function destinationSure(valeur: string | undefined | null): string | undefined {
+  if (!valeur) return undefined;
+  return /^\/rejoindre\/[A-Za-z0-9_-]{8,200}$/.test(valeur) ? valeur : undefined;
+}
+
+export async function poserSuite(destination: string): Promise<void> {
+  const store = await cookies();
+  store.set(COOKIE_SUITE, destination, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: UN_QUART_D_HEURE,
+  });
+}
+
+/** Lit sans consommer : une page ne peut pas effacer un témoin. */
+export async function lireSuite(): Promise<string | undefined> {
+  const store = await cookies();
+  return destinationSure(store.get(COOKIE_SUITE)?.value);
+}
+
+/** Lit et consomme. Réservé aux actions et aux gestionnaires de route. */
+export async function releverSuite(): Promise<string | undefined> {
+  const store = await cookies();
+  const destination = destinationSure(store.get(COOKIE_SUITE)?.value);
+  store.delete(COOKIE_SUITE);
+  return destination;
+}
+
 const SIX_MOIS_EN_SECONDES = 180 * 24 * 60 * 60;
 const UN_AN_EN_SECONDES = 365 * 24 * 60 * 60;
 
