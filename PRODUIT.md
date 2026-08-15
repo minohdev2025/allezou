@@ -223,6 +223,16 @@ précisément pourquoi la minimisation n'est pas une posture ici.
   contrôle : ne pas pouvoir le rappeler serait une porte laissée ouverte. Exclure quelqu'un et nommer un second administrateur sont repliés
   derrière « Administrer cette personne » — ces gestes sont rares, et un bouton « exclure » à
   portée de pouce se touche par accident.
+- **L'écran d'invitation nomme le cercle, avant la connexion.** « Quelqu'un vous a transmis
+  une invitation » demandait de donner son adresse électronique pour apprendre où l'on entre,
+  c'est-à-dire de commencer par faire confiance. Ce qui est divulgué est le nom d'un cercle,
+  à quelqu'un qui détient déjà le jeton — or ce jeton ne se contente pas de nommer, il fait
+  entrer : celui qui le tient a reçu le lien, et le remède si un lien va trop loin reste sa
+  révocation. Le nom montré est celui d'origine, jamais l'alias qu'un membre s'est donné pour
+  lui-même. Un jeton révoqué, expiré, épuisé ou inventé se comporte de la même façon pour les
+  quatre : sans cela, essayer des jetons au hasard apprendrait lesquels ont déjà servi. Une
+  invitation morte se dit d'ailleurs enfin tout de suite, au lieu de se découvrir après la
+  création d'un compte et un aller-retour par courriel.
 - **Les liens à partager portent un code QR**, généré sur le serveur et sans aucun appel
   extérieur : confier un lien d'invitation à un service de génération d'images reviendrait à
   lui confier la clé d'entrée d'un cercle. Deux parents à la sortie de l'école se montrent un

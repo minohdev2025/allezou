@@ -164,6 +164,39 @@ export async function revokeInvite(actorId: string, inviteId: string): Promise<R
 }
 
 /**
+ * Le nom du cercle derrière un lien d'invitation, ou rien.
+ *
+ * Celui qui arrive par WhatsApp voyait « Quelqu'un vous a transmis une invitation » et
+ * devait donner son adresse électronique pour apprendre où il entrait. Nommer le cercle
+ * lève cette hésitation au moment exact où elle se produit.
+ *
+ * Ce que cela divulgue, et à qui : le nom d'un cercle, à quelqu'un qui détient déjà le
+ * jeton. Détenir le jeton, c'est avoir reçu le lien — et ce lien fait bien plus que nommer,
+ * il fait entrer. Le remède si un lien va trop loin reste le même qu'avant : le révoquer.
+ *
+ * Un jeton révoqué, expiré, épuisé ou inventé rend `null`, tous les quatre de la même
+ * façon. Distinguer « ce lien a expiré » de « ce lien n'a jamais existé » ici apprendrait à
+ * qui essaie des jetons au hasard lesquels ont déjà servi.
+ *
+ * Le nom rendu est celui d'origine, jamais un alias : l'alias est le nom qu'un membre s'est
+ * donné pour lui-même, et il n'a rien à faire chez quelqu'un qui n'est pas encore entré.
+ */
+export async function circleNameForInvite(token: string): Promise<string | null> {
+  const rows = await db.execute<{ name: string }>(sql`
+    select c.name
+    from circle_invite i
+    join circle c on c.id = i.circle_id and c.archived_at is null
+    where i.token_hash = ${hashToken(token)}
+      and i.revoked_at is null
+      and i.expires_at > now()
+      and i.use_count < i.max_uses
+    limit 1
+  `);
+
+  return rows[0]?.name ?? null;
+}
+
+/**
  * Suivre un lien d'invitation. Dépose une demande en attente — n'accorde aucun accès.
  *
  * L'usage du lien est décompté ici et non à la validation : un lien « valable 20 fois »
