@@ -70,7 +70,7 @@ src/app/
 
 src/lib/
   db/           schéma, connexion, conversion des lignes brutes
-  visibility.ts LA règle : point de passage unique de toute lecture
+  visibility.ts LA règle : point de passage unique de toute lecture d'autrui
   auth.ts       accès sans mot de passe (lien magique)
   account.ts    suppression d'un compte
   children.ts   enfants (un prénom) et lien entre co-parents
@@ -92,14 +92,27 @@ src/lib/
 
 ## Ce qu'il ne faut pas casser
 
-**Toute lecture de publication passe par `src/lib/visibility.ts`.** Aucune autre partie du
-code ne doit interroger la table `publication` directement. Le prédicat y est écrit une seule
-fois et sert dans les deux sens : « que voit cette personne » et « qui voit cette
-publication ». C'est ce qui garantit qu'une notification ne part jamais vers quelqu'un qui
-ne verrait pas la sortie à l'écran.
+**Toute lecture qui montre à quelqu'un ce qu'un autre a publié passe par
+`src/lib/visibility.ts`.** Le prédicat y est écrit une seule fois et sert dans les deux
+sens : « que voit cette personne » et « qui voit cette publication ». C'est ce qui garantit
+qu'une notification ne part jamais vers quelqu'un qui ne verrait pas la sortie à l'écran.
 
-Les tests de `visibility.test.ts` sont la démonstration exigée par PRODUIT.md, pas un filet
-de sécurité parmi d'autres. Ils sont écrits pour être lus par quelqu'un qui ne programme pas.
+La phrase disait « aucune autre partie du code n'interroge la table `publication` », et ce
+n'était pas vrai : dix endroits la lisent. Aucun ne montre pourtant la publication de
+quelqu'un d'autre. Ils lisent soit vos propres lignes (« ma dernière sortie », « mon
+inscription à cette activité »), soit le seul `author_id` ou `kind` d'une publication pour
+décider si celui qui demande a le droit de la modifier. La réponse qui en sort est « c'est à
+vous » ou « ce n'est pas à vous », jamais un contenu. Une règle qu'on énonce plus large
+qu'elle n'est finit par n'être vérifiée nulle part : celle-ci l'est maintenant.
+
+Deux tests s'en chargent, et ils ne font pas le même travail. `visibility.test.ts` démontre
+que la règle est juste, en énumérant les cas un par un ; c'est la démonstration exigée par
+PRODUIT.md, écrite pour être lue par quelqu'un qui ne programme pas.
+`visibility-frontiere.test.ts` vérifie qu'on ne peut pas la contourner : il compte les
+lectures directes de la table, fichier par fichier, et tombe dès qu'une nouvelle apparaît.
+La question à se poser quand il tombe est écrite en tête : cette lecture montre-t-elle à
+quelqu'un ce qu'un autre a publié ? Si oui, elle passe par la règle. Si non, elle s'inscrit
+dans la liste avec sa raison.
 
 **Les dates comparées viennent de l'horloge de la base**, jamais de celle de Node : quelques
 millisecondes d'écart suffisent à faire sortir un membre avant son entrée, ou à afficher
