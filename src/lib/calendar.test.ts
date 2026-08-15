@@ -195,29 +195,50 @@ describe("Une activité que la source n'annonce plus", () => {
 });
 
 describe("Filtres prix et inscription", () => {
-  it("sépare gratuit, payant et non défini", async () => {
+  /*
+    Un prix non défini entre dans les deux filtres, et c'est un changement assumé.
+
+    Le filtre écartait ce que la commune n'avait pas écrit. Comme c'est l'état d'une bonne
+    moitié de l'agenda, un parent qui cherchait du gratuit voyait disparaître la moitié des
+    activités, dont beaucoup le sont. On montre donc plus large et on le laisse vérifier.
+
+    Ce que cela ne change pas : la fiche affiche toujours « non défini ». Rien n'est
+    requalifié en gratuit, et personne n'arrive devant une caisse en croyant le contraire —
+    c'était la crainte qui avait fondé la règle d'affichage, et elle tient toujours.
+  */
+  it("montre les prix non définis avec les gratuites comme avec les payantes", async () => {
     const alice = await createAccount("Alice");
     await createEvent({ title: "Concert de l'Escalade", tarif: "gratuit" });
     await createEvent({ title: "Cirque de Noël", tarif: "payant" });
     await createEvent({ title: "Vide-greniers du village" });
 
     const gratuites = await upcomingCalendar(alice.id, { tarif: "gratuit" });
-    expect(gratuites.map((e) => e.title)).toEqual(["Concert de l'Escalade"]);
+    expect(gratuites.map((e) => e.title).sort()).toEqual([
+      "Concert de l'Escalade",
+      "Vide-greniers du village",
+    ]);
 
     const payantes = await upcomingCalendar(alice.id, { tarif: "payant" });
-    expect(payantes.map((e) => e.title)).toEqual(["Cirque de Noël"]);
+    expect(payantes.map((e) => e.title).sort()).toEqual([
+      "Cirque de Noël",
+      "Vide-greniers du village",
+    ]);
 
-    // « Non défini » se demande comme les deux autres : c'est l'état d'une bonne moitié des
-    // activités communales, et le cacher reviendrait à les faire passer pour gratuites.
+    // Demander « non défini » ne rend que celles-là : le filtre reste utilisable pour voir
+    // ce dont on ignore le prix.
     const inconnues = await upcomingCalendar(alice.id, { tarif: "inconnu" });
     expect(inconnues.map((e) => e.title)).toEqual(["Vide-greniers du village"]);
   });
 
-  it("une activité sans prix annoncé n'est pas gratuite", async () => {
+  it("garde le prix non défini tel quel, sans le requalifier", async () => {
     const alice = await createAccount("Alice");
     await createEvent({ title: "Atelier sans prix affiché" });
 
-    expect(await upcomingCalendar(alice.id, { tarif: "gratuit" })).toEqual([]);
+    // Elle apparaît dans le filtre « gratuit », et reste « inconnu » : c'est la fiche qui
+    // doit être exacte, pas la liste de ce qu'on propose de regarder.
+    const [activite] = await upcomingCalendar(alice.id, { tarif: "gratuit" });
+    expect(activite.title).toBe("Atelier sans prix affiché");
+    expect(activite.tarif).toBe("inconnu");
   });
 
   it("sépare l'inscription de l'entrée libre", async () => {

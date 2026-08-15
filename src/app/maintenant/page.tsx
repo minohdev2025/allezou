@@ -69,15 +69,24 @@ export default async function Maintenant() {
 
           {enAttendant.length > 0 ? (
             <section className="mt-8">
-              <h2 className="titre mb-1 text-lg font-bold">En attendant, le canton sort</h2>
+              <h2 className="titre mb-1 text-lg font-bold">
+                Les prochaines sorties du canton
+              </h2>
               <p className="mb-3 text-sm leading-snug text-[color:var(--color-doux)]">
-                L&apos;agenda des communes genevoises ne dépend d&apos;aucun cercle. Il est
-                déjà là.
+                Les activités des communes genevoises, ouvertes à tous.
               </p>
 
               <ul className="mb-4 space-y-2">
                 {enAttendant.map((activite) => {
-                  const jour = jourCourt(activite.startsAt);
+                  /*
+                    Une activité déjà commencée portait sa date de début : une exposition
+                    ouverte du 22 juillet au 15 août affichait « 22 juillet » alors qu'on
+                    était le 12 août. C'est la date de fin qui informe, puisqu'elle dit
+                    combien de temps il reste pour y aller.
+                  */
+                  const jour = jourCourt(
+                    activite.enCours && activite.endsAt ? activite.endsAt : activite.startsAt,
+                  );
                   return (
                     <li key={activite.id}>
                       <Link
@@ -91,6 +100,11 @@ export default async function Maintenant() {
                           className="w-14 shrink-0 text-sm font-bold leading-tight"
                           style={{ color: `var(--color-${teinte(activite.id)})` }}
                         >
+                          {activite.enCours && activite.endsAt ? (
+                            <span className="block text-[0.7rem] opacity-75">
+                              jusqu&apos;au
+                            </span>
+                          ) : null}
                           {jour.nombre} {jour.mois}
                         </span>
                         <span className="min-w-0 flex-1">

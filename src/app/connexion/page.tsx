@@ -17,34 +17,28 @@ const MESSAGES: Record<string, string> = {
 };
 
 /**
- * Ce qui attend quelqu'un qui n'est jamais venu.
+ * Ce qui attend quelqu'un qui n'est jamais venu : trois étapes, dites comme on les vit.
  *
- * Trois choses qu'un formulaire ne dit pas, et qui font hésiter : il n'y a pas de compte à
- * créer, on ne demandera presque rien, et ce qu'on voit le premier jour dépend des cercles
- * qu'on a — sauf l'agenda du canton, qui n'en demande aucun.
- *
- * La troisième étape disait « seul, Allezou ne montre rien ». C'était vrai le jour où elle a
- * été écrite, et ça ne l'est plus depuis que l'écran des sorties montre les prochaines
- * activités du canton à qui n'a pas encore de cercle. C'était surtout une phrase de
- * découragement au dernier écran avant l'engagement, juste au-dessus du bouton : elle
- * demandait de créer un compte en prévenant qu'il ne servirait à rien. Ce qui reste vrai est
- * dit sans détour — les sorties, elles, attendent des cercles.
+ * Écrites à l'affirmative, ce qu'elles n'étaient pas. Elles annonçaient ce qui n'existe pas
+ * — pas de mot de passe, rien d'autre qu'un prénom, l'agenda qui ne dépend d'aucun cercle —
+ * là où quelqu'un qui hésite veut savoir ce qui va se passer. Chaque étape dit maintenant le
+ * geste, dans l'ordre où il vient.
  */
 const ETAPES = [
   {
     titre: "Vous recevez un lien par courriel",
     texte:
-      "Il n'y a pas de mot de passe à choisir, ni à retenir. Le lien vous connecte, et il ne fonctionne qu'une fois.",
+      "Vous entrez votre adresse, le lien arrive, il vous connecte. Il sert une seule fois.",
   },
   {
-    titre: "Vous donnez un nom et les prénoms de vos enfants",
+    titre: "Vous choisissez un nom et vous ajoutez vos enfants",
     texte:
-      "Le nom que les autres verront, « Sophie » ou « Maman de Léa », comme vous voulez. Sur vos enfants, un prénom et rien d'autre.",
+      "Le nom que les autres verront : « Sophie », « Maman de Léa », ce que vous voulez. Pour chaque enfant, son prénom.",
   },
   {
-    titre: "Vous entrez dans un cercle, ou vous créez le vôtre",
+    titre: "Vous rejoignez un cercle, ou vous créez le vôtre",
     texte:
-      "Si un parent vous a envoyé un lien d'invitation, il vous y fait entrer. Sinon vous créez votre cercle et vous invitez qui vous voulez. En attendant, l'agenda du canton est déjà là : il ne dépend d'aucun cercle. Les sorties, elles, attendent les vôtres.",
+      "Un parent vous a envoyé un lien : il vous fait entrer dans son cercle. Sinon, créez le vôtre et invitez les familles de votre choix. L'agenda du canton s'affiche dès votre arrivée.",
   },
 ];
 
@@ -128,7 +122,7 @@ export default async function Connexion({
           Je reviens
         </Onglet>
         <Onglet href={lien("/connexion?premiere=1", reprise)} actif={premiereFois}>
-          C&apos;est ma première fois
+          Je n&apos;ai pas encore de compte
         </Onglet>
       </div>
 

@@ -98,9 +98,12 @@ export default async function Agenda({
   const account = await requireAccount();
   const params = await searchParams;
 
+  /** La fenêtre qu'on voit sans rien demander : assez large pour qu'il y ait à lire. */
+  const FENETRE_PAR_DEFAUT: Fenetre = "quinzaine";
+
   const quand = (FENETRES as readonly string[]).includes(params.quand ?? "")
     ? (params.quand as Fenetre)
-    : "quinzaine";
+    : FENETRE_PAR_DEFAUT;
   // Plusieurs âges, séparés par des virgules dans l'adresse : une famille en a plusieurs, et
   // l'écran doit rester partageable et utilisable sans JavaScript.
   const ages = (params.age ?? "")
@@ -152,24 +155,20 @@ export default async function Agenda({
       </Titre>
 
       <div className="mb-6 space-y-2">
-        <Rangee>
-          {FENETRES.map((f) => (
-            <Puce key={f} href={lien(params, { quand: f })} actif={quand === f}>
-              {LIBELLES_FENETRE[f]}
-            </Puce>
-          ))}
-        </Rangee>
-
         {/*
-          « Quand » reste visible, le reste se replie : quatre rangées de puces prenaient
-          300 px sur un écran de 812, il ne restait presque rien pour les activités.
+          Tous les filtres sont repliés, « quand » compris.
 
-          Replié, mais derrière un bouton qui le dit — pas derrière un défilement latéral
-          qu'on ne devine pas. Et le bloc s'ouvre de lui-même dès qu'un de ces filtres est
-          actif : on ne cache jamais un filtre en cours.
+          Ils occupaient le haut de l'écran alors qu'on vient ici pour lire des activités :
+          la première ligne d'agenda commençait sous la ligne de flottaison. Un filtre sert
+          une fois sur dix visites, une activité se lit à chaque fois.
+
+          Repliés derrière un bouton qui les nomme, pas derrière un geste à deviner. Et le
+          bloc s'ouvre de lui-même dès qu'un filtre est actif : on ne cache jamais à quelqu'un
+          ce qui restreint ce qu'il regarde.
         */}
         <details
           open={
+            quand !== FENETRE_PAR_DEFAUT ||
             ages.length > 0 ||
             Boolean(params.commune) ||
             avecMonCercle ||
@@ -178,10 +177,18 @@ export default async function Agenda({
           }
         >
           <summary className="cursor-pointer py-1 text-sm font-bold text-[color:var(--color-doux)]">
-            Âge, commune, prix, qui y va
+            Quand, âge, commune, prix, qui y va
           </summary>
 
           <div className="mt-2 space-y-2">
+        <Rangee>
+          {FENETRES.map((f) => (
+            <Puce key={f} href={lien(params, { quand: f })} actif={quand === f}>
+              {LIBELLES_FENETRE[f]}
+            </Puce>
+          ))}
+        </Rangee>
+
         <Rangee>
           {/*
             Les tranches s'ajoutent au lieu de se remplacer : un parent de trois enfants

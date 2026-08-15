@@ -203,12 +203,24 @@ export async function upcomingCalendar(
     conditions.push(sql`e.commune = ${filtre.commune}`);
   }
 
+  /*
+    Ce qui n'est pas défini entre dans les deux cas, et c'est voulu.
+
+    « Non défini » veut dire que la commune n'a rien écrit, pas que l'activité est payante.
+    Un filtre qui l'écarterait cacherait à un parent cherchant du gratuit la moitié de
+    l'agenda, dont une bonne part l'est. On montre donc plus large, et la fiche continue
+    d'afficher « non défini » : c'est elle qui doit être exacte, pas le filtre.
+
+    Cela ne défait pas la règle d'affichage prise en août — ne jamais présenter un prix
+    inconnu comme gratuit — puisque rien n'est requalifié : on élargit ce qu'on propose de
+    regarder, on ne renomme rien.
+  */
   if (filtre.tarif) {
-    conditions.push(sql`e.tarif = ${filtre.tarif}`);
+    conditions.push(sql`e.tarif in (${filtre.tarif}, 'inconnu')`);
   }
 
   if (filtre.acces) {
-    conditions.push(sql`e.acces = ${filtre.acces}`);
+    conditions.push(sql`e.acces in (${filtre.acces}, 'inconnu')`);
   }
 
   if (filtre.avecMonCercle) {

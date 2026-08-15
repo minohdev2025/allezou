@@ -54,6 +54,7 @@ export default async function Activite({
   );
   const enfantsCoches = new Set(inscription ? inscription.childIds : enfants.map((e) => e.id));
   const date = jourCourt(activite.startsAt);
+  const fin = activite.endsAt ? jourCourt(activite.endsAt) : date;
   const couleur = teinte(activite.id);
 
   return (
@@ -68,8 +69,22 @@ export default async function Activite({
               color: `var(--color-${couleur})`,
             }}
           >
+            {/*
+              Une activité commencée n'a plus de date de début utile : c'est celle de fin qui
+              dit s'il reste du temps pour y aller. « En cours » seul ne le disait pas, et la
+              date de début affichée ailleurs était pire — « 22 juillet » pour une exposition
+              qu'on regarde le 12 août.
+            */}
             {activite.enCours ? (
-              <span className="text-xs font-bold uppercase">en cours</span>
+              activite.endsAt ? (
+                <>
+                  <span className="text-xs font-bold uppercase">jusqu&apos;au</span>
+                  <span className="titre text-2xl font-bold">{fin.nombre}</span>
+                  <span className="text-xs font-bold">{fin.mois}</span>
+                </>
+              ) : (
+                <span className="text-xs font-bold uppercase">en cours</span>
+              )
             ) : (
               <>
                 <span className="text-xs font-bold uppercase">{date.jour}</span>
