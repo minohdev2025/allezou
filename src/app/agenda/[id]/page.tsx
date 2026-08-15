@@ -88,6 +88,7 @@ export default async function Activite({
                 {activite.endsAt ? ` – ${heureCourte(activite.endsAt)}` : null}
               </>
             )}
+            {activite.recurrence ? `, ${activite.recurrence}` : null}
           </p>
         </div>
 

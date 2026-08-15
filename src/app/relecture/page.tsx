@@ -1,6 +1,12 @@
 import Link from "next/link";
 
 import { flaggedPublished, pendingReview, sourceHealth } from "@/lib/ingest/run";
+import {
+  ACCES,
+  LIBELLES_ACCES,
+  LIBELLES_TARIF,
+  TARIFS,
+} from "@/lib/ingest/tarif";
 import { jobStatus } from "@/lib/scheduler";
 import { requireRelecteur } from "@/lib/session";
 import {
@@ -34,6 +40,7 @@ const champ =
 /** Le motif, en deux mots, avant le détail que le contrôle a écrit. */
 const MOTIFS: Record<string, string> = {
   date_absente: "Date",
+  recurrence_absente: "Rythme",
   heure_absente: "Heure",
   titre_reformule: "Titre",
   titre_generique: "Rubrique",
@@ -262,6 +269,17 @@ export default async function Relecture() {
                       />
                     </label>
 
+                    <label className="block">
+                      <span className="mb-1 block text-sm font-bold">Description</span>
+                      <textarea
+                        name="description"
+                        defaultValue={activite.description ?? ""}
+                        maxLength={280}
+                        rows={3}
+                        className={champ}
+                      />
+                    </label>
+
                     <div className="flex gap-2">
                       <label className="flex-1">
                         <span className="mb-1 block text-sm font-bold">Début</span>
@@ -278,6 +296,34 @@ export default async function Relecture() {
                           type="datetime-local"
                           name="fin"
                           defaultValue={pourChamp(activite.endsAt)}
+                          className={champ}
+                        />
+                      </label>
+                    </div>
+
+                    {/*
+                      Une activité sans horaire annoncé tient la journée : c'est ce qui
+                      l'empêche d'être affichée à 00:00, et ce qui la dispense du contrôle
+                      de l'heure. Le rythme, lui, dit ce qu'une période ne dit pas.
+                    */}
+                    <div className="flex gap-2">
+                      <label className="flex flex-1 cursor-pointer items-center gap-2">
+                        <input
+                          type="checkbox"
+                          name="journee"
+                          value="1"
+                          defaultChecked={activite.allDay}
+                          className="h-5 w-5 shrink-0 accent-[color:var(--color-vert)]"
+                        />
+                        <span className="text-sm font-bold">Toute la journée</span>
+                      </label>
+                      <label className="flex-1">
+                        <span className="mb-1 block text-sm font-bold">Rythme</span>
+                        <input
+                          name="rythme"
+                          defaultValue={activite.recurrence ?? ""}
+                          maxLength={60}
+                          placeholder="les mercredis"
                           className={champ}
                         />
                       </label>
@@ -328,6 +374,40 @@ export default async function Relecture() {
                         />
                       </label>
                     </div>
+
+                    <div className="flex gap-2">
+                      <label className="flex-1">
+                        <span className="mb-1 block text-sm font-bold">Prix</span>
+                        <select name="tarif" defaultValue={activite.tarif} className={champ}>
+                          {TARIFS.map((t) => (
+                            <option key={t} value={t}>
+                              {LIBELLES_TARIF[t]}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <label className="flex-1">
+                        <span className="mb-1 block text-sm font-bold">Inscription</span>
+                        <select name="acces" defaultValue={activite.acces} className={champ}>
+                          {ACCES.map((a) => (
+                            <option key={a} value={a}>
+                              {LIBELLES_ACCES[a]}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                    </div>
+
+                    <label className="block">
+                      <span className="mb-1 block text-sm font-bold">Lien vers l&apos;activité</span>
+                      <input
+                        name="lien"
+                        type="url"
+                        defaultValue={activite.url ?? ""}
+                        maxLength={500}
+                        className={champ}
+                      />
+                    </label>
 
                     {activite.url ? (
                       <p className="text-sm">

@@ -145,6 +145,35 @@ describe("Le titre est-il recopié ou reformulé", () => {
   });
 });
 
+describe("Le rythme d'une activité qui se répète", () => {
+  const page =
+    "Cours d'espagnol pour enfants, du 12 septembre au 21 novembre 2026, les mercredis, " +
+    "14h00, Maison de quartier du Petit-Lancy.";
+
+  const cours = (modifications = {}) =>
+    uneLecture({
+      title: "Cours d'espagnol pour enfants",
+      description: undefined,
+      minAge: undefined,
+      ...modifications,
+    });
+
+  it("passe quand la page l'écrit", () => {
+    expect(codes(cours({ recurrence: "les mercredis" }), page)).toEqual([]);
+  });
+
+  it("est signalé quand il est déduit d'une période", () => {
+    // Trois mois de cours appellent un « toutes les semaines » que personne n'a écrit.
+    expect(codes(cours({ recurrence: "toutes les semaines" }), page)).toContain(
+      "recurrence_absente",
+    );
+  });
+
+  it("ne reproche rien à une activité qui n'en annonce pas", () => {
+    expect(codes(cours(), page)).toEqual([]);
+  });
+});
+
 describe("Les champs absents de la page mais présents dans la réponse", () => {
   it("signale un lieu qui ne figure pas sur la page", () => {
     expect(codes(uneLecture({ placeLabel: "Salle communale du Grand-Saconnex" }))).toContain(

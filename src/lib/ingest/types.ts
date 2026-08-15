@@ -23,6 +23,8 @@ export type RawEvent = {
   acces?: Acces;
   /** Aucun horaire annoncé : l'activité tient la journée, elle ne commence pas à minuit. */
   allDay?: boolean;
+  /** Le rythme, recopié tel que la page l'écrit : « les mercredis ». */
+  recurrence?: string;
   /**
    * Le texte de la page d'où l'activité a été lue, tel qu'il a été donné au modèle.
    *

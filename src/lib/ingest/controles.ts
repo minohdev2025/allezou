@@ -25,6 +25,7 @@ export type CodeControle =
   | "lieu_absent"
   | "age_absent"
   | "description_inventee"
+  | "recurrence_absente"
   | "url_hors_domaine"
   | "duree_invraisemblable"
   | "doublon";
@@ -307,6 +308,16 @@ export function controler(event: RawEvent, contexte: ContexteControle): Echec[] 
     echecs.push({
       code: "description_inventee",
       detail: "La description contient des mots absents de la page.",
+    });
+  }
+
+  // Le rythme se recopie comme la tranche d'âge : il vient de la page ou il n'existe pas.
+  // C'est le champ où déduire est le plus tentant, une période de trois mois appelant un
+  // « toutes les semaines » que personne n'a écrit.
+  if (event.recurrence && !contient(page, normaliser(event.recurrence))) {
+    echecs.push({
+      code: "recurrence_absente",
+      detail: `La page n'écrit nulle part « ${event.recurrence} ».`,
     });
   }
 

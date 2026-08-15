@@ -360,6 +360,15 @@ export const event = pgTable(
      * file au 15 août 2026 étaient là pour cette seule raison.
      */
     allDay: boolean().notNull().default(false),
+    /**
+     * Le rythme, recopié tel que la page l'écrit : « les mercredis », « chaque samedi ».
+     *
+     * Un cours d'espagnol qui court de mars à juin n'a pas lieu tous les jours, et afficher
+     * la seule période le laissait croire. On n'invente pas les occurrences pour autant :
+     * elles ne sont écrites nulle part, et une date qu'on fabrique est une date qu'aucun
+     * contrôle ne peut vérifier.
+     */
+    recurrence: varchar({ length: 60 }),
     placeId: uuid().references(() => place.id, { onDelete: "set null" }),
     /** Lieu en clair quand il vient d'une source et n'a pas de correspondance au catalogue. */
     placeLabel: varchar({ length: 120 }),

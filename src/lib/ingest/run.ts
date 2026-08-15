@@ -17,6 +17,7 @@ import { db } from "../db";
 import { asDate, asDateOrNull } from "../db/rows";
 import * as s from "../db/schema";
 import { controler, type Echec } from "./controles";
+import type { Acces, Tarif } from "./tarif";
 import { icalAdapter } from "./ical";
 import { jsonLdAdapter } from "./jsonld";
 import { minimaxAdapter } from "./minimax";
@@ -105,6 +106,7 @@ export async function runSource(
         tarif: event.tarif ?? "inconnu",
         acces: event.acces ?? "inconnu",
         allDay: event.allDay ?? false,
+        recurrence: event.recurrence,
         commune: source.commune,
       };
 
@@ -357,11 +359,15 @@ export type PendingEvent = {
   description: string | null;
   startsAt: Date;
   endsAt: Date | null;
+  allDay: boolean;
+  recurrence: string | null;
   placeLabel: string | null;
   commune: string | null;
   minAge: number | null;
   maxAge: number | null;
   url: string | null;
+  tarif: Tarif;
+  acces: Acces;
   sourceName: string | null;
   /** Pourquoi cette activité est là plutôt qu'au calendrier. */
   controles: Echec[];
@@ -387,11 +393,16 @@ export async function pendingReview(limit = 50): Promise<PendingEvent[]> {
     min_age: number | null;
     max_age: number | null;
     url: string | null;
+    all_day: boolean;
+    recurrence: string | null;
+    tarif: Tarif;
+    acces: Acces;
     source_name: string | null;
     controles: Echec[] | null;
   }>(sql`
     select e.id, e.title, e.description, e.starts_at, e.ends_at, e.place_label, e.url,
-           e.commune, e.min_age, e.max_age, e.controles,
+           e.commune, e.min_age, e.max_age, e.controles, e.all_day, e.recurrence,
+           e.tarif, e.acces,
            src.name as source_name
     from event e
     left join source src on src.id = e.source_id
@@ -412,19 +423,36 @@ export async function pendingReview(limit = 50): Promise<PendingEvent[]> {
     minAge: r.min_age,
     maxAge: r.max_age,
     url: r.url,
+    allDay: r.all_day,
+    recurrence: r.recurrence,
+    tarif: r.tarif,
+    acces: r.acces,
     sourceName: r.source_name,
     controles: r.controles ?? [],
   }));
 }
 
+/**
+ * Ce qu'un relecteur peut corriger avant de publier.
+ *
+ * Tous les champs qu'un parent lit, et pas seulement ceux que le modèle rate le plus souvent :
+ * ne pouvoir corriger que la moitié d'une fiche oblige à écarter une activité juste pour un
+ * champ faux, alors qu'elle ne demandait qu'une retouche.
+ */
 export type Correction = {
   title?: string;
+  description?: string | null;
   startsAt?: Date;
   endsAt?: Date | null;
+  allDay?: boolean;
+  recurrence?: string | null;
   placeLabel?: string | null;
   commune?: string | null;
+  url?: string | null;
   minAge?: number | null;
   maxAge?: number | null;
+  tarif?: Tarif;
+  acces?: Acces;
 };
 
 /**

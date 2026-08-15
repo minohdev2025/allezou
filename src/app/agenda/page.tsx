@@ -426,6 +426,11 @@ function LigneActivite({
               {entree.acces === "inscription" ? (
                 <Pastille couleur="corail">Sur inscription</Pastille>
               ) : null}
+              {/* Le rythme dit ce qu'une période ne dit pas : un cours de mars à juin
+                  n'a pas lieu tous les jours. */}
+              {entree.recurrence ? (
+                <Pastille couleur="rose">{entree.recurrence}</Pastille>
+              ) : null}
               {entree.ageLabel ? <Pastille couleur="ambre">{entree.ageLabel}</Pastille> : null}
               {entree.commune ? <Pastille couleur="bleu">{entree.commune}</Pastille> : null}
             </span>

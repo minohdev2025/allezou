@@ -65,6 +65,8 @@ const extractedEvent = z.object({
   url: texteFacultatif,
   /** Recopié tel qu'écrit sur la page (« dès 5 ans »), jamais estimé par le modèle. */
   age: texteFacultatif,
+  /** Recopié tel qu'écrit (« les mercredis »), jamais déduit d'une période. */
+  recurrence: texteFacultatif,
 });
 
 /**
@@ -207,7 +209,7 @@ function blocEquilibre(texte: string, debut: number): string | null {
 const SYSTEME = [
   "Tu extrais des événements d'une page d'agenda communal suisse romand.",
   "Réponds uniquement par un objet JSON, sans texte autour, de la forme :",
-  '{"evenements":[{"titre":"...","description":"...","debut":"2026-01-04T14:00:00+01:00","fin":"...","lieu":"...","url":"..."}]}',
+  '{"evenements":[{"titre":"...","description":"...","debut":"2026-01-04T14:00:00+01:00","fin":"...","lieu":"...","url":"...","age":"...","recurrence":"..."}]}',
   "Règles strictes :",
   "- N'invente jamais une date. Si le jour ou le mois d'un événement est absent, ne le retourne pas.",
   "- Les dates sont au format ISO 8601 avec fuseau horaire, heure de Genève (+01:00 en hiver, +02:00 en été).",
@@ -218,6 +220,12 @@ const SYSTEME = [
   "  ne résume pas, ne complète pas de mémoire.",
   "- Le champ « age » recopie mot pour mot la tranche d'âge écrite sur la page (« dès 5 ans »,",
   "  « 3-6 ans »). Si la page n'en indique pas, omets le champ : ne l'estime jamais.",
+  "- Une activité qui se répète sur une période garde la date du premier jour dans « debut » et",
+  "  celle du dernier dans « fin ». Son rythme va dans « recurrence », recopié mot pour mot",
+  "  (« les mercredis », « chaque samedi », « du lundi au vendredi »). Ne découpe pas une",
+  "  activité répétée en plusieurs événements, et n'invente jamais les dates de ses occurrences.",
+  "- Si la page n'annonce aucun rythme, omets « recurrence » : une activité qui dure trois mois",
+  "  sans rythme écrit est une exposition, pas un cours hebdomadaire.",
   "- Si la page ne contient aucun événement exploitable, réponds {\"evenements\":[]}.",
 ].join("\n");
 
@@ -360,6 +368,7 @@ export function eventsFromPayload(
       placeLabel: clamp(evenement.lieu, 120),
       url: clamp(evenement.url ?? pageUrl, 500),
       ...parseAgeRange(evenement.age),
+      recurrence: clamp(evenement.recurrence, 60),
       // Lu dans ce que le modèle a recopié, par mots exacts. Le modèle n'a pas son mot à
       // dire sur le prix : on ne lui demande pas de conclure, on relit ce qu'il a copié.
       ...lireTarifEtAcces(evenement.titre, evenement.description),

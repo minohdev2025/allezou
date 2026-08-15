@@ -41,6 +41,7 @@ import {
   setRole,
 } from "@/lib/circles";
 import { heureDeGeneve } from "@/lib/heure";
+import { ACCES, TARIFS } from "@/lib/ingest/tarif";
 import { clearWarnings, correctAndPublish, rejectEvent, withdrawEvent } from "@/lib/ingest/run";
 import {
   ajouterMotCle,
@@ -411,14 +412,25 @@ export async function publierActivite(formData: FormData) {
     return valeur ? Number(valeur) : null;
   };
 
+  const parmi = <T extends string>(champ: string, valeurs: readonly T[]): T | undefined => {
+    const valeur = formData.get(champ)?.toString();
+    return valeurs.includes(valeur as T) ? (valeur as T) : undefined;
+  };
+
   await correctAndPublish(id, {
     title: String(formData.get("titre") ?? "").trim() || undefined,
+    description: formData.get("description")?.toString().trim() || null,
     startsAt: debut ?? undefined,
     endsAt: fin,
+    allDay: formData.get("journee") === "1",
+    recurrence: formData.get("rythme")?.toString().trim() || null,
     placeLabel: formData.get("lieu")?.toString().trim() || null,
     commune: formData.get("commune")?.toString().trim() || null,
+    url: formData.get("lien")?.toString().trim() || null,
     minAge: age("ageMin"),
     maxAge: age("ageMax"),
+    tarif: parmi("tarif", TARIFS),
+    acces: parmi("acces", ACCES),
   });
 
   // Une activité relue à la main paraît comme les autres : ceux qui la guettaient doivent
