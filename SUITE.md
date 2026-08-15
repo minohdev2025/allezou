@@ -3,6 +3,10 @@
 > Réécrit le 14 août 2026, après les sept objectifs posés à la clôture de la mise en ligne.
 > Ils sont faits. Ce fichier dit maintenant ce qu'ils ont laissé derrière eux : les choses
 > qu'on ne saura qu'en regardant tourner, et celles qu'on a vues sans les traiter.
+>
+> Complété le 15 août 2026, après un audit en deux temps — le regard de quelqu'un qui arrive
+> sans rien savoir, puis celui de quelqu'un qui ouvre le dépôt — et les quatorze commits qui
+> en sont sortis.
 
 ## Ce qui a été fait
 
@@ -23,6 +27,33 @@
    compris.
 7. **Les alertes de l'agenda** : un mot qu'on surveille, et les activités sur inscription,
    annoncées à la publication.
+
+## Ce qu'a donné l'audit du 15 août
+
+Le produit se transmet de famille en famille, et non par une découverte au hasard : c'est ce
+qui a fixé les priorités. Quatorze commits, quatre cent quatorze tests.
+
+- **Deux promesses de la page données étaient fausses**, toutes deux dans le sens de la
+  prudence excessive ou de l'imprécision : les inscriptions sont effacées vingt-quatre heures
+  après l'activité et non « jusqu'à 90 jours », et le rattachement d'un enfant à un cercle est
+  visible du second parent, pas de vous seul·e. Un test fige désormais chacune.
+- **La règle de visibilité tenait ; la phrase qui la décrivait, non.** Le README annonçait
+  qu'aucune autre partie du code ne lit la table des publications : dix endroits la lisent,
+  tous légitimes. La phrase dit la règle réelle, et `visibility-frontiere.test.ts` refuse
+  désormais toute nouvelle lecture directe non discutée.
+- **Une notification pouvait nommer un cercle où le lien est coupé.** La liste des
+  destinataires était juste, le titre qui l'accompagnait en disait plus que la sortie.
+- **L'accroche parle de l'enfant** — « Pour que nos enfants se retrouvent dehors » — et non
+  de ce que le parent surveille. L'accueil montre enfin un écran, dessiné.
+- **L'invitation nomme son cercle avant la connexion**, et un lien mort se dit tout de suite
+  au lieu de se découvrir après la création d'un compte. Un message tout prêt accompagne le
+  lien, pour que le premier parent d'un cercle n'ait plus à improviser.
+- **Une adresse fausse se corrige**, à plusieurs comme un nom, en oubliant les coordonnées
+  géocodées de l'ancienne.
+- **Chaque activité est confrontée à son bloc de page**, et non à toute la liste.
+
+Deux choses n'ont pas été faites, et c'est délibéré : le port 80 reste fermé (le raisonnement
+tient toujours, voir DEPLOIEMENT.md), et aucune interface n'a été refondue.
 
 ## Ce qui a été repris ensuite
 
