@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { upcomingCalendar } from "@/lib/calendar";
 import { myChildren } from "@/lib/children";
 import { currentlyOut, upcomingOutings } from "@/lib/publications";
 import { requireAccount } from "@/lib/session";
@@ -27,6 +28,18 @@ export default async function Maintenant() {
     myChildren(account.id),
   ]);
 
+  /*
+    L'agenda du canton, pour qui n'a pas encore de cercle.
+
+    Cet écran est le premier qu'on voit, et sans cercle il ne montrait rien. Or l'agenda a
+    plus de cent activités qui ne dépendent de personne : c'est la seule chose qui vaille
+    quelque chose le premier jour, quand tout le reste attend que d'autres familles arrivent.
+
+    L'appel à créer un cercle reste en tête. On n'a pas caché ce qu'il faut faire, on a
+    ajouté ce qu'il y a à voir en attendant.
+  */
+  const enAttendant = cercles.length === 0 ? await upcomingCalendar(account.id, { limit: 3 }) : [];
+
   return (
     <main className="apparait">
       <header className="mb-6">
@@ -42,15 +55,63 @@ export default async function Maintenant() {
       </div>
 
       {cercles.length === 0 ? (
-        <Vide emoji="🫱" titre="Aucun cercle pour l'instant">
-          <p className="mb-4">C&apos;est là que se partagent les sorties.</p>
-          {/*
-            « Rejoindre ou créer » et pas « créer » : on arrive presque toujours ici parce
-            qu'on a été invité. Envoyer d'emblée vers la création ferait fabriquer un cercle
-            vide à quelqu'un qui a déjà le lien du bon dans ses messages.
-          */}
-          <LienBouton href="/cercles">Rejoindre ou créer un cercle</LienBouton>
-        </Vide>
+        <>
+          <Vide emoji="🫱" titre="Aucun cercle pour l'instant">
+            <p className="mb-4">C&apos;est là que se partagent les sorties.</p>
+            {/*
+              « Rejoindre ou créer » et pas « créer » : on arrive presque toujours ici parce
+              qu'on a été invité. Envoyer d'emblée vers la création ferait fabriquer un cercle
+              vide à quelqu'un qui a déjà le lien du bon dans ses messages.
+            */}
+            <LienBouton href="/cercles">Rejoindre ou créer un cercle</LienBouton>
+          </Vide>
+
+          {enAttendant.length > 0 ? (
+            <section className="mt-8">
+              <h2 className="titre mb-1 text-lg font-bold">En attendant, le canton sort</h2>
+              <p className="mb-3 text-sm leading-snug text-[color:var(--color-doux)]">
+                L&apos;agenda des communes genevoises ne dépend d&apos;aucun cercle. Il est
+                déjà là.
+              </p>
+
+              <ul className="mb-4 space-y-2">
+                {enAttendant.map((activite) => {
+                  const jour = jourCourt(activite.startsAt);
+                  return (
+                    <li key={activite.id}>
+                      <Link
+                        href={`/agenda/${activite.id}`}
+                        className="flex gap-3 rounded-2xl bg-[color:var(--color-surface)] px-4 py-3"
+                        style={{
+                          boxShadow: `inset 0 0 0 2px var(--color-${teinte(activite.id)}-doux)`,
+                        }}
+                      >
+                        <span
+                          className="w-14 shrink-0 text-sm font-bold leading-tight"
+                          style={{ color: `var(--color-${teinte(activite.id)})` }}
+                        >
+                          {jour.nombre} {jour.mois}
+                        </span>
+                        <span className="min-w-0 flex-1">
+                          <span className="titre line-clamp-2 font-bold leading-tight">
+                            {activite.title}
+                          </span>
+                          {activite.commune ? (
+                            <span className="mt-0.5 block text-sm text-[color:var(--color-doux)]">
+                              {activite.commune}
+                            </span>
+                          ) : null}
+                        </span>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+
+              <LienBouton href="/agenda">Voir tout l&apos;agenda</LienBouton>
+            </section>
+          ) : null}
+        </>
       ) : (
         <>
           {sorties.length === 0 ? (
