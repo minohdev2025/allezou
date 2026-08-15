@@ -58,6 +58,11 @@ const texteFacultatif = z
 
 const extractedEvent = z.object({
   titre: z.string().min(1),
+  /**
+   * Les premiers mots du passage, recopiés de la page. Sert à situer l'activité, jamais à
+   * la décrire : le modèle dit « où », le code décide ensuite « si ».
+   */
+  ancre: texteFacultatif,
   description: texteFacultatif,
   debut: z.string(),
   fin: texteFacultatif,
@@ -209,8 +214,13 @@ function blocEquilibre(texte: string, debut: number): string | null {
 const SYSTEME = [
   "Tu extrais des événements d'une page d'agenda communal suisse romand.",
   "Réponds uniquement par un objet JSON, sans texte autour, de la forme :",
-  '{"evenements":[{"titre":"...","description":"...","debut":"2026-01-04T14:00:00+01:00","fin":"...","lieu":"...","url":"...","age":"...","recurrence":"..."}]}',
+  '{"evenements":[{"titre":"...","ancre":"...","description":"...","debut":"2026-01-04T14:00:00+01:00","fin":"...","lieu":"...","url":"...","age":"...","recurrence":"..."}]}',
   "Règles strictes :",
+  "- « ancre » recopie mot pour mot les premiers mots du passage de la page qui décrit cet",
+  "  événement, une dizaine de mots, en commençant par la date si elle est écrite juste avant.",
+  "  Ce champ ne sert pas à décrire l'événement : il sert à retrouver son emplacement exact",
+  "  dans la page. Recopie, ne reformule pas, et n'invente rien : une ancre introuvable dans",
+  "  la page est inutile.",
   "- N'invente jamais une date. Si le jour ou le mois d'un événement est absent, ne le retourne pas.",
   "- Les dates sont au format ISO 8601 avec fuseau horaire, heure de Genève (+01:00 en hiver, +02:00 en été).",
   "- Si l'année n'est pas écrite à côté de la date, déduis-la de la date du jour : prends la",
@@ -275,11 +285,22 @@ export async function extractEventsWithMiniMax(
     dans le bloc de cette activité — et non plus « nulle part sur la page », que la moindre
     activité horaire voisine suffisait à contredire.
   */
-  const blocs = blocsParActivite(pageText, events.map((e) => e.title));
+  const blocs = blocsParActivite(
+    pageText,
+    events.map((e) => ({ titre: e.title, ancre: e.ancre })),
+  );
 
   return events.map((event, rang) => {
     const bloc = blocs[rang] ?? pageText;
-    return { ...event, texteSource: bloc, allDay: sansHoraireAnnonce(event.startsAt, bloc) };
+    return {
+      ...event,
+      // L'ancre a servi à situer l'activité, elle ne va pas plus loin : elle ne dit rien de
+      // l'activité elle-même, et `run.ts` ne recopie de toute façon que les champs qu'il
+      // connaît. La laisser à undefined évite de la trimballer jusqu'aux contrôles.
+      ancre: undefined,
+      texteSource: bloc,
+      allDay: sansHoraireAnnonce(event.startsAt, bloc),
+    };
   });
 }
 
@@ -308,17 +329,39 @@ export async function extractEventsWithMiniMax(
  * plus finement demanderait de reconnaître la structure de chaque site, ce que ce chemin-là
  * évite précisément de faire.
  */
-export function blocsParActivite(texte: string, titres: string[]): (string | null)[] {
+export type Repere = { titre: string; ancre?: string };
+
+export function blocsParActivite(texte: string, reperes: Repere[]): (string | null)[] {
   const page = normaliser(texte);
   const rembourree = ` ${page} `;
 
-  const debuts = titres.map((titre) => {
-    const aiguille = normaliser(titre);
-    // Un titre de deux lettres tomberait n'importe où : mieux vaut la page entière.
+  /** Où commence ce que la page dit de cette activité, ou -1 si on ne le retrouve pas. */
+  const situer = (aiguilleBrute: string | undefined): number => {
+    const aiguille = normaliser(aiguilleBrute ?? "");
+    // Deux lettres tomberaient n'importe où : mieux vaut la page entière.
     if (aiguille.length < 3) return -1;
     // Même exigence de début de mot que `contient` : sans elle, « Marché » se trouverait
     // dans « Supermarché » et couperait la page au mauvais endroit.
     return rembourree.indexOf(` ${aiguille}`);
+  };
+
+  /*
+    L'ancre d'abord, le titre ensuite.
+
+    L'ancre est le passage tel que la page l'écrit, rendu par le modèle pour dire où il a lu.
+    Elle vaut mieux que le titre à deux titres : elle commence à la date quand la page la
+    place avant, et elle ne se confond pas avec une entrée de menu — « Bibliobus » figure
+    dans la navigation du site d'Onex bien avant d'être une activité, et le titre seul
+    s'ancrait là.
+
+    Elle n'est pourtant crue sur rien : on vérifie qu'elle existe mot pour mot dans la page,
+    et si elle n'y est pas, elle est ignorée. Le modèle dit où regarder, jamais si c'est
+    juste — sans quoi il jugerait son propre travail, et le contrôle ne contrôlerait plus
+    rien.
+  */
+  const debuts = reperes.map((repere) => {
+    const parLAncre = situer(repere.ancre);
+    return parLAncre >= 0 ? parLAncre : situer(repere.titre);
   });
 
   const frontieres = [...new Set(debuts.filter((d) => d >= 0))].sort((a, b) => a - b);
@@ -468,6 +511,9 @@ export function eventsFromPayload(
       // renvoient la même URL pour tous leurs événements, qui s'écraseraient sinon.
       externalId: identiteLue(evenement.titre, startsAt),
       title: clamp(evenement.titre, 120)!,
+      // Assez longue pour situer, assez courte pour rester une citation exacte : plus le
+      // modèle recopie, plus il risque de dériver, et une ancre qui dérive est ignorée.
+      ancre: clamp(evenement.ancre, 120),
       description: clamp(evenement.description, 280),
       startsAt,
       endsAt,
@@ -600,7 +646,7 @@ async function lirePages(
   url: string,
   maxPages: number,
   motif: string | undefined,
-): Promise<{ texte: string; liens: Map<string, string> }> {
+): Promise<{ pages: string[]; liens: Map<string, string> }> {
   const pages: string[] = [];
   const liens = new Map<string, string>();
 
@@ -639,15 +685,45 @@ async function lirePages(
     pages.push(utile);
   }
 
-  return { texte: pages.join("\n\n---\n\n").slice(0, 30_000), liens };
+  return { pages, liens };
 }
 
 export const minimaxAdapter: Adapter = async (source) => {
   const config = (source.config ?? {}) as MiniMaxConfig;
   const maxPages = Math.min(Math.max(config.maxPages ?? 3, 1), 15);
 
-  const { texte, liens } = await lirePages(source.url, maxPages, config.itemPattern);
-  const events = await extractEventsWithMiniMax(texte, source.url);
+  const { pages, liens } = await lirePages(source.url, maxPages, config.itemPattern);
+
+  /*
+    Une page, un appel — et non plus six pages réunies en un seul.
+
+    Les six pages étaient concaténées puis coupées à trente mille caractères : une amputation
+    silencieuse sur les grosses communes, et une confusion de plus pour le modèle, qui devait
+    tenir cent activités et leurs frontières dans une seule réponse. Le format de sortie de M3
+    est en outre borné, et son raisonnement en consomme l'essentiel : les réponses tronquées
+    ont un message d'erreur dédié dans ce fichier, ce n'est pas une crainte théorique.
+
+    Une page à la fois coûte cinq appels de plus par commune. C'est sans commune mesure avec
+    le budget disponible, et cela achète trois choses : plus de troncature, un contexte cinq
+    fois plus court pour chaque lecture, et une page qui échoue n'emporte plus les cinq autres.
+
+    Les blocs sont découpés page par page, ce qui est exactement ce qu'il faut : une activité
+    de la page 3 n'a jamais eu de voisine sur la page 1.
+  */
+  const lots = await Promise.all(
+    pages.map(async (texte, rang) => {
+      try {
+        return await extractEventsWithMiniMax(texte, source.url);
+      } catch (erreur) {
+        // La première page fait la source : si elle ne se lit pas, la source a échoué. Les
+        // suivantes sont un supplément, et l'une d'elles ne doit pas faire perdre le reste.
+        if (rang === 0) throw erreur;
+        return [];
+      }
+    }),
+  );
+
+  const events = lots.flat();
 
   // Le lien de la fiche remplace celui de la liste quand on l'a retrouvé. Sinon rien ne
   // change : mieux vaut la page de la commune qu'une adresse devinée.

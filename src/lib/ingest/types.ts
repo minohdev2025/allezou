@@ -26,6 +26,13 @@ export type RawEvent = {
   /** Le rythme, recopié tel que la page l'écrit : « les mercredis ». */
   recurrence?: string;
   /**
+   * Les premiers mots du passage, recopiés de la page par le modèle pour dire où il a lu.
+   *
+   * Elle ne va pas en base et ne décrit rien : elle sert à découper la page en blocs, le
+   * temps d'un passage, et elle est vérifiée mot pour mot avant d'être crue.
+   */
+  ancre?: string;
+  /**
    * Le texte de la page d'où l'activité a été lue, tel qu'il a été donné au modèle.
    *
    * Il ne va pas en base : il sert le temps d'un passage, aux contrôles qui vérifient que

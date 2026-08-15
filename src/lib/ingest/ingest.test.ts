@@ -39,7 +39,9 @@ describe("Lire une réponse sans se laisser noyer", () => {
   });
 
   it("s'arrête au plafond", async () => {
-    expect(await lireTexte(new Response("a".repeat(5_000)), 100)).toHaveLength(100);
+    expect(await lireTexte(new Response("a".repeat(5_000)), 100)).toHaveLength(
+      100,
+    );
   });
 
   it("coupe un flux qui ne se termine jamais", async () => {
@@ -118,7 +120,10 @@ describe("Lecture du JSON-LD (format réel de geneve.ch)", () => {
     </script></head><body></body></html>`;
 
   it("extrait titre, dates et lieu", () => {
-    const [event] = eventsFromHtml(page, "https://www.geneve.ch/agenda/concert-chaloupe-vapeur-0");
+    const [event] = eventsFromHtml(
+      page,
+      "https://www.geneve.ch/agenda/concert-chaloupe-vapeur-0",
+    );
 
     expect(event.title).toBe("Concert à La Chaloupe à Vapeur !");
     expect(event.startsAt.toISOString()).toBe("2026-08-09T14:00:00.000Z");
@@ -141,7 +146,9 @@ describe("Lecture du JSON-LD (format réel de geneve.ch)", () => {
   });
 
   it("ignore un bloc JSON illisible sans échouer", () => {
-    expect(eventsFromHtml('<script type="application/ld+json">{oops</script>', "x")).toEqual([]);
+    expect(
+      eventsFromHtml('<script type="application/ld+json">{oops</script>', "x"),
+    ).toEqual([]);
   });
 
   it("croit le prix déclaré par la fiche plutôt que sa description", () => {
@@ -161,7 +168,9 @@ describe("Lecture du JSON-LD (format réel de geneve.ch)", () => {
       {"@type":"Event","name":"Conte au parc","startDate":"2026-12-20T15:00:00+01:00",
        "isAccessibleForFree":true}
     </script>`;
-    expect(eventsFromHtml(fiche, "https://exemple.test/fiche")[0].tarif).toBe("gratuit");
+    expect(eventsFromHtml(fiche, "https://exemple.test/fiche")[0].tarif).toBe(
+      "gratuit",
+    );
   });
 
   it("reconnaît une fiche qui annonce un jour et non une heure", () => {
@@ -172,8 +181,12 @@ describe("Lecture du JSON-LD (format réel de geneve.ch)", () => {
       {"@type":"Event","name":"Conte au parc","startDate":"2026-12-12T15:00:00+01:00"}
     </script>`;
 
-    expect(eventsFromHtml(journee, "https://exemple.test/f")[0].allDay).toBe(true);
-    expect(eventsFromHtml(rendezVous, "https://exemple.test/f")[0].allDay).toBe(false);
+    expect(eventsFromHtml(journee, "https://exemple.test/f")[0].allDay).toBe(
+      true,
+    );
+    expect(eventsFromHtml(rendezVous, "https://exemple.test/f")[0].allDay).toBe(
+      false,
+    );
   });
 
   it("laisse non défini ce qu'aucune fiche ne déclare", () => {
@@ -221,11 +234,22 @@ describe("Retrouver le lien d'une fiche dans la page de liste", () => {
     <a href="/prestations/piscine-de-marignac">Piscine de Marignac</a>
   `;
 
-  const agenda = ancresDeFiches(liste, "https://www.lancy.ch/agenda", "/agenda/");
-  const evenements = ancresDeFiches(liste, "https://www.vernier.ch/evenements", "/evenements/");
+  const agenda = ancresDeFiches(
+    liste,
+    "https://www.lancy.ch/agenda",
+    "/agenda/",
+  );
+  const evenements = ancresDeFiches(
+    liste,
+    "https://www.vernier.ch/evenements",
+    "/evenements/",
+  );
 
   it("ne garde que les liens qui portent le motif", () => {
-    expect([...agenda.keys()]).toEqual(["biblio bingo", "la maison illustree par cecile koepfli"]);
+    expect([...agenda.keys()]).toEqual([
+      "biblio bingo",
+      "la maison illustree par cecile koepfli",
+    ]);
   });
 
   it("rend une adresse complète, pas le chemin relatif", () => {
@@ -247,9 +271,9 @@ describe("Retrouver le lien d'une fiche dans la page de liste", () => {
   });
 
   it("ne s'arrête ni aux accents ni à la casse", () => {
-    expect(lienDeLActivite(agenda, "LA MAISON ILLUSTREE, PAR CECILE KOEPFLI")).toBe(
-      "https://www.lancy.ch/agenda/93226869_la-maison-illustree",
-    );
+    expect(
+      lienDeLActivite(agenda, "LA MAISON ILLUSTREE, PAR CECILE KOEPFLI"),
+    ).toBe("https://www.lancy.ch/agenda/93226869_la-maison-illustree");
   });
 
   it("ne rend rien plutôt qu'un lien approchant", () => {
@@ -268,7 +292,8 @@ describe("Une activité que la page ne date pas à l'heure près", () => {
   const minuit = new Date("2026-09-12T00:00:00+02:00");
 
   it("est reconnue quand la page n'écrit aucune heure", () => {
-    const page = "Exposition La Maison illustrée, du 12 septembre au 21 novembre 2026.";
+    const page =
+      "Exposition La Maison illustrée, du 12 septembre au 21 novembre 2026.";
     expect(sansHoraireAnnonce(minuit, page)).toBe(true);
   });
 
@@ -279,7 +304,9 @@ describe("Une activité que la page ne date pas à l'heure près", () => {
 
   it("n'en est pas une dès que l'heure lue n'est pas minuit", () => {
     const quatorzeHeures = new Date("2026-09-12T14:00:00+02:00");
-    expect(sansHoraireAnnonce(quatorzeHeures, "peu importe ce que dit la page")).toBe(false);
+    expect(
+      sansHoraireAnnonce(quatorzeHeures, "peu importe ce que dit la page"),
+    ).toBe(false);
   });
 });
 
@@ -297,9 +324,9 @@ describe("Découper une page de liste en un bloc par activité", () => {
 
   it("donne à chaque activité le morceau de page qui la concerne", () => {
     const blocs = blocsParActivite(LISTE, [
-      "Atelier chocolat",
-      "Marché aux puces",
-      "Contes pour les petits",
+      { titre: "Atelier chocolat" },
+      { titre: "Marché aux puces" },
+      { titre: "Contes pour les petits" },
     ]);
 
     expect(blocs[0]).toContain("16 septembre");
@@ -312,12 +339,14 @@ describe("Découper une page de liste en un bloc par activité", () => {
   });
 
   it("laisse tomber le décor de la page, qui n'appartient à personne", () => {
-    const blocs = blocsParActivite(LISTE, ["Atelier chocolat"]);
+    const blocs = blocsParActivite(LISTE, [{ titre: "Atelier chocolat" }]);
     expect(blocs[0]).not.toContain("agenda de la commune");
   });
 
   it("rend null quand le titre ne se retrouve pas, pour retomber sur la page entière", () => {
-    const blocs = blocsParActivite(LISTE, ["Titre que le modèle a reformulé"]);
+    const blocs = blocsParActivite(LISTE, [
+      { titre: "Titre que le modèle a reformulé" },
+    ]);
     expect(blocs[0]).toBeNull();
   });
 
@@ -338,7 +367,11 @@ describe("Découper une page de liste en un bloc par activité", () => {
       "25 août Cours de Pilates parc Brot près de l'étang 12h15 sport tout public",
     ].join(" ");
 
-    const blocs = blocsParActivite(commeOnex, ["Zuza", "Cours de Zumba", "Cours de Pilates"]);
+    const blocs = blocsParActivite(commeOnex, [
+      { titre: "Zuza" },
+      { titre: "Cours de Zumba" },
+      { titre: "Cours de Pilates" },
+    ]);
 
     expect(blocs[0]).toContain("23 aout");
     expect(blocs[0]).toContain("16h00");
@@ -352,31 +385,72 @@ describe("Découper une page de liste en un bloc par activité", () => {
 
   it("ne coupe pas au milieu d'un mot plus long", () => {
     const page = "Supermarché ouvert. Marché aux puces Samedi 19 septembre.";
-    const blocs = blocsParActivite(page, ["Marché aux puces"]);
+    const blocs = blocsParActivite(page, [{ titre: "Marché aux puces" }]);
     expect(blocs[0]).toContain("19 septembre");
     expect(blocs[0]).not.toContain("supermarche");
+  });
+
+  /*
+    L'ancre, et la raison pour laquelle on ne la croit pas sur parole.
+
+    Le modèle rend, avec chaque activité, les premiers mots du passage tel que la page les
+    écrit. C'est un bien meilleur repère qu'un titre : elle commence à la date, et elle ne se
+    confond pas avec une entrée de menu. Mais elle vient du modèle, donc elle se vérifie : une
+    ancre qu'on ne retrouve pas mot pour mot dans la page est ignorée, et le titre reprend son
+    rôle. Le modèle dit où regarder, jamais si c'est juste.
+  */
+  it("suit l'ancre quand la page la porte vraiment", () => {
+    // « Bibliobus » apparaît d'abord dans le menu du site, bien avant l'agenda : le titre
+    // seul s'ancrait là, et le bloc n'était fait que de rubriques.
+    const avecMenu = [
+      "Bibliobus Ludothèque Déchets Sécurité Solidarité",
+      "20 août Bibliobus rue des Bossons 11 10h00 lecture tout public",
+    ].join(" ");
+
+    const parLeTitre = blocsParActivite(avecMenu, [{ titre: "Bibliobus" }])[0]!;
+    expect(parLeTitre).toContain("ludotheque");
+
+    const parLAncre = blocsParActivite(avecMenu, [
+      { titre: "Bibliobus", ancre: "20 août Bibliobus rue des Bossons" },
+    ])[0]!;
+    expect(parLAncre).toContain("20 aout");
+    expect(parLAncre).toContain("10h00");
+    expect(parLAncre).not.toContain("ludotheque");
+  });
+
+  it("ignore une ancre que la page n'écrit pas, et retombe sur le titre", () => {
+    const blocs = blocsParActivite(LISTE, [
+      { titre: "Marché aux puces", ancre: "Une phrase que le modèle a inventée" },
+    ]);
+
+    expect(blocs[0]).toContain("marche aux puces");
   });
 
   it("attrape l'erreur qu'aucun contrôle ne voyait", () => {
     // Le modèle attribue à l'atelier l'heure du marché. Toutes les valeurs existent sur la
     // page, et c'est bien pour ça que la page entière ne prouvait rien.
-    const source = { url: "https://exemple.test/agenda", kind: "html_ai" as const };
+    const source = {
+      url: "https://exemple.test/agenda",
+      kind: "html_ai" as const,
+    };
     const atelier = {
       externalId: "a",
       title: "Atelier chocolat",
       startsAt: new Date("2026-09-16T08:00:00+02:00"),
     };
 
-    expect(controler(atelier, { source, texteSource: LISTE }).map((e) => e.code)).toEqual([]);
+    expect(
+      controler(atelier, { source, texteSource: LISTE }).map((e) => e.code),
+    ).toEqual([]);
 
     const bloc = blocsParActivite(LISTE, [
-      "Atelier chocolat",
-      "Marché aux puces",
-      "Contes pour les petits",
+      { titre: "Atelier chocolat" },
+      { titre: "Marché aux puces" },
+      { titre: "Contes pour les petits" },
     ])[0]!;
-    expect(controler(atelier, { source, texteSource: bloc }).map((e) => e.code)).toEqual([
-      "heure_absente",
-    ]);
+    expect(
+      controler(atelier, { source, texteSource: bloc }).map((e) => e.code),
+    ).toEqual(["heure_absente"]);
   });
 
   it("ne borne un bloc que par les titres qu'on lui donne", () => {
@@ -384,20 +458,23 @@ describe("Découper une page de liste en un bloc par activité", () => {
     // des titres rendus par le modèle. S'il n'en rend qu'un sur une page qui en porte vingt,
     // son bloc court jusqu'au bas de la page et les contrôles retrouvent la portée qu'ils
     // avaient avant — pas moins bien qu'hier, pas mieux non plus.
-    const seul = blocsParActivite(LISTE, ["Atelier chocolat"])[0]!;
+    const seul = blocsParActivite(LISTE, [{ titre: "Atelier chocolat" }])[0]!;
     expect(seul).toContain("19 septembre");
 
     const tous = blocsParActivite(LISTE, [
-      "Atelier chocolat",
-      "Marché aux puces",
-      "Contes pour les petits",
+      { titre: "Atelier chocolat" },
+      { titre: "Marché aux puces" },
+      { titre: "Contes pour les petits" },
     ])[0]!;
     expect(tous).not.toContain("19 septembre");
   });
 });
 
 describe("La date de fin se confronte à la page", () => {
-  const source = { url: "https://exemple.test/agenda", kind: "html_ai" as const };
+  const source = {
+    url: "https://exemple.test/agenda",
+    kind: "html_ai" as const,
+  };
   const page =
     "Exposition La Maison illustrée, du 12 septembre au 21 novembre 2026. Entrée libre.";
 
@@ -460,12 +537,16 @@ describe("Lecture d'une page par MiniMax", () => {
       J'espère que cela convient {sinon dites-le}.`;
 
     expect(parseModelJson(reponse)).toEqual({
-      evenements: [{ titre: "Atelier {spécial}", debut: "2026-01-04T14:00:00+01:00" }],
+      evenements: [
+        { titre: "Atelier {spécial}", debut: "2026-01-04T14:00:00+01:00" },
+      ],
     });
   });
 
   it("réduit une page à son texte pour la lecture par l'IA", () => {
-    const texte = htmlToText("<div><script>var a=1</script><h1>Atelier</h1><p>14h00</p></div>");
+    const texte = htmlToText(
+      "<div><script>var a=1</script><h1>Atelier</h1><p>14h00</p></div>",
+    );
     expect(texte).toBe("Atelier 14h00");
   });
 
@@ -558,7 +639,11 @@ describe("Mise en forme de ce que le modèle a rendu", () => {
   it("écarte ce qui est terminé, sans date, ou trop loin", () => {
     expect(
       evenements([
-        { titre: "Fête passée", debut: "2026-06-01T10:00:00+02:00", fin: "2026-08-10T18:00:00+02:00" },
+        {
+          titre: "Fête passée",
+          debut: "2026-06-01T10:00:00+02:00",
+          fin: "2026-08-10T18:00:00+02:00",
+        },
         { titre: "Sans fin annoncée", debut: "2026-08-10T10:00:00+02:00" },
         { titre: "Date illisible", debut: "un samedi de septembre" },
         { titre: "Trop loin", debut: "2028-01-01T10:00:00+01:00" },
@@ -579,12 +664,13 @@ describe("Mise en forme de ce que le modèle a rendu", () => {
 describe("Pagination des agendas communaux", () => {
   // Onex n'affiche que neuf entrées sur cent quinze : le menu, répété à chaque page, pèse
   // plus lourd que la liste elle-même.
-  const page = (liste: string) => `Menu Accueil Agenda ${liste} Dernière modification`;
+  const page = (liste: string) =>
+    `Menu Accueil Agenda ${liste} Dernière modification`;
 
   it("ne garde d'une page que ce qui la distingue de la première", () => {
-    expect(sansPartieCommune(page("Atelier du 14"), page("Concert du 20"))).toBe(
-      "Concert du 20",
-    );
+    expect(
+      sansPartieCommune(page("Atelier du 14"), page("Concert du 20")),
+    ).toBe("Concert du 20");
   });
 
   it("ne coupe pas au milieu d'un mot", () => {
@@ -597,7 +683,9 @@ describe("Pagination des agendas communaux", () => {
 
   it("rend une chaîne vide quand la page ne dit rien de neuf", () => {
     // Un site qui ignore le paramètre `page`, ou une pagination épuisée : on s'arrête là.
-    expect(sansPartieCommune(page("Atelier du 14"), page("Atelier du 14"))).toBe("");
+    expect(
+      sansPartieCommune(page("Atelier du 14"), page("Atelier du 14")),
+    ).toBe("");
   });
 });
 
@@ -611,9 +699,10 @@ describe("Passage d'une source", () => {
     expect(rapport.created).toBe(1);
     expect(await pendingReview()).toEqual([]);
 
-    const rows = await db.execute<{ published_at: Date | null; origin: string }>(
-      sql`select published_at, origin from event`,
-    );
+    const rows = await db.execute<{
+      published_at: Date | null;
+      origin: string;
+    }>(sql`select published_at, origin from event`);
     expect(rows[0].published_at).not.toBeNull();
     expect(rows[0].origin).toBe("feed");
   });
@@ -627,7 +716,9 @@ describe("Passage d'une source", () => {
     expect(attente.map((e) => e.title)).toEqual(["Atelier chocolat"]);
     expect(attente[0].sourceName).toBe("Agenda de test");
 
-    const rows = await db.execute<{ origin: string }>(sql`select origin from event`);
+    const rows = await db.execute<{ origin: string }>(
+      sql`select origin from event`,
+    );
     expect(rows[0].origin).toBe("ai");
   });
 
@@ -643,7 +734,9 @@ describe("Passage d'une source", () => {
     expect(second.created).toBe(0);
     expect(second.updated).toBe(1);
 
-    const rows = await db.execute<{ title: string }>(sql`select title from event`);
+    const rows = await db.execute<{ title: string }>(
+      sql`select title from event`,
+    );
     expect(rows.map((r) => r.title)).toEqual(["Atelier chocolat (complet)"]);
   });
 
@@ -672,7 +765,10 @@ describe("Passage d'une source", () => {
     // rien à confronter. Ce qui est publié ne se laisse pas réécrire par une lecture qu'on
     // ne sait pas vérifier : sinon une source qui se met à mal lire remplacerait en silence
     // une activité relue par une activité douteuse.
-    await runSource(source.id, adaptateur([unEvenement({ title: "Atelier chocolat, 15h" })]));
+    await runSource(
+      source.id,
+      adaptateur([unEvenement({ title: "Atelier chocolat, 15h" })]),
+    );
 
     expect(await pendingReview()).toEqual([]);
     const rows = await db.execute<{ title: string; published_at: Date | null }>(
@@ -704,7 +800,9 @@ describe("Les contrôles à la place de la relecture", () => {
     const rapport = await runSource(
       source.id,
       adaptateur([
-        unEvenement({ texteSource: "Cette page ne parle pas de cette activité-là." }),
+        unEvenement({
+          texteSource: "Cette page ne parle pas de cette activité-là.",
+        }),
       ]),
     );
 
@@ -731,27 +829,40 @@ describe("Les contrôles à la place de la relecture", () => {
     await runSource(seconde.id, adaptateur([lecture]));
 
     const attente = await pendingReview();
-    expect(attente.map((e) => e.controles.map((c) => c.code))).toEqual([["doublon"]]);
+    expect(attente.map((e) => e.controles.map((c) => c.code))).toEqual([
+      ["doublon"],
+    ]);
   });
 
   it("une relecture humaine efface les contrôles en défaut", async () => {
     const source = await createSource({ kind: "html_ai", autoPublish: true });
-    await runSource(source.id, adaptateur([unEvenement({ texteSource: "page muette" })]));
+    await runSource(
+      source.id,
+      adaptateur([unEvenement({ texteSource: "page muette" })]),
+    );
 
     const attente = await pendingReview();
     expect(attente[0].controles.length).toBeGreaterThan(0);
     await publishEvent(attente[0].id);
 
-    const rows = await db.execute<{ controles: unknown }>(sql`select controles from event`);
+    const rows = await db.execute<{ controles: unknown }>(
+      sql`select controles from event`,
+    );
     expect(rows[0].controles).toBeNull();
   });
 });
 
 describe("Santé des sources", () => {
   it("inscrit l'erreur d'un passage en échec", async () => {
-    const source = await createSource({ kind: "jsonld", name: "Commune muette" });
+    const source = await createSource({
+      kind: "jsonld",
+      name: "Commune muette",
+    });
 
-    const rapport = await runSource(source.id, adaptateur(new Error("HTTP 503")));
+    const rapport = await runSource(
+      source.id,
+      adaptateur(new Error("HTTP 503")),
+    );
 
     expect(rapport.ok).toBe(false);
     expect(rapport.error).toContain("503");
@@ -795,7 +906,11 @@ describe("Santé des sources", () => {
 
   it("signale une source qui répond correctement mais ne rapporte plus rien", async () => {
     // C'est la panne la plus traître : techniquement tout va bien, l'agenda se vide.
-    const source = await createSource({ kind: "jsonld", autoPublish: true, name: "Vidée" });
+    const source = await createSource({
+      kind: "jsonld",
+      autoPublish: true,
+      name: "Vidée",
+    });
     await runSource(source.id, adaptateur([unEvenement()]));
     await db.execute(sql`
       update source set last_non_empty_at = now() - interval '10 days' where id = ${source.id}

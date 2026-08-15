@@ -153,11 +153,23 @@ chose à la même heure.
 **Le morceau de page, et non la page entière.** Une page d'agenda communal est une liste : la
 date de l'activité voisine y figure aussi, et une lecture qui attribue à l'atelier de mercredi
 l'horaire du marché de samedi passait tous les contrôles, chaque valeur existant quelque part.
-La page est donc découpée en un bloc par activité, ancré sur les titres rendus par le modèle
-(`blocsParActivite`), et chaque activité n'est confrontée qu'au sien. Les frontières viennent
-de ces titres : si le modèle n'en rend qu'un sur une page qui en porte vingt, son bloc court
-jusqu'en bas et les contrôles retrouvent leur portée d'avant. C'est une limite connue, pas une
-régression.
+La page est donc découpée en un bloc par activité (`blocsParActivite`), et chaque activité
+n'est confrontée qu'au sien.
+
+Le repère de découpe est l'**ancre** : les premiers mots du passage, recopiés de la page par
+le modèle avec chaque activité. Elle vaut mieux qu'un titre, pour deux raisons apprises en
+production : elle commence à la date quand la commune l'écrit au-dessus du titre, et elle ne
+se confond pas avec une entrée de menu, « Bibliobus » figurant dans la navigation d'Onex bien
+avant d'être une activité. Une ancre qu'on ne retrouve pas mot pour mot dans la page est
+ignorée et le titre reprend son rôle : le modèle dit où regarder, jamais si c'est juste, sans
+quoi il jugerait son propre travail. Sans repère du tout, l'activité garde la page entière, et
+les contrôles retrouvent la portée qu'ils avaient avant.
+
+**Une page, un appel.** Les pages d'une commune étaient réunies puis coupées à trente mille
+caractères : une amputation silencieuse sur les grosses sources, et une seule réponse à tenir
+pour cent activités — les réponses tronquées ont leur message d'erreur dans `minimax.ts`.
+Chaque page est désormais lue par son propre appel, et une page qui échoue n'emporte plus les
+autres.
 
 Ce qui passe tous les contrôles est publié sans que personne n'intervienne. Ce qui en échoue
 un seul attend sur `/relecture`, qui affiche le motif. La file existe toujours ; elle est
