@@ -54,6 +54,25 @@ export type CalendarEntry = {
   attendees: { publicationId: string; accountId: string; displayName: string }[];
 };
 
+/**
+ * Les tranches d'âge demandées dans l'adresse : « 3,7 » devient [3, 7].
+ *
+ * Écrit ici, et testé, parce que la version qui vivait dans l'écran filtrait l'agenda sans
+ * que personne ne l'ait demandé. Une adresse sans âge donne une chaîne vide, que `split(",")`
+ * rend comme `[""]`, et `Number("")` vaut zéro : le filtre s'appliquait donc en permanence
+ * pour un enfant de zéro an, et masquait toute activité annoncée « dès 5 ans ». Une seule y
+ * passait le jour où on l'a vu, mais le nombre n'aurait fait que monter à mesure que les
+ * communes annoncent des âges.
+ */
+export function agesDemandes(param: string | undefined): number[] {
+  return (param ?? "")
+    .split(",")
+    .map((v) => v.trim())
+    .filter(Boolean)
+    .map(Number)
+    .filter((v) => Number.isInteger(v) && v >= 0 && v <= 18);
+}
+
 export const FENETRES = ["aujourd_hui", "demain", "week_end", "quinzaine"] as const;
 export type Fenetre = (typeof FENETRES)[number];
 

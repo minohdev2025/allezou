@@ -6,7 +6,12 @@
 import { sql } from "drizzle-orm";
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { communesDisponibles, purgePastEvents, upcomingCalendar } from "@/lib/calendar";
+import {
+  agesDemandes,
+  communesDisponibles,
+  purgePastEvents,
+  upcomingCalendar,
+} from "@/lib/calendar";
 import { db } from "@/lib/db";
 import { declareAttendance } from "@/lib/publications";
 import {
@@ -336,5 +341,25 @@ describe("Purge des activités passées", () => {
 
     expect(await purgePastEvents(90)).toBe(1);
     expect((await upcomingCalendar(alice.id)).map((e) => e.title)).toEqual(["Bientôt"]);
+  });
+});
+
+describe("Les âges demandés dans l'adresse", () => {
+  /*
+    Le cas qui a filtré l'agenda en silence : une adresse sans âge donnait [0], parce que
+    `"".split(",")` rend [""] et que `Number("")` vaut zéro. Toute activité annoncée « dès
+    5 ans » disparaissait de la vue par défaut, sans que personne n'ait demandé de filtre.
+  */
+  it("ne demande aucun âge quand l'adresse n'en porte pas", () => {
+    expect(agesDemandes(undefined)).toEqual([]);
+    expect(agesDemandes("")).toEqual([]);
+    expect(agesDemandes(",")).toEqual([]);
+  });
+
+  it("lit les âges écrits, et laisse le reste dehors", () => {
+    expect(agesDemandes("3,7")).toEqual([3, 7]);
+    expect(agesDemandes(" 3 , 7 ")).toEqual([3, 7]);
+    // Hors bornes, ou pas un nombre : rien de tout cela ne devient un filtre.
+    expect(agesDemandes("42,abc,-1,3")).toEqual([3]);
   });
 });

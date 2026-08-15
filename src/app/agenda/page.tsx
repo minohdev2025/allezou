@@ -4,6 +4,7 @@ import {
   FENETRES,
   LIBELLES_FENETRE,
   TRANCHES_AGE,
+  agesDemandes,
   communesDisponibles,
   upcomingCalendar,
   type CalendarEntry,
@@ -105,11 +106,9 @@ export default async function Agenda({
     ? (params.quand as Fenetre)
     : FENETRE_PAR_DEFAUT;
   // Plusieurs âges, séparés par des virgules dans l'adresse : une famille en a plusieurs, et
-  // l'écran doit rester partageable et utilisable sans JavaScript.
-  const ages = (params.age ?? "")
-    .split(",")
-    .map((v) => Number(v))
-    .filter((v) => Number.isFinite(v) && v >= 0 && v <= 18);
+  // l'écran doit rester partageable et utilisable sans JavaScript. Le découpage vit dans
+  // calendar.ts, où il est testé : celui qui était ici filtrait l'agenda en permanence.
+  const ages = agesDemandes(params.age);
   const avecMonCercle = params.cercle === "1";
   const tarif = (TARIFS as readonly string[]).includes(params.tarif ?? "")
     ? (params.tarif as Tarif)
