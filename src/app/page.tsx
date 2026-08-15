@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 
 import { accueilMasque, currentAccount } from "@/lib/session";
 import { entrer } from "./actions";
+import { MaquetteSortie } from "./maquette";
 import { Bouton, Carte, type Teinte } from "./ui";
 
 /**
@@ -71,6 +72,12 @@ export default async function Accueil({
                 {geste.titre}
               </p>
               <p className="leading-relaxed text-[color:var(--color-doux)]">{geste.texte}</p>
+              {/*
+                La maquette, plutôt qu'une capture : la page décrivait cinq écrans sans en
+                montrer aucun, et demandait une adresse électronique sur la foi d'un texte.
+                Un seul écran suffit, celui que les autres familles voient.
+              */}
+              {geste.avecMaquette ? <MaquetteSortie className="mt-4" /> : null}
             </Carte>
           </li>
         ))}
@@ -157,7 +164,14 @@ export default async function Accueil({
  * Sans eux, les trois autres gestes n'ont personne à qui parler : une sortie publiée dans le
  * vide ne sert à rien, et c'est la première chose à faire en arrivant.
  */
-const GESTES: { emoji: string; accent: Teinte; titre: string; texte: string }[] = [
+const GESTES: {
+  emoji: string;
+  accent: Teinte;
+  titre: string;
+  texte: string;
+  /** Montre la carte de sortie dessinée sous le texte. Un seul geste la porte. */
+  avecMaquette?: boolean;
+}[] = [
   {
     emoji: "👥",
     accent: "corail",
@@ -178,6 +192,7 @@ const GESTES: { emoji: string; accent: Teinte; titre: string; texte: string }[] 
     titre: "Voir qui est dehors",
     texte:
       "Vous voyez qui est sorti en ce moment, et vous les rejoignez en un clic si vous en avez envie.",
+    avecMaquette: true,
   },
   {
     emoji: "📅",
