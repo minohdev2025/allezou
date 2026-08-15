@@ -263,18 +263,15 @@ export async function creerCercle(formData: FormData) {
 }
 
 /**
- * Le jeton d'invitation ne passe pas par l'URL.
- *
- * Une barre d'adresse se retrouve dans l'historique du navigateur, dans les journaux du
- * serveur et dans le référent des liens sortants. Le jeton voyage donc dans un cookie de
- * courte durée, lu une fois par la page qui l'affiche, puis oublié de lui-même.
- */
-/**
  * Porte le jeton fraîchement créé jusqu'à l'écran qui l'affiche.
  *
  * Par un cookie et non par l'URL : une barre d'adresse se retrouve dans l'historique, dans
  * les journaux du proxy et dans le référent des liens sortants. Cinq minutes suffisent, et
  * c'est la seule fenêtre où le jeton existe en clair — seul son condensé est enregistré.
+ *
+ * Le lien que l'administrateur envoie ensuite porte évidemment le jeton, puisque c'est ce
+ * qu'il est. Ce détour ne protège pas le lien partagé, il évite seulement d'en laisser une
+ * copie de plus dans les journaux de qui le fabrique.
  */
 async function poserJetonInvitation(circleId: string, token: string): Promise<void> {
   const cookieStore = await cookies();

@@ -132,8 +132,8 @@ l'association de parents qui relaie l'invitation. Contact : contact@allezou.ch. 
 la **nLPD suisse**. La page destinée aux parents est [DONNEES.md](DONNEES.md).
 
 Ce que cela implique, et qui n'est pas rien : Allezou traite bien des données personnelles
-réelles — adresses électroniques, noms affichés, prénoms et années de naissance d'enfants,
-déclarations de présence en temps quasi réel. Une personne physique en répond. C'est
+réelles — adresses électroniques, noms affichés, prénoms d'enfants, déclarations de présence
+en temps quasi réel. Une personne physique en répond. C'est
 précisément pourquoi la minimisation n'est pas une posture ici.
 
 ## Décisions prises en cours de route
@@ -188,9 +188,14 @@ précisément pourquoi la minimisation n'est pas une posture ici.
 - **Qui relit l'agenda** est défini par `ADMIN_EMAILS` dans la configuration du serveur, pas
   par un rôle en base. Un pouvoir de plus à modéliser, protéger et révoquer ne se justifie pas
   pour une seule personne au pilote.
-- **Le jeton d'invitation ne passe pas par l'URL** : il voyage dans un cookie de cinq minutes.
-  Une barre d'adresse se retrouve dans l'historique, dans les journaux et dans le référent des
-  liens sortants.
+- **Le jeton d'invitation fraîchement créé ne passe pas par l'URL** : il voyage jusqu'à
+  l'écran qui l'affiche dans un cookie de cinq minutes. Une barre d'adresse se retrouve dans
+  l'historique, dans les journaux et dans le référent des liens sortants — trois endroits où
+  la clé d'entrée d'un cercle n'a rien à faire.
+  Le lien que l'administrateur envoie ensuite, lui, *est* `/rejoindre/<jeton>` : c'est sa
+  fonction même, et rien ne peut l'éviter. Ce qui le protège n'est donc pas sa forme mais ses
+  bornes : un nombre d'entrées, une semaine de validité, une révocation possible à tout
+  moment, et seul son condensé enregistré chez nous.
 - **Plafond global de vingt demandes de lien par minute.** On ne compte pas par adresse IP —
   la minimisation l'interdit — donc la limite est globale : grossière, mais elle empêche de se
   servir du serveur comme d'un relais de courrier sans rien collecter de plus.
@@ -215,9 +220,7 @@ précisément pourquoi la minimisation n'est pas une posture ici.
   bornes sont appliquées côté serveur et pas seulement à l'écran : une action serveur est
   joignable par une requête directe, un champ de formulaire ne protège rien.
 - **Un lien d'invitation se liste et se révoque.** Il circule par message, donc hors de tout
-  contrôle, et
-  il circule par message, donc hors de tout contrôle : ne pas pouvoir le rappeler serait une
-  porte laissée ouverte. Exclure quelqu'un et nommer un second administrateur sont repliés
+  contrôle : ne pas pouvoir le rappeler serait une porte laissée ouverte. Exclure quelqu'un et nommer un second administrateur sont repliés
   derrière « Administrer cette personne » — ces gestes sont rares, et un bouton « exclure » à
   portée de pouce se touche par accident.
 - **Les liens à partager portent un code QR**, généré sur le serveur et sans aucun appel
