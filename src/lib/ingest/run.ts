@@ -11,7 +11,7 @@
  * n'a pas disparu, elle est devenue l'exception.
  */
 
-import { and, eq, isNull, sql } from "drizzle-orm";
+import { and, eq, isNull, or, sql } from "drizzle-orm";
 
 import { db } from "../db";
 import { asDate, asDateOrNull } from "../db/rows";
@@ -21,7 +21,7 @@ import type { Acces, Tarif } from "./tarif";
 import { icalAdapter } from "./ical";
 import { jsonLdAdapter } from "./jsonld";
 import { minimaxAdapter } from "./minimax";
-import { clamp, type Adapter, type RawEvent, type Source } from "./types";
+import { clamp, jourGenevois, type Adapter, type RawEvent, type Source } from "./types";
 
 /** Au-delà de ce délai sans succès, la source est signalée dans l'interface. */
 export const SEUIL_SOURCE_MUETTE_JOURS = 7;
@@ -223,20 +223,53 @@ async function retirerLesDisparues(sourceId: string): Promise<number> {
  * l'écrire entre deux passages, et l'ancienne version est restée. Dans les deux cas le
  * calendrier montrerait deux fois la même sortie à un parent.
  *
+ * Deux comparaisons, apprises l'une après l'autre :
+ *
+ * 1. **Le même titre à la même heure**, chez soi ou ailleurs. C'est le cas d'origine.
+ * 2. **Un titre contenu dans un autre, le même jour, chez la même source.** Lancy affiche la
+ *    rubrique à gauche du titre — « Concert Musique à Pont-Rouge », « Animation Biblio-Bingo »
+ *    — et le modèle la reprenait une fois sur deux. Comme l'identité d'une activité est son
+ *    titre et son jour, la version longue entrait comme une activité de plus : quarante paires
+ *    de jumelles à Lancy, dont plusieurs publiées des deux côtés, c'est-à-dire montrées deux
+ *    fois à un parent. La consigne donnée au modèle a été resserrée, mais une consigne se
+ *    respecte à peu près : ce contrôle est ce qui reste quand elle dérape.
+ *
+ * Le jour et non l'heure pour ce second cas : la version longue et la courte se lisent parfois
+ * à quelques minutes d'écart, et attendre l'égalité à la seconde reviendrait à ne rien voir.
+ *
  * On exclut la ligne de l'activité elle-même, et elle seule.
  */
 async function chercherDoublon(event: RawEvent, sourceId: string): Promise<Echec[]> {
+  const pasSoiMeme = sql`not (${s.event.sourceId} is not distinct from cast(${sourceId} as uuid)
+           and ${s.event.externalId} is not distinct from cast(${event.externalId} as text))`;
+
+  // Les dates passent par `eq`, jamais par un fragment brut : drizzle connaît le type de la
+  // colonne et encode l'horodatage, là où le pilote refuse tout net un objet Date qu'on lui
+  // tend dans un `sql` littéral.
+  const memeTitreMemeHeure = and(
+    eq(s.event.startsAt, event.startsAt),
+    // `cast` explicite : sans lui, Postgres ne sait pas de quel type est le paramètre qu'on
+    // lui demande de mettre en minuscules, et refuse la requête entière.
+    sql`lower(${s.event.title}) = lower(cast(${event.title} as text))`,
+  );
+
+  const titreEmboiteMemeJour = and(
+    eq(s.event.sourceId, sourceId),
+    sql`date(${s.event.startsAt} at time zone 'Europe/Zurich')
+        = cast(${jourGenevois(event.startsAt)} as date)`,
+    sql`(
+      position(lower(${s.event.title}) in lower(cast(${event.title} as text))) > 0
+      or position(lower(cast(${event.title} as text)) in lower(${s.event.title})) > 0
+    )`,
+  );
+
   const rows = await db
-    .select({ commune: s.event.commune, sourceId: s.event.sourceId })
+    .select({ commune: s.event.commune, sourceId: s.event.sourceId, title: s.event.title })
     .from(s.event)
     .where(
       and(
-        eq(s.event.startsAt, event.startsAt),
-        // `cast` explicite : sans lui, Postgres ne sait pas de quel type est le paramètre
-        // qu'on lui demande de mettre en minuscules, et refuse la requête entière.
-        sql`lower(${s.event.title}) = lower(cast(${event.title} as text))`,
-        sql`not (${s.event.sourceId} is not distinct from cast(${sourceId} as uuid)
-                 and ${s.event.externalId} is not distinct from cast(${event.externalId} as text))`,
+        or(memeTitreMemeHeure, titreEmboiteMemeJour),
+        pasSoiMeme,
         isNull(s.event.rejectedAt),
         isNull(s.event.withdrawnAt),
       ),
@@ -252,7 +285,7 @@ async function chercherDoublon(event: RawEvent, sourceId: string): Promise<Echec
     {
       code: "doublon",
       detail: memeSource
-        ? `Cette source annonce déjà « ${event.title} » à la même heure sous une autre forme.`
+        ? `Cette source annonce déjà « ${rows[0].title} » ce jour-là.`
         : `Une autre source annonce déjà « ${event.title} » à la même heure${ailleurs}.`,
     },
   ];

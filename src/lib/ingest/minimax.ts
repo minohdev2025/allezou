@@ -29,6 +29,7 @@ import { lireTarifEtAcces } from "./tarif";
 import {
   clamp,
   lireTexte,
+  jourGenevois,
   parseAgeRange,
   USER_AGENT,
   type Adapter,
@@ -217,10 +218,13 @@ const SYSTEME = [
   '{"evenements":[{"titre":"...","ancre":"...","description":"...","debut":"2026-01-04T14:00:00+01:00","fin":"...","lieu":"...","url":"...","age":"...","recurrence":"..."}]}',
   "Règles strictes :",
   "- « ancre » recopie mot pour mot les premiers mots du passage de la page qui décrit cet",
-  "  événement, une dizaine de mots, en commençant par la date si elle est écrite juste avant.",
-  "  Ce champ ne sert pas à décrire l'événement : il sert à retrouver son emplacement exact",
-  "  dans la page. Recopie, ne reformule pas, et n'invente rien : une ancre introuvable dans",
-  "  la page est inutile.",
+  "  événement, une dizaine de mots, en commençant tout au début du passage : par la rubrique",
+  "  ou par la date si elles sont écrites avant le titre. Ce champ ne décrit pas l'événement,",
+  "  il sert à retrouver son emplacement exact dans la page. Recopie, ne reformule pas, et",
+  "  n'invente rien : une ancre introuvable dans la page est inutile.",
+  "- « titre » ne reprend pas la rubrique affichée à côté du titre (« Concert », « Animation »,",
+  "  « Exposition », « Sport », « Spectacle - Théâtre »…), ni la date. Le titre seul, tel que",
+  "  la page le donne. La rubrique va dans l'ancre, pas dans le titre.",
   "- N'invente jamais une date. Si le jour ou le mois d'un événement est absent, ne le retourne pas.",
   "- Les dates sont au format ISO 8601 avec fuseau horaire, heure de Genève (+01:00 en hiver, +02:00 en été).",
   "- Si l'année n'est pas écrite à côté de la date, déduis-la de la date du jour : prends la",
@@ -359,21 +363,42 @@ export function blocsParActivite(texte: string, reperes: Repere[]): (string | nu
     juste — sans quoi il jugerait son propre travail, et le contrôle ne contrôlerait plus
     rien.
   */
-  const debuts = reperes.map((repere) => {
+  const situes = reperes.map((repere) => {
     const parLAncre = situer(repere.ancre);
-    return parLAncre >= 0 ? parLAncre : situer(repere.titre);
+    return parLAncre >= 0
+      ? { debut: parLAncre, ancree: true }
+      : { debut: situer(repere.titre), ancree: false };
   });
 
-  const frontieres = [...new Set(debuts.filter((d) => d >= 0))].sort((a, b) => a - b);
+  /*
+    Le recul dépend de ce qui a servi de repère, et c'est tout l'intérêt de l'ancre.
 
-  return debuts.map((debut) => {
+    Une ancre commence là où l'article commence, rubrique ou date comprises : il n'y a rien à
+    rattraper, et reculer volerait la fin de l'article précédent. Un titre, lui, est au milieu
+    de son article : un court recul lui rend ce qui est écrit juste avant.
+
+    Ce n'est pas une subtilité gratuite. Onex écrit la date au-dessus du titre, Lancy l'écrit
+    en dessous et met la rubrique au-dessus : un recul fixe aide la première et vole à la
+    seconde l'heure écrite en fin de ligne. Aucune marge ne peut servir deux dispositions
+    opposées — l'ancre, si, parce qu'elle vient de la page.
+  */
+  const bornes = new Map(
+    situes.filter((s) => s.debut >= 0).map((s) => [s.debut, s.ancree] as const),
+  );
+  const frontieres = [...bornes.keys()].sort((a, b) => a - b);
+
+  return situes.map(({ debut, ancree }) => {
     if (debut < 0) return null;
     const rang = frontieres.indexOf(debut);
     const precedente = rang > 0 ? frontieres[rang - 1] : 0;
     const suivante = frontieres[rang + 1];
 
-    const fin = suivante === undefined ? page.length : coupe(debut, suivante);
-    return page.slice(coupe(precedente, debut), fin).trim();
+    const fin =
+      suivante === undefined
+        ? page.length
+        : coupe(debut, suivante, bornes.get(suivante) ?? false);
+
+    return page.slice(coupe(precedente, debut, ancree), fin).trim();
   });
 }
 
@@ -416,7 +441,9 @@ const PREAMBULE_MAX = 20;
  * La moitié de l'écart borne le recul quand deux titres se suivent de très près, pour ne
  * jamais dépasser le milieu.
  */
-function coupe(precedent: number, courant: number): number {
+function coupe(precedent: number, courant: number, ancree: boolean): number {
+  // Une ancre tombe déjà au début de l'article : reculer lui donnerait la fin du précédent.
+  if (ancree) return courant;
   const marge = Math.min(PREAMBULE_MAX, Math.floor((courant - precedent) / 2));
   return courant - marge;
 }
@@ -437,16 +464,6 @@ export function sansHoraireAnnonce(debut: Date, page: string): boolean {
 
   const texte = normaliser(page);
   return !heures.some((forme) => contient(texte, forme));
-}
-
-/** Le jour d'une date à l'heure de Genève : « 2026-09-12 ». */
-function jourGenevois(date: Date): string {
-  return new Intl.DateTimeFormat("sv-SE", {
-    timeZone: "Europe/Zurich",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(date);
 }
 
 /**

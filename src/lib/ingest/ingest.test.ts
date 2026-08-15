@@ -834,6 +834,37 @@ describe("Les contrôles à la place de la relecture", () => {
     ]);
   });
 
+  /*
+    Le cas de Lancy, mesuré en production : quarante paires de jumelles.
+
+    Sa page affiche la rubrique à gauche du titre — « Concert Musique à Pont-Rouge » — et le
+    modèle la reprenait dans le titre une fois sur deux. Comme l'identité d'une activité est
+    son titre et son jour, la version longue entrait comme une activité de plus, et plusieurs
+    paires se sont retrouvées publiées des deux côtés : la même sortie, montrée deux fois à un
+    parent. La consigne a été resserrée, mais une consigne se respecte à peu près.
+  */
+  it("attrape une seconde lecture qui ajoute la rubrique au titre", async () => {
+    const source = await createSource({ kind: "html_ai", autoPublish: true });
+
+    const event = unEvenement();
+    await runSource(source.id, adaptateur([{ ...event, texteSource: pageQuiDitTout(event) }]));
+
+    // Même activité, même jour, titre préfixé de sa rubrique : une nouvelle identité, donc
+    // une ligne de plus si personne ne s'en aperçoit.
+    const avecRubrique = {
+      ...event,
+      externalId: "atelier-chocolat-avec-rubrique",
+      title: `Atelier ${event.title}`,
+    };
+    await runSource(
+      source.id,
+      adaptateur([{ ...avecRubrique, texteSource: pageQuiDitTout(avecRubrique) }]),
+    );
+
+    const attente = await pendingReview();
+    expect(attente.map((e) => e.controles.map((c) => c.code))).toEqual([["doublon"]]);
+  });
+
   it("une relecture humaine efface les contrôles en défaut", async () => {
     const source = await createSource({ kind: "html_ai", autoPublish: true });
     await runSource(

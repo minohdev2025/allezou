@@ -126,3 +126,19 @@ export function clamp(text: string | undefined, max: number): string | undefined
   const space = cut.lastIndexOf(" ");
   return (space > max * 0.6 ? cut.slice(0, space) : cut).trim();
 }
+
+/**
+ * Le jour d'une date à l'heure de Genève : « 2026-09-12 ».
+ *
+ * Calculé ici et non par Postgres : le pilote refuse de lier un objet Date dans un
+ * `cast(… as timestamptz)`, et de toute façon le jour genevois d'un horodatage est une
+ * question de fuseau, pas de base de données.
+ */
+export function jourGenevois(date: Date): string {
+  return new Intl.DateTimeFormat("sv-SE", {
+    timeZone: "Europe/Zurich",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(date);
+}
