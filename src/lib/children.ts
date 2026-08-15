@@ -207,9 +207,15 @@ export async function revokeCoparentInvite(actorId: string): Promise<void> {
  * Pourquoi je suis dans ce cercle.
  *
  * Presque toujours parce qu'un de mes enfants est dans cette classe. Le dire permet de ne
- * plus adresser au cercle de l'aînée une sortie où seul le petit est venu. Le lien est
- * personnel : il n'apprend rien aux autres membres, et un cercle de voisinage n'en porte
- * aucun.
+ * plus adresser au cercle de l'aînée une sortie où seul le petit est venu. Un cercle de
+ * voisinage n'en porte aucun.
+ *
+ * Le lien appartient à l'enfant, pas au compte qui l'a posé : les deux parents d'un même
+ * enfant voient donc le même rattachement, et chacun peut le défaire. C'est le bon
+ * comportement — une classe est un fait, pas une préférence, et deux parents n'ont pas à
+ * la déclarer chacun de leur côté — mais ce n'est pas ce que « personnel » laissait
+ * entendre. Les autres membres du cercle, eux, n'en apprennent rien : chacun ne voit dans
+ * cet écran que ses propres enfants.
  */
 export type EnfantDuCercle = { id: string; firstName: string; lie: boolean };
 

@@ -240,6 +240,43 @@ describe("Quel enfant est concerné par quel cercle", () => {
     });
   });
 
+  /*
+    Le rattachement suit l'enfant, pas le compte qui l'a posé.
+
+    DONNEES.md a dit « Vous seul·e » pendant un temps, ce qui était faux pour une famille
+    à deux comptes : la table ne porte pas de colonne compte, et le lien se lit donc à
+    l'identique chez les deux parents. Ce test fixe ce que la page promet maintenant, dans
+    ses deux moitiés : l'autre parent voit et peut défaire, les autres membres du cercle
+    n'apprennent rien.
+  */
+  it("se lit et se défait chez l'autre parent, mais nulle part ailleurs", async () => {
+    const alice = await createAccount("Alice");
+    const bob = await createAccount("Bob");
+    const carla = await createAccount("Carla");
+    const classe = await createCircle(alice);
+    await join(classe, bob);
+    await join(classe, carla);
+
+    const lea = await addChild(alice.id, { firstName: "Léa" });
+    if (!lea.ok) throw new Error("l'enfant devait être créé");
+    const { token } = await inviteCoparent(alice.id);
+    await acceptCoparent(bob.id, token);
+
+    await setChildInCircle(alice.id, lea.value.id, classe.id, true);
+
+    // L'autre parent voit le même rattachement.
+    expect(await childrenInCircle(bob.id, classe.id)).toEqual([
+      { id: lea.value.id, firstName: "Léa", lie: true },
+    ]);
+    // Un membre du cercle qui n'est pas parent de Léa n'en apprend rien : cet écran ne
+    // montre à chacun que ses propres enfants.
+    expect(await childrenInCircle(carla.id, classe.id)).toEqual([]);
+
+    // Et il se défait des deux côtés.
+    await setChildInCircle(bob.id, lea.value.id, classe.id, false);
+    expect((await childrenInCircle(alice.id, classe.id))[0].lie).toBe(false);
+  });
+
   it("range les cercles par enfant, pour l'écran de sortie", async () => {
     const alice = await createAccount("Alice");
     const classeDeLea = await createCircle(alice, "Classe de Léa");
