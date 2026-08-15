@@ -17,28 +17,27 @@ const MESSAGES: Record<string, string> = {
 };
 
 /**
- * Ce qui attend quelqu'un qui n'est jamais venu : trois étapes, dites comme on les vit.
+ * Ce qui attend quelqu'un qui n'est jamais venu : trois étapes, dans l'ordre où on les vit.
  *
- * Écrites à l'affirmative, ce qu'elles n'étaient pas. Elles annonçaient ce qui n'existe pas
- * — pas de mot de passe, rien d'autre qu'un prénom, l'agenda qui ne dépend d'aucun cercle —
- * là où quelqu'un qui hésite veut savoir ce qui va se passer. Chaque étape dit maintenant le
- * geste, dans l'ordre où il vient.
+ * Texte de Michael, repris tel quel. Les versions successives écrites ici annonçaient ce qui
+ * n'existe pas — pas de mot de passe, rien d'autre qu'un prénom — là où quelqu'un qui hésite
+ * veut savoir ce qui va se passer.
  */
 const ETAPES = [
   {
-    titre: "Vous recevez un lien par courriel",
+    titre: "Vous entrez votre adresse mail",
     texte:
-      "Vous entrez votre adresse, le lien arrive, il vous connecte. Il sert une seule fois.",
+      "Après avoir entré votre adresse mail ci-dessous, vous recevez un lien de connexion. Il ne sert qu'une fois et est valable 15 minutes.",
   },
   {
-    titre: "Vous choisissez un nom et vous ajoutez vos enfants",
+    titre: "Vous choisissez un nom et vous ajoutez ceux de vos enfants",
     texte:
-      "Le nom que les autres verront : « Sophie », « Maman de Léa », ce que vous voulez. Pour chaque enfant, son prénom.",
+      "Ce sont les noms que les autres utilisateurs verront et avec lesquels ils pourront vous identifier.",
   },
   {
     titre: "Vous rejoignez un cercle, ou vous créez le vôtre",
     texte:
-      "Un parent vous a envoyé un lien : il vous fait entrer dans son cercle. Sinon, créez le vôtre et invitez les familles de votre choix. L'agenda du canton s'affiche dès votre arrivée.",
+      "Si un autre parent vous a envoyé un lien, il vous fait entrer dans son cercle. Sinon, créez le vôtre et invitez les familles de votre choix.",
   },
 ];
 
@@ -119,7 +118,7 @@ export default async function Connexion({
 
       <div className="mb-6 flex gap-2">
         <Onglet href={lien("/connexion", reprise)} actif={!premiereFois}>
-          Je reviens
+          J&apos;ai déjà un compte
         </Onglet>
         <Onglet href={lien("/connexion?premiere=1", reprise)} actif={premiereFois}>
           Je n&apos;ai pas encore de compte
@@ -239,7 +238,9 @@ function Onglet({
     <Link
       href={href}
       aria-current={actif ? "page" : undefined}
-      className="flex-1 rounded-[var(--radius-pilule)] px-3 py-2.5 text-center text-sm font-bold"
+      // Les deux onglets ont la même hauteur puisqu'ils sont côte à côte, mais l'un tient sur
+      // une ligne et l'autre sur deux : sans centrage, le court se colle en haut de sa case.
+      className="flex flex-1 items-center justify-center rounded-[var(--radius-pilule)] px-3 py-2.5 text-center text-sm font-bold"
       style={
         actif
           ? { background: "var(--color-vert)", color: "var(--color-fond)" }
