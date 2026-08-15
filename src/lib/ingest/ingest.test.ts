@@ -80,14 +80,24 @@ const unEvenement = (overrides: Partial<RawEvent> = {}): RawEvent => ({
 /**
  * Une page d'agenda qui annonce vraiment ce que la lecture prétend y avoir lu : c'est le cas
  * normal, celui où plus personne n'a besoin de relire.
+ *
+ * Elle écrit la date de fin dès qu'elle tombe un autre jour que le début. Sans cela, ce
+ * gabarit dépendait de l'heure à laquelle les tests tournent : une activité qui commence dans
+ * vingt-quatre heures et dure deux heures reste le même jour à vingt et une heures, et
+ * déborde sur le lendemain à vingt-trois. Le contrôle de la date de fin réclamait alors une
+ * date que la page ne portait pas, et huit tests changeaient d'avis selon l'heure. Une suite
+ * qui dépend de l'horloge ment un jour sur deux.
  */
 function pageQuiDitTout(event: RawEvent): string {
-  const jour = new Intl.DateTimeFormat("fr-CH", {
-    timeZone: "Europe/Zurich",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(event.startsAt);
+  const dateFr = (date: Date) =>
+    new Intl.DateTimeFormat("fr-CH", {
+      timeZone: "Europe/Zurich",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    }).format(date);
+
+  const jour = dateFr(event.startsAt);
 
   const heure = new Intl.DateTimeFormat("fr-CH", {
     timeZone: "Europe/Zurich",
@@ -96,7 +106,12 @@ function pageQuiDitTout(event: RawEvent): string {
     hour12: false,
   }).format(event.startsAt);
 
-  return `Agenda communal. ${jour}, ${heure} : ${event.title}. ${event.placeLabel}.`;
+  const fin =
+    event.endsAt && dateFr(event.endsAt) !== jour
+      ? ` Jusqu'au ${dateFr(event.endsAt)}.`
+      : "";
+
+  return `Agenda communal. ${jour}, ${heure} : ${event.title}. ${event.placeLabel}.${fin}`;
 }
 
 beforeEach(async () => {
@@ -420,7 +435,10 @@ describe("Découper une page de liste en un bloc par activité", () => {
 
   it("ignore une ancre que la page n'écrit pas, et retombe sur le titre", () => {
     const blocs = blocsParActivite(LISTE, [
-      { titre: "Marché aux puces", ancre: "Une phrase que le modèle a inventée" },
+      {
+        titre: "Marché aux puces",
+        ancre: "Une phrase que le modèle a inventée",
+      },
     ]);
 
     expect(blocs[0]).toContain("marche aux puces");
@@ -847,7 +865,10 @@ describe("Les contrôles à la place de la relecture", () => {
     const source = await createSource({ kind: "html_ai", autoPublish: true });
 
     const event = unEvenement();
-    await runSource(source.id, adaptateur([{ ...event, texteSource: pageQuiDitTout(event) }]));
+    await runSource(
+      source.id,
+      adaptateur([{ ...event, texteSource: pageQuiDitTout(event) }]),
+    );
 
     // Même activité, même jour, titre préfixé de sa rubrique : une nouvelle identité, donc
     // une ligne de plus si personne ne s'en aperçoit.
@@ -858,11 +879,15 @@ describe("Les contrôles à la place de la relecture", () => {
     };
     await runSource(
       source.id,
-      adaptateur([{ ...avecRubrique, texteSource: pageQuiDitTout(avecRubrique) }]),
+      adaptateur([
+        { ...avecRubrique, texteSource: pageQuiDitTout(avecRubrique) },
+      ]),
     );
 
     const attente = await pendingReview();
-    expect(attente.map((e) => e.controles.map((c) => c.code))).toEqual([["doublon"]]);
+    expect(attente.map((e) => e.controles.map((c) => c.code))).toEqual([
+      ["doublon"],
+    ]);
   });
 
   it("une relecture humaine efface les contrôles en défaut", async () => {

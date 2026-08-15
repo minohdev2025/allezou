@@ -42,14 +42,25 @@ const unEvenement = (overrides: Partial<RawEvent> = {}): RawEvent => ({
   ...overrides,
 });
 
-/** Une page qui annonce vraiment ce que la lecture prétend y avoir lu. */
+/**
+ * Une page qui annonce vraiment ce que la lecture prétend y avoir lu.
+ *
+ * La date de fin y figure dès qu'elle tombe un autre jour que le début, sans quoi ce gabarit
+ * dépend de l'heure à laquelle les tests tournent : une activité qui commence dans
+ * vingt-quatre heures et dure deux heures reste le même jour en début de soirée et déborde
+ * sur le lendemain plus tard. Le contrôle de la date de fin réclamait alors une date absente
+ * de la page, et cinq tests d'ici changeaient d'avis selon l'horloge.
+ */
 function pageQuiDitTout(event: RawEvent): string {
-  const jour = new Intl.DateTimeFormat("fr-CH", {
-    timeZone: "Europe/Zurich",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(event.startsAt);
+  const dateFr = (date: Date) =>
+    new Intl.DateTimeFormat("fr-CH", {
+      timeZone: "Europe/Zurich",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    }).format(date);
+
+  const jour = dateFr(event.startsAt);
 
   const heure = new Intl.DateTimeFormat("fr-CH", {
     timeZone: "Europe/Zurich",
@@ -58,7 +69,12 @@ function pageQuiDitTout(event: RawEvent): string {
     hour12: false,
   }).format(event.startsAt);
 
-  return `Agenda communal. ${jour}, ${heure} : ${event.title}. ${event.placeLabel}.`;
+  const fin =
+    event.endsAt && dateFr(event.endsAt) !== jour
+      ? ` Jusqu'au ${dateFr(event.endsAt)}.`
+      : "";
+
+  return `Agenda communal. ${jour}, ${heure} : ${event.title}. ${event.placeLabel}.${fin}`;
 }
 
 /** Recule la dernière vue de toutes les activités, comme si des passages les avaient manquées. */
@@ -76,29 +92,50 @@ beforeEach(async () => {
 
 describe("Identité d'une activité lue par le modèle", () => {
   it("ne bouge pas quand la commune corrige l'heure", () => {
-    const matin = identiteLue("Atelier chocolat", new Date("2026-09-12T10:00:00+02:00"));
-    const apresMidi = identiteLue("Atelier chocolat", new Date("2026-09-12T14:00:00+02:00"));
+    const matin = identiteLue(
+      "Atelier chocolat",
+      new Date("2026-09-12T10:00:00+02:00"),
+    );
+    const apresMidi = identiteLue(
+      "Atelier chocolat",
+      new Date("2026-09-12T14:00:00+02:00"),
+    );
 
     expect(matin).toBe(apresMidi);
   });
 
   it("ne bouge pas pour une majuscule ou un accent", () => {
-    const propre = identiteLue("Fête de l'Escalade", new Date("2026-12-12T18:00:00+01:00"));
-    const abime = identiteLue("FETE DE L'ESCALADE", new Date("2026-12-12T18:00:00+01:00"));
+    const propre = identiteLue(
+      "Fête de l'Escalade",
+      new Date("2026-12-12T18:00:00+01:00"),
+    );
+    const abime = identiteLue(
+      "FETE DE L'ESCALADE",
+      new Date("2026-12-12T18:00:00+01:00"),
+    );
 
     expect(propre).toBe(abime);
   });
 
   it("sépare deux occurrences d'un rendez-vous hebdomadaire", () => {
-    const mercredi = identiteLue("Bibliobus", new Date("2026-09-09T10:00:00+02:00"));
-    const suivant = identiteLue("Bibliobus", new Date("2026-09-16T10:00:00+02:00"));
+    const mercredi = identiteLue(
+      "Bibliobus",
+      new Date("2026-09-09T10:00:00+02:00"),
+    );
+    const suivant = identiteLue(
+      "Bibliobus",
+      new Date("2026-09-16T10:00:00+02:00"),
+    );
 
     expect(mercredi).not.toBe(suivant);
   });
 
   it("prend le jour tel qu'il est à Genève, pas à Greenwich", () => {
     // 00h30 à Genève un 12 septembre, c'est encore le 11 en temps universel.
-    const nuit = identiteLue("Nuit des chauves-souris", new Date("2026-09-11T22:30:00Z"));
+    const nuit = identiteLue(
+      "Nuit des chauves-souris",
+      new Date("2026-09-11T22:30:00Z"),
+    );
 
     expect(nuit).toContain("2026-09-12");
   });
@@ -148,7 +185,10 @@ describe("Ce que la source n'annonce plus", () => {
     await runSource(
       source.id,
       adaptateur([
-        unEvenement({ startsAt: minutesFromNow(-300), endsAt: minutesFromNow(-120) }),
+        unEvenement({
+          startsAt: minutesFromNow(-300),
+          endsAt: minutesFromNow(-120),
+        }),
       ]),
     );
     await vieillir(24);
@@ -177,8 +217,14 @@ describe("Publiées, mais signalées", () => {
     const source = await createSource({ kind: "html_ai", autoPublish: true });
     const event = unEvenement();
 
-    await runSource(source.id, adaptateur([{ ...event, texteSource: pageQuiDitTout(event) }]));
-    await runSource(source.id, adaptateur([{ ...event, texteSource: "page devenue muette" }]));
+    await runSource(
+      source.id,
+      adaptateur([{ ...event, texteSource: pageQuiDitTout(event) }]),
+    );
+    await runSource(
+      source.id,
+      adaptateur([{ ...event, texteSource: "page devenue muette" }]),
+    );
 
     return source.id;
   }
@@ -194,14 +240,21 @@ describe("Publiées, mais signalées", () => {
   it("garde le contenu vérifié plutôt que la lecture douteuse", async () => {
     const source = await createSource({ kind: "html_ai", autoPublish: true });
     const event = unEvenement();
-    await runSource(source.id, adaptateur([{ ...event, texteSource: pageQuiDitTout(event) }]));
+    await runSource(
+      source.id,
+      adaptateur([{ ...event, texteSource: pageQuiDitTout(event) }]),
+    );
 
     await runSource(
       source.id,
-      adaptateur([{ ...event, title: "Titre douteux", texteSource: "page muette" }]),
+      adaptateur([
+        { ...event, title: "Titre douteux", texteSource: "page muette" },
+      ]),
     );
 
-    const rows = await db.execute<{ title: string }>(sql`select title from event`);
+    const rows = await db.execute<{ title: string }>(
+      sql`select title from event`,
+    );
     expect(rows[0].title).toBe("Atelier chocolat");
   });
 
@@ -237,7 +290,10 @@ describe("Une activité restée en file", () => {
     const event = unEvenement();
 
     // Première lecture : la page ne confirme rien, l'activité attend.
-    await runSource(source.id, adaptateur([{ ...event, texteSource: "page muette" }]));
+    await runSource(
+      source.id,
+      adaptateur([{ ...event, texteSource: "page muette" }]),
+    );
     expect(await pendingReview()).toHaveLength(1);
 
     // La page dit maintenant ce qu'il faut. Rien ne la retient plus, et personne n'a eu à
@@ -254,7 +310,10 @@ describe("Une activité restée en file", () => {
   it("ne revient pas quand un relecteur l'a écartée", async () => {
     const source = await createSource({ kind: "html_ai", autoPublish: true });
     const event = unEvenement();
-    await runSource(source.id, adaptateur([{ ...event, texteSource: "page muette" }]));
+    await runSource(
+      source.id,
+      adaptateur([{ ...event, texteSource: "page muette" }]),
+    );
     await rejectEvent((await pendingReview())[0].id);
 
     await runSource(
@@ -279,10 +338,14 @@ describe("Deux fois la même activité chez une même source", () => {
     // Même titre, même heure, mais une identité que la source rend autrement.
     await runSource(
       source.id,
-      adaptateur([{ ...event, externalId: "autre-identifiant", texteSource: page }]),
+      adaptateur([
+        { ...event, externalId: "autre-identifiant", texteSource: page },
+      ]),
     );
 
     const attente = await pendingReview();
-    expect(attente.map((e) => e.controles.map((c) => c.code))).toEqual([["doublon"]]);
+    expect(attente.map((e) => e.controles.map((c) => c.code))).toEqual([
+      ["doublon"],
+    ]);
   });
 });
