@@ -26,6 +26,7 @@ que cette page existe.
 | Le nom que vous choisissez d'afficher | Pour que les autres vous reconnaissent. Vous l'écrivez librement : « Sophie », « Maman de Léa », ce que vous voulez | Tant que votre compte existe | Les membres de vos cercles |
 | Le **prénom** de vos enfants, et rien d'autre | Pour dire qui est présent à une sortie : « nous sommes au parc avec Matéo » | Tant que vous le gardez déclaré | Les membres de vos cercles, quand vous déclarez l'enfant présent |
 | Vos cercles et qui en fait partie | C'est le cœur du produit | Tant que le cercle existe | Les membres du cercle concerné |
+| Quel enfant est concerné par quel cercle | Pour qu'une sortie sans l'aîné ne parte pas vers sa classe | Tant que vous le gardez | Vous seul·e. Les autres membres ne le voient pas |
 | Vos sorties : un lieu choisi dans une liste, une heure de fin, éventuellement un mot de 140 caractères | C'est ce que vous partagez | **Effacée 24 heures après son heure de fin** | Uniquement les cercles que vous avez choisis au moment de publier |
 | Vos inscriptions aux activités de l'agenda | Pour que d'autres sachent que leur enfant y retrouvera quelqu'un | Jusqu'à 90 jours après l'activité | Uniquement les cercles que vous avez choisis |
 | Vos réglages de notification | Pour ne vous déranger que quand vous l'avez demandé | Tant que votre compte existe | Vous seul·e |
