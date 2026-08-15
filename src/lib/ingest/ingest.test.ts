@@ -321,6 +321,35 @@ describe("Découper une page de liste en un bloc par activité", () => {
     expect(blocs[0]).toBeNull();
   });
 
+  /*
+    Le cas qui a coûté dix-huit faux signalements le soir du déploiement.
+
+    Onex écrit la date au-dessus du titre et l'heure en dessous. Un bloc commençant au titre
+    perdait donc la date de son activité et héritait de celle de la suivante : les contrôles
+    avaient raison de crier, c'est le bloc qui était décalé d'un cran. La coupe tombe
+    désormais un peu avant le titre, ce qui donne à chacun son préambule sans lui donner la
+    fin du précédent.
+  */
+  it("garde la date écrite juste avant le titre, sans prendre celle de la suivante", () => {
+    const commeOnex = [
+      "Agenda de la commune",
+      "23 août Zuza parc des Evaux skatepark 16h00 spectacle tout public",
+      "24 août Cours de Zumba place du 150e rendez-vous au milieu 18h30 sport tout public",
+      "25 août Cours de Pilates parc Brot près de l'étang 12h15 sport tout public",
+    ].join(" ");
+
+    const blocs = blocsParActivite(commeOnex, ["Zuza", "Cours de Zumba", "Cours de Pilates"]);
+
+    expect(blocs[0]).toContain("23 aout");
+    expect(blocs[0]).toContain("16h00");
+    expect(blocs[0]).not.toContain("24 aout");
+
+    expect(blocs[1]).toContain("24 aout");
+    // L'heure doit rester avec son activité : c'est elle qu'un recul trop large emporte.
+    expect(blocs[1]).toContain("18h30");
+    expect(blocs[1]).not.toContain("25 aout");
+  });
+
   it("ne coupe pas au milieu d'un mot plus long", () => {
     const page = "Supermarché ouvert. Marché aux puces Samedi 19 septembre.";
     const blocs = blocsParActivite(page, ["Marché aux puces"]);

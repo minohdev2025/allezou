@@ -293,9 +293,9 @@ export async function extractEventsWithMiniMax(
  * C'est l'erreur qu'un œil humain attrapait en lisant la fiche comme un tout, et c'est la
  * seule que la confrontation à la page entière ne peut pas voir.
  *
- * Un bloc court du titre d'une activité au titre de la suivante. Le texte rendu est
- * normalisé, ce qui ne gêne personne : les contrôles normalisent de toute façon, et
- * `normaliser` appliqué deux fois donne le même résultat.
+ * Un bloc court d'un peu avant le titre d'une activité à un peu avant celui de la suivante.
+ * Le texte rendu est normalisé, ce qui ne gêne personne : les contrôles normalisent de toute
+ * façon, et `normaliser` appliqué deux fois donne le même résultat.
  *
  * Un titre introuvable rend `null`, et l'appelant retombe sur la page entière : le contrôle
  * `titre_reformule` s'en chargera de toute façon, et retenir en file pour deux motifs plutôt
@@ -325,9 +325,57 @@ export function blocsParActivite(texte: string, titres: string[]): (string | nul
 
   return debuts.map((debut) => {
     if (debut < 0) return null;
-    const suivante = frontieres.find((f) => f > debut) ?? page.length;
-    return page.slice(debut, suivante).trim();
+    const rang = frontieres.indexOf(debut);
+    const precedente = rang > 0 ? frontieres[rang - 1] : 0;
+    const suivante = frontieres[rang + 1];
+
+    const fin = suivante === undefined ? page.length : coupe(debut, suivante);
+    return page.slice(coupe(precedente, debut), fin).trim();
   });
+}
+
+/**
+ * Le recul en amont d'un titre, en caractères.
+ *
+ * Vingt, et ce n'est pas un nombre choisi au jugé. Le premier passage en production a montré
+ * qu'Onex écrit la date au-dessus du titre et l'heure en dessous : un bloc commençant au titre
+ * perdait la date de son activité et héritait de celle de la suivante. Dix-huit activités
+ * justes se sont retrouvées signalées « date absente », et les chiffres le disaient sans
+ * détour : trente `date_absente` de plus, une `heure_absente` de moins.
+ *
+ * La valeur a donc été calibrée sur cette page, en relevant à la main la date et l'heure de
+ * quatre activités puis en comptant combien chaque marge en retrouve :
+ *
+ *     marge  0 (le titre)  → 1 date sur 4, 4 heures sur 4
+ *     marge 20 à 30        → 4 dates sur 4, 4 heures sur 4
+ *     marge 40             → 4 dates sur 4, 3 heures sur 4
+ *     moitié de l'écart    → 3 dates sur 4, 2 heures sur 4
+ *
+ * Au-delà de trente, on commence à voler à l'activité précédente l'heure écrite en fin de
+ * ligne. Vingt plutôt que trente, à résultat égal sur Onex, parce que toutes les communes
+ * n'écrivent pas leurs dates au même endroit : celles qui les mettent *après* le titre voient
+ * ce recul amputer la fin de leur article, et le plus court des deux reculs est celui qui leur
+ * fait le moins de mal. La moitié de l'écart borne le reste.
+ *
+ * C'est un seuil observé sur un site, pas une vérité : si une commune écrit ses dates plus
+ * loin de ses titres, c'est ici qu'il faudra revenir, avec la file de relecture pour preuve.
+ */
+const PREAMBULE_MAX = 20;
+
+/**
+ * Où couper, entre deux titres.
+ *
+ * Un peu avant chaque titre, jamais dessus. Chaque activité reçoit ainsi le court préambule
+ * qui la précède — une ligne de date, le plus souvent — sans recevoir la fin de celle d'avant.
+ * Le décalage vaut des deux côtés : ce qui est donné en amont d'un titre est retiré en aval du
+ * précédent, et rien n'appartient à deux blocs.
+ *
+ * La moitié de l'écart borne le recul quand deux titres se suivent de très près, pour ne
+ * jamais dépasser le milieu.
+ */
+function coupe(precedent: number, courant: number): number {
+  const marge = Math.min(PREAMBULE_MAX, Math.floor((courant - precedent) / 2));
+  return courant - marge;
 }
 
 /**
