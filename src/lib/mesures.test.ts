@@ -1,50 +1,24 @@
 /**
- * Ce que ces tests garantissent : les nombres comptent les familles qui existent, et rien
- * d'autre.
- *
- * Trois vérifications pour trois nombres, ce qui est le bon rapport. Un écran de mesure se
- * met à grossir dès qu'on le laisse faire, et ce qui s'y ajoute finit toujours par regarder
- * quelqu'un.
+ * Ce que ce test garantit : le nombre affiché compte les comptes qui existent, et un compte
+ * supprimé n'en fait plus partie.
  */
 
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { mesures } from "@/lib/mesures";
-import {
-  createAccount,
-  createChild,
-  deleteAccount as supprimerCompte,
-  resetDatabase,
-} from "@/test/helpers";
+import { comptesOuverts } from "@/lib/mesures";
+import { createAccount, deleteAccount, resetDatabase } from "@/test/helpers";
 
 beforeEach(async () => {
   await resetDatabase();
 });
 
-describe("Les familles, en trois nombres", () => {
-  it("compte les comptes, et ceux qui ont déclaré un enfant", async () => {
+describe("Le nombre de comptes ouverts", () => {
+  it("compte ceux qui existent, pas ceux qui sont supprimés", async () => {
     const alice = await createAccount("Alice");
     await createAccount("Bob");
-    await createChild(alice, "Léa");
+    expect(await comptesOuverts()).toBe(2);
 
-    const m = await mesures();
-
-    expect(m.comptes).toBe(2);
-    // L'écart entre les deux est le seul endroit où une arrivée interrompue se voit.
-    expect(m.comptesAvecEnfant).toBe(1);
-  });
-
-  it("ne compte pas un compte supprimé", async () => {
-    const alice = await createAccount("Alice");
-    await createAccount("Bob");
-    await supprimerCompte(alice);
-
-    expect((await mesures()).comptes).toBe(1);
-  });
-
-  it("compte comme nouvelle une famille arrivée cette semaine", async () => {
-    await createAccount("Alice");
-
-    expect((await mesures()).comptesNouveaux7j).toBe(1);
+    await deleteAccount(alice);
+    expect(await comptesOuverts()).toBe(1);
   });
 });
