@@ -66,6 +66,13 @@ export default async function Cercle({
 
   const demandes = admin ? await listPendingRequests(account.id, id) : null;
   const invitations = await listInvites(account.id, id);
+
+  const demandesEnAttente = demandes?.ok ? demandes.value.length : 0;
+  // Ce que les liens encore actifs peuvent accueillir : le nombre de familles annoncé au
+  // moment de les créer, moins celles qui les ont déjà suivis.
+  const placesOuvertes = invitations.ok
+    ? invitations.value.reduce((total, i) => total + Math.max(0, i.maxUses - i.useCount), 0)
+    : 0;
   const appUrl = process.env.APP_URL ?? "http://localhost:3000";
   const couleur = teinte(id);
 
@@ -86,6 +93,48 @@ export default async function Cercle({
           </p>
         ) : null}
       </header>
+
+      {/*
+        Où en est ce cercle.
+
+        Le premier parent d'un cercle a la plus mauvaise expérience du produit : il invite,
+        puis attend, sans rien savoir. Ces trois nombres existaient déjà en base et ne se
+        voyaient nulle part — c'est ce qui manque pour décider s'il faut relancer.
+      */}
+      <p className="mb-5 leading-snug text-[color:var(--color-doux)]">
+        <strong className="text-[color:var(--color-encre)]">
+          {membres.length === 1 ? "Vous êtes seul·e" : `${membres.length} familles`}
+        </strong>{" "}
+        dans ce cercle
+        {demandesEnAttente > 0 ? (
+          <>
+            {" · "}
+            <strong className="text-[color:var(--color-corail)]">
+              {demandesEnAttente === 1 ? "1 demande" : `${demandesEnAttente} demandes`}
+            </strong>{" "}
+            à valider
+          </>
+        ) : null}
+        {placesOuvertes > 0 ? (
+          <>
+            {" · "}
+            {placesOuvertes === 1 ? "1 place ouverte" : `${placesOuvertes} places ouvertes`} sur
+            vos liens
+          </>
+        ) : null}
+      </p>
+
+      {/*
+        Seul, un cercle ne montre rien. Le dire vaut mieux que de laisser quelqu'un publier
+        des sorties pendant une semaine avant de comprendre que personne ne les voit.
+      */}
+      {membres.length === 1 ? (
+        <Alerte>
+          <strong className="mb-1 block">Il manque du monde</strong>
+          Tant que vous y êtes seul·e, vos sorties ne sont vues par personne. Envoyez un lien
+          d&apos;invitation aux familles avec qui vos enfants aiment jouer.
+        </Alerte>
+      ) : null}
 
       {erreur ? <Alerte ton="erreur">{MESSAGES[erreur] ?? "Cela n'a pas marché."}</Alerte> : null}
 
