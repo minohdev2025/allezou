@@ -104,38 +104,57 @@ export async function runSource(
         maxAge: event.maxAge,
         tarif: event.tarif ?? "inconnu",
         acces: event.acces ?? "inconnu",
+        allDay: event.allDay ?? false,
         commune: source.commune,
       };
 
       const [existing] = await db
-        .select({ id: s.event.id, publishedAt: s.event.publishedAt })
+        .select({
+          id: s.event.id,
+          publishedAt: s.event.publishedAt,
+          rejectedAt: s.event.rejectedAt,
+        })
         .from(s.event)
         .where(and(eq(s.event.sourceId, source.id), eq(s.event.externalId, event.externalId)))
         .limit(1);
 
       if (existing) {
-        // L'état de relecture ne bouge jamais ici : un événement déjà relu ne repart pas en
-        // file, un événement écarté ne réapparaît pas.
+        // Un événement écarté à la main ne réapparaît pas, et un événement publié le reste :
+        // aucune décision humaine ne se défait ici.
+        //
+        // Une activité restée en file, en revanche, n'est le fruit d'aucune décision : c'est
+        // un contrôle qui l'y a mise. Si la lecture d'aujourd'hui passe, elle rejoint le
+        // calendrier comme l'aurait fait une activité découverte ce matin. Sans cela, une
+        // activité retenue pour un contrôle depuis corrigé y serait restée pour toujours,
+        // sans que rien ne lui soit plus reproché.
         //
         // `withdrawnAt` est remis à zéro : une commune qui réannonce une activité qu'elle
         // avait retirée la remet à l'agenda, sans qu'on ait à s'en occuper.
         //
-        // Le contenu, lui, n'est remplacé que par une lecture qui passe les contrôles. Sans
-        // cette réserve, une source qui se met à mal lire réécrirait en silence une activité
+        // Le contenu n'est remplacé que par une lecture qui passe les contrôles. Sans cette
+        // réserve, une source qui se met à mal lire réécrirait en silence une activité
         // vérifiée par une activité douteuse, sans repasser devant personne.
         const remplacable = !existing.publishedAt || echecs.length === 0;
+        const publiable =
+          !existing.publishedAt &&
+          !existing.rejectedAt &&
+          source.autoPublish &&
+          echecs.length === 0;
 
         await db
           .update(s.event)
           .set({
             ...(remplacable ? contenu : {}),
+            ...(publiable ? { publishedAt: new Date() } : {}),
             controles: echecs.length > 0 ? echecs : null,
             lastSeenAt: sql`now()`,
             withdrawnAt: null,
             updatedAt: new Date(),
           })
           .where(eq(s.event.id, existing.id));
+
         report.updated += 1;
+        if (publiable) report.published += 1;
       } else {
         const publiable = source.autoPublish && echecs.length === 0;
 

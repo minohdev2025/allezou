@@ -17,6 +17,7 @@ import {
   htmlToText,
   lienDeLActivite,
   parseModelJson,
+  sansHoraireAnnonce,
   sansPartieCommune,
 } from "@/lib/ingest/minimax";
 import {
@@ -161,6 +162,18 @@ describe("Lecture du JSON-LD (format réel de geneve.ch)", () => {
     expect(eventsFromHtml(fiche, "https://exemple.test/fiche")[0].tarif).toBe("gratuit");
   });
 
+  it("reconnaît une fiche qui annonce un jour et non une heure", () => {
+    const journee = `<script type="application/ld+json">
+      {"@type":"Event","name":"Marché de Noël","startDate":"2026-12-12"}
+    </script>`;
+    const rendezVous = `<script type="application/ld+json">
+      {"@type":"Event","name":"Conte au parc","startDate":"2026-12-12T15:00:00+01:00"}
+    </script>`;
+
+    expect(eventsFromHtml(journee, "https://exemple.test/f")[0].allDay).toBe(true);
+    expect(eventsFromHtml(rendezVous, "https://exemple.test/f")[0].allDay).toBe(false);
+  });
+
   it("laisse non défini ce qu'aucune fiche ne déclare", () => {
     const fiche = `<script type="application/ld+json">
       {"@type":"Event","name":"Marché du village","startDate":"2026-12-20T15:00:00+01:00"}
@@ -246,6 +259,25 @@ describe("Retrouver le lien d'une fiche dans la page de liste", () => {
 
   it("refuse un titre trop court pour désigner quoi que ce soit", () => {
     expect(lienDeLActivite(agenda, "à")).toBeUndefined();
+  });
+});
+
+describe("Une activité que la page ne date pas à l'heure près", () => {
+  const minuit = new Date("2026-09-12T00:00:00+02:00");
+
+  it("est reconnue quand la page n'écrit aucune heure", () => {
+    const page = "Exposition La Maison illustrée, du 12 septembre au 21 novembre 2026.";
+    expect(sansHoraireAnnonce(minuit, page)).toBe(true);
+  });
+
+  it("n'en est pas une quand la page annonce bien minuit", () => {
+    const page = "Nuit des musées, samedi 12 septembre, de 20h00 à minuit.";
+    expect(sansHoraireAnnonce(minuit, page)).toBe(false);
+  });
+
+  it("n'en est pas une dès que l'heure lue n'est pas minuit", () => {
+    const quatorzeHeures = new Date("2026-09-12T14:00:00+02:00");
+    expect(sansHoraireAnnonce(quatorzeHeures, "peu importe ce que dit la page")).toBe(false);
   });
 });
 

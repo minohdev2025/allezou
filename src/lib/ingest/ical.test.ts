@@ -86,6 +86,12 @@ describe("Lecture d'une feuille iCalendar communale", () => {
     expect(parTitre("Découvrir").endsAt?.toISOString()).toBe("2026-09-12T22:00:00.000Z");
   });
 
+  it("sait quelles activités n'ont pas d'horaire", () => {
+    // `VALUE=DATE` est la façon dont la commune dit « ce jour-là, sans heure ».
+    expect(parTitre("Découvrir").allDay).toBe(true);
+    expect(parTitre("Sey'maz").allDay).toBe(false);
+  });
+
   it("lit un horodatage déjà en UTC sans y toucher", () => {
     expect(parTitre("Un titre").startsAt.toISOString()).toBe("2026-07-01T08:30:00.000Z");
   });

@@ -23,7 +23,8 @@ import { join } from "node:path";
 
 import { z } from "zod";
 
-import { normaliser } from "../texte";
+import { contient, normaliser } from "../texte";
+import { ecrituresDeLHeure } from "./controles";
 import { lireTarifEtAcces } from "./tarif";
 import {
   clamp,
@@ -259,7 +260,26 @@ export async function extractEventsWithMiniMax(
   return eventsFromPayload(parseModelJson(content), pageUrl).map((event) => ({
     ...event,
     texteSource: pageText,
+    allDay: sansHoraireAnnonce(event.startsAt, pageText),
   }));
+}
+
+/**
+ * Vrai quand le modèle a rendu minuit et que la page n'écrit aucune heure pour cette
+ * activité.
+ *
+ * Une exposition ouverte de juin à septembre n'a pas d'horaire, et le modèle sort alors
+ * minuit faute de mieux. Le prendre pour un rendez-vous à 00:00 était faux deux fois : à
+ * l'écran, où l'agenda l'affichait, et au contrôle, qui refusait à juste titre une heure
+ * absente de la page.
+ */
+export function sansHoraireAnnonce(debut: Date, page: string): boolean {
+  const heures = ecrituresDeLHeure(debut);
+  // La première écriture est « 0h00 » : elle n'est là que si l'heure lue est minuit.
+  if (!heures.includes("minuit")) return false;
+
+  const texte = normaliser(page);
+  return !heures.some((forme) => contient(texte, forme));
 }
 
 /** Le jour d'une date à l'heure de Genève : « 2026-09-12 ». */

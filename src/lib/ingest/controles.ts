@@ -276,12 +276,17 @@ export function controler(event: RawEvent, contexte: ContexteControle): Echec[] 
     });
   }
 
-  const heures = ecrituresDeLHeure(event.startsAt);
-  if (!heures.some((forme) => contient(page, forme))) {
-    echecs.push({
-      code: "heure_absente",
-      detail: `Aucune heure lisible sur la page : l'activité ressort à ${heures[0]}.`,
-    });
+  // Une activité sans horaire annoncé n'a pas d'heure à confronter : elle tient la journée,
+  // et c'est ainsi qu'elle s'affiche. Le contrôle garde son rôle là où il compte, quand une
+  // heure précise est annoncée que la page n'écrit nulle part.
+  if (!event.allDay) {
+    const heures = ecrituresDeLHeure(event.startsAt);
+    if (!heures.some((forme) => contient(page, forme))) {
+      echecs.push({
+        code: "heure_absente",
+        detail: `Aucune heure lisible sur la page : l'activité ressort à ${heures[0]}.`,
+      });
+    }
   }
 
   if (!contient(page, normaliser(event.title))) {

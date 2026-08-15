@@ -21,6 +21,8 @@ export type RawEvent = {
   /** Ce que la page dit du prix et de l'inscription. « inconnu » quand elle n'en dit rien. */
   tarif?: Tarif;
   acces?: Acces;
+  /** Aucun horaire annoncé : l'activité tient la journée, elle ne commence pas à minuit. */
+  allDay?: boolean;
   /**
    * Le texte de la page d'où l'activité a été lue, tel qu'il a été donné au modèle.
    *

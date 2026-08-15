@@ -103,6 +103,9 @@ function toRawEvent(event: JsonLdEvent, pageUrl: string): RawEvent | null {
   const startsAt = new Date(event.startDate);
   if (Number.isNaN(startsAt.getTime())) return null;
 
+  // « 2026-09-12 » sans partie horaire : la fiche annonce un jour, pas un rendez-vous.
+  const journeeEntiere = /^\d{4}-\d{2}-\d{2}$/.test(event.startDate.trim());
+
   const endsAt = event.endDate ? new Date(event.endDate) : undefined;
 
   /*
@@ -136,6 +139,7 @@ function toRawEvent(event: JsonLdEvent, pageUrl: string): RawEvent | null {
     // Ce que la fiche déclare l'emporte sur ce que sa description raconte.
     tarif: tarifDeclare(event) ?? lu.tarif,
     acces: lu.acces,
+    allDay: journeeEntiere,
   };
 }
 

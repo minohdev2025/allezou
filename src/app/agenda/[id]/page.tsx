@@ -79,8 +79,15 @@ export default async function Activite({
           </div>
           <p className="flex items-center gap-2 font-bold text-[color:var(--color-doux)]">
             <IconeHorloge className="h-5 w-5" />
-            {heureCourte(activite.startsAt)}
-            {activite.endsAt ? ` – ${heureCourte(activite.endsAt)}` : null}
+            {activite.allDay ? (
+              // L'organisateur n'annonce pas d'horaire : le dire vaut mieux qu'un 00:00 faux.
+              "Toute la journée"
+            ) : (
+              <>
+                {heureCourte(activite.startsAt)}
+                {activite.endsAt ? ` – ${heureCourte(activite.endsAt)}` : null}
+              </>
+            )}
           </p>
         </div>
 

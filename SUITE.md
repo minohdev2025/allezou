@@ -73,14 +73,29 @@ rend du Markdown non assaini, mais il vient d'un fichier du dépôt et la politi
 du contenu bloquerait un script injecté ; et il manque `Cross-Origin-Opener-Policy`, alors que
 `frame-ancestors 'none'` couvre déjà le cadrage.
 
+## Ce que le premier passage en production a appris
+
+Nuit du 14 au 15 août 2026, six sources. Cent quarante-trois activités publiées, cinquante
+retenues en file. Les trois sources structurées passent entières ; les cinquante viennent
+toutes des trois communes lues par le modèle.
+
+**Trente-neuf des cinquante échouaient au même contrôle, `heure_absente`**, et c'était le
+trou noté la veille : une exposition ou un marché n'a pas d'horaire, le modèle sort minuit
+faute de mieux, et le contrôle refusait à juste titre une heure absente de la page. Il avait
+raison sur la forme et tort sur le fond.
+
+Une activité sans horaire annoncé est désormais une activité **de toute la journée**. Les
+flux structurés le déclarent eux-mêmes (`VALUE=DATE` en iCalendar, une date sans heure en
+JSON-LD) ; pour une page lue par le modèle, on le déduit de la conjonction « minuit rendu »
+et « aucune heure écrite sur la page ». Le contrôle garde son rôle là où il compte : une
+heure précise que la page n'écrit nulle part reste un motif de mise en file.
+
+Une activité restée en file rejoint par ailleurs le calendrier dès qu'une lecture repasse les
+contrôles. Sans cela, les trente-neuf y seraient restées pour toujours, sans qu'aucun
+contrôle ne leur reproche plus rien. Une décision humaine, elle, ne se défait pas : ce qui a
+été écarté ne revient pas.
+
 ## Ce qui reste ouvert
-
-### Les activités sans horaire sortent à minuit
-
-Une exposition annoncée « 21 juin - 21 septembre » n'a pas d'heure, et une feuille iCalendar
-qui la décrit en journée entière la place à minuit. L'agenda affiche donc « 00:00 », ce qui
-est faux à la lecture. Il manque la notion de journée entière, en base et à l'écran. C'est
-visible dès la première activité de Chêne-Bougeries.
 
 ### Les seuils des contrôles sont des paris
 

@@ -16,6 +16,7 @@ import {
   clearWarnings,
   flaggedPublished,
   pendingReview,
+  rejectEvent,
   runSource,
   withdrawEvent,
   type Adapters,
@@ -227,6 +228,44 @@ describe("Publiées, mais signalées", () => {
       sql`select rejected_at from event`,
     );
     expect(apres[0].rejected_at).not.toBeNull();
+  });
+});
+
+describe("Une activité restée en file", () => {
+  it("rejoint le calendrier dès que la lecture repasse les contrôles", async () => {
+    const source = await createSource({ kind: "html_ai", autoPublish: true });
+    const event = unEvenement();
+
+    // Première lecture : la page ne confirme rien, l'activité attend.
+    await runSource(source.id, adaptateur([{ ...event, texteSource: "page muette" }]));
+    expect(await pendingReview()).toHaveLength(1);
+
+    // La page dit maintenant ce qu'il faut. Rien ne la retient plus, et personne n'a eu à
+    // cliquer : une activité en file n'est le fruit d'aucune décision humaine.
+    const rapport = await runSource(
+      source.id,
+      adaptateur([{ ...event, texteSource: pageQuiDitTout(event) }]),
+    );
+
+    expect(rapport.published).toBe(1);
+    expect(await pendingReview()).toEqual([]);
+  });
+
+  it("ne revient pas quand un relecteur l'a écartée", async () => {
+    const source = await createSource({ kind: "html_ai", autoPublish: true });
+    const event = unEvenement();
+    await runSource(source.id, adaptateur([{ ...event, texteSource: "page muette" }]));
+    await rejectEvent((await pendingReview())[0].id);
+
+    await runSource(
+      source.id,
+      adaptateur([{ ...event, texteSource: pageQuiDitTout(event) }]),
+    );
+
+    const rows = await db.execute<{ published_at: Date | null }>(
+      sql`select published_at from event`,
+    );
+    expect(rows[0].published_at).toBeNull();
   });
 });
 

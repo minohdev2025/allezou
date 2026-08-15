@@ -381,6 +381,9 @@ function LigneActivite({
             ) : (
               "en cours"
             )
+          ) : entree.allDay ? (
+            // Une exposition ou un marché n'ouvre pas à minuit : afficher 00:00 était faux.
+            "toute la journée"
           ) : (
             heureCourte(entree.startsAt)
           )}

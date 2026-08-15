@@ -351,6 +351,15 @@ export const event = pgTable(
     description: varchar({ length: 280 }),
     startsAt: timestamp({ withTimezone: true }).notNull(),
     endsAt: timestamp({ withTimezone: true }),
+    /**
+     * Activité sans horaire annoncé : une exposition, un marché, un été d'animations.
+     *
+     * Sans cette distinction, elles ressortaient à minuit et l'agenda affichait « 00:00 »,
+     * ce qui est faux. Elles échouaient de surcroît au contrôle de l'heure, qui refusait à
+     * juste titre une heure absente de la page : trente-neuf des cinquante activités en
+     * file au 15 août 2026 étaient là pour cette seule raison.
+     */
+    allDay: boolean().notNull().default(false),
     placeId: uuid().references(() => place.id, { onDelete: "set null" }),
     /** Lieu en clair quand il vient d'une source et n'a pas de correspondance au catalogue. */
     placeLabel: varchar({ length: 120 }),

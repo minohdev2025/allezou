@@ -98,6 +98,33 @@ describe("L'heure lue existe-t-elle sur la page", () => {
     expect(codes(event, page)).toContain("heure_absente");
   });
 
+  it("ne reproche rien à une activité qui tient la journée", () => {
+    const page = "Exposition La Maison illustrée, du 12 septembre au 21 novembre 2026.";
+    const event = uneLecture({
+      title: "Exposition La Maison illustrée",
+      startsAt: new Date("2026-09-12T00:00:00+02:00"),
+      allDay: true,
+      description: undefined,
+      placeLabel: undefined,
+      minAge: undefined,
+    });
+
+    // Une exposition n'ouvre pas à minuit : elle n'a pas d'heure du tout.
+    expect(codes(event, page)).toEqual([]);
+  });
+
+  it("reproche toujours une heure précise que la page n'écrit pas", () => {
+    const page = "Atelier chocolat, samedi 12 septembre 2026, Maison de quartier.";
+    const event = uneLecture({
+      startsAt: new Date("2026-09-12T16:45:00+02:00"),
+      description: undefined,
+      placeLabel: undefined,
+      minAge: undefined,
+    });
+
+    expect(codes(event, page)).toContain("heure_absente");
+  });
+
   it("reconnaît « 14 h 30 » autant que « 14h30 »", () => {
     const heures = ecrituresDeLHeure(new Date("2026-09-12T14:30:00+02:00"));
     expect(heures).toContain("14h30");

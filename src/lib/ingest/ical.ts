@@ -207,6 +207,10 @@ function versRawEvent(
   const debut = trouver("DTSTART");
   if (!titre || !debut) return null;
 
+  // `VALUE=DATE` est la façon dont iCalendar dit « ce jour-là, sans heure ». La commune le
+  // déclare elle-même : rien à deviner.
+  const journeeEntiere = /^\d{8}$/.test(debut.valeur.trim());
+
   const startsAt = dateIcal(debut);
   if (!startsAt) return null;
 
@@ -231,6 +235,7 @@ function versRawEvent(
     url: clamp(valeur("URL") ?? sourceUrl, 500),
     ...parseAgeRange(description),
     ...lireTarifEtAcces(titre, description),
+    allDay: journeeEntiere,
   };
 }
 

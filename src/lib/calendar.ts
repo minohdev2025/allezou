@@ -35,6 +35,8 @@ export type CalendarEntry = {
   acces: Acces;
   /** Déjà commencé et pas terminé : une exposition, un festival, un été d'animations. */
   enCours: boolean;
+  /** Aucun horaire annoncé : elle tient la journée, elle ne commence pas à minuit. */
+  allDay: boolean;
   /**
    * Hors agenda : la source ne l'annonce plus, ou un relecteur l'a retirée.
    *
@@ -213,12 +215,13 @@ export async function upcomingCalendar(
     max_age: number | null;
     tarif: Tarif;
     acces: Acces;
+    all_day: boolean;
     en_cours: boolean;
     retiree: boolean;
   }>(sql`
     select
       e.id, e.title, e.description, e.starts_at, e.ends_at, e.url, e.origin, e.updated_at,
-      e.min_age, e.max_age, e.commune, e.tarif, e.acces,
+      e.min_age, e.max_age, e.commune, e.tarif, e.acces, e.all_day,
       (e.starts_at <= now()) as en_cours,
       (e.withdrawn_at is not null or e.rejected_at is not null) as retiree,
       coalesce(pl.name, e.place_label) as place,
@@ -256,6 +259,7 @@ export async function upcomingCalendar(
     tarif: r.tarif,
     acces: r.acces,
     enCours: r.en_cours,
+    allDay: r.all_day,
     retiree: r.retiree,
     attendees: parEvenement.get(r.id) ?? [],
   }));
@@ -282,12 +286,13 @@ export async function calendarEntry(
     max_age: number | null;
     tarif: Tarif;
     acces: Acces;
+    all_day: boolean;
     en_cours: boolean;
     retiree: boolean;
   }>(sql`
     select
       e.id, e.title, e.description, e.starts_at, e.ends_at, e.url, e.origin, e.updated_at,
-      e.min_age, e.max_age, e.commune, e.tarif, e.acces,
+      e.min_age, e.max_age, e.commune, e.tarif, e.acces, e.all_day,
       (e.starts_at <= now()) as en_cours,
       (e.withdrawn_at is not null or e.rejected_at is not null) as retiree,
       coalesce(pl.name, e.place_label) as place,
@@ -324,6 +329,7 @@ export async function calendarEntry(
     tarif: r.tarif,
     acces: r.acces,
     enCours: r.en_cours,
+    allDay: r.all_day,
     retiree: r.retiree,
     attendees: participations.map((p) => ({
       publicationId: p.id,
