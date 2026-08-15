@@ -125,6 +125,7 @@ export async function createEvent(
     minAge?: number;
     maxAge?: number;
     commune?: string;
+    placeLabel?: string;
     tarif?: "gratuit" | "payant" | "inconnu";
     acces?: "libre" | "inscription" | "inconnu";
     /** La source ne l'annonce plus. */
@@ -141,6 +142,7 @@ export async function createEvent(
       minAge: options.minAge,
       maxAge: options.maxAge,
       commune: options.commune,
+      placeLabel: options.placeLabel,
       tarif: options.tarif,
       acces: options.acces,
       withdrawnAt: options.retiree ? new Date() : undefined,

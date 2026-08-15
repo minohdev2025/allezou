@@ -39,6 +39,9 @@ export type CalendarEntry = {
   allDay: boolean;
   /** Le rythme annoncé par l'organisateur : « les mercredis ». Null quand il n'en dit rien. */
   recurrence: string | null;
+  /** Où c'est, quand le géocodage a trouvé. Sert au repère exact sur la carte. */
+  lat: number | null;
+  lon: number | null;
   /**
    * Hors agenda : la source ne l'annonce plus, ou un relecteur l'a retirée.
    *
@@ -219,12 +222,15 @@ export async function upcomingCalendar(
     acces: Acces;
     all_day: boolean;
     recurrence: string | null;
+    lat: number | null;
+    lon: number | null;
     en_cours: boolean;
     retiree: boolean;
   }>(sql`
     select
       e.id, e.title, e.description, e.starts_at, e.ends_at, e.url, e.origin, e.updated_at,
       e.min_age, e.max_age, e.commune, e.tarif, e.acces, e.all_day, e.recurrence,
+      e.lat, e.lon,
       (e.starts_at <= now()) as en_cours,
       (e.withdrawn_at is not null or e.rejected_at is not null) as retiree,
       coalesce(pl.name, e.place_label) as place,
@@ -264,6 +270,8 @@ export async function upcomingCalendar(
     enCours: r.en_cours,
     allDay: r.all_day,
     recurrence: r.recurrence,
+    lat: r.lat,
+    lon: r.lon,
     retiree: r.retiree,
     attendees: parEvenement.get(r.id) ?? [],
   }));
@@ -292,12 +300,15 @@ export async function calendarEntry(
     acces: Acces;
     all_day: boolean;
     recurrence: string | null;
+    lat: number | null;
+    lon: number | null;
     en_cours: boolean;
     retiree: boolean;
   }>(sql`
     select
       e.id, e.title, e.description, e.starts_at, e.ends_at, e.url, e.origin, e.updated_at,
       e.min_age, e.max_age, e.commune, e.tarif, e.acces, e.all_day, e.recurrence,
+      e.lat, e.lon,
       (e.starts_at <= now()) as en_cours,
       (e.withdrawn_at is not null or e.rejected_at is not null) as retiree,
       coalesce(pl.name, e.place_label) as place,
@@ -336,6 +347,8 @@ export async function calendarEntry(
     enCours: r.en_cours,
     allDay: r.all_day,
     recurrence: r.recurrence,
+    lat: r.lat,
+    lon: r.lon,
     retiree: r.retiree,
     attendees: participations.map((p) => ({
       publicationId: p.id,

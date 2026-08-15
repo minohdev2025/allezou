@@ -18,6 +18,7 @@ import {
   Pastille,
   heureCourte,
   jourCourt,
+  lienCarte,
   teinte,
 } from "../../ui";
 
@@ -95,7 +96,20 @@ export default async function Activite({
         <h1 className="text-[1.6rem] font-bold leading-tight">{activite.title}</h1>
 
         {activite.place ? (
-          <p className="mt-2 text-[color:var(--color-doux)]">📍 {activite.place}</p>
+          <p className="mt-2">
+            {/*
+              Un parent qui décide d'y aller cherche d'abord où c'est. Le repère est exact
+              dès que le géocodage a trouvé, et retombe sur une recherche sinon.
+            */}
+            <a
+              href={lienCarte(activite.place, null, activite.commune, activite)}
+              target="_blank"
+              rel="noreferrer"
+              className="text-[color:var(--color-doux)] underline underline-offset-4"
+            >
+              📍 {activite.place} ↗
+            </a>
+          </p>
         ) : null}
 
         {/*

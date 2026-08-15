@@ -113,7 +113,7 @@ export default async function Lieux({
                       {lieu.address ? (
                         <p className="mt-0.5 text-sm">
                           <a
-                            href={lienCarte(lieu.name, lieu.address, lieu.commune)}
+                            href={lienCarte(lieu.name, lieu.address, lieu.commune, lieu)}
                             target="_blank"
                             rel="noreferrer"
                             className="text-[color:var(--color-doux)] underline underline-offset-4"

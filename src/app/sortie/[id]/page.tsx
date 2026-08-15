@@ -89,7 +89,10 @@ export default async function Sortie({
         {sortie.placeAddress ? (
           <p className="mt-1">
             <a
-              href={lienCarte(sortie.placeName ?? "", sortie.placeAddress)}
+              href={lienCarte(sortie.placeName ?? "", sortie.placeAddress, null, {
+                lat: sortie.placeLat,
+                lon: sortie.placeLon,
+              })}
               target="_blank"
               rel="noreferrer"
               className="text-[color:var(--color-doux)] underline underline-offset-4"

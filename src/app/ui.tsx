@@ -408,7 +408,20 @@ export function Navigation({
  * seulement si on en a besoin : rien ne part tant que personne ne clique. Notre en-tête
  * `Referrer-Policy` étant `same-origin`, l'autre bout n'apprend même pas d'où l'on vient.
  */
-export function lienCarte(nom: string, adresse?: string | null, commune?: string | null) {
+export function lienCarte(
+  nom: string,
+  adresse?: string | null,
+  commune?: string | null,
+  coord?: { lat: number | null; lon: number | null } | null,
+) {
+  // Avec des coordonnées, un repère tombe sur le bon point. Sans elles, une recherche
+  // textuelle vaut mieux que rien : « Maison de quartier » existe dans dix communes, mais
+  // avec la commune à côté, la carte s'en approche.
+  if (coord?.lat != null && coord.lon != null) {
+    const { lat, lon } = coord;
+    return `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=17/${lat}/${lon}`;
+  }
+
   const requete = [nom, adresse, commune].filter(Boolean).join(", ");
   return `https://www.openstreetmap.org/search?query=${encodeURIComponent(requete)}`;
 }

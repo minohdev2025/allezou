@@ -18,6 +18,7 @@ import { sql } from "drizzle-orm";
 
 import { purgePastEvents } from "./calendar";
 import { db } from "./db";
+import { geocoderCeQuiManque } from "./geo";
 import { runAllSources } from "./ingest/run";
 import { purgeAll } from "./maintenance";
 import { notifyNewlyPublished, webPushSender } from "./notifications";
@@ -57,6 +58,15 @@ export const JOBS: Job[] = [
 
       return { sources: rapport, activitesEffacees: effacees, alertes };
     },
+  },
+  {
+    name: "geo",
+    everyMinutes: 60,
+    libelle: "Coordonnées des lieux",
+    // Vingt adresses par heure, une par seconde : de quoi rattraper un catalogue entier en
+    // une journée sans peser sur un service bénévole. Rien n'attend ces coordonnées, seuls
+    // les liens de carte gagnent en précision quand elles arrivent.
+    run: geocoderCeQuiManque,
   },
 ];
 

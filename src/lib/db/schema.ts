@@ -18,6 +18,7 @@ import { sql } from "drizzle-orm";
 import {
   boolean,
   check,
+  doublePrecision,
   foreignKey,
   index,
   integer,
@@ -254,6 +255,19 @@ export const place = pgTable(
      * sur une famille. Personne n'est jamais géolocalisé.
      */
     address: varchar({ length: 160 }),
+    /**
+     * Coordonnées, trouvées une fois à partir de l'adresse et gardées.
+     *
+     * Elles servent à poser un repère exact sur la carte que le parent ouvre, au lieu d'une
+     * recherche textuelle qui tombe à peu près. Elles ne disent rien de personne : c'est la
+     * position d'un parc, pas celle d'une famille.
+     *
+     * `geocodedAt` marque la tentative, réussie ou non : sans elle, une adresse introuvable
+     * serait redemandée à chaque passage, et le service de géocodage n'est pas à nous.
+     */
+    lat: doublePrecision(),
+    lon: doublePrecision(),
+    geocodedAt: timestamp({ withTimezone: true }),
     createdBy: uuid().references(() => account.id, { onDelete: "set null" }),
     createdAt: timestamp({ withTimezone: true }).notNull().default(now),
     archivedAt: timestamp({ withTimezone: true }),
@@ -369,6 +383,19 @@ export const event = pgTable(
      * contrôle ne peut vérifier.
      */
     recurrence: varchar({ length: 60 }),
+    /**
+     * Coordonnées, trouvées une fois à partir de l'adresse et gardées.
+     *
+     * Elles servent à poser un repère exact sur la carte que le parent ouvre, au lieu d'une
+     * recherche textuelle qui tombe à peu près. Elles ne disent rien de personne : c'est la
+     * position d'un parc, pas celle d'une famille.
+     *
+     * `geocodedAt` marque la tentative, réussie ou non : sans elle, une adresse introuvable
+     * serait redemandée à chaque passage, et le service de géocodage n'est pas à nous.
+     */
+    lat: doublePrecision(),
+    lon: doublePrecision(),
+    geocodedAt: timestamp({ withTimezone: true }),
     placeId: uuid().references(() => place.id, { onDelete: "set null" }),
     /** Lieu en clair quand il vient d'une source et n'a pas de correspondance au catalogue. */
     placeLabel: varchar({ length: 120 }),

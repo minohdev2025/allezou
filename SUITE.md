@@ -95,6 +95,23 @@ contrôles. Sans cela, les trente-neuf y seraient restées pour toujours, sans q
 contrôle ne leur reproche plus rien. Une décision humaine, elle, ne se défait pas : ce qui a
 été écarté ne revient pas.
 
+## La carte, et pourquoi elle n'existe pas encore
+
+Une URL de carte, chez Google comme ailleurs, porte une recherche ou un itinéraire. Aucune
+n'accepte un jeu de repères : montrer les parcs et les activités ensemble suppose une carte
+**dans** Allezou, et une carte suppose un fond, qui vient forcément d'un tiers. Notre
+politique de sécurité du contenu l'interdit, et DONNEES.md promet « aucun traceur tiers ».
+Relayer les tuiles par notre serveur éviterait la promesse mais heurte la politique d'usage
+d'OpenStreetMap et la bande passante d'un VPS de 2 Go.
+
+Ce qui a été fait en attendant sert le même besoin à un coût nul : chaque adresse est
+géocodée une fois, côté serveur, et les liens tombent sur un repère exact au lieu d'une
+recherche approximative. Le parent ouvre l'application de cartes qu'il utilise déjà, avec son
+trafic et ses horaires de bus, que notre carte n'aurait pas.
+
+Les coordonnées ainsi rassemblées sont exactement ce qu'une carte demanderait. Le jour où des
+parents diront qu'elle leur manque, la première marche sera faite.
+
 ## Ce qui reste ouvert
 
 ### Les seuils des contrôles sont des paris
