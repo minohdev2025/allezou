@@ -25,9 +25,9 @@ const MESSAGES: Record<string, string> = {
  */
 const ETAPES = [
   {
-    titre: "Vous entrez votre adresse mail",
+    titre: "Vous entrez votre adresse électronique",
     texte:
-      "Après avoir entré votre adresse mail ci-dessous, vous recevez un lien de connexion. Il ne sert qu'une fois et est valable 15 minutes.",
+      "Après avoir entré votre adresse électronique ci-dessous, vous recevez un lien de connexion. Il ne sert qu'une fois et est valable 15 minutes.",
   },
   {
     titre: "Vous choisissez un nom et vous ajoutez ceux de vos enfants",
