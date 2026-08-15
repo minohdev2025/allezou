@@ -349,12 +349,74 @@ export function eventsFromPayload(
   return events;
 }
 
+/**
+ * Les liens de fiche d'une page de liste, rangés par le libellé qu'ils portent.
+ *
+ * `htmlToText` retire toutes les balises avant d'envoyer la page au modèle : les `href`
+ * n'arrivent jamais jusqu'à lui, et il ne peut donc pas rendre un lien qu'il n'a pas vu.
+ * On les récupère donc ici, dans le HTML brut, et on les rapproche des titres après coup.
+ * C'est déterministe : aucun lien ne sort d'une invention.
+ *
+ * `motif` écarte la navigation du site, qui porte elle aussi des libellés longs. Sans lui,
+ * « Bibliobus » tombait sur la page du bibliobus scolaire au lieu de la fiche d'agenda.
+ */
+export function ancresDeFiches(html: string, base: string, motif: string): Map<string, string> {
+  const liens = new Map<string, string>();
+
+  for (const [, href, contenu] of html.matchAll(/<a[^>]+href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi)) {
+    if (!href.includes(motif)) continue;
+
+    const libelle = normaliser(htmlToText(contenu, 200));
+    if (!libelle) continue;
+
+    try {
+      const url = new URL(href, base).toString();
+      if (!liens.has(libelle)) liens.set(libelle, url);
+    } catch {
+      // Un href relatif illisible ne vaut pas la peine d'arrêter la lecture.
+    }
+  }
+
+  return liens;
+}
+
+/**
+ * Le lien de la fiche qui porte ce titre.
+ *
+ * Deux formes acceptées, et pas une de plus : le libellé du lien est le titre, ou il
+ * commence par lui. Lancy écrit le titre seul, Vernier le fait suivre de la date et du
+ * début de la description. Chercher le titre n'importe où dans le libellé ouvrirait la
+ * porte à un mauvais lien, et un parent envoyé sur la mauvaise activité est plus mal servi
+ * que celui qu'on renvoie à la page de la commune.
+ */
+export function lienDeLActivite(
+  liens: Map<string, string>,
+  titre: string,
+): string | undefined {
+  const cible = normaliser(titre);
+  if (cible.length < 3) return undefined;
+
+  const exact = liens.get(cible);
+  if (exact) return exact;
+
+  for (const [libelle, url] of liens) {
+    if (libelle.startsWith(cible)) return url;
+  }
+
+  return undefined;
+}
+
 type MiniMaxConfig = {
   /**
    * Nombre de pages de liste à lire. Les pages sont réunies en un seul appel au modèle :
    * une page de plus coûte quelques milliers de caractères de contexte, pas un appel.
    */
   maxPages?: number;
+  /**
+   * Fragment que doit contenir un lien pour désigner une fiche d'activité. Absent, on ne
+   * cherche pas de lien et chaque activité renvoie à la page de liste, comme avant.
+   */
+  itemPattern?: string;
 };
 
 /**
@@ -399,8 +461,13 @@ export function sansPartieCommune(reference: string, texte: string): string {
  * l'essentiel de l'agenda — et, à Onex, à ne voir qu'une page de cours de fitness pour
  * adultes que le modèle écarte à raison, d'où une source « ok » qui ne rapportait rien.
  */
-async function lirePages(url: string, maxPages: number): Promise<string> {
+async function lirePages(
+  url: string,
+  maxPages: number,
+  motif: string | undefined,
+): Promise<{ texte: string; liens: Map<string, string> }> {
   const pages: string[] = [];
+  const liens = new Map<string, string>();
 
   for (let page = 0; page < maxPages; page += 1) {
     const pageUrl = new URL(url);
@@ -424,18 +491,33 @@ async function lirePages(url: string, maxPages: number): Promise<string> {
       break;
     }
 
-    const texte = htmlToText(await lireTexte(reponse));
+    const html = await lireTexte(reponse);
+    if (motif) {
+      for (const [libelle, lien] of ancresDeFiches(html, pageUrl.toString(), motif)) {
+        if (!liens.has(libelle)) liens.set(libelle, lien);
+      }
+    }
+
+    const texte = htmlToText(html);
     const utile = page === 0 ? texte : sansPartieCommune(pages[0], texte);
     if (!utile) break;
     pages.push(utile);
   }
 
-  return pages.join("\n\n---\n\n").slice(0, 30_000);
+  return { texte: pages.join("\n\n---\n\n").slice(0, 30_000), liens };
 }
 
 export const minimaxAdapter: Adapter = async (source) => {
   const config = (source.config ?? {}) as MiniMaxConfig;
   const maxPages = Math.min(Math.max(config.maxPages ?? 3, 1), 15);
 
-  return extractEventsWithMiniMax(await lirePages(source.url, maxPages), source.url);
+  const { texte, liens } = await lirePages(source.url, maxPages, config.itemPattern);
+  const events = await extractEventsWithMiniMax(texte, source.url);
+
+  // Le lien de la fiche remplace celui de la liste quand on l'a retrouvé. Sinon rien ne
+  // change : mieux vaut la page de la commune qu'une adresse devinée.
+  return events.map((event) => {
+    const lien = lienDeLActivite(liens, event.title);
+    return lien ? { ...event, url: clamp(lien, 500) } : event;
+  });
 };

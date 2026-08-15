@@ -12,8 +12,10 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { db } from "@/lib/db";
 import { eventsFromHtml } from "@/lib/ingest/jsonld";
 import {
+  ancresDeFiches,
   eventsFromPayload,
   htmlToText,
+  lienDeLActivite,
   parseModelJson,
   sansPartieCommune,
 } from "@/lib/ingest/minimax";
@@ -189,6 +191,61 @@ describe("Lecture du JSON-LD (format réel de geneve.ch)", () => {
     const [event] = eventsFromHtml(avecAge, "https://example.test");
     expect(event.minAge).toBe(3);
     expect(event.maxAge).toBe(8);
+  });
+});
+
+describe("Retrouver le lien d'une fiche dans la page de liste", () => {
+  /** Forme réelle d'un agenda communal : des fiches, et la navigation du site autour. */
+  const liste = `
+    <a href="/agenda/43359726_biblio-bingo-6307839"><h3>Biblio-Bingo</h3></a>
+    <a href="/agenda/93226869_la-maison-illustree">La Maison illustrée, par Cécile Koepfli</a>
+    <a href="/evenements/9737586_lhumain-au-coeur-de-la-nuit">
+      <span>L'humain au cœur de la nuit</span> 15 juillet - 15 août Que cache la nuit ?
+    </a>
+    <a href="/mon-quotidien/vie-scolaire/bibliobus-550">Bibliobus</a>
+    <a href="/prestations/piscine-de-marignac">Piscine de Marignac</a>
+  `;
+
+  const agenda = ancresDeFiches(liste, "https://www.lancy.ch/agenda", "/agenda/");
+  const evenements = ancresDeFiches(liste, "https://www.vernier.ch/evenements", "/evenements/");
+
+  it("ne garde que les liens qui portent le motif", () => {
+    expect([...agenda.keys()]).toEqual(["biblio bingo", "la maison illustree par cecile koepfli"]);
+  });
+
+  it("rend une adresse complète, pas le chemin relatif", () => {
+    expect(agenda.get("biblio bingo")).toBe(
+      "https://www.lancy.ch/agenda/43359726_biblio-bingo-6307839",
+    );
+  });
+
+  it("retrouve un titre que la commune écrit tel quel", () => {
+    expect(lienDeLActivite(agenda, "Biblio-Bingo")).toBe(
+      "https://www.lancy.ch/agenda/43359726_biblio-bingo-6307839",
+    );
+  });
+
+  it("retrouve un titre que la date suit", () => {
+    expect(lienDeLActivite(evenements, "L'humain au cœur de la nuit")).toBe(
+      "https://www.vernier.ch/evenements/9737586_lhumain-au-coeur-de-la-nuit",
+    );
+  });
+
+  it("ne s'arrête ni aux accents ni à la casse", () => {
+    expect(lienDeLActivite(agenda, "LA MAISON ILLUSTREE, PAR CECILE KOEPFLI")).toBe(
+      "https://www.lancy.ch/agenda/93226869_la-maison-illustree",
+    );
+  });
+
+  it("ne rend rien plutôt qu'un lien approchant", () => {
+    // Le mot est bien sur la page, mais dans la navigation du site : sans le motif, il
+    // renvoyait le bibliobus scolaire au lieu d'une activité.
+    expect(lienDeLActivite(agenda, "Bibliobus")).toBeUndefined();
+    expect(lienDeLActivite(agenda, "Atelier chocolat")).toBeUndefined();
+  });
+
+  it("refuse un titre trop court pour désigner quoi que ce soit", () => {
+    expect(lienDeLActivite(agenda, "à")).toBeUndefined();
   });
 });
 
