@@ -253,6 +253,31 @@ export async function recipientsFor(publicationId: string): Promise<Recipient[]>
     where p.id = ${publicationId}
       -- l'auteur n'est pas notifié de sa propre sortie
       and m.account_id <> p.author_id
+
+      /*
+        Le titre d'une notification est un nom de cercle, donc une divulgation.
+
+        Partir des lecteurs ne suffit pas ici : quelqu'un peut voir une sortie par un cercle
+        et être membre d'un second cercle destinataire où le lien avec l'auteur est coupé.
+        La liste des destinataires était juste, le nom qui l'accompagnait ne l'était pas —
+        et il aurait appris à cette personne que l'auteur publie encore là où elle croit
+        n'avoir plus rien en commun avec lui.
+
+        Chaque ligne doit donc tenir seule : le cercle qui la porte est un chemin par lequel
+        ce destinataire a réellement le droit de voir cette sortie.
+      */
+      and not exists (
+        select 1 from circle_link_cut cut
+        where cut.circle_id = c.id
+          and cut.account_a = least(p.author_id, m.account_id)
+          and cut.account_b = greatest(p.author_id, m.account_id)
+      )
+      and exists (
+        select 1 from circle_membership auteur
+        where auteur.circle_id = c.id
+          and auteur.account_id = p.author_id
+          and auteur.left_at is null
+      )
       -- réglages du cercle, valeurs par défaut si rien n'a été réglé
       and coalesce(
             case when p.kind = 'presence' then np.on_presence else np.on_attendance end,
@@ -266,6 +291,10 @@ export async function recipientsFor(publicationId: string): Promise<Recipient[]>
           and nm.circle_id = c.id
           and nm.muted_account_id = p.author_id
       )
+    -- Quelqu'un peut être destinataire par plusieurs cercles, et une seule notification
+    -- part : sans ordre, le cercle qui la titre changerait d'un envoi à l'autre pour la
+    -- même sortie. Toutes les lignes sont légitimes, mais le hasard n'a rien à décider.
+    order by m.account_id, circle_name, c.id
   `);
 
   return rows.map((r) => ({

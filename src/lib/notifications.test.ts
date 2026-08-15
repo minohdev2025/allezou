@@ -95,6 +95,60 @@ describe("Destinataires", () => {
     expect(await recipientsFor(presence.id)).toEqual([]);
   });
 
+  /*
+    Une sortie adressée à deux cercles, un lien coupé dans un seul.
+
+    Bob voit bien la sortie : il la reçoit par le voisinage, où rien n'est coupé. Mais le
+    titre de la notification est un nom de cercle, et nommer la classe lui apprendrait
+    qu'Alice y a publié — alors que dans la classe, précisément, elle ne veut plus rien
+    partager avec lui. Une notification en dit toujours un peu, et ce peu doit venir du
+    chemin par lequel on a le droit de voir.
+  */
+  it("nomme le cercle par lequel on voit, jamais celui où le lien est coupé", async () => {
+    const alice = await createAccount("Alice");
+    const bob = await createAccount("Bob");
+    const classe = await createCircle(alice, "Classe 4P");
+    const voisinage = await createCircle(alice, "Voisinage");
+    await join(classe, bob);
+    await join(voisinage, bob);
+    const parc = await createPlace();
+
+    await cutLink(classe, alice, bob, bob);
+    const presence = await declarePresence({
+      author: alice,
+      place: parc,
+      circles: [classe, voisinage],
+    });
+
+    const destinataires = await recipientsFor(presence.id);
+
+    expect(destinataires.map((r) => r.circleName)).toEqual(["Voisinage"]);
+    expect(destinataires.map((r) => r.accountId)).toEqual([bob.id]);
+  });
+
+  it("ne nomme pas un cercle que l'auteur a quitté depuis", async () => {
+    const alice = await createAccount("Alice");
+    const bob = await createAccount("Bob");
+    const classe = await createCircle(alice, "Classe 4P");
+    const voisinage = await createCircle(alice, "Voisinage");
+    await join(classe, bob);
+    await join(voisinage, bob);
+    const parc = await createPlace();
+
+    const presence = await declarePresence({
+      author: alice,
+      place: parc,
+      circles: [classe, voisinage],
+    });
+    // Alice quitte la classe : la sortie n'y est plus visible, et son nom n'a donc plus à
+    // titrer quoi que ce soit. Bob continue de la voir par le voisinage.
+    await leave(classe, alice);
+
+    const destinataires = await recipientsFor(presence.id);
+
+    expect(destinataires.map((r) => r.circleName)).toEqual(["Voisinage"]);
+  });
+
   it("personne exclue ponctuellement de la publication", async () => {
     const alice = await createAccount("Alice");
     const bob = await createAccount("Bob");
