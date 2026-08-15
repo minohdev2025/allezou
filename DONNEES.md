@@ -29,7 +29,7 @@ que cette page existe.
 | Le nom sous lequel vous voyez un cercle, s'il diffère de celui d'origine | Pour que « Classe 4P » puisse se lire « Classe de Jules » chez vous | Tant que vous le gardez | Vous seul·e. Les autres membres voient le nom d'origine |
 | Quel enfant est concerné par quel cercle | Pour qu'une sortie sans l'aîné ne parte pas vers sa classe | Tant que vous le gardez | Vous seul·e. Les autres membres ne le voient pas |
 | Vos sorties : un lieu choisi dans une liste, une heure de fin, éventuellement un mot de 140 caractères | C'est ce que vous partagez | **Effacée 24 heures après son heure de fin** | Uniquement les cercles que vous avez choisis au moment de publier |
-| Vos inscriptions aux activités de l'agenda | Pour que d'autres sachent que leur enfant y retrouvera quelqu'un | Jusqu'à 90 jours après l'activité | Uniquement les cercles que vous avez choisis |
+| Vos inscriptions aux activités de l'agenda | Pour que d'autres sachent que leur enfant y retrouvera quelqu'un | **Effacée 24 heures après la fin de l'activité**, comme une sortie | Uniquement les cercles que vous avez choisis |
 | Vos réglages de notification | Pour ne vous déranger que quand vous l'avez demandé | Tant que votre compte existe | Vous seul·e |
 | Les mots que vous surveillez à l'agenda : « piscine », « judo » | Pour vous prévenir quand une activité publiée en contient un | Tant que vous les gardez | Vous seul·e. Ils ne sont montrés à personne et ne servent à rien d'autre |
 | L'adresse technique de votre téléphone pour les notifications | Pour vous envoyer les notifications | Tant que vous les acceptez | Personne : c'est un identifiant technique |
@@ -124,4 +124,4 @@ en silence.
 
 ---
 
-*Dernière mise à jour : 14 août 2026.*
+*Dernière mise à jour : 15 août 2026.*

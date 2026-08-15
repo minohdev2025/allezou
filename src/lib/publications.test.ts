@@ -35,6 +35,7 @@ import {
   createCircle,
   createEvent,
   createPlace,
+  declareAttendance as insererParticipation,
   declarePresence as insererPresence,
   join,
   minutesFromNow,
@@ -599,5 +600,44 @@ describe("Purge", () => {
     await insererPresence({ author: alice, place: parc, circles: [classe] });
 
     expect(await purgeExpired()).toBe(0);
+  });
+
+  /*
+    Une inscription à une activité suit exactement le sort d'une sortie : elle porte
+    l'heure de fin de l'activité, et disparaît vingt-quatre heures plus tard.
+
+    Ce test existe pour que DONNEES.md ne redivergne pas du code. La page a promis
+    « jusqu'à 90 jours après l'activité » pendant un temps — c'était la rétention des
+    activités de l'agenda, qui sont publiques, et non celle des inscriptions, qui disent
+    où une famille est allée. Une promesse plus longue que la réalité inquiète pour rien ;
+    une promesse plus courte trahit. Aucune des deux ne doit pouvoir s'installer sans
+    qu'un test tombe.
+  */
+  it("efface une inscription vingt-quatre heures après la fin de l'activité", async () => {
+    const alice = await createAccount("Alice");
+    const classe = await createCircle(alice);
+
+    const passee = await createEvent({
+      title: "Contes de la semaine dernière",
+      startsAt: minutesFromNow(-60 * 34),
+      endsAt: minutesFromNow(-60 * 32),
+    });
+    const hier = await createEvent({
+      title: "Atelier d'hier soir",
+      startsAt: minutesFromNow(-180),
+      endsAt: minutesFromNow(-60),
+    });
+
+    await insererParticipation({ author: alice, event: passee, circles: [classe] });
+    const recente = await insererParticipation({
+      author: alice,
+      event: hier,
+      circles: [classe],
+    });
+
+    expect(await purgeExpired()).toBe(1);
+
+    const restantes = await db.execute<{ id: string }>(sql`select id from publication`);
+    expect(restantes.map((r) => r.id)).toEqual([recente.id]);
   });
 });
