@@ -11,8 +11,10 @@ import { beforeEach, describe, expect, it } from "vitest";
 
 import { db } from "@/lib/db";
 import { eventsFromHtml } from "@/lib/ingest/jsonld";
+import { controler } from "@/lib/ingest/controles";
 import {
   ancresDeFiches,
+  blocsParActivite,
   eventsFromPayload,
   htmlToText,
   lienDeLActivite,
@@ -278,6 +280,144 @@ describe("Une activité que la page ne date pas à l'heure près", () => {
   it("n'en est pas une dès que l'heure lue n'est pas minuit", () => {
     const quatorzeHeures = new Date("2026-09-12T14:00:00+02:00");
     expect(sansHoraireAnnonce(quatorzeHeures, "peu importe ce que dit la page")).toBe(false);
+  });
+});
+
+describe("Découper une page de liste en un bloc par activité", () => {
+  /*
+    La page qui a motivé ce découpage : une liste où chaque activité a sa date et son heure,
+    et où les contrôles, confrontés à la page entière, trouvaient toujours leur bonheur.
+  */
+  const LISTE = [
+    "Agenda de la commune",
+    "Atelier chocolat Mercredi 16 septembre, 14h00. Dès 6 ans. Maison de quartier.",
+    "Marché aux puces Samedi 19 septembre, 8h00. Place du Marché.",
+    "Contes pour les petits Dimanche 20 septembre, 10h30. Bibliothèque.",
+  ].join(" ");
+
+  it("donne à chaque activité le morceau de page qui la concerne", () => {
+    const blocs = blocsParActivite(LISTE, [
+      "Atelier chocolat",
+      "Marché aux puces",
+      "Contes pour les petits",
+    ]);
+
+    expect(blocs[0]).toContain("16 septembre");
+    expect(blocs[0]).toContain("14h00");
+    // Le point de tout le chantier : la date de la voisine n'est plus dans le bloc.
+    expect(blocs[0]).not.toContain("19 septembre");
+    expect(blocs[1]).toContain("19 septembre");
+    expect(blocs[1]).not.toContain("16 septembre");
+    expect(blocs[2]).toContain("20 septembre");
+  });
+
+  it("laisse tomber le décor de la page, qui n'appartient à personne", () => {
+    const blocs = blocsParActivite(LISTE, ["Atelier chocolat"]);
+    expect(blocs[0]).not.toContain("agenda de la commune");
+  });
+
+  it("rend null quand le titre ne se retrouve pas, pour retomber sur la page entière", () => {
+    const blocs = blocsParActivite(LISTE, ["Titre que le modèle a reformulé"]);
+    expect(blocs[0]).toBeNull();
+  });
+
+  it("ne coupe pas au milieu d'un mot plus long", () => {
+    const page = "Supermarché ouvert. Marché aux puces Samedi 19 septembre.";
+    const blocs = blocsParActivite(page, ["Marché aux puces"]);
+    expect(blocs[0]).toContain("19 septembre");
+    expect(blocs[0]).not.toContain("supermarche");
+  });
+
+  it("attrape l'erreur qu'aucun contrôle ne voyait", () => {
+    // Le modèle attribue à l'atelier l'heure du marché. Toutes les valeurs existent sur la
+    // page, et c'est bien pour ça que la page entière ne prouvait rien.
+    const source = { url: "https://exemple.test/agenda", kind: "html_ai" as const };
+    const atelier = {
+      externalId: "a",
+      title: "Atelier chocolat",
+      startsAt: new Date("2026-09-16T08:00:00+02:00"),
+    };
+
+    expect(controler(atelier, { source, texteSource: LISTE }).map((e) => e.code)).toEqual([]);
+
+    const bloc = blocsParActivite(LISTE, [
+      "Atelier chocolat",
+      "Marché aux puces",
+      "Contes pour les petits",
+    ])[0]!;
+    expect(controler(atelier, { source, texteSource: bloc }).map((e) => e.code)).toEqual([
+      "heure_absente",
+    ]);
+  });
+
+  it("ne borne un bloc que par les titres qu'on lui donne", () => {
+    // La limite du procédé, écrite pour qu'on ne la redécouvre pas : les frontières viennent
+    // des titres rendus par le modèle. S'il n'en rend qu'un sur une page qui en porte vingt,
+    // son bloc court jusqu'au bas de la page et les contrôles retrouvent la portée qu'ils
+    // avaient avant — pas moins bien qu'hier, pas mieux non plus.
+    const seul = blocsParActivite(LISTE, ["Atelier chocolat"])[0]!;
+    expect(seul).toContain("19 septembre");
+
+    const tous = blocsParActivite(LISTE, [
+      "Atelier chocolat",
+      "Marché aux puces",
+      "Contes pour les petits",
+    ])[0]!;
+    expect(tous).not.toContain("19 septembre");
+  });
+});
+
+describe("La date de fin se confronte à la page", () => {
+  const source = { url: "https://exemple.test/agenda", kind: "html_ai" as const };
+  const page =
+    "Exposition La Maison illustrée, du 12 septembre au 21 novembre 2026. Entrée libre.";
+
+  it("passe quand la page annonce bien cette fin", () => {
+    const codes = controler(
+      {
+        externalId: "e",
+        title: "Exposition La Maison illustrée",
+        startsAt: new Date("2026-09-12T00:00:00+02:00"),
+        endsAt: new Date("2026-11-21T18:00:00+01:00"),
+        allDay: true,
+      },
+      { source, texteSource: page },
+    ).map((e) => e.code);
+
+    expect(codes).toEqual([]);
+  });
+
+  it("retient une fin que la page n'écrit nulle part", () => {
+    const codes = controler(
+      {
+        externalId: "e",
+        title: "Exposition La Maison illustrée",
+        startsAt: new Date("2026-09-12T00:00:00+02:00"),
+        // Trois semaines de plus que ce que la commune annonce : une famille se déplacerait
+        // devant une porte fermée.
+        endsAt: new Date("2026-12-12T18:00:00+01:00"),
+        allDay: true,
+      },
+      { source, texteSource: page },
+    ).map((e) => e.code);
+
+    expect(codes).toContain("date_fin_absente");
+  });
+
+  it("ne réclame rien pour une activité qui tient dans la journée", () => {
+    const codes = controler(
+      {
+        externalId: "m",
+        title: "Marché aux puces",
+        startsAt: new Date("2026-09-19T08:00:00+02:00"),
+        endsAt: new Date("2026-09-19T17:00:00+02:00"),
+      },
+      { source, texteSource: "Marché aux puces Samedi 19 septembre, 8h00." },
+    ).map((e) => e.code);
+
+    // La date de fin est celle du début, déjà vérifiée : l'exiger deux fois remplirait la
+    // file sans rien apprendre.
+    expect(codes).toEqual([]);
   });
 });
 

@@ -114,8 +114,13 @@ raison sur la forme et tort sur le fond.
 Une activité sans horaire annoncé est désormais une activité **de toute la journée**. Les
 flux structurés le déclarent eux-mêmes (`VALUE=DATE` en iCalendar, une date sans heure en
 JSON-LD) ; pour une page lue par le modèle, on le déduit de la conjonction « minuit rendu »
-et « aucune heure écrite sur la page ». Le contrôle garde son rôle là où il compte : une
-heure précise que la page n'écrit nulle part reste un motif de mise en file.
+et « aucune heure écrite dans le bloc de cette activité ». Le contrôle garde son rôle là où
+il compte : une heure précise que la page n'écrit nulle part reste un motif de mise en file.
+
+*(Cette phrase disait « aucune heure écrite sur la page », et le code n'en vérifiait que la
+première moitié : il regardait si minuit était écrit, pas si une heure l'était. Sur une liste,
+l'horaire de la voisine suffisait de toute façon à contredire la seconde. Depuis le découpage
+par activité, la conjonction se vérifie vraiment, et sur le bon morceau de page.)*
 
 Une activité restée en file rejoint par ailleurs le calendrier dès qu'une lecture repasse les
 contrôles. Sans cela, les trente-neuf y seraient restées pour toujours, sans qu'aucun
@@ -141,10 +146,31 @@ parents diront qu'elle leur manque, la première marche sera faite.
 
 ## Ce qui reste ouvert
 
+### Ce que le découpage par activité va changer, et qu'on ne saura qu'en regardant
+
+Chaque activité est désormais confrontée à son bloc de page et non à la page entière. Deux
+conséquences à surveiller au prochain passage, dans des directions opposées :
+
+- **La file va se remplir davantage**, et c'est attendu. Un bloc est vingt fois plus court
+  qu'une page : une date écrite une seule fois en tête de liste, un lieu annoncé dans le
+  chapeau, une tranche d'âge commune à toutes les activités ne se retrouvent plus dans le bloc
+  de chacune. Les deux seuils de couverture se resserrent donc mécaniquement, sans qu'on y ait
+  touché. S'il faut les bouger, c'est maintenant qu'on le saura, et c'est le seuil qu'il faut
+  bouger, pas le contrôle.
+- **Vernier devrait aller mieux.** Ses titres sur deux lignes, que le modèle recolle à sa
+  façon, échouaient à `titre_reformule` ; le découpage ne les répare pas, mais les trois
+  autres motifs qu'elle accumulait — date absente, heure absente — venaient du voisinage.
+  C'est la source à regarder en premier au prochain passage.
+
+Ce qui ne change pas : une activité dont le titre est introuvable dans la page garde la page
+entière pour bloc, et les contrôles se comportent comme avant. On ne perd rien, on gagne là où
+les titres sont fidèles.
+
 ### Les seuils des contrôles sont des paris
 
 `couverture ≥ 0.8` pour le lieu, `≥ 0.75` pour la description : deux nombres choisis sans
-données. Ce qui les corrigera, c'est la file elle-même. Si elle se remplit de descriptions
+données, et à réobserver depuis que les blocs les resserrent. Ce qui les corrigera, c'est la
+file elle-même. Si elle se remplit de descriptions
 jugées inventées alors qu'elles ne le sont pas, c'est le seuil qu'il faut bouger, pas le
 contrôle.
 

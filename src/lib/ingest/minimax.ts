@@ -263,13 +263,71 @@ export async function extractEventsWithMiniMax(
   const content = body.choices?.[0]?.message?.content;
   if (!content) throw new Error("MiniMax : réponse vide");
 
-  // La page lue repart avec chaque activité : c'est elle que les contrôles reliront pour
-  // vérifier que la date, le titre et le lieu annoncés y figurent vraiment.
-  return eventsFromPayload(parseModelJson(content), pageUrl).map((event) => ({
-    ...event,
-    texteSource: pageText,
-    allDay: sansHoraireAnnonce(event.startsAt, pageText),
-  }));
+  const events = eventsFromPayload(parseModelJson(content), pageUrl);
+
+  /*
+    Chaque activité repart avec son bloc, et non avec la page entière : c'est lui que les
+    contrôles reliront. Confronter une activité à toute la liste revenait à demander « cette
+    date existe-t-elle quelque part ? » quand la question est « est-ce la sienne ? ».
+
+    La déduction « toute la journée » suit le même chemin, ce que le README et SUITE.md
+    promettaient déjà sans que le code sache le faire : minuit rendu, et aucune heure écrite
+    dans le bloc de cette activité — et non plus « nulle part sur la page », que la moindre
+    activité horaire voisine suffisait à contredire.
+  */
+  const blocs = blocsParActivite(pageText, events.map((e) => e.title));
+
+  return events.map((event, rang) => {
+    const bloc = blocs[rang] ?? pageText;
+    return { ...event, texteSource: bloc, allDay: sansHoraireAnnonce(event.startsAt, bloc) };
+  });
+}
+
+/**
+ * Découpe la page en un bloc par activité, ancré sur les titres rendus par le modèle.
+ *
+ * C'est ce qui manquait aux contrôles. Ils vérifient qu'une valeur figure sur la page — mais
+ * la page est une liste de vingt activités, et la date de la voisine y figure aussi. Une
+ * lecture qui attribue à l'atelier de mercredi l'horaire du marché de samedi passait donc
+ * tous les contrôles : chaque valeur existait, aucune n'appartenait à la bonne activité.
+ * C'est l'erreur qu'un œil humain attrapait en lisant la fiche comme un tout, et c'est la
+ * seule que la confrontation à la page entière ne peut pas voir.
+ *
+ * Un bloc court du titre d'une activité au titre de la suivante. Le texte rendu est
+ * normalisé, ce qui ne gêne personne : les contrôles normalisent de toute façon, et
+ * `normaliser` appliqué deux fois donne le même résultat.
+ *
+ * Un titre introuvable rend `null`, et l'appelant retombe sur la page entière : le contrôle
+ * `titre_reformule` s'en chargera de toute façon, et retenir en file pour deux motifs plutôt
+ * qu'un n'apprend rien de plus au relecteur.
+ *
+ * La portée du procédé tient à ce qu'on lui donne : les frontières sont les titres rendus
+ * par le modèle. S'il n'en rend qu'un sur une page qui en porte vingt, son bloc court
+ * jusqu'en bas et les contrôles retrouvent exactement la portée qu'ils avaient avant. C'est
+ * une limite, pas une régression, et il vaut mieux la connaître que la deviner : découper
+ * plus finement demanderait de reconnaître la structure de chaque site, ce que ce chemin-là
+ * évite précisément de faire.
+ */
+export function blocsParActivite(texte: string, titres: string[]): (string | null)[] {
+  const page = normaliser(texte);
+  const rembourree = ` ${page} `;
+
+  const debuts = titres.map((titre) => {
+    const aiguille = normaliser(titre);
+    // Un titre de deux lettres tomberait n'importe où : mieux vaut la page entière.
+    if (aiguille.length < 3) return -1;
+    // Même exigence de début de mot que `contient` : sans elle, « Marché » se trouverait
+    // dans « Supermarché » et couperait la page au mauvais endroit.
+    return rembourree.indexOf(` ${aiguille}`);
+  });
+
+  const frontieres = [...new Set(debuts.filter((d) => d >= 0))].sort((a, b) => a - b);
+
+  return debuts.map((debut) => {
+    if (debut < 0) return null;
+    const suivante = frontieres.find((f) => f > debut) ?? page.length;
+    return page.slice(debut, suivante).trim();
+  });
 }
 
 /**

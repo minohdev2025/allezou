@@ -144,11 +144,20 @@ toujours figurer en clair sur la page, et les contrôles le vérifient.
 
 ### Ce qui remplace la relecture
 
-Avant d'entrer au calendrier, chaque activité est confrontée à la page dont elle sort
-(`src/lib/ingest/controles.ts`) : la date et l'heure sont-elles écrites en clair sur cette
-page, le titre est-il recopié ou reformulé, le lieu et la tranche d'âge s'y trouvent-ils, la
+Avant d'entrer au calendrier, chaque activité est confrontée au morceau de page dont elle sort
+(`src/lib/ingest/controles.ts`) : la date, la date de fin et l'heure sont-elles écrites en
+clair, le titre est-il recopié ou reformulé, le lieu et la tranche d'âge s'y trouvent-ils, la
 fiche est-elle bien sur le domaine de la source, une autre source annonce-t-elle déjà la même
 chose à la même heure.
+
+**Le morceau de page, et non la page entière.** Une page d'agenda communal est une liste : la
+date de l'activité voisine y figure aussi, et une lecture qui attribue à l'atelier de mercredi
+l'horaire du marché de samedi passait tous les contrôles, chaque valeur existant quelque part.
+La page est donc découpée en un bloc par activité, ancré sur les titres rendus par le modèle
+(`blocsParActivite`), et chaque activité n'est confrontée qu'au sien. Les frontières viennent
+de ces titres : si le modèle n'en rend qu'un sur une page qui en porte vingt, son bloc court
+jusqu'en bas et les contrôles retrouvent leur portée d'avant. C'est une limite connue, pas une
+régression.
 
 Ce qui passe tous les contrôles est publié sans que personne n'intervienne. Ce qui en échoue
 un seul attend sur `/relecture`, qui affiche le motif. La file existe toujours ; elle est

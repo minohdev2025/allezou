@@ -19,6 +19,7 @@ import type { RawEvent, Source } from "./types";
 
 export type CodeControle =
   | "date_absente"
+  | "date_fin_absente"
   | "heure_absente"
   | "titre_reformule"
   | "titre_generique"
@@ -275,6 +276,37 @@ export function controler(event: RawEvent, contexte: ContexteControle): Echec[] 
       code: "date_absente",
       detail: `Aucune trace du ${dates[0]} sur la page d'origine.`,
     });
+  }
+
+  /*
+    La date de fin se confronte comme celle de début, et ne l'était pas.
+
+    « Du 12 septembre au 21 novembre » : le premier jour était vérifié, le dernier venait du
+    modèle sans que rien ne le relise. Une exposition qu'on croit ouverte trois semaines de
+    plus qu'elle ne l'est envoie une famille devant une porte fermée, et c'est le genre
+    d'erreur qu'aucun contrôle n'aurait signalée.
+
+    On ne regarde que les fins d'un autre jour : quand l'activité tient dans la journée, la
+    date de fin est celle du début, déjà vérifiée, et l'exiger une seconde fois ne ferait que
+    remplir la file.
+  */
+  if (event.endsAt) {
+    const finGenevoise = partiesGenevoises(event.endsAt);
+    const debutGenevois = partiesGenevoises(event.startsAt);
+    const autreJour =
+      finGenevoise.jour !== debutGenevois.jour ||
+      finGenevoise.mois !== debutGenevois.mois ||
+      finGenevoise.annee !== debutGenevois.annee;
+
+    if (autreJour) {
+      const fins = ecrituresDeLaDate(event.endsAt);
+      if (!fins.some((forme) => contient(page, forme))) {
+        echecs.push({
+          code: "date_fin_absente",
+          detail: `La page n'annonce nulle part une fin le ${fins[0]}.`,
+        });
+      }
+    }
   }
 
   // Une activité sans horaire annoncé n'a pas d'heure à confronter : elle tient la journée,
