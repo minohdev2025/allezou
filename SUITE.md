@@ -7,6 +7,9 @@
 > Complété le 15 août 2026, après un audit en deux temps — le regard de quelqu'un qui arrive
 > sans rien savoir, puis celui de quelqu'un qui ouvre le dépôt — et les quatorze commits qui
 > en sont sortis.
+>
+> Repris le 16 août 2026 : la carte, dont une section expliquait l'absence, est arrivée.
+> La même section dit maintenant ce qui l'a débloquée.
 
 ## Ce qui a été fait
 
@@ -158,22 +161,37 @@ contrôles. Sans cela, les trente-neuf y seraient restées pour toujours, sans q
 contrôle ne leur reproche plus rien. Une décision humaine, elle, ne se défait pas : ce qui a
 été écarté ne revient pas.
 
-## La carte, et pourquoi elle n'existe pas encore
+## La carte, et pourquoi elle existe maintenant
 
-Une URL de carte, chez Google comme ailleurs, porte une recherche ou un itinéraire. Aucune
-n'accepte un jeu de repères : montrer les parcs et les activités ensemble suppose une carte
-**dans** Allezou, et une carte suppose un fond, qui vient forcément d'un tiers. Notre
-politique de sécurité du contenu l'interdit, et DONNEES.md promet « aucun traceur tiers ».
-Relayer les tuiles par notre serveur éviterait la promesse mais heurte la politique d'usage
-d'OpenStreetMap et la bande passante d'un VPS de 2 Go.
+Cette section expliquait pourquoi elle n'existait pas : montrer les parcs et les activités
+ensemble suppose une carte **dans** Allezou, une carte suppose un fond, un fond vient d'un
+tiers — ce que la politique de sécurité du contenu interdisait et que la promesse « aucun
+traceur tiers » de DONNEES.md semblait sceller, relayer les tuiles nous-mêmes heurtant la
+politique d'usage d'OpenStreetMap et la bande passante d'un VPS de 2 Go. Le raisonnement
+tenait ; il supposait seulement qu'un fond se charge d'office, avec la page. C'est cette
+hypothèse que le voile a fait tomber, le 16 août : **rien ne part vers Google tant que
+personne n'a touché « Voir sur la carte »** — une carte qui se tait n'est pas un traceur.
 
-Ce qui a été fait en attendant sert le même besoin à un coût nul : chaque adresse est
-géocodée une fois, côté serveur, et les liens tombent sur un repère exact au lieu d'une
-recherche approximative. Le parent ouvre l'application de cartes qu'il utilise déjà, avec son
-trafic et ses horaires de bus, que notre carte n'aurait pas.
+L'agenda pose donc sur une carte les activités que les filtres retiennent, « Nous sortons »
+les lieux du catalogue, et un lieu qu'on ajoute se géolocalise du doigt, en posant son point
+([carte-client.tsx](src/app/carte-client.tsx)). Le fond vient de Google Maps plutôt que
+d'OpenStreetMap, par l'argument qui justifiait hier de s'en remettre aux liens : c'est la
+carte que les parents savent déjà lire — et les liens de lieu y tombent désormais aussi, sur
+un repère exact, au moment du toucher. La CSP autorise les hôtes que Google documente, mais
+c'est le voile qui décide : aucune de ces origines ne reçoit de requête avant le geste
+([proxy.ts](src/proxy.ts)). DONNEES.md le dit aux familles dans sa section « La carte » :
+Google voit la zone demandée, jamais qui regarde.
 
-Les coordonnées ainsi rassemblées sont exactement ce qu'une carte demanderait. Le jour où des
-parents diront qu'elle leur manque, la première marche sera faite.
+La clé (`GOOGLE_MAPS_API_KEY`) se lit à l'exécution, jamais au build ; sans elle, la carte
+explique son absence et tout le reste fonctionne, liens compris. Le quota se plafonne côté
+console pour que le zéro franc soit une garantie et non un espoir — le raisonnement est dans
+docs/google-maps.md.
+
+Ce qui n'a pas bougé : le géocodage reste sur Nominatim, côté serveur, une fois par adresse,
+et la géolocalisation reste interdite à toute l'application par `Permissions-Policy` — la
+promesse de PRODUIT.md, opposable au code même. « Autour de moi », né avec la carte, était
+donc mort-né ; c'est lui qui a été retiré, pas la promesse. On se repère en pinçant la
+carte, comme sur un plan papier.
 
 ## Ce qui reste ouvert
 
