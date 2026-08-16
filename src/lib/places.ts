@@ -35,11 +35,22 @@ export const addressSchema = z
   .optional()
   .transform((v) => v || undefined);
 
+/**
+ * Le point posé sur la carte par la personne qui ajoute le lieu. Deux nombres bornés au
+ * monde réel — tout le reste, un texte, un NaN, un hémisphère inventé, est refusé avant
+ * la base.
+ */
+export const coordonneesSchema = z.object({
+  lat: z.number().min(-90).max(90),
+  lon: z.number().min(-180).max(180),
+});
+
 export type PlaceError =
   | "nom_invalide"
   | "commune_invalide"
   | "adresse_invalide"
   | "adresse_deja_connue"
+  | "position_invalide"
   | "lieu_inconnu"
   | "proposition_inconnue"
   | "proposition_close"
@@ -68,7 +79,12 @@ function normalize(name: string): string {
  */
 export async function createPlace(
   actorId: string,
-  input: { name: string; commune?: string; address?: string },
+  input: {
+    name: string;
+    commune?: string;
+    address?: string;
+    coord?: { lat: number; lon: number };
+  },
 ): Promise<Result<Place>> {
   const name = placeNameSchema.safeParse(input.name);
   if (!name.success) return ko("nom_invalide");
@@ -78,6 +94,9 @@ export async function createPlace(
 
   const address = addressSchema.safeParse(input.address);
   if (!address.success) return ko("adresse_invalide");
+
+  const coord = input.coord === undefined ? undefined : coordonneesSchema.safeParse(input.coord);
+  if (coord && !coord.success) return ko("position_invalide");
 
   const existing = await db
     .select()
@@ -93,6 +112,14 @@ export async function createPlace(
       name: name.data,
       commune: commune.data,
       address: address.data,
+      /*
+        Le doigt posé sur la carte vaut mieux que la devinette d'un géocodeur : la
+        position arrive déjà exacte, marquée géocodée pour que le passage Nominatim
+        (geo.ts) n'écrase jamais un point montré par quelqu'un qui y était.
+      */
+      lat: coord?.data.lat,
+      lon: coord?.data.lon,
+      geocodedAt: coord ? sql`now()` : undefined,
       createdBy: actorId,
     })
     .returning();

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { requireAccount } from "@/lib/session";
 import { ajouterLieu } from "../../actions";
 import { Alerte, Bouton, Carte, Champ, Titre } from "../../ui";
+import { ChoisirLaPosition } from "./position-client";
 
 export default async function NouveauLieu({
   searchParams,
@@ -25,7 +26,9 @@ export default async function NouveauLieu({
         <Alerte ton="erreur">
           {erreur === "adresse_invalide"
             ? "Cette adresse est trop longue : 160 caractères au plus."
-            : "Ce nom de lieu ne convient pas."}
+            : erreur === "position_invalide"
+              ? "Ce point ne ressemble pas à un endroit sur Terre. Reposez-le sur la carte."
+              : "Ce nom de lieu ne convient pas."}
         </Alerte>
       ) : null}
 
@@ -39,6 +42,10 @@ export default async function NouveauLieu({
             name="adresse"
             maxLength={160}
             placeholder="Chemin du Gué 12, derrière l'école"
+          />
+          <ChoisirLaPosition
+            cleApi={process.env.GOOGLE_MAPS_API_KEY ?? null}
+            mapId={process.env.GOOGLE_MAPS_MAP_ID ?? null}
           />
           <Bouton type="submit">Ajouter</Bouton>
         </form>

@@ -61,6 +61,33 @@ describe("Ajouter un lieu", () => {
     });
   });
 
+  it("garde la position posée sur la carte, et la marque géocodée", async () => {
+    const alice = await createAccount("Alice");
+
+    const result = await createPlace(alice.id, {
+      name: "Parc du Gué",
+      coord: { lat: 46.1858, lon: 6.1207 },
+    });
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.lat).toBeCloseTo(46.1858);
+    expect(result.value.lon).toBeCloseTo(6.1207);
+    // Géocodée d'origine : le passage Nominatim n'a plus rien à demander pour elle.
+    expect(result.value.geocodedAt).not.toBeNull();
+  });
+
+  it("refuse une position hors du monde", async () => {
+    const alice = await createAccount("Alice");
+
+    expect(
+      await createPlace(alice.id, { name: "Parc du Gué", coord: { lat: 91, lon: 6.12 } }),
+    ).toEqual({ ok: false, reason: "position_invalide" });
+    expect(
+      await createPlace(alice.id, { name: "Parc du Gué", coord: { lat: 46.18, lon: 181 } }),
+    ).toEqual({ ok: false, reason: "position_invalide" });
+  });
+
   it("se cherche par fragment de nom", async () => {
     const alice = await createAccount("Alice");
     await createPlace(alice.id, { name: "Parc du Gué" });

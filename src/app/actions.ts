@@ -767,10 +767,29 @@ export async function validerRenommage(formData: FormData) {
 
 export async function ajouterLieu(formData: FormData) {
   const account = await requireAccount();
+
+  /*
+    La position vient d'un toucher sur la carte, jamais d'un champ tapé : deux nombres,
+    ensemble ou pas du tout. Un seul des deux, ou un texte à leur place, c'est un
+    formulaire trafiqué — refusé plutôt que deviné.
+  */
+  const latBrut = String(formData.get("lat") ?? "").trim();
+  const lonBrut = String(formData.get("lon") ?? "").trim();
+  let coord: { lat: number; lon: number } | undefined;
+  if (latBrut || lonBrut) {
+    const lat = Number(latBrut);
+    const lon = Number(lonBrut);
+    if (!latBrut || !lonBrut || !Number.isFinite(lat) || !Number.isFinite(lon)) {
+      redirect("/sortir/lieu?erreur=position_invalide");
+    }
+    coord = { lat, lon };
+  }
+
   const result = await createPlace(account.id, {
     name: String(formData.get("nom") ?? ""),
     commune: String(formData.get("commune") ?? "") || undefined,
     address: String(formData.get("adresse") ?? "") || undefined,
+    coord,
   });
   if (!result.ok) redirect(`/sortir/lieu?erreur=${result.reason}`);
   redirect("/sortir");
