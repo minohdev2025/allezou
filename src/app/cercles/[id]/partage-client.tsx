@@ -42,8 +42,13 @@ export function PartageInvitation({ lien, message }: { lien: string; message: st
     }
   };
 
+  /*
+    Ces boutons vivent sur le panneau vert-doux de l'Alerte : le liseré `trait` y est
+    invisible et un bouton vert s'y noie. L'encre pour le principal, le fond de page
+    pour les secondaires — les deux tranchent sur le panneau, en clair comme en sombre.
+  */
   const pilule =
-    "rounded-[var(--radius-pilule)] px-4 py-2 text-sm font-bold shadow-[inset_0_0_0_2px_var(--color-trait)]";
+    "rounded-[var(--radius-pilule)] px-4 py-2 text-sm font-bold bg-[color:var(--color-fond)] shadow-[inset_0_0_0_2px_var(--color-vert)]";
 
   return (
     <div className="mt-3 flex flex-wrap gap-2">
@@ -52,7 +57,7 @@ export function PartageInvitation({ lien, message }: { lien: string; message: st
         <button
           type="button"
           onClick={partager}
-          className={`${pilule} text-[color:var(--color-fond)] shadow-none [background:var(--color-vert)]`}
+          className="rounded-[var(--radius-pilule)] px-4 py-2 text-sm font-bold text-[color:var(--color-fond)] [background:var(--color-encre)]"
         >
           Partager
         </button>
