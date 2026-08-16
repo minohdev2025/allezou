@@ -4,7 +4,7 @@ import type { MetadataRoute } from "next";
  * Manifeste de l'application installable.
  *
  * `start_url` ouvre directement « qui est dehors » plutôt que la page d'accueil : quelqu'un
- * qui touche l'icône veut voir l'écran principal, pas naviguer. Le raccourci « Nous sortons »
+ * qui touche l'icône veut voir l'écran principal, pas naviguer. Le raccourci « Annoncer une sortie »
  * mène en une touche à la déclaration — depuis l'écran d'accueil, le geste du samedi matin
  * devient un seul appui.
  */
@@ -27,7 +27,7 @@ export default function manifest(): MetadataRoute.Manifest {
     ],
     shortcuts: [
       {
-        name: "Nous sortons",
+        name: "Annoncer une sortie",
         short_name: "Sortir",
         description: "Déclarer une sortie en cours",
         url: "/sortir",
