@@ -18,7 +18,9 @@ import {
   type Acces,
   type Tarif,
 } from "@/lib/ingest/tarif";
+import { type PointCarte } from "@/lib/carte";
 import { requireAccount } from "@/lib/session";
+import { CarteDesLieux } from "../carte-client";
 import {
   Jeton,
   LienBouton,
@@ -275,6 +277,38 @@ export default async function Agenda({
       <div className="mb-6">
         <LienBouton href="/agenda/nouveau">📅 Proposer une activité</LienBouton>
       </div>
+
+      {/*
+        La même liste, posée sur la carte — celle des activités que les filtres retiennent,
+        pas une autre. « Quelque part près de chez moi mercredi » est une question de carte,
+        pas de liste, et c'est la carte des filtres actifs qui y répond.
+      */}
+      {entrees.length > 0 ? (
+        <CarteDesLieux
+          points={entrees.flatMap((entree): PointCarte[] =>
+            entree.lat != null && entree.lon != null
+              ? [
+                  {
+                    id: entree.id,
+                    nom: entree.title,
+                    sousTitre: [
+                      entree.enCours ? "en ce moment" : libelleJour(entree.startsAt),
+                      entree.place ?? entree.commune,
+                    ]
+                      .filter(Boolean)
+                      .join(" · "),
+                    lat: entree.lat,
+                    lon: entree.lon,
+                    href: `/agenda/${entree.id}`,
+                  },
+                ]
+              : [],
+          )}
+          sansPosition={entrees.filter((e) => e.lat == null || e.lon == null).length}
+          cleApi={process.env.GOOGLE_MAPS_API_KEY ?? null}
+          mapId={process.env.GOOGLE_MAPS_MAP_ID ?? null}
+        />
+      ) : null}
 
       {entrees.length === 0 ? (
         <Vide emoji="🗓️" titre="Rien ne correspond">

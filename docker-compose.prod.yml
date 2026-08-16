@@ -62,6 +62,12 @@ services:
       # Clé de lecture des agendas communaux sans flux structuré.
       MINIMAX_API_KEY: ${MINIMAX_API_KEY:-}
 
+      # La carte intégrée (agenda, sorties). Facultative : sans clé, les cartes expliquent
+      # leur absence et les liens Google Maps suffisent. Lue à l'exécution — remplir le
+      # `.env` du serveur puis `up -d`, sans reconstruire l'image (docs/google-maps.md).
+      GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY:-}
+      GOOGLE_MAPS_MAP_ID: ${GOOGLE_MAPS_MAP_ID:-}
+
       # Effacements quotidiens et rafraîchissement de l'agenda, dans le serveur.
       SCHEDULER: ${SCHEDULER:-1}
     ports:

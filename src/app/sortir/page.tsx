@@ -1,11 +1,13 @@
 import Link from "next/link";
 
+import { type PointCarte } from "@/lib/carte";
 import { circlesByChild, myChildren } from "@/lib/children";
 import { searchPlaces } from "@/lib/places";
 import { defaultAudience, dureesProposees, lastOuting } from "@/lib/publications";
 import { requireAccount } from "@/lib/session";
 import { readerCircles } from "@/lib/visibility";
 import { declarerSortie, refaireDerniereSortie } from "../actions";
+import { CarteDesLieux } from "../carte-client";
 import { LiaisonEnfantsCercles } from "./liaison-client";
 import {
   Alerte,
@@ -122,6 +124,7 @@ export default async function Sortir({
           )}
         </Vide>
       ) : (
+        <>
         <form action={declarerSortie} data-sortie>
           <LiaisonEnfantsCercles parEnfant={cerclesParEnfant} />
           {/*
@@ -293,6 +296,34 @@ export default async function Sortir({
             ))}
           </ul>
         </form>
+
+        {/*
+          La carte est sous la liste, jamais au-dessus : le premier lieu doit rester au
+          premier écran. Elle sert l'autre moitié de la question — « lequel est près de
+          moi ? » — avec la position qui reste dans le navigateur. Déclarer la sortie,
+          en revanche, reste un geste de la liste : on ne publie pas d'un toucher de
+          marqueur posé à côté d'un autre.
+        */}
+        <CarteDesLieux
+          points={lieux.flatMap((lieu): PointCarte[] =>
+            lieu.lat != null && lieu.lon != null
+              ? [
+                  {
+                    id: lieu.id,
+                    nom: lieu.name,
+                    sousTitre: [lieu.address, lieu.commune].filter(Boolean).join(", "),
+                    lat: lieu.lat,
+                    lon: lieu.lon,
+                  },
+                ]
+              : [],
+          )}
+          sansPosition={lieux.filter((l) => l.lat == null || l.lon == null).length}
+          autourDeMoi
+          cleApi={process.env.GOOGLE_MAPS_API_KEY ?? null}
+          mapId={process.env.GOOGLE_MAPS_MAP_ID ?? null}
+        />
+        </>
       )}
 
       <div className="mt-7 space-y-3 text-center">

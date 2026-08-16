@@ -104,6 +104,7 @@ renseigner :
 | `VAPID_*` | `npx web-push generate-vapid-keys` |
 | `ADMIN_EMAILS` | Les adresses qui accèdent à `/relecture` |
 | `MINIMAX_API_KEY` | Lecture des agendas communaux sans flux structuré |
+| `GOOGLE_MAPS_API_KEY` | Facultative — la carte intégrée de l'agenda et des sorties ([docs/google-maps.md](docs/google-maps.md) : création, restriction au domaine, plafond qui garantit le 0 franc). Lue à l'exécution : la remplir puis `docker compose -f docker-compose.prod.yml up -d`, sans redéployer |
 
 Le démarrage échoue si l'un des obligatoires manque : mieux vaut un service qui refuse de
 démarrer qu'un service qui tourne avec un secret par défaut.

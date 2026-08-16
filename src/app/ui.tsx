@@ -404,9 +404,13 @@ export function Navigation({
 /**
  * Un lien vers une carte, pour la famille qui ne connaît pas le quartier.
  *
- * OpenStreetMap plutôt qu'un service qui profile ses visiteurs, et un lien qu'on suit
- * seulement si on en a besoin : rien ne part tant que personne ne clique. Notre en-tête
- * `Referrer-Policy` étant `same-origin`, l'autre bout n'apprend même pas d'où l'on vient.
+ * Google Maps et non plus OpenStreetMap : c'est l'application que la plupart des parents
+ * ont déjà, avec leurs trajets, le trafic et les horaires de bus — un lien OSM les
+ * laissait devant un site inconnu au moment précis où ils cherchent leur chemin. Ce que
+ * l'on cède en échange est borné : rien ne part tant que personne ne clique, notre
+ * en-tête `Referrer-Policy` étant `same-origin` l'autre bout n'apprend pas d'où l'on
+ * vient, et Google ne voit que la destination d'un clic volontaire — jamais qui lit
+ * quelle liste. Le géocodage, lui, reste sur Nominatim, côté serveur (`geo.ts`).
  */
 export function lienCarte(
   nom: string,
@@ -418,12 +422,11 @@ export function lienCarte(
   // textuelle vaut mieux que rien : « Maison de quartier » existe dans dix communes, mais
   // avec la commune à côté, la carte s'en approche.
   if (coord?.lat != null && coord.lon != null) {
-    const { lat, lon } = coord;
-    return `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=17/${lat}/${lon}`;
+    return `https://www.google.com/maps/search/?api=1&query=${coord.lat}%2C${coord.lon}`;
   }
 
   const requete = [nom, adresse, commune].filter(Boolean).join(", ");
-  return `https://www.openstreetmap.org/search?query=${encodeURIComponent(requete)}`;
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(requete)}`;
 }
 
 /* --------------------------------------------------------------------- dates */
