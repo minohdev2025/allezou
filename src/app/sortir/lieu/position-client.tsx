@@ -44,17 +44,14 @@ export function ChoisirLaPosition({
       <input type="hidden" name="lat" value={point?.lat ?? ""} />
       <input type="hidden" name="lon" value={point?.lon ?? ""} />
 
+      {/* Un nom qui dit le geste, sans mode d'emploi : le bouton se suffit. */}
       {!visible ? (
         <button
           type="button"
           onClick={() => setVisible(true)}
           className="w-full rounded-[var(--radius-pilule)] bg-[color:var(--color-fond)] px-5 py-3 text-left font-bold shadow-[inset_0_0_0_2px_var(--color-trait)]"
         >
-          🗺️ Poser le point sur la carte
-          <span className="block text-sm font-normal text-[color:var(--color-doux)]">
-            Facultatif, mais imbattable : l&apos;endroit exact, montré du doigt. La carte
-            vient de Google Maps et n&apos;est chargée que si vous la demandez.
-          </span>
+          🗺️ Géolocaliser sur la carte
         </button>
       ) : !cleApi ? (
         <div className="rounded-[var(--radius-carte)] bg-[color:var(--color-fond)] p-4 text-sm leading-snug text-[color:var(--color-doux)] shadow-[inset_0_0_0_2px_var(--color-trait)]">
