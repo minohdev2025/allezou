@@ -69,15 +69,13 @@ export function CarteDesLieux({
   if (!visible) {
     return (
       <div className="mb-6">
+        {/* Le libellé seul : le pourquoi du voile est écrit sur /donnees, pas ici. */}
         <button
           type="button"
           onClick={() => setVisible(true)}
           className="w-full rounded-[var(--radius-pilule)] bg-[color:var(--color-surface)] px-5 py-3 text-left font-bold shadow-[inset_0_0_0_2px_var(--color-trait)]"
         >
           🗺️ Voir sur la carte
-          <span className="block text-sm font-normal text-[color:var(--color-doux)]">
-            La carte vient de Google Maps ; rien n&apos;est chargé avant que vous la demandiez.
-          </span>
         </button>
       </div>
     );
@@ -200,9 +198,7 @@ function CarteOuverte({
 function NoteSansPosition({ n, seuls = false }: { n: number; seuls?: boolean }) {
   return (
     <p className="mt-2 text-sm leading-snug text-[color:var(--color-doux)]">
-      {seuls
-        ? `${n} lieu${n > 1 ? "x" : ""} sans position connue : la carte viendra quand le géocodage les aura trouvés.`
-        : `${n} lieu${n > 1 ? "x" : ""} de cette liste n'${n > 1 ? "ont" : "a"} pas encore de position connue et manque${n > 1 ? "nt" : ""} à la carte.`}
+      {`${n} lieu${n > 1 ? "x" : ""} sans position connue${seuls ? " — la carte viendra avec le géocodage." : "."}`}
     </p>
   );
 }

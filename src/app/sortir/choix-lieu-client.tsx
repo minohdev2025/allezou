@@ -174,7 +174,7 @@ export function ChoixDuLieu({
                 ) : null}
               </>
             ) : (
-              <strong>Choisissez un lieu — dans la liste ou sur la carte</strong>
+              <strong>Choisissez un lieu</strong>
             )}
           </span>
           <span className="shrink-0 text-sm font-bold text-[color:var(--color-vert)]">
@@ -317,13 +317,13 @@ export function ChoixDuLieu({
 
           {vueMasques && listeMasques.length === 0 ? (
             <p className="text-sm leading-snug text-[color:var(--color-doux)]">
-              Plus aucun lieu masqué — tout est revenu dans la liste.
+              Plus aucun lieu masqué.
             </p>
           ) : null}
 
           {!vueMasques && ordonnes.length === 0 && requete !== "" ? (
             <p className="text-sm leading-snug text-[color:var(--color-doux)]">
-              Aucun lieu de ce nom — le lien ci-dessous permet de l&apos;ajouter.
+              Aucun lieu de ce nom.
             </p>
           ) : null}
 
@@ -339,7 +339,7 @@ export function ChoixDuLieu({
               href="/lieux"
               className="text-sm text-[color:var(--color-doux)] underline underline-offset-4"
             >
-              Corriger un lieu (nom, adresse, catégorie)
+              Corriger un lieu
             </Link>
           </p>
 
@@ -362,12 +362,11 @@ export function ChoixDuLieu({
         <p className="mt-2 text-center text-sm leading-snug text-[color:var(--color-doux)]">
           {lieuChoisi ? (
             <>
-              La sortie part vers les cercles cochés plus haut. Leurs membres seront
-              prévenus <strong>dans une minute</strong> — le temps d&apos;annuler depuis
-              « Qui est dehors ? » en cas d&apos;erreur.
+              Part vers les cercles cochés ; membres prévenus{" "}
+              <strong>dans une minute</strong> — le temps d&apos;annuler.
             </>
           ) : (
-            "Choisissez d'abord un lieu ; la sortie partira vers les cercles cochés plus haut."
+            "Choisissez d'abord un lieu."
           )}
         </p>
       </div>

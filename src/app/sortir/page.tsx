@@ -67,7 +67,7 @@ export default async function Sortir({
 
   return (
     <main className="apparait">
-      <Titre emoji="🌳" sous="Choisissez le lieu, confirmez — rien ne part avant.">
+      <Titre emoji="🌳" sous="Choisissez le lieu, puis confirmez.">
         Nous sortons
       </Titre>
 

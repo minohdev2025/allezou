@@ -90,8 +90,7 @@ export function ChoisirLaPosition({
             {point ? (
               <>
                 <span>
-                  Point posé : {point.lat.toFixed(5)}, {point.lon.toFixed(5)} — il part
-                  avec le formulaire.
+                  Point posé : {point.lat.toFixed(5)}, {point.lon.toFixed(5)}
                 </span>
                 <button
                   type="button"
@@ -102,7 +101,7 @@ export function ChoisirLaPosition({
                 </button>
               </>
             ) : (
-              "Touchez l'endroit exact du lieu pour poser le point."
+              "Touchez l'endroit exact."
             )}
           </p>
         </div>
