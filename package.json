@@ -19,6 +19,7 @@
     "sources:run": "tsx scripts/run-sources.mts",
     "maintenance": "tsx scripts/maintenance.mts",
     "demo:seed": "tsx scripts/seed-demo.mts",
+    "lieux:seed": "tsx scripts/seed-lieux-petit-lancy.mts",
     "demo:start": "next build && next start",
     "demo:tunnel": "cloudflared --config cloudflared/rapide.yml tunnel --url http://localhost:3000"
   },
