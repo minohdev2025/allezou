@@ -4,6 +4,13 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { type PointCarte } from "@/lib/carte";
+import {
+  CATEGORIES_LIEU,
+  EMOJIS_CATEGORIE,
+  LIBELLES_CATEGORIE,
+  estCategorieLieu,
+  type CategorieLieu,
+} from "@/lib/categories-lieu";
 import { CarteDesLieux } from "../carte-client";
 import { Bouton, IconePlus, teinte } from "../ui";
 
@@ -30,6 +37,7 @@ export type LieuChoix = {
   name: string;
   commune: string | null;
   address: string | null;
+  categorie: string | null;
   lat: number | null;
   lon: number | null;
 };
@@ -44,9 +52,21 @@ export function ChoixDuLieu({
   mapId?: string | null;
 }) {
   const [choisi, setChoisi] = useState<string | null>(null);
+  const [filtre, setFiltre] = useState<CategorieLieu | null>(null);
   const lieuChoisi = lieux.find((l) => l.id === choisi) ?? null;
 
-  const points = lieux.flatMap((lieu): PointCarte[] =>
+  /*
+    Le filtre agit sur la liste et la carte à la fois, côté client : les lieux sont déjà
+    là, aucun aller-retour. Il ne touche jamais au choix fait — un lieu choisi puis
+    masqué par le filtre reste celui que le bouton de confirmation nomme, et c'est le
+    bouton qui fait foi. Sans JavaScript, pas de filtre : tout s'affiche, rien ne manque.
+  */
+  const categoriesPresentes = CATEGORIES_LIEU.filter((c) =>
+    lieux.some((l) => l.categorie === c),
+  );
+  const lieuxFiltres = filtre ? lieux.filter((l) => l.categorie === filtre) : lieux;
+
+  const points = lieuxFiltres.flatMap((lieu): PointCarte[] =>
     lieu.lat != null && lieu.lon != null
       ? [
           {
@@ -69,8 +89,25 @@ export function ChoixDuLieu({
         </span>
       </p>
 
+      {categoriesPresentes.length > 1 ? (
+        <div className="mb-3 flex flex-wrap gap-2">
+          <PuceFiltre actif={filtre === null} onClick={() => setFiltre(null)}>
+            Tous
+          </PuceFiltre>
+          {categoriesPresentes.map((categorie) => (
+            <PuceFiltre
+              key={categorie}
+              actif={filtre === categorie}
+              onClick={() => setFiltre(filtre === categorie ? null : categorie)}
+            >
+              {EMOJIS_CATEGORIE[categorie]} {LIBELLES_CATEGORIE[categorie]}
+            </PuceFiltre>
+          ))}
+        </div>
+      ) : null}
+
       <ul className="space-y-3">
-        {lieux.map((lieu) => (
+        {lieuxFiltres.map((lieu) => (
           <li key={lieu.id}>
             <label className="block">
               <input
@@ -98,7 +135,11 @@ export function ChoixDuLieu({
                   className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-2xl"
                   style={{ background: `var(--color-${teinte(lieu.id)}-doux)` }}
                 >
-                  {choisi === lieu.id ? "✅" : "📍"}
+                  {choisi === lieu.id
+                    ? "✅"
+                    : lieu.categorie && estCategorieLieu(lieu.categorie)
+                      ? EMOJIS_CATEGORIE[lieu.categorie]
+                      : "📍"}
                 </span>
                 <span className="min-w-0">
                   <span className="titre block text-lg font-bold leading-tight">
@@ -139,7 +180,7 @@ export function ChoixDuLieu({
       <div className="mt-4">
         <CarteDesLieux
           points={points}
-          sansPosition={lieux.length - points.length}
+          sansPosition={lieuxFiltres.length - points.length}
           cleApi={cleApi}
           mapId={mapId}
           choisiId={choisi}
@@ -164,5 +205,34 @@ export function ChoixDuLieu({
         </p>
       </div>
     </>
+  );
+}
+
+function PuceFiltre({
+  actif,
+  onClick,
+  children,
+}: {
+  actif: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="shrink-0 rounded-[var(--radius-pilule)] px-4 py-2 text-sm font-bold"
+      style={
+        actif
+          ? { background: "var(--color-vert)", color: "var(--color-fond)" }
+          : {
+              background: "var(--color-surface)",
+              color: "var(--color-doux)",
+              boxShadow: "inset 0 0 0 2px var(--color-trait)",
+            }
+      }
+    >
+      {children}
+    </button>
   );
 }

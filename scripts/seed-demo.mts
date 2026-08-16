@@ -98,12 +98,12 @@ const VOISINAGE = [
 ];
 
 const LIEUX = [
-  { name: "Parc du Gué", commune: "Petit-Lancy" },
-  { name: "Parc Navazza-Oltramare", commune: "Grand-Lancy" },
-  { name: "Bois de la Bâtie", commune: "Genève" },
-  { name: "Ludothèque de Lancy", commune: "Grand-Lancy" },
-  { name: "Piscine de Marignac", commune: "Grand-Lancy" },
-  { name: "Préau de l'école du Gué", commune: "Petit-Lancy" },
+  { name: "Parc du Gué", commune: "Petit-Lancy", categorie: "parc" },
+  { name: "Parc Navazza-Oltramare", commune: "Grand-Lancy", categorie: "parc" },
+  { name: "Bois de la Bâtie", commune: "Genève", categorie: "parc" },
+  { name: "Ludothèque de Lancy", commune: "Grand-Lancy", categorie: "ludotheque" },
+  { name: "Piscine de Marignac", commune: "Grand-Lancy", categorie: "piscine" },
+  { name: "Préau de l'école du Gué", commune: "Petit-Lancy", categorie: "aire_de_jeux" },
 ];
 
 /* ------------------------------------------------------------------ montage */

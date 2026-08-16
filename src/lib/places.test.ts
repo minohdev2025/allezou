@@ -10,6 +10,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { db } from "@/lib/db";
 import {
   VALIDATIONS_RENOMMAGE,
+  completerCategorie,
   createPlace,
   pendingRenames,
   proposeAddress,
@@ -88,6 +89,18 @@ describe("Ajouter un lieu", () => {
     ).toEqual({ ok: false, reason: "position_invalide" });
   });
 
+  it("garde la catégorie annoncée, et refuse celles qui n'existent pas", async () => {
+    const alice = await createAccount("Alice");
+
+    const parc = await createPlace(alice.id, { name: "Parc du Gué", categorie: "parc" });
+    expect(parc.ok).toBe(true);
+    if (parc.ok) expect(parc.value.categorie).toBe("parc");
+
+    expect(
+      await createPlace(alice.id, { name: "Base secrète", categorie: "base_secrete" }),
+    ).toEqual({ ok: false, reason: "categorie_invalide" });
+  });
+
   it("se cherche par fragment de nom", async () => {
     const alice = await createAccount("Alice");
     await createPlace(alice.id, { name: "Parc du Gué" });
@@ -95,6 +108,38 @@ describe("Ajouter un lieu", () => {
 
     expect((await searchPlaces("parc")).map((p) => p.name)).toEqual(["Parc du Gué"]);
     expect(await searchPlaces()).toHaveLength(2);
+  });
+});
+
+describe("Classer un lieu", () => {
+  it("remplit un vide, une fois et une seule", async () => {
+    const alice = await createAccount("Alice");
+    const cree = await createPlace(alice.id, { name: "Parc du Gué" });
+    if (!cree.ok) return;
+
+    expect(await completerCategorie(cree.value.id, "parc")).toEqual({
+      ok: true,
+      value: undefined,
+    });
+    // Déjà classé : la seconde tentative ne défait pas le geste de la première.
+    expect(await completerCategorie(cree.value.id, "piscine")).toEqual({
+      ok: false,
+      reason: "categorie_deja_connue",
+    });
+
+    const [apres] = await searchPlaces("Parc du Gué");
+    expect(apres.categorie).toBe("parc");
+  });
+
+  it("refuse une catégorie inventée", async () => {
+    const alice = await createAccount("Alice");
+    const cree = await createPlace(alice.id, { name: "Parc du Gué" });
+    if (!cree.ok) return;
+
+    expect(await completerCategorie(cree.value.id, "volcan")).toEqual({
+      ok: false,
+      reason: "categorie_invalide",
+    });
   });
 });
 

@@ -260,6 +260,7 @@ export default async function Sortir({
               name: lieu.name,
               commune: lieu.commune,
               address: lieu.address,
+              categorie: lieu.categorie,
               lat: lieu.lat,
               lon: lieu.lon,
             }))}

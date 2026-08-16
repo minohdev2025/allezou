@@ -69,6 +69,7 @@ import {
 } from "@/lib/passkeys";
 import {
   completerAdresse,
+  completerCategorie,
   createPlace,
   proposeAddress,
   proposeRename,
@@ -790,9 +791,20 @@ export async function ajouterLieu(formData: FormData) {
     commune: String(formData.get("commune") ?? "") || undefined,
     address: String(formData.get("adresse") ?? "") || undefined,
     coord,
+    categorie: String(formData.get("categorie") ?? "") || undefined,
   });
   if (!result.ok) redirect(`/sortir/lieu?erreur=${result.reason}`);
   redirect("/sortir");
+}
+
+/** Classer un lieu encore sans catégorie : un vide se remplit seul, comme l'adresse. */
+export async function completerCategorieLieu(formData: FormData) {
+  await requireAccount();
+  const result = await completerCategorie(
+    String(formData.get("lieu") ?? ""),
+    String(formData.get("categorie") ?? ""),
+  );
+  redirect(result.ok ? "/lieux?categorie=1" : `/lieux?erreur=${result.reason}`);
 }
 
 /**

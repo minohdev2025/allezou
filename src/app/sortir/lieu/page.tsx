@@ -1,5 +1,10 @@
 import Link from "next/link";
 
+import {
+  CATEGORIES_LIEU,
+  EMOJIS_CATEGORIE,
+  LIBELLES_CATEGORIE,
+} from "@/lib/categories-lieu";
 import { requireAccount } from "@/lib/session";
 import { ajouterLieu } from "../../actions";
 import { Alerte, Bouton, Carte, Champ, Titre } from "../../ui";
@@ -35,6 +40,25 @@ export default async function NouveauLieu({
       <Carte accent="violet">
         <form action={ajouterLieu} className="space-y-5">
           <Champ label="Nom du lieu" name="nom" required maxLength={80} placeholder="Parc du Gué" />
+          <fieldset>
+            <legend className="mb-2 font-bold">C&apos;est quoi ?</legend>
+            <div className="flex flex-wrap gap-2">
+              {CATEGORIES_LIEU.map((categorie) => (
+                <label key={categorie}>
+                  <input
+                    type="radio"
+                    name="categorie"
+                    value={categorie}
+                    required
+                    className="peer sr-only"
+                  />
+                  <span className="inline-flex cursor-pointer items-center gap-1 rounded-[var(--radius-pilule)] px-3.5 py-2 text-sm font-bold text-[color:var(--color-doux)] shadow-[inset_0_0_0_2px_var(--color-trait)] peer-checked:bg-[color:var(--color-vert)] peer-checked:text-[color:var(--color-fond)] peer-checked:shadow-none peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2">
+                    {EMOJIS_CATEGORIE[categorie]} {LIBELLES_CATEGORIE[categorie]}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
           <Champ label="Commune" name="commune" maxLength={60} placeholder="Petit-Lancy" />
           <Champ
             label="Où est-ce ?"

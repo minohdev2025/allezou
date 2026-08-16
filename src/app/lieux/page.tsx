@@ -1,9 +1,16 @@
 import Link from "next/link";
 
+import {
+  CATEGORIES_LIEU,
+  EMOJIS_CATEGORIE,
+  LIBELLES_CATEGORIE,
+  estCategorieLieu,
+} from "@/lib/categories-lieu";
 import { VALIDATIONS_RENOMMAGE, openRenames, searchPlaces } from "@/lib/places";
 import { requireAccount } from "@/lib/session";
 import {
   completerAdresseLieu,
+  completerCategorieLieu,
   proposerAdresse,
   proposerRenommage,
   validerRenommage,
@@ -15,6 +22,8 @@ const MESSAGES: Record<string, string> = {
   lieu_inconnu: "Ce lieu n'existe plus.",
   adresse_invalide: "Cette adresse ne convient pas : 160 caractères au plus.",
   adresse_deja_connue: "Quelqu'un vient de la donner. Rechargez pour la voir.",
+  categorie_invalide: "Cette catégorie n'existe pas.",
+  categorie_deja_connue: "Quelqu'un vient de le classer. Rechargez pour le voir.",
   proposition_close: "Cette correction a déjà été tranchée.",
   proposition_inconnue: "Cette correction n'existe pas.",
 };
@@ -35,10 +44,11 @@ export default async function Lieux({
     propose?: string;
     applique?: string;
     adresse?: string;
+    categorie?: string;
   }>;
 }) {
   const account = await requireAccount();
-  const { q, erreur, propose, applique, adresse } = await searchParams;
+  const { q, erreur, propose, applique, adresse, categorie } = await searchParams;
 
   const [lieux, corrections] = await Promise.all([
     searchPlaces(q ?? "", 100),
@@ -62,6 +72,7 @@ export default async function Lieux({
       {erreur ? <Alerte ton="erreur">{MESSAGES[erreur] ?? "Cela n'a pas marché."}</Alerte> : null}
       {applique ? <Alerte ton="succes">Le lieu est renommé pour tout le monde.</Alerte> : null}
       {adresse ? <Alerte ton="succes">Merci : le lieu se trouve maintenant.</Alerte> : null}
+      {categorie ? <Alerte ton="succes">Merci : le lieu est classé.</Alerte> : null}
       {propose && !applique ? (
         <Alerte>
           Votre correction est proposée. Elle s&apos;appliquera quand {VALIDATIONS_RENOMMAGE}{" "}
@@ -98,6 +109,10 @@ export default async function Lieux({
           {lieux.map((lieu) => {
             const couleur = teinte(lieu.id);
             const enAttente = parLieu.get(lieu.id) ?? [];
+            const classe = lieu.categorie && estCategorieLieu(lieu.categorie) ? lieu.categorie : null;
+            const sousLigne = [classe ? LIBELLES_CATEGORIE[classe] : null, lieu.commune]
+              .filter(Boolean)
+              .join(" · ");
 
             return (
               <li key={lieu.id}>
@@ -108,12 +123,12 @@ export default async function Lieux({
                       className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-xl"
                       style={{ background: `var(--color-${couleur}-doux)` }}
                     >
-                      📍
+                      {classe ? EMOJIS_CATEGORIE[classe] : "📍"}
                     </span>
                     <div className="min-w-0 flex-1">
                       <h2 className="titre text-lg font-bold leading-tight">{lieu.name}</h2>
-                      {lieu.commune ? (
-                        <p className="text-sm text-[color:var(--color-doux)]">{lieu.commune}</p>
+                      {sousLigne ? (
+                        <p className="text-sm text-[color:var(--color-doux)]">{sousLigne}</p>
                       ) : null}
                       {lieu.address ? (
                         <p className="mt-0.5 text-sm">
@@ -150,6 +165,31 @@ export default async function Lieux({
                         Donner
                       </button>
                     </form>
+                  ) : null}
+
+                  {/*
+                    Classer un lieu encore sans catégorie : un vide se remplit seul, comme
+                    l'adresse — et chaque catégorie est le bouton d'envoi, un seul geste.
+                  */}
+                  {!classe ? (
+                    <details className="mb-2">
+                      <summary className="cursor-pointer py-1 text-sm font-bold text-[color:var(--color-doux)]">
+                        C&apos;est quoi, ce lieu ? Parc, piscine…
+                      </summary>
+                      <form action={completerCategorieLieu} className="mt-2 flex flex-wrap gap-1.5">
+                        <input type="hidden" name="lieu" value={lieu.id} />
+                        {CATEGORIES_LIEU.map((c) => (
+                          <button
+                            key={c}
+                            name="categorie"
+                            value={c}
+                            className="rounded-[var(--radius-pilule)] px-3 py-1.5 text-sm font-bold text-[color:var(--color-doux)] shadow-[inset_0_0_0_2px_var(--color-trait)]"
+                          >
+                            {EMOJIS_CATEGORIE[c]} {LIBELLES_CATEGORIE[c]}
+                          </button>
+                        ))}
+                      </form>
+                    </details>
                   ) : null}
 
                   {enAttente.map((correction) => (

@@ -15,6 +15,7 @@
 import { and, eq, ilike, isNull, sql } from "drizzle-orm";
 import { z } from "zod";
 
+import { estCategorieLieu, type CategorieLieu } from "./categories-lieu";
 import { db } from "./db";
 import * as s from "./db/schema";
 
@@ -51,6 +52,8 @@ export type PlaceError =
   | "adresse_invalide"
   | "adresse_deja_connue"
   | "position_invalide"
+  | "categorie_invalide"
+  | "categorie_deja_connue"
   | "lieu_inconnu"
   | "proposition_inconnue"
   | "proposition_close"
@@ -84,6 +87,7 @@ export async function createPlace(
     commune?: string;
     address?: string;
     coord?: { lat: number; lon: number };
+    categorie?: string;
   },
 ): Promise<Result<Place>> {
   const name = placeNameSchema.safeParse(input.name);
@@ -97,6 +101,10 @@ export async function createPlace(
 
   const coord = input.coord === undefined ? undefined : coordonneesSchema.safeParse(input.coord);
   if (coord && !coord.success) return ko("position_invalide");
+
+  if (input.categorie !== undefined && !estCategorieLieu(input.categorie)) {
+    return ko("categorie_invalide");
+  }
 
   const existing = await db
     .select()
@@ -120,11 +128,38 @@ export async function createPlace(
       lat: coord?.data.lat,
       lon: coord?.data.lon,
       geocodedAt: coord ? sql`now()` : undefined,
+      categorie: input.categorie as CategorieLieu | undefined,
       createdBy: actorId,
     })
     .returning();
 
   return ok(place);
+}
+
+/**
+ * Classer un lieu qui ne l'est pas encore.
+ *
+ * Même règle que pour l'adresse : remplir un vide se fait seul, sans rien défaire du
+ * travail de personne — et tous les lieux entrés avant que la catégorie existe sont des
+ * vides. Changer une catégorie déjà posée sera une autre affaire, le jour où le besoin
+ * se montrera.
+ */
+export async function completerCategorie(
+  placeId: string,
+  saisie: string,
+): Promise<Result<void>> {
+  if (!estCategorieLieu(saisie)) return ko("categorie_invalide");
+
+  const modifiees = await db
+    .update(s.place)
+    .set({ categorie: saisie })
+    .where(
+      and(eq(s.place.id, placeId), isNull(s.place.categorie), isNull(s.place.archivedAt)),
+    )
+    .returning({ id: s.place.id });
+
+  if (modifiees.length === 0) return ko("categorie_deja_connue");
+  return ok(undefined as void);
 }
 
 /** Recherche pour le sélecteur de lieu. Une requête vide renvoie les lieux les plus récents. */

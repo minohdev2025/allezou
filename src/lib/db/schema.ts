@@ -250,12 +250,31 @@ export const circleJoinRequest = pgTable(
 
 /* -------------------------------------------------------------------- lieux */
 
+/**
+ * La nature d'un lieu, pour filtrer « où sort-on ? » d'un geste : un parc quand il fait
+ * beau, une ludothèque quand il pleut. Une liste fermée et courte — le texte libre, c'est
+ * le nom ; « autre » recueille ce qui déborde, et nul vaut « pas encore classé », l'état
+ * de tous les lieux entrés avant que le champ existe.
+ */
+export const placeCategorie = pgEnum("place_categorie", [
+  "parc",
+  "aire_de_jeux",
+  "piscine",
+  "patinoire",
+  "ludotheque",
+  "bibliotheque",
+  "musee",
+  "maison_quartier",
+  "autre",
+]);
+
 export const place = pgTable(
   "place",
   {
     id: uuid().primaryKey().defaultRandom(),
     name: varchar({ length: 80 }).notNull(),
     commune: varchar({ length: 60 }),
+    categorie: placeCategorie(),
     /**
      * Où c'est, en clair : « Chemin du Gué 12 », « derrière l'école du Bachet ».
      *
