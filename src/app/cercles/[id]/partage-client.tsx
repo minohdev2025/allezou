@@ -47,12 +47,7 @@ export function PartageInvitation({ lien, message }: { lien: string; message: st
 
   return (
     <div className="mt-3 flex flex-wrap gap-2">
-      <button type="button" onClick={() => copier("lien")} className={pilule}>
-        {copie === "lien" ? "Copié ✓" : "Copier le lien"}
-      </button>
-      <button type="button" onClick={() => copier("message")} className={pilule}>
-        {copie === "message" ? "Copié ✓" : "Copier le message"}
-      </button>
+      {/* Le geste principal d'abord : sur téléphone, on partage — copier est le repli. */}
       {peutPartager ? (
         <button
           type="button"
@@ -62,6 +57,12 @@ export function PartageInvitation({ lien, message }: { lien: string; message: st
           Partager
         </button>
       ) : null}
+      <button type="button" onClick={() => copier("lien")} className={pilule}>
+        {copie === "lien" ? "Copié ✓" : "Copier le lien"}
+      </button>
+      <button type="button" onClick={() => copier("message")} className={pilule}>
+        {copie === "message" ? "Copié ✓" : "Copier le message"}
+      </button>
     </div>
   );
 }
