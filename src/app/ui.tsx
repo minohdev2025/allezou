@@ -225,7 +225,7 @@ type VarianteBouton = "principal" | "second" | "discret";
 
 const stylesBouton: Record<VarianteBouton, string> = {
   principal:
-    "bg-[color:var(--color-vert)] text-[color:var(--color-fond)] font-bold shadow-[0_3px_0_0_rgba(0,0,0,0.18)] active:translate-y-[2px] active:shadow-none",
+    "bg-[color:var(--color-vert)] text-[color:var(--color-fond)] font-bold shadow-[0_3px_0_0_var(--color-socle-vert)] active:translate-y-[2px] active:shadow-none",
   second:
     "bg-[color:var(--color-surface)] ring-2 ring-[color:var(--color-trait)] font-semibold active:translate-y-[1px]",
   discret: "text-[color:var(--color-doux)] underline underline-offset-4",

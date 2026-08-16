@@ -16,7 +16,7 @@ const bouton =
   "flex w-full items-center justify-center gap-2 rounded-[var(--radius-pilule)] px-5 py-3.5 text-center text-[1.05rem] transition-transform disabled:opacity-60";
 
 const principal =
-  "bg-[color:var(--color-vert)] font-bold text-[color:var(--color-fond)] shadow-[0_3px_0_0_rgba(0,0,0,0.18)]";
+  "bg-[color:var(--color-vert)] font-bold text-[color:var(--color-fond)] shadow-[0_3px_0_0_var(--color-socle-vert)]";
 
 const second =
   "bg-[color:var(--color-surface)] font-semibold shadow-[inset_0_0_0_2px_var(--color-trait)]";

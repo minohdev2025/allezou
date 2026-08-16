@@ -35,6 +35,14 @@
   --color-rose: #b32e72;
   --color-rose-doux: #fbcfe3;
 
+  /* Socles : l'ombre dure sous les pastilles pleines, qui donne aux boutons leur relief
+     de touche. Un voile noir suffit sur le fond clair ; en sombre il s'y perdrait —
+     c'est la teinte profonde de chaque pastille (sa valeur du mode clair) qui prend
+     le relais. */
+  --color-socle-vert: rgba(0, 0, 0, 0.18);
+  --color-socle-ambre: rgba(0, 0, 0, 0.18);
+  --color-socle-corail: rgba(0, 0, 0, 0.18);
+
   --radius-carte: 1.5rem;
   --radius-pilule: 999px;
 }
@@ -64,6 +72,10 @@
     --color-violet-doux: #2b2046;
     --color-rose: #f186b7;
     --color-rose-doux: #3d1932;
+
+    --color-socle-vert: #17784f;
+    --color-socle-ambre: #9c5c00;
+    --color-socle-corail: #c0362f;
   }
 }
 
