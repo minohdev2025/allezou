@@ -110,7 +110,12 @@ export default async function Compte({
         <ul className="mb-4 space-y-2">
           {enfants.map((enfant) => (
             <li key={enfant.id} className="flex items-center gap-2">
-              <form action={renommerEnfant} className="flex flex-1 gap-2">
+              {/*
+                `min-w-0` sur le formulaire, pas seulement sur le champ : la largeur
+                intrinsèque d'un champ (size=20) remonte en minimum à travers un flex
+                imbriqué, et sur 360 px le rang débordait — le ✕ vivait hors de l'écran.
+              */}
+              <form action={renommerEnfant} className="flex min-w-0 flex-1 gap-2">
                 <input type="hidden" name="enfant" value={enfant.id} />
                 <input
                   name="prenom"

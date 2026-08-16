@@ -404,7 +404,7 @@ export function Navigation({
         ombres, qui peignaient par-dessus. `-mx-5` annule le gouttière du `main` pour
         qu'il coure d'un bord à l'autre.
       */}
-      <nav className="sticky bottom-0 z-20 -mx-5 -mb-8 mt-8 border-t-2 border-[color:var(--color-trait)] bg-[color:var(--color-surface)] pb-[env(safe-area-inset-bottom)]">
+      <nav className="sticky bottom-0 z-20 -mx-5 mt-8 border-t-2 border-[color:var(--color-trait)] bg-[color:var(--color-surface)] pb-[env(safe-area-inset-bottom)]">
         <ul className="mx-auto flex max-w-lg">
         {onglets.map(({ cle, href, texte, Icone }) => {
           const estActif = actif === cle;
