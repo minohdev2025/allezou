@@ -1,21 +1,27 @@
 import type { Metadata, Viewport } from "next";
-import { Fredoka, Nunito } from "next/font/google";
+import localFont from "next/font/local";
 
 import "./globals.css";
 
 /**
- * Les polices sont téléchargées au moment du build et servies depuis notre serveur.
- * Le téléphone d'un parent n'appelle jamais Google : aucune donnée ne part chez un tiers.
+ * Les polices vivent dans le dépôt (src/fonts/, provenance dans son README) et sont servies
+ * depuis notre serveur. Le téléphone d'un parent n'appelle jamais Google : aucune donnée ne
+ * part chez un tiers. Et le build non plus : quand elles se téléchargeaient au build, une
+ * rotation de version chez Google Fonts a suffi à faire tomber un déploiement sur des 404.
+ * Un fichier commité ne tombe pas.
+ *
+ * Chaque fichier est le woff2 variable (sous-ensemble latin, qui couvre tout le français)
+ * que Google servait — mêmes glyphes, mêmes graisses, rendu identique.
  */
-const titre = Fredoka({
-  subsets: ["latin"],
-  weight: ["500", "600", "700"],
+const titre = localFont({
+  src: "../fonts/fredoka-latin.woff2",
+  weight: "500 700",
   variable: "--font-titre",
 });
 
-const texte = Nunito({
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
+const texte = localFont({
+  src: "../fonts/nunito-latin.woff2",
+  weight: "400 700",
   variable: "--font-texte",
 });
 
