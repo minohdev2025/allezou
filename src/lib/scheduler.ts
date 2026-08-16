@@ -21,7 +21,11 @@ import { db } from "./db";
 import { geocoderCeQuiManque } from "./geo";
 import { runAllSources } from "./ingest/run";
 import { purgeAll } from "./maintenance";
-import { notifyNewlyPublished, webPushSender } from "./notifications";
+import {
+  notifyNewlyPublished,
+  notifyPendingPublications,
+  webPushSender,
+} from "./notifications";
 
 export type Job = {
   name: string;
@@ -67,6 +71,23 @@ export const JOBS: Job[] = [
     // une journée sans peser sur un service bénévole. Rien n'attend ces coordonnées, seuls
     // les liens de carte gagnent en précision quand elles arrivent.
     run: geocoderCeQuiManque,
+  },
+  {
+    // Chaque tick (5 minutes) : le rattrapage doit passer vite, la sortie est en cours.
+    name: "alertes",
+    everyMinutes: 5,
+    libelle: "Alertes de sortie en retard",
+    // L'alerte normale part du serveur une minute après la confirmation (actions.ts). Si
+    // le serveur a redémarré pendant cette minute, elle serait perdue : ce passage ramasse
+    // ce qui n'a été ni notifié ni retiré. `notified_at` interdit le double envoi.
+    run: async () => {
+      try {
+        return { rattrapees: await notifyPendingPublications(await webPushSender()) };
+      } catch {
+        // Pas de clés VAPID (développement, tests) : rien à envoyer, rien à rattraper.
+        return { rattrapees: null };
+      }
+    },
   },
 ];
 

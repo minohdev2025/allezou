@@ -243,11 +243,22 @@ async function LigneSortie({
         </div>
 
         {cestMoi ? (
-          <form action={retirerSortie}>
+          <form action={retirerSortie} className="text-right">
             <input type="hidden" name="sortie" value={sortie.id} />
+            {/*
+              Tant que la minute de silence court (notifiedAt vide), retirer la sortie ne
+              réveille personne : le bouton dit « Annuler », et la petite ligne dit
+              pourquoi c'est encore sans conséquence. Une fois les alertes parties, le
+              même geste redevient « Rentrés » — on ne reprend pas ce qui a sonné.
+            */}
             <button className={pastilleAction}>
-              {aVenir ? "Annuler" : "Rentrés"}
+              {aVenir || !sortie.notifiedAt ? "Annuler" : "Rentrés"}
             </button>
+            {!aVenir && !sortie.notifiedAt ? (
+              <p className="mt-1 text-xs leading-tight text-[color:var(--color-doux)]">
+                personne n&apos;est encore prévenu
+              </p>
+            ) : null}
           </form>
         ) : jySuis ? (
           <Pastille couleur="vert">Vous y êtes</Pastille>

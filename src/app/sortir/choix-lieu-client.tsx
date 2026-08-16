@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 
 import { type PointCarte } from "@/lib/carte";
 import {
@@ -11,25 +11,24 @@ import {
   estCategorieLieu,
   type CategorieLieu,
 } from "@/lib/categories-lieu";
+import { basculerFavoriLieu, basculerMasqueLieu } from "../actions";
 import { CarteDesLieux } from "../carte-client";
 import { Bouton, IconePlus, teinte } from "../ui";
 
 /**
  * Choisir le lieu, puis confirmer — en deux gestes qui se voient.
  *
- * La première version publiait au toucher du lieu : le geste le plus rapide possible,
- * mais aussi le plus glissant — un pouce qui dérape publiait une sortie au mauvais parc,
- * vers de vraies familles. Et la carte ne pouvait rien proposer : toucher un marqueur
- * pour « voir » et toucher un lieu pour « publier » auraient été le même geste avec deux
- * effets sans commune mesure.
+ * La zone se replie sur le lieu choisi : vingt lieux au catalogue faisaient de l'écran
+ * un long couloir, et le dernier lieu utilisé est présélectionné — l'écran s'ouvre donc
+ * déjà court, prêt à confirmer, jamais prêt à publier. C'est un `details` : sans
+ * JavaScript, le repli s'ouvre au doigt et les boutons radio font le reste.
  *
- * Désormais choisir et confirmer sont deux gestes distincts : liste et carte font le
- * premier, le bouton du bas — qui nomme le lieu choisi — fait le second. Rien ne part
- * avant lui.
+ * Les favoris (l'étoile) tiennent la tête de liste : une famille sort toujours aux trois
+ * mêmes endroits. L'étoile bascule sans recharger — un envoi de formulaire emporterait
+ * les cercles décochés et le lieu choisi. Le masquage (✕) est son miroir : un lieu qu'on
+ * ne fréquente pas sort de la liste, la puce « Masqués » le garde à portée de retour.
  *
- * Sans JavaScript, tout tient : des boutons radio, leur mise en valeur en CSS pur
- * (`peer-checked`), et `required` qui retient une confirmation sans lieu. Seule la
- * carte et le libellé vivant du bouton demandent du script — ce sont des plus.
+ * Rien ne part avant le bouton de confirmation, et lui seul.
  */
 
 export type LieuChoix = {
@@ -44,29 +43,86 @@ export type LieuChoix = {
 
 export function ChoixDuLieu({
   lieux,
+  dernierLieuId,
+  favorisInitiaux,
+  masquesInitiaux,
   cleApi,
   mapId,
 }: {
   lieux: LieuChoix[];
+  /** Le lieu de la dernière sortie : présélectionné, jamais publié d'office. */
+  dernierLieuId?: string | null;
+  favorisInitiaux?: string[];
+  masquesInitiaux?: string[];
   cleApi?: string | null;
   mapId?: string | null;
 }) {
-  const [choisi, setChoisi] = useState<string | null>(null);
+  const [choisi, setChoisi] = useState<string | null>(() => {
+    if (!dernierLieuId) return null;
+    const masque = new Set(masquesInitiaux ?? []).has(dernierLieuId);
+    return !masque && lieux.some((l) => l.id === dernierLieuId) ? dernierLieuId : null;
+  });
+  const [ouvert, setOuvert] = useState(choisi === null);
   const [filtre, setFiltre] = useState<CategorieLieu | null>(null);
+  const [vueMasques, setVueMasques] = useState(false);
+  const [favoris, setFavoris] = useState<Set<string>>(new Set(favorisInitiaux ?? []));
+  const [masques, setMasques] = useState<Set<string>>(new Set(masquesInitiaux ?? []));
+  const [, lancer] = useTransition();
+
   const lieuChoisi = lieux.find((l) => l.id === choisi) ?? null;
 
-  /*
-    Le filtre agit sur la liste et la carte à la fois, côté client : les lieux sont déjà
-    là, aucun aller-retour. Il ne touche jamais au choix fait — un lieu choisi puis
-    masqué par le filtre reste celui que le bouton de confirmation nomme, et c'est le
-    bouton qui fait foi. Sans JavaScript, pas de filtre : tout s'affiche, rien ne manque.
-  */
-  const categoriesPresentes = CATEGORIES_LIEU.filter((c) =>
-    lieux.some((l) => l.categorie === c),
-  );
-  const lieuxFiltres = filtre ? lieux.filter((l) => l.categorie === filtre) : lieux;
+  const basculerFavoriIci = (id: string) => {
+    // L'étoile change tout de suite ; le serveur suit. Au pire d'un échec réseau, le
+    // prochain chargement remettra la vérité de la base — un favori n'est pas une sortie.
+    setFavoris((avant) => {
+      const apres = new Set(avant);
+      if (apres.has(id)) apres.delete(id);
+      else apres.add(id);
+      return apres;
+    });
+    lancer(() => basculerFavoriLieu(id));
+  };
 
-  const points = lieuxFiltres.flatMap((lieu): PointCarte[] =>
+  const basculerMasqueIci = (id: string) => {
+    const masquer = !masques.has(id);
+    setMasques((avant) => {
+      const apres = new Set(avant);
+      if (masquer) apres.add(id);
+      else apres.delete(id);
+      return apres;
+    });
+    if (masquer) {
+      // Miroir du serveur : masquer retire l'étoile, et un lieu choisi puis masqué
+      // n'est plus choisi — on ne confirme pas une sortie vers un lieu qu'on vient
+      // de ranger hors de sa vue.
+      setFavoris((avant) => {
+        const apres = new Set(avant);
+        apres.delete(id);
+        return apres;
+      });
+      if (choisi === id) setChoisi(null);
+    }
+    lancer(() => basculerMasqueLieu(id));
+  };
+
+  const visibles = lieux.filter((l) => !masques.has(l.id));
+  const listeMasques = lieux.filter((l) => masques.has(l.id));
+
+  const categoriesPresentes = CATEGORIES_LIEU.filter((c) =>
+    visibles.some((l) => l.categorie === c),
+  );
+  const filtres = filtre ? visibles.filter((l) => l.categorie === filtre) : visibles;
+  /* Les favoris d'abord — dans l'ordre du nom, comme le reste : deux listes triées, pas
+     un classement. Étoiler un lieu le fait monter sous les yeux : c'est le geste qui
+     s'explique lui-même. La vue « Masqués » remplace tout : on y va pour réafficher. */
+  const ordonnes = vueMasques
+    ? listeMasques
+    : [
+        ...filtres.filter((l) => favoris.has(l.id)),
+        ...filtres.filter((l) => !favoris.has(l.id)),
+      ];
+
+  const points = ordonnes.flatMap((lieu): PointCarte[] =>
     lieu.lat != null && lieu.lon != null
       ? [
           {
@@ -75,6 +131,7 @@ export function ChoixDuLieu({
             sousTitre: [lieu.address, lieu.commune].filter(Boolean).join(", "),
             lat: lieu.lat,
             lon: lieu.lon,
+            href: `/lieux?q=${encodeURIComponent(lieu.name)}`,
           },
         ]
       : [],
@@ -82,126 +139,194 @@ export function ChoixDuLieu({
 
   return (
     <>
-      <p className="mb-2 font-bold">
-        Choisissez un lieu :{" "}
-        <span className="font-normal text-[color:var(--color-doux)]">
-          dans la liste ou sur la carte — rien ne part avant la confirmation
-        </span>
-      </p>
+      <details
+        open={ouvert}
+        onToggle={(e) => setOuvert((e.target as HTMLDetailsElement).open)}
+        className="mb-4"
+      >
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-[var(--radius-pilule)] bg-[color:var(--color-surface)] px-4 py-3 shadow-[inset_0_0_0_2px_var(--color-trait)]">
+          <span className="min-w-0 truncate text-sm">
+            {lieuChoisi ? (
+              <>
+                ✅{" "}
+                <strong className="text-[color:var(--color-encre)]">{lieuChoisi.name}</strong>
+                {lieuChoisi.commune ? (
+                  <span className="text-[color:var(--color-doux)]"> · {lieuChoisi.commune}</span>
+                ) : null}
+              </>
+            ) : (
+              <strong>Choisissez un lieu — dans la liste ou sur la carte</strong>
+            )}
+          </span>
+          <span className="shrink-0 text-sm font-bold text-[color:var(--color-vert)]">
+            {lieuChoisi ? "Changer" : "Ouvrir"}
+          </span>
+        </summary>
 
-      {categoriesPresentes.length > 1 ? (
-        <div className="mb-3 flex flex-wrap gap-2">
-          <PuceFiltre actif={filtre === null} onClick={() => setFiltre(null)}>
-            Tous
-          </PuceFiltre>
-          {categoriesPresentes.map((categorie) => (
-            <PuceFiltre
-              key={categorie}
-              actif={filtre === categorie}
-              onClick={() => setFiltre(filtre === categorie ? null : categorie)}
-            >
-              {EMOJIS_CATEGORIE[categorie]} {LIBELLES_CATEGORIE[categorie]}
-            </PuceFiltre>
-          ))}
-        </div>
-      ) : null}
-
-      <ul className="space-y-3">
-        {lieuxFiltres.map((lieu) => (
-          <li key={lieu.id}>
-            <label className="block">
-              <input
-                type="radio"
-                name="lieu"
-                value={lieu.id}
-                required
-                checked={choisi === lieu.id}
-                onChange={() => setChoisi(lieu.id)}
-                className="peer sr-only"
-              />
-              {/*
-                L'accent de couleur vit en style inline (la teinte est calculée), donc la
-                mise en valeur du choix passe par `outline` : un box-shadow de classe
-                perdrait toujours contre le style inline.
-              */}
-              <span
-                className="flex w-full cursor-pointer items-center gap-4 rounded-[var(--radius-carte)] bg-[color:var(--color-surface)] px-5 py-4 text-left transition-transform active:translate-y-[2px] peer-checked:outline peer-checked:outline-[3px] peer-checked:-outline-offset-[3px] peer-checked:outline-[color:var(--color-vert)] peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[color:var(--color-bleu)]"
-                style={{
-                  boxShadow: `inset 0 0 0 2px var(--color-${teinte(lieu.id)}-doux)`,
+        <div className="mt-3 space-y-3">
+          {categoriesPresentes.length > 1 || listeMasques.length > 0 ? (
+            <div className="flex flex-wrap gap-2">
+              <PuceFiltre
+                actif={filtre === null && !vueMasques}
+                onClick={() => {
+                  setFiltre(null);
+                  setVueMasques(false);
                 }}
               >
-                <span
-                  aria-hidden
-                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-2xl"
-                  style={{ background: `var(--color-${teinte(lieu.id)}-doux)` }}
+                Tous
+              </PuceFiltre>
+              {categoriesPresentes.map((categorie) => (
+                <PuceFiltre
+                  key={categorie}
+                  actif={filtre === categorie && !vueMasques}
+                  onClick={() => {
+                    setFiltre(filtre === categorie ? null : categorie);
+                    setVueMasques(false);
+                  }}
                 >
-                  {choisi === lieu.id
-                    ? "✅"
-                    : lieu.categorie && estCategorieLieu(lieu.categorie)
-                      ? EMOJIS_CATEGORIE[lieu.categorie]
-                      : "📍"}
-                </span>
-                <span className="min-w-0">
-                  <span className="titre block text-lg font-bold leading-tight">
-                    {lieu.name}
-                  </span>
-                  {lieu.commune ? (
-                    <span className="block text-sm text-[color:var(--color-doux)]">
-                      {lieu.commune}
+                  {EMOJIS_CATEGORIE[categorie]} {LIBELLES_CATEGORIE[categorie]}
+                </PuceFiltre>
+              ))}
+              {listeMasques.length > 0 ? (
+                <PuceFiltre actif={vueMasques} onClick={() => setVueMasques(!vueMasques)}>
+                  🙈 Masqués ({listeMasques.length})
+                </PuceFiltre>
+              ) : null}
+            </div>
+          ) : null}
+
+          <ul className="space-y-3">
+            {ordonnes.map((lieu) => (
+              <li key={lieu.id} className="flex items-stretch gap-2">
+                <label className="min-w-0 flex-1">
+                  <input
+                    type="radio"
+                    name="lieu"
+                    value={lieu.id}
+                    required
+                    checked={choisi === lieu.id}
+                    onChange={() => {
+                      setChoisi(lieu.id);
+                      setOuvert(false);
+                    }}
+                    className="peer sr-only"
+                  />
+                  {/*
+                    L'accent de couleur vit en style inline (la teinte est calculée), donc
+                    la mise en valeur du choix passe par `outline` : un box-shadow de
+                    classe perdrait toujours contre le style inline.
+                  */}
+                  <span
+                    className="flex h-full w-full cursor-pointer items-center gap-3 rounded-[var(--radius-carte)] bg-[color:var(--color-surface)] px-4 py-3 text-left transition-transform active:translate-y-[2px] peer-checked:outline peer-checked:outline-[3px] peer-checked:-outline-offset-[3px] peer-checked:outline-[color:var(--color-vert)] peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[color:var(--color-bleu)]"
+                    style={{
+                      boxShadow: `inset 0 0 0 2px var(--color-${teinte(lieu.id)}-doux)`,
+                    }}
+                  >
+                    <span
+                      aria-hidden
+                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-xl"
+                      style={{ background: `var(--color-${teinte(lieu.id)}-doux)` }}
+                    >
+                      {choisi === lieu.id
+                        ? "✅"
+                        : lieu.categorie && estCategorieLieu(lieu.categorie)
+                          ? EMOJIS_CATEGORIE[lieu.categorie]
+                          : "📍"}
                     </span>
-                  ) : null}
-                </span>
-              </span>
-            </label>
-          </li>
-        ))}
-      </ul>
+                    <span className="min-w-0">
+                      <span className="titre block font-bold leading-tight">{lieu.name}</span>
+                      {lieu.commune ? (
+                        <span className="block text-sm text-[color:var(--color-doux)]">
+                          {lieu.commune}
+                        </span>
+                      ) : null}
+                    </span>
+                  </span>
+                </label>
+                {vueMasques ? (
+                  <button
+                    type="button"
+                    onClick={() => basculerMasqueIci(lieu.id)}
+                    className="shrink-0 rounded-[var(--radius-carte)] px-3 text-sm font-bold text-[color:var(--color-vert)] shadow-[inset_0_0_0_2px_var(--color-trait)]"
+                  >
+                    Réafficher
+                  </button>
+                ) : (
+                  <span className="flex shrink-0 flex-col gap-1">
+                    <button
+                      type="button"
+                      onClick={() => basculerFavoriIci(lieu.id)}
+                      aria-label={
+                        favoris.has(lieu.id)
+                          ? `Retirer ${lieu.name} des favoris`
+                          : `Mettre ${lieu.name} en favori`
+                      }
+                      className="flex-1 rounded-[var(--radius-carte)] px-3 text-lg shadow-[inset_0_0_0_2px_var(--color-trait)]"
+                    >
+                      {favoris.has(lieu.id) ? "⭐" : "☆"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => basculerMasqueIci(lieu.id)}
+                      aria-label={`Masquer ${lieu.name} de ma liste`}
+                      className="flex-1 rounded-[var(--radius-carte)] px-3 text-sm text-[color:var(--color-doux)] shadow-[inset_0_0_0_2px_var(--color-trait)]"
+                    >
+                      ✕
+                    </button>
+                  </span>
+                )}
+              </li>
+            ))}
+          </ul>
 
-      {/*
-        « Pas dans la liste » se lit juste sous la liste : c'est en la finissant sans
-        trouver qu'on en a besoin. Placé après la confirmation, il ne se découvrait
-        qu'une fois le bouton d'envoi dépassé — trop tard pour servir.
-      */}
-      <p className="mt-3">
-        <Link
-          href="/sortir/lieu"
-          className="inline-flex items-center gap-1 font-bold text-[color:var(--color-vert)] underline underline-offset-4"
-        >
-          <IconePlus className="h-5 w-5" />
-          Le lieu n&apos;est pas dans la liste
-        </Link>
-      </p>
+          {vueMasques && listeMasques.length === 0 ? (
+            <p className="text-sm leading-snug text-[color:var(--color-doux)]">
+              Plus aucun lieu masqué — tout est revenu dans la liste.
+            </p>
+          ) : null}
 
-      {/*
-        La carte est sous la liste, jamais au-dessus : le premier lieu doit rester au
-        premier écran. « Choisir ce lieu » dans une bulle coche le même bouton radio que
-        la liste — même choix, même confirmation, aucun raccourci qui publierait.
-      */}
-      <div className="mt-4">
-        <CarteDesLieux
-          points={points}
-          sansPosition={lieuxFiltres.length - points.length}
-          cleApi={cleApi}
-          mapId={mapId}
-          choisiId={choisi}
-          onChoisir={(point) => setChoisi(point.id)}
-        />
-      </div>
+          <p className="flex flex-wrap gap-x-5 gap-y-1">
+            <Link
+              href="/sortir/lieu"
+              className="inline-flex items-center gap-1 font-bold text-[color:var(--color-vert)] underline underline-offset-4"
+            >
+              <IconePlus className="h-5 w-5" />
+              Le lieu n&apos;est pas dans la liste
+            </Link>
+            <Link
+              href="/lieux"
+              className="text-sm text-[color:var(--color-doux)] underline underline-offset-4"
+            >
+              Corriger un lieu (nom, adresse, catégorie)
+            </Link>
+          </p>
 
-      <div className="mt-5">
-        <Bouton>
+          <CarteDesLieux
+            points={points}
+            sansPosition={ordonnes.length - points.length}
+            cleApi={cleApi}
+            mapId={mapId}
+            choisiId={choisi}
+            onChoisir={(point) => {
+              setChoisi(point.id);
+              setOuvert(false);
+            }}
+          />
+        </div>
+      </details>
+
+      <div>
+        <Bouton>Confirmer la sortie</Bouton>
+        <p className="mt-2 text-center text-sm leading-snug text-[color:var(--color-doux)]">
           {lieuChoisi ? (
             <>
-              Nous sortons : <strong>{lieuChoisi.name}</strong>
+              La sortie part vers les cercles cochés plus haut. Leurs membres seront
+              prévenus <strong>dans une minute</strong> — le temps d&apos;annuler depuis
+              « Qui est dehors ? » en cas d&apos;erreur.
             </>
           ) : (
-            "Confirmer la sortie"
+            "Choisissez d'abord un lieu ; la sortie partira vers les cercles cochés plus haut."
           )}
-        </Bouton>
-        <p className="mt-2 text-center text-sm leading-snug text-[color:var(--color-doux)]">
-          {lieuChoisi
-            ? "La sortie part vers les cercles cochés plus haut."
-            : "Elle partira une fois un lieu choisi, vers les cercles cochés plus haut."}
         </p>
       </div>
     </>

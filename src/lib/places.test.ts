@@ -10,8 +10,13 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { db } from "@/lib/db";
 import {
   VALIDATIONS_RENOMMAGE,
+  archiverLieu,
+  basculerFavori,
+  basculerMasque,
   completerCategorie,
   createPlace,
+  lieuxFavoris,
+  lieuxMasques,
   pendingRenames,
   proposeAddress,
   proposeRename,
@@ -108,6 +113,65 @@ describe("Ajouter un lieu", () => {
 
     expect((await searchPlaces("parc")).map((p) => p.name)).toEqual(["Parc du Gué"]);
     expect(await searchPlaces()).toHaveLength(2);
+  });
+});
+
+describe("Favoris et lieux masqués", () => {
+  it("l'étoile s'épingle et se détache, pour soi seulement", async () => {
+    const alice = await createAccount("Alice");
+    const bob = await createAccount("Bob");
+    const cree = await createPlace(alice.id, { name: "Parc du Gué" });
+    if (!cree.ok) return;
+
+    expect(await basculerFavori(alice.id, cree.value.id)).toBe(true);
+    expect(await lieuxFavoris(alice.id)).toEqual([cree.value.id]);
+    // Le favori d'Alice ne dit rien à Bob.
+    expect(await lieuxFavoris(bob.id)).toEqual([]);
+
+    expect(await basculerFavori(alice.id, cree.value.id)).toBe(false);
+    expect(await lieuxFavoris(alice.id)).toEqual([]);
+  });
+
+  it("masquer retire l'étoile, et réafficher ne la rend pas", async () => {
+    const alice = await createAccount("Alice");
+    const cree = await createPlace(alice.id, { name: "Parc du Gué" });
+    if (!cree.ok) return;
+
+    await basculerFavori(alice.id, cree.value.id);
+    expect(await basculerMasque(alice.id, cree.value.id)).toBe(true);
+
+    expect(await lieuxMasques(alice.id)).toEqual([cree.value.id]);
+    expect(await lieuxFavoris(alice.id)).toEqual([]);
+
+    // Réafficher rend le lieu, pas l'épingle : elle a été retirée, pas suspendue.
+    expect(await basculerMasque(alice.id, cree.value.id)).toBe(false);
+    expect(await lieuxMasques(alice.id)).toEqual([]);
+    expect(await lieuxFavoris(alice.id)).toEqual([]);
+  });
+});
+
+describe("Retirer un lieu du catalogue", () => {
+  it("le lieu disparaît des recherches, et son nom redevient libre", async () => {
+    const alice = await createAccount("Alice");
+    const cree = await createPlace(alice.id, { name: "Parc du Gué" });
+    if (!cree.ok) return;
+
+    expect(await archiverLieu(cree.value.id)).toEqual({ ok: true, value: undefined });
+    expect(await searchPlaces()).toHaveLength(0);
+
+    // Un nom archivé n'est plus un doublon : le lieu peut renaître, neuf.
+    const renaissance = await createPlace(alice.id, { name: "Parc du Gué" });
+    expect(renaissance.ok).toBe(true);
+    if (renaissance.ok) expect(renaissance.value.id).not.toBe(cree.value.id);
+  });
+
+  it("retirer deux fois ne retire qu'une fois", async () => {
+    const alice = await createAccount("Alice");
+    const cree = await createPlace(alice.id, { name: "Parc du Gué" });
+    if (!cree.ok) return;
+
+    await archiverLieu(cree.value.id);
+    expect(await archiverLieu(cree.value.id)).toEqual({ ok: false, reason: "lieu_inconnu" });
   });
 });
 

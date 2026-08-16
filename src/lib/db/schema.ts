@@ -353,6 +353,48 @@ export const placeRenameVote = pgTable(
   (t) => [primaryKey({ columns: [t.proposalId, t.accountId] })],
 );
 
+/**
+ * Les lieux qu'une famille garde en tête de liste.
+ *
+ * Le catalogue grandit — dix-neuf lieux rien que pour le Petit-Lancy — mais une famille
+ * sort toujours aux trois mêmes endroits. Le favori est personnel : c'est un tri, pas un
+ * vote, et il ne dit rien aux autres familles.
+ */
+export const placeFavorite = pgTable(
+  "place_favorite",
+  {
+    accountId: uuid()
+      .notNull()
+      .references(() => account.id, { onDelete: "cascade" }),
+    placeId: uuid()
+      .notNull()
+      .references(() => place.id, { onDelete: "cascade" }),
+    createdAt: timestamp({ withTimezone: true }).notNull().default(now),
+  },
+  (t) => [primaryKey({ columns: [t.accountId, t.placeId] })],
+);
+
+/**
+ * Les lieux qu'une famille ne veut plus voir dans sa liste.
+ *
+ * Le miroir du favori : personnel, réversible, muet pour les autres. Le lieu reste au
+ * catalogue commun — masquer n'est pas juger, c'est ranger. Un lieu à la fois masqué et
+ * favori n'existe pas : masquer retire l'étoile (places.ts).
+ */
+export const placeHidden = pgTable(
+  "place_hidden",
+  {
+    accountId: uuid()
+      .notNull()
+      .references(() => account.id, { onDelete: "cascade" }),
+    placeId: uuid()
+      .notNull()
+      .references(() => place.id, { onDelete: "cascade" }),
+    createdAt: timestamp({ withTimezone: true }).notNull().default(now),
+  },
+  (t) => [primaryKey({ columns: [t.accountId, t.placeId] })],
+);
+
 /* --------------------------------------------------------------- calendrier */
 
 export const sourceKind = pgEnum("source_kind", ["ical", "jsonld", "html_ai"]);
@@ -539,6 +581,13 @@ export const publication = pgTable(
     /** Toujours renseigné : rien ne reste visible sans fin programmée. */
     endsAt: timestamp({ withTimezone: true }).notNull(),
     withdrawnAt: timestamp({ withTimezone: true }),
+    /**
+     * Quand les destinataires ont été prévenus — une minute après la publication, pas
+     * au moment même. Cette minute est la fenêtre où « Annuler » ne réveille personne :
+     * un pouce qui a glissé se rattrape sans qu'aucun téléphone n'ait sonné. Nul tant
+     * que l'envoi n'a pas eu lieu, ce qui interdit aussi de sonner deux fois.
+     */
+    notifiedAt: timestamp({ withTimezone: true }),
     createdAt: timestamp({ withTimezone: true }).notNull().default(now),
   },
   (t) => [

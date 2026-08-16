@@ -137,6 +137,98 @@ export async function createPlace(
 }
 
 /**
+ * Les lieux que ce compte garde en tête de liste — un tri personnel, pas un vote.
+ */
+export async function lieuxFavoris(accountId: string): Promise<string[]> {
+  const rows = await db
+    .select({ placeId: s.placeFavorite.placeId })
+    .from(s.placeFavorite)
+    .where(eq(s.placeFavorite.accountId, accountId));
+  return rows.map((r) => r.placeId);
+}
+
+/**
+ * Épingle ou détache un favori : même geste, état inversé. Rend le nouvel état.
+ *
+ * Un lieu disparu ne s'épingle pas — sans ce garde-fou, la contrainte de clé étrangère
+ * transformerait un favori sur un lieu archivé en erreur serveur.
+ */
+export async function basculerFavori(accountId: string, placeId: string): Promise<boolean> {
+  const detache = await db
+    .delete(s.placeFavorite)
+    .where(and(eq(s.placeFavorite.accountId, accountId), eq(s.placeFavorite.placeId, placeId)))
+    .returning({ placeId: s.placeFavorite.placeId });
+  if (detache.length > 0) return false;
+
+  const [lieu] = await db
+    .select({ id: s.place.id })
+    .from(s.place)
+    .where(and(eq(s.place.id, placeId), isNull(s.place.archivedAt)))
+    .limit(1);
+  if (!lieu) return false;
+
+  await db
+    .insert(s.placeFavorite)
+    .values({ accountId, placeId })
+    .onConflictDoNothing();
+  return true;
+}
+
+/** Les lieux que ce compte a rangés hors de sa liste. */
+export async function lieuxMasques(accountId: string): Promise<string[]> {
+  const rows = await db
+    .select({ placeId: s.placeHidden.placeId })
+    .from(s.placeHidden)
+    .where(eq(s.placeHidden.accountId, accountId));
+  return rows.map((r) => r.placeId);
+}
+
+/**
+ * Masque ou réaffiche un lieu pour ce compte. Rend vrai si le lieu est désormais masqué.
+ *
+ * Masquer retire aussi l'étoile : un lieu à la fois favori et invisible serait un état
+ * qui ne veut rien dire, et le réafficher un jour ne doit pas le faire resurgir épinglé.
+ */
+export async function basculerMasque(accountId: string, placeId: string): Promise<boolean> {
+  const reaffiche = await db
+    .delete(s.placeHidden)
+    .where(and(eq(s.placeHidden.accountId, accountId), eq(s.placeHidden.placeId, placeId)))
+    .returning({ placeId: s.placeHidden.placeId });
+  if (reaffiche.length > 0) return false;
+
+  const [lieu] = await db
+    .select({ id: s.place.id })
+    .from(s.place)
+    .where(and(eq(s.place.id, placeId), isNull(s.place.archivedAt)))
+    .limit(1);
+  if (!lieu) return false;
+
+  await db
+    .delete(s.placeFavorite)
+    .where(and(eq(s.placeFavorite.accountId, accountId), eq(s.placeFavorite.placeId, placeId)));
+  await db.insert(s.placeHidden).values({ accountId, placeId }).onConflictDoNothing();
+  return true;
+}
+
+/**
+ * Retirer un lieu du catalogue commun — le geste du relecteur devant un doublon.
+ *
+ * C'est un archivage, pas un effacement : les sorties passées qui pointaient dessus
+ * gardent leur lieu, et une erreur de relecture se répare en base. Toutes les lectures
+ * du catalogue filtrent déjà `archived_at`.
+ */
+export async function archiverLieu(placeId: string): Promise<Result<void>> {
+  const archivees = await db
+    .update(s.place)
+    .set({ archivedAt: sql`now()` })
+    .where(and(eq(s.place.id, placeId), isNull(s.place.archivedAt)))
+    .returning({ id: s.place.id });
+
+  if (archivees.length === 0) return ko("lieu_inconnu");
+  return ok(undefined as void);
+}
+
+/**
  * Classer un lieu qui ne l'est pas encore.
  *
  * Même règle que pour l'adresse : remplir un vide se fait seul, sans rien défaire du

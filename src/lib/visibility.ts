@@ -136,6 +136,12 @@ export type VisiblePublication = {
   note: string | null;
   startsAt: Date;
   endsAt: Date;
+  /**
+   * Quand les destinataires ont été prévenus, ou null tant que la minute de silence
+   * court : c'est elle qui permet à l'auteur d'annuler sans qu'aucun téléphone n'ait
+   * sonné, et à l'écran de le lui dire.
+   */
+  notifiedAt: Date | null;
   /** Les prénoms des enfants que l'auteur a déclarés présents. */
   authorChildren: string[];
   /** Le « +n » : les personnes qui ont rejoint et que ce lecteur a le droit de voir. */
@@ -190,6 +196,7 @@ export async function visiblePublications(
     note: string | null;
     starts_at: Date;
     ends_at: Date;
+    notified_at: Date | null;
     author_children: string[];
     other_participants: number;
   }>(sql`
@@ -208,6 +215,7 @@ export async function visiblePublications(
       p.note,
       p.starts_at,
       p.ends_at,
+      p.notified_at,
       (
         select coalesce(array_agg(ch.first_name order by ch.first_name), '{}')
         from publication_participant_child ppc
@@ -245,6 +253,7 @@ export async function visiblePublications(
     note: r.note,
     startsAt: asDate(r.starts_at),
     endsAt: asDate(r.ends_at),
+    notifiedAt: r.notified_at ? asDate(r.notified_at) : null,
     authorChildren: r.author_children ?? [],
     otherParticipants: r.other_participants,
   }));

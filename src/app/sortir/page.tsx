@@ -1,16 +1,15 @@
 import Link from "next/link";
 
 import { circlesByChild, myChildren } from "@/lib/children";
-import { searchPlaces } from "@/lib/places";
+import { lieuxFavoris, lieuxMasques, searchPlaces } from "@/lib/places";
 import { defaultAudience, dureesProposees, lastOuting } from "@/lib/publications";
 import { requireAccount } from "@/lib/session";
 import { readerCircles } from "@/lib/visibility";
-import { declarerSortie, refaireDerniereSortie } from "../actions";
+import { declarerSortie } from "../actions";
 import { ChoixDuLieu } from "./choix-lieu-client";
 import { LiaisonEnfantsCercles } from "./liaison-client";
 import {
   Alerte,
-  Bouton,
   LienBouton,
   PUCE_COCHEE,
   Titre,
@@ -50,14 +49,17 @@ export default async function Sortir({
   const { erreur, q } = await searchParams;
   const recherche = (q ?? "").trim();
 
-  const [lieux, cercles, defauts, enfants, derniere, cerclesParEnfant] = await Promise.all([
-    searchPlaces(recherche, 30),
-    readerCircles(account.id),
-    defaultAudience(account.id),
-    myChildren(account.id),
-    lastOuting(account.id),
-    circlesByChild(account.id),
-  ]);
+  const [lieux, cercles, defauts, enfants, derniere, cerclesParEnfant, favoris, masques] =
+    await Promise.all([
+      searchPlaces(recherche, 60),
+      readerCircles(account.id),
+      defaultAudience(account.id),
+      myChildren(account.id),
+      lastOuting(account.id),
+      circlesByChild(account.id),
+      lieuxFavoris(account.id),
+      lieuxMasques(account.id),
+    ]);
 
   const cerclesCoches = new Set(defauts.map((c) => c.id));
 
@@ -66,7 +68,7 @@ export default async function Sortir({
 
   return (
     <main className="apparait">
-      <Titre emoji="🌳" sous="Touchez le lieu où vous êtes, ou où vous serez.">
+      <Titre emoji="🌳" sous="Choisissez le lieu, confirmez — rien ne part avant.">
         Nous sortons
       </Titre>
 
@@ -74,16 +76,13 @@ export default async function Sortir({
         <Alerte ton="erreur">{MESSAGES[erreur] ?? "La sortie n'a pas pu être déclarée."}</Alerte>
       ) : null}
 
-      {derniere ? (
-        <form action={refaireDerniereSortie} className="mb-5">
-          <Bouton>Comme la dernière fois : {derniere.placeName}</Bouton>
-        </form>
-      ) : null}
-
       {/*
-        La recherche n'apparaît que lorsqu'elle sert. En dessous d'une dizaine de lieux, le
-        défilement va plus vite qu'un champ à remplir — et l'écran doit rester à deux gestes.
-        Elle est en dehors du formulaire de sortie : on n'imbrique pas deux formulaires.
+        La recherche ouvre l'écran : c'est le premier geste de qui cherche un lieu précis.
+        « Comme la dernière fois » a vécu ici en bouton d'envoi : un toucher par erreur
+        publiait vers de vraies familles. Le dernier lieu est désormais présélectionné
+        dans le choix, en dessous — même raccourci, mais la confirmation reste la porte.
+        La recherche est en dehors du formulaire de sortie : on n'imbrique pas deux
+        formulaires.
       */}
       {lieux.length > 8 || recherche ? (
         <form method="get" className="mb-5 flex gap-2">
@@ -264,6 +263,9 @@ export default async function Sortir({
               lat: lieu.lat,
               lon: lieu.lon,
             }))}
+            dernierLieuId={derniere?.placeId ?? null}
+            favorisInitiaux={favoris}
+            masquesInitiaux={masques}
             cleApi={process.env.GOOGLE_MAPS_API_KEY ?? null}
             mapId={process.env.GOOGLE_MAPS_MAP_ID ?? null}
           />

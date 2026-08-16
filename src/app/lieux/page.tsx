@@ -7,12 +7,13 @@ import {
   estCategorieLieu,
 } from "@/lib/categories-lieu";
 import { VALIDATIONS_RENOMMAGE, openRenames, searchPlaces } from "@/lib/places";
-import { requireAccount } from "@/lib/session";
+import { estRelecteur, requireAccount } from "@/lib/session";
 import {
   completerAdresseLieu,
   completerCategorieLieu,
   proposerAdresse,
   proposerRenommage,
+  retirerLieu,
   validerRenommage,
 } from "../actions";
 import { Alerte, Carte, Navigation, Pastille, Titre, Vide, lienCarte, teinte } from "../ui";
@@ -45,10 +46,12 @@ export default async function Lieux({
     applique?: string;
     adresse?: string;
     categorie?: string;
+    retire?: string;
   }>;
 }) {
   const account = await requireAccount();
-  const { q, erreur, propose, applique, adresse, categorie } = await searchParams;
+  const { q, erreur, propose, applique, adresse, categorie, retire } = await searchParams;
+  const relecteur = estRelecteur(account);
 
   const [lieux, corrections] = await Promise.all([
     searchPlaces(q ?? "", 100),
@@ -73,6 +76,7 @@ export default async function Lieux({
       {applique ? <Alerte ton="succes">Le lieu est renommé pour tout le monde.</Alerte> : null}
       {adresse ? <Alerte ton="succes">Merci : le lieu se trouve maintenant.</Alerte> : null}
       {categorie ? <Alerte ton="succes">Merci : le lieu est classé.</Alerte> : null}
+      {retire ? <Alerte ton="succes">Le lieu est retiré du catalogue.</Alerte> : null}
       {propose && !applique ? (
         <Alerte>
           Votre correction est proposée. Elle s&apos;appliquera quand {VALIDATIONS_RENOMMAGE}{" "}
@@ -239,6 +243,26 @@ export default async function Lieux({
                       </button>
                     </form>
                   </details>
+
+                  {/*
+                    Retirer un lieu est le seul geste de cette page qui ne soit pas
+                    collectif : c'est celui du relecteur devant un doublon manifeste, et
+                    c'est un archivage — les sorties passées gardent leur lieu, une
+                    erreur se répare en base.
+                  */}
+                  {relecteur ? (
+                    <details>
+                      <summary className="cursor-pointer py-1 text-sm font-bold text-[color:var(--color-doux)]">
+                        Ce lieu est en trop ? (relecture)
+                      </summary>
+                      <form action={retirerLieu} className="mt-2">
+                        <input type="hidden" name="lieu" value={lieu.id} />
+                        <button className="rounded-[var(--radius-pilule)] px-4 py-2 text-sm font-bold text-[color:var(--color-fond)] shadow-[0_2px_0_0_rgba(0,0,0,0.18)] [background:var(--color-corail)]">
+                          Retirer du catalogue
+                        </button>
+                      </form>
+                    </details>
+                  ) : null}
 
                   {lieu.address ? (
                     <details>

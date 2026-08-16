@@ -424,11 +424,25 @@ export async function notifyPublication(
   send: Sender,
 ): Promise<NotifyReport> {
   const [publication] = await db
-    .select({ kind: s.publication.kind })
+    .select({
+      kind: s.publication.kind,
+      withdrawnAt: s.publication.withdrawnAt,
+      notifiedAt: s.publication.notifiedAt,
+    })
     .from(s.publication)
     .where(eq(s.publication.id, publicationId))
     .limit(1);
   if (!publication) return { sent: 0, failed: 0, recipients: 0 };
+
+  /*
+    Retirée pendant la minute de silence : personne n'est prévenu, et c'est tout le sens
+    de cette minute — un pouce qui a glissé se rattrape sans qu'aucun téléphone n'ait
+    sonné. Déjà notifiée : on ne sonne pas deux fois, quel que soit le chemin — l'envoi
+    différé et le rattrapage du planificateur passent tous les deux par ici.
+  */
+  if (publication.withdrawnAt || publication.notifiedAt) {
+    return { sent: 0, failed: 0, recipients: 0 };
+  }
 
   const recipients = await recipientsFor(publicationId);
   const report: NotifyReport = { sent: 0, failed: 0, recipients: recipients.length };
@@ -446,7 +460,45 @@ export async function notifyPublication(
     );
   }
 
+  // Même sans destinataire : la publication est traitée, le rattrapage n'y reviendra pas.
+  await db
+    .update(s.publication)
+    .set({ notifiedAt: sql`now()` })
+    .where(eq(s.publication.id, publicationId));
+
   return report;
+}
+
+/** La minute de silence entre la confirmation d'une sortie et les téléphones qui sonnent. */
+export const DELAI_AVANT_ALERTE_MS = 60_000;
+
+/**
+ * Rattraper les publications que l'envoi différé a manquées.
+ *
+ * L'alerte normale part du serveur, une minute après la confirmation (actions.ts). Si le
+ * serveur redémarre pendant cette minute, elle serait perdue : ce passage ramasse ce qui
+ * n'a été ni notifié ni retiré, encore en cours, et de moins d'un jour — au-delà, sonner
+ * pour une sortie d'hier réveillerait pour rien.
+ */
+export async function notifyPendingPublications(send: Sender): Promise<number> {
+  const enRetard = await db
+    .select({ id: s.publication.id })
+    .from(s.publication)
+    .where(
+      and(
+        isNull(s.publication.notifiedAt),
+        isNull(s.publication.withdrawnAt),
+        sql`${s.publication.createdAt} < now() - interval '1 minute'`,
+        sql`${s.publication.createdAt} > now() - interval '1 day'`,
+        sql`${s.publication.endsAt} > now()`,
+      ),
+    );
+
+  for (const publication of enRetard) {
+    await notifyPublication(publication.id, send);
+  }
+
+  return enRetard.length;
 }
 
 /** L'expéditeur de production. Chargé à la demande pour ne pas exiger les clés en test. */

@@ -1,9 +1,15 @@
 /**
- * Ce que ces tests garantissent : on n'est jamais notifié de ce qu'on ne verrait pas, et
- * le contenu envoyé ne raconte rien sur un écran verrouillé.
+ * Ce que ces tests garantissent : on n'est jamais notifié de ce qu'on ne verrait pas, le
+ * contenu envoyé ne raconte rien sur un écran verrouillé, une sortie annulée pendant la
+ * minute de silence ne sonne personne, et rien ne sonne jamais deux fois.
  */
 
+import { sql } from "drizzle-orm";
 import { beforeEach, describe, expect, it } from "vitest";
+
+import { db } from "@/lib/db";
+import { notifyPendingPublications } from "@/lib/notifications";
+import { withdraw } from "@/lib/publications";
 
 import {
   ajouterMotCle,
@@ -539,5 +545,76 @@ describe("Envoi", () => {
   it("le texte diffère selon la nature du signal", () => {
     expect(payloadFor("presence", "Classe 4P").body).toContain("sortie");
     expect(payloadFor("attendance", "Classe 4P").body).toContain("inscription");
+  });
+});
+
+describe("La minute de silence", () => {
+  it("une sortie retirée avant l'envoi ne sonne personne", async () => {
+    const alice = await createAccount("Alice");
+    const bob = await createAccount("Bob");
+    const classe = await createCircle(alice);
+    await join(classe, bob);
+    await abonner(bob);
+    const parc = await createPlace();
+    const presence = await declarePresence({ author: alice, place: parc, circles: [classe] });
+
+    await withdraw(alice.id, presence.id);
+
+    const { envois, send } = expediteur();
+    const rapport = await notifyPublication(presence.id, send);
+
+    expect(envois).toEqual([]);
+    expect(rapport.sent).toBe(0);
+  });
+
+  it("ne sonne jamais deux fois, quel que soit le chemin", async () => {
+    const alice = await createAccount("Alice");
+    const bob = await createAccount("Bob");
+    const classe = await createCircle(alice);
+    await join(classe, bob);
+    await abonner(bob);
+    const parc = await createPlace();
+    const presence = await declarePresence({ author: alice, place: parc, circles: [classe] });
+
+    const { envois, send } = expediteur();
+    await notifyPublication(presence.id, send);
+    // Second passage — l'envoi différé et le rattrapage du planificateur se croisent.
+    await notifyPublication(presence.id, send);
+
+    expect(envois).toHaveLength(1);
+  });
+
+  it("le rattrapage ramasse l'oubliée, laisse la fraîche et la retirée", async () => {
+    const alice = await createAccount("Alice");
+    const bob = await createAccount("Bob");
+    const classe = await createCircle(alice);
+    await join(classe, bob);
+    await abonner(bob);
+    const parc = await createPlace();
+
+    // Oubliée : créée il y a deux minutes, jamais notifiée — un redémarrage du serveur.
+    const oubliee = await declarePresence({ author: alice, place: parc, circles: [classe] });
+    await db.execute(sql`
+      update publication set created_at = now() - interval '2 minutes' where id = ${oubliee.id}
+    `);
+    // Fraîche : sa minute de silence court encore, le rattrapage ne la touche pas.
+    await declarePresence({ author: alice, place: parc, circles: [classe] });
+    // Retirée pendant sa minute : elle ne sonnera jamais.
+    const retiree = await declarePresence({ author: alice, place: parc, circles: [classe] });
+    await db.execute(sql`
+      update publication set created_at = now() - interval '2 minutes' where id = ${retiree.id}
+    `);
+    await withdraw(alice.id, retiree.id);
+
+    const { envois, send } = expediteur();
+    const rattrapees = await notifyPendingPublications(send);
+
+    expect(rattrapees).toBe(1);
+    expect(envois).toHaveLength(1);
+
+    // Un second passage n'a plus rien à ramasser.
+    const seconde = expediteur();
+    expect(await notifyPendingPublications(seconde.send)).toBe(0);
+    expect(seconde.envois).toEqual([]);
   });
 });

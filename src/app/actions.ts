@@ -46,6 +46,7 @@ import { heureDeGeneve } from "@/lib/heure";
 import { ACCES, TARIFS } from "@/lib/ingest/tarif";
 import { clearWarnings, correctAndPublish, rejectEvent, withdrawEvent } from "@/lib/ingest/run";
 import {
+  DELAI_AVANT_ALERTE_MS,
   ajouterMotCle,
   muteMember,
   notifyJoinRequest,
@@ -68,6 +69,9 @@ import {
   optionsEnregistrement,
 } from "@/lib/passkeys";
 import {
+  archiverLieu,
+  basculerFavori,
+  basculerMasque,
   completerAdresse,
   completerCategorie,
   createPlace,
@@ -81,7 +85,6 @@ import {
   declarePresence,
   extendPresence,
   joinPresence,
-  lastOuting,
   leavePresence,
   myAttendance,
   setDefaultAudience,
@@ -665,12 +668,20 @@ export async function basculerSourdine(formData: FormData) {
 /* ------------------------------------------------------------------- sorties */
 
 /**
- * Prévenir les destinataires après coup, sans faire attendre celui qui vient de publier :
- * l'envoi push prend le temps qu'il prend, et il ne doit pas retenir l'écran de quelqu'un
- * qui a un enfant dans les bras.
+ * Prévenir les destinataires une minute après, jamais au moment même.
+ *
+ * Cette minute est la fenêtre où « Annuler » ne réveille personne : un pouce qui a
+ * glissé sur la confirmation se rattrape sans qu'aucun téléphone n'ait sonné —
+ * `notifyPublication` vérifie le retrait au moment de l'envoi, pas avant. L'écran de
+ * celui qui publie, lui, n'attend rien : tout part après la réponse.
+ *
+ * Si le serveur redémarre pendant la minute, le passage « alertes » du planificateur
+ * ramasse ce qui n'a été ni notifié ni retiré (notifyPendingPublications) ; la date
+ * `notified_at` garantit qu'aucun des deux chemins ne sonne deux fois.
  */
 function prevenir(publicationId: string) {
   after(async () => {
+    await new Promise((suite) => setTimeout(suite, DELAI_AVANT_ALERTE_MS));
     try {
       await notifyPublication(publicationId, await webPushSender());
     } catch {
@@ -797,6 +808,31 @@ export async function ajouterLieu(formData: FormData) {
   redirect("/sortir");
 }
 
+/**
+ * Épingler ou détacher un lieu favori.
+ *
+ * Appelée depuis le sélecteur de lieu sans passer par un envoi de formulaire : un
+ * favori qui rechargerait la page emporterait les cercles décochés et le lieu choisi.
+ * Pas de redirect — l'écran garde la main, l'étoile a déjà changé d'état chez lui.
+ */
+export async function basculerFavoriLieu(placeId: string): Promise<void> {
+  const account = await requireAccount();
+  await basculerFavori(account.id, placeId);
+}
+
+/** Masquer ou réafficher un lieu — même contrat que le favori : sans rechargement. */
+export async function basculerMasqueLieu(placeId: string): Promise<void> {
+  const account = await requireAccount();
+  await basculerMasque(account.id, placeId);
+}
+
+/** Retirer un lieu en trop du catalogue — réservé au relecteur, archivage réversible. */
+export async function retirerLieu(formData: FormData) {
+  await requireRelecteur();
+  const result = await archiverLieu(String(formData.get("lieu") ?? ""));
+  redirect(result.ok ? "/lieux?retire=1" : `/lieux?erreur=${result.reason}`);
+}
+
 /** Classer un lieu encore sans catégorie : un vide se remplit seul, comme l'adresse. */
 export async function completerCategorieLieu(formData: FormData) {
   await requireAccount();
@@ -899,20 +935,9 @@ export async function enregistrerMot(formData: FormData) {
   redirect(result.ok ? `/sortie/${sortie}` : `/sortie/${sortie}?erreur=${result.reason}`);
 }
 
-/** Rejouer la dernière sortie : même lieu, même durée, mêmes enfants. */
-export async function refaireDerniereSortie() {
-  const account = await requireAccount();
-  const derniere = await lastOuting(account.id);
-  if (!derniere) redirect("/sortir");
-
-  const result = await declarePresence(account.id, {
-    placeId: derniere.placeId,
-    minutes: derniere.minutes,
-    childIds: derniere.childIds,
-  });
-
-  if (!result.ok) redirect(`/sortir?erreur=${result.reason}`);
-
-  prevenir(result.value.publicationId);
-  redirect("/maintenant");
-}
+/*
+  « Rejouer la dernière sortie » a vécu ici : un bouton qui publiait d'un seul toucher,
+  c'est-à-dire aussi d'un toucher par erreur. Le raccourci survit en présélection du
+  dernier lieu dans le choix (sortir/page.tsx) — même vitesse, mais la confirmation
+  reste la seule porte par où une sortie part.
+*/
