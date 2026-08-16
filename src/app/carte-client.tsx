@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   APIProvider,
   AdvancedMarker,
@@ -8,16 +8,9 @@ import {
   InfoWindow,
   Map as CarteGoogle,
   Pin,
-  useMap,
 } from "@vis.gl/react-google-maps";
 
-import {
-  cadrageInitial,
-  distanceMetres,
-  formatDistance,
-  lienItineraire,
-  type PointCarte,
-} from "@/lib/carte";
+import { cadrageInitial, lienItineraire, type PointCarte } from "@/lib/carte";
 
 /**
  * La carte des lieux, voilée tant qu'on ne la demande pas.
@@ -30,20 +23,19 @@ import {
  * Sans JavaScript, le bouton ne fait rien et la liste au-dessus reste l'écran entier :
  * la carte est un plus, jamais un préalable.
  *
+ * Pas de géolocalisation ici, et ce n'est pas un oubli : `Permissions-Policy` (proxy.ts)
+ * la bloque pour tout Allezou — c'est la promesse de PRODUIT.md, opposable au code même.
+ *
  * La clé arrive en prop depuis la page, qui la lit dans l'environnement du serveur à
  * chaque requête — jamais par `NEXT_PUBLIC_`, que `next build` figerait dans l'image
  * Docker au moment précis où `.dockerignore` en écarte les secrets. Ainsi, remplir la
  * clé sur le serveur et redémarrer suffit, sans reconstruire.
  */
 
-type Position = { lat: number; lon: number };
-
 type PropsCarte = {
   points: PointCarte[];
   /** Combien de lieux la carte ne peut pas montrer, faute de géocodage abouti. */
   sansPosition?: number;
-  /** Propose « Autour de moi » : utile pour choisir un parc, pas pour lire un agenda. */
-  autourDeMoi?: boolean;
   /** `GOOGLE_MAPS_API_KEY` lue par la page côté serveur. Absente, la carte s'explique. */
   cleApi?: string | null;
   /** `GOOGLE_MAPS_MAP_ID`, facultatif — style de carte. */
@@ -61,7 +53,6 @@ type PropsCarte = {
 export function CarteDesLieux({
   points,
   sansPosition = 0,
-  autourDeMoi = false,
   cleApi,
   mapId,
   onChoisir,
@@ -96,7 +87,6 @@ export function CarteDesLieux({
     <CarteOuverte
       points={points}
       sansPosition={sansPosition}
-      autourDeMoi={autourDeMoi}
       cleApi={cleApi}
       mapId={mapId}
       onChoisir={onChoisir}
@@ -108,15 +98,12 @@ export function CarteDesLieux({
 function CarteOuverte({
   points,
   sansPosition = 0,
-  autourDeMoi = false,
   cleApi,
   mapId,
   onChoisir,
   choisiId,
 }: PropsCarte) {
   const [selection, setSelection] = useState<PointCarte | null>(null);
-  const [position, setPosition] = useState<Position | null>(null);
-  const [positionRefusee, setPositionRefusee] = useState(false);
 
   /*
     La clé manque : le dire à l'écran plutôt que d'afficher un cadre gris. Ce message
@@ -134,34 +121,8 @@ function CarteOuverte({
     );
   }
 
-  const demanderPosition = () => {
-    setPositionRefusee(false);
-    navigator.geolocation.getCurrentPosition(
-      ({ coords }) => setPosition({ lat: coords.latitude, lon: coords.longitude }),
-      () => setPositionRefusee(true),
-      { enableHighAccuracy: true, timeout: 10_000 },
-    );
-  };
-
   return (
     <div className="mb-6">
-      {autourDeMoi ? (
-        <div className="mb-2 flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            onClick={demanderPosition}
-            className="rounded-[var(--radius-pilule)] px-4 py-2 text-sm font-bold shadow-[inset_0_0_0_2px_var(--color-trait)]"
-          >
-            📍 Autour de moi
-          </button>
-          <span className="text-sm text-[color:var(--color-doux)]">
-            {positionRefusee
-              ? "Position refusée ou introuvable — la carte reste utilisable."
-              : "Votre position n'est jamais envoyée à Allezou."}
-          </span>
-        </div>
-      ) : null}
-
       <div className="h-[26rem] overflow-hidden rounded-[var(--radius-carte)] shadow-[inset_0_0_0_2px_var(--color-trait)]">
         <APIProvider apiKey={cleApi}>
           <CarteGoogle
@@ -189,19 +150,6 @@ function CarteOuverte({
               </AdvancedMarker>
             ))}
 
-            {position ? (
-              <>
-                <Recadrage position={position} />
-                <AdvancedMarker
-                  position={{ lat: position.lat, lng: position.lon }}
-                  title="Vous êtes ici"
-                >
-                  {/* Le point bleu que toutes les cartes ont appris aux gens. */}
-                  <span className="block h-4 w-4 rounded-full border-2 border-white bg-[#4285f4] shadow-md" />
-                </AdvancedMarker>
-              </>
-            ) : null}
-
             {selection ? (
               <InfoWindow
                 position={{ lat: selection.lat, lng: selection.lon }}
@@ -211,9 +159,6 @@ function CarteOuverte({
               >
                 <div className="flex flex-col gap-1">
                   {selection.sousTitre ? <span>{selection.sousTitre}</span> : null}
-                  {position ? (
-                    <span>à {formatDistance(distanceMetres(position, selection))} à vol d&apos;oiseau</span>
-                  ) : null}
                   {onChoisir ? (
                     <button
                       type="button"
@@ -249,22 +194,6 @@ function CarteOuverte({
       {sansPosition > 0 ? <NoteSansPosition n={sansPosition} /> : null}
     </div>
   );
-}
-
-/**
- * Recentre la carte quand la position arrive — et seulement là. Le reste du temps, la
- * main reste à la personne : une carte qui se recadre toute seule est une carte qu'on lâche.
- */
-function Recadrage({ position }: { position: Position }) {
-  const carte = useMap();
-
-  useEffect(() => {
-    if (!carte) return;
-    carte.panTo({ lat: position.lat, lng: position.lon });
-    if ((carte.getZoom() ?? 0) < 14) carte.setZoom(14);
-  }, [carte, position]);
-
-  return null;
 }
 
 /** Dire ce que la carte ne montre pas : un lieu absent en silence semble ne pas exister. */

@@ -140,7 +140,6 @@ export function ChoixDuLieu({
         <CarteDesLieux
           points={points}
           sansPosition={lieux.length - points.length}
-          autourDeMoi
           cleApi={cleApi}
           mapId={mapId}
           choisiId={choisi}

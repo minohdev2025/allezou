@@ -11,10 +11,16 @@ familles :
   Lien officiel, gratuit, sans clé, en quantité illimitée. Toujours au clic : rien ne
   part tant que personne ne demande rien.
 - **Une carte intégrée** (`src/app/carte-client.tsx`) sur l'agenda (toutes les activités
-  filtrées) et sur « Nous sortons » (tous les lieux, avec « Autour de moi »). Elle est
-  **voilée** : Google Maps ne se charge qu'après un toucher sur « Voir sur la carte »,
-  dans le même esprit. La géolocalisation passe par le navigateur et la position n'est
-  jamais envoyée à Allezou.
+  filtrées) et sur « Nous sortons » (tous les lieux du catalogue, choisissables d'un
+  toucher de marqueur). Elle est **voilée** : Google Maps ne se charge qu'après un
+  toucher sur « Voir sur la carte », dans le même esprit. La CSP (`src/proxy.ts`)
+  autorise les hôtes Google nécessaires, suivant la liste documentée par Google.
+- **Poser un nouveau lieu du doigt** (`src/app/sortir/lieu/position-client.tsx`) : à
+  l'ajout d'un lieu, le point touché sur la carte part avec le formulaire — plus précis
+  que le géocodage, qui n'a alors plus rien à deviner.
+- **Pas de géolocalisation**, nulle part : `Permissions-Policy: geolocation=()` la bloque
+  pour toute l'application. C'est la promesse « pas de position GPS » de PRODUIT.md,
+  opposable au code — la carte se pince, comme un plan papier.
 
 ## Le coût
 

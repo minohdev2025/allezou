@@ -14,6 +14,12 @@ import { NextResponse, type NextRequest } from "next/server";
  * `Permissions-Policy: geolocation=()` n'est pas une précaution de forme : c'est la promesse
  * de PRODUIT.md rendue opposable par le navigateur. Allezou ne peut pas demander la position,
  * même si quelqu'un ajoutait le code pour le faire.
+ *
+ * Les hôtes Google des directives style/img/font/connect/frame servent à la carte intégrée
+ * (carte-client.tsx), suivant la liste que Google documente pour son API JS. La CSP autorise,
+ * mais c'est le voile qui décide : aucune de ces origines ne reçoit de requête tant que
+ * personne n'a touché « Voir sur la carte ». Le script, lui, n'a besoin de rien de plus —
+ * `strict-dynamic` couvre le chargeur que notre code, porteur du nonce, insère lui-même.
  */
 export function proxy(request: NextRequest) {
   const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
@@ -22,9 +28,11 @@ export function proxy(request: NextRequest) {
   const csp = `
     default-src 'self';
     script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${dev ? " 'unsafe-eval'" : ""};
-    style-src 'self' 'unsafe-inline';
-    img-src 'self' blob: data:;
-    font-src 'self';
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+    img-src 'self' blob: data: https://*.googleapis.com https://*.gstatic.com https://*.google.com;
+    font-src 'self' https://fonts.gstatic.com;
+    connect-src 'self' https://*.googleapis.com https://*.gstatic.com https://*.google.com;
+    frame-src 'self' https://*.google.com;
     object-src 'none';
     base-uri 'self';
     form-action 'self';

@@ -61,35 +61,8 @@ export function cadrageInitial(points: { lat: number; lon: number }[]):
   };
 }
 
-/**
- * La distance à vol d'oiseau, en mètres.
- *
- * Haversine sur une Terre sphérique : l'erreur est de l'ordre du pour mille, très en
- * dessous de ce que « à 850 m » promet à un parent avec une poussette.
- */
-export function distanceMetres(
-  a: { lat: number; lon: number },
-  b: { lat: number; lon: number },
-): number {
-  const RAYON_TERRE = 6_371_000;
-  const rad = (d: number) => (d * Math.PI) / 180;
-
-  const dLat = rad(b.lat - a.lat);
-  const dLon = rad(b.lon - a.lon);
-  const h =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLon / 2) ** 2;
-
-  return 2 * RAYON_TERRE * Math.asin(Math.sqrt(h));
-}
-
-/**
- * « 850 m », « 2,1 km » : l'ordre de grandeur, pas l'arpentage.
- *
- * Sous le kilomètre, la dizaine de mètres suffit ; au-delà, la centaine. Une virgule et
- * non un point : la distance se lit en français.
- */
-export function formatDistance(metres: number): string {
-  if (metres < 1000) return `${Math.max(10, Math.round(metres / 10) * 10)} m`;
-  return `${(Math.round(metres / 100) / 10).toLocaleString("fr-CH")} km`;
-}
+/*
+  Pas de calcul de distance « depuis ma position » ici, et ce n'est pas un manque :
+  la géolocalisation est bloquée pour tout Allezou par `Permissions-Policy` (proxy.ts),
+  promesse de PRODUIT.md. Une distance sans point de départ n'a rien à mesurer.
+*/
