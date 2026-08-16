@@ -33,6 +33,7 @@ import {
   revoquerInvitation,
 } from "../../actions";
 import { CodeQR } from "../../qr";
+import { PartageInvitation } from "./partage-client";
 import { Alerte, Bouton, Carte, Jeton, Pastille, jourCourt, teinte } from "../../ui";
 
 const MESSAGES: Record<string, string> = {
@@ -194,21 +195,25 @@ export default async function Cercle({
             JavaScript, sur un téléphone comme ailleurs.
           */}
           {messagePret ? (
-            <div className="mt-4">
-              <label
-                htmlFor="message-invitation"
-                className="mb-1 block text-sm font-bold leading-snug"
-              >
-                À envoyer par message, si vous voulez
-              </label>
-              <textarea
-                id="message-invitation"
-                readOnly
-                rows={8}
-                className="w-full rounded-xl bg-[color:var(--color-surface)] p-3 text-sm leading-snug"
-                value={messagePret}
-              />
-            </div>
+            <>
+              {/* Un toucher pour copier ou partager ; la zone de texte reste le chemin sans JavaScript. */}
+              <PartageInvitation lien={`${appUrl}/rejoindre/${lien}`} message={messagePret} />
+              <div className="mt-4">
+                <label
+                  htmlFor="message-invitation"
+                  className="mb-1 block text-sm font-bold leading-snug"
+                >
+                  À envoyer par message, si vous voulez
+                </label>
+                <textarea
+                  id="message-invitation"
+                  readOnly
+                  rows={8}
+                  className="w-full rounded-xl bg-[color:var(--color-surface)] p-3 text-sm leading-snug"
+                  value={messagePret}
+                />
+              </div>
+            </>
           ) : null}
         </Alerte>
       ) : null}
