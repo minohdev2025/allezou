@@ -105,6 +105,22 @@ export function IconePlus({ className = "" }: IconeProps) {
   );
 }
 
+/** L'œil barré du masquage : voir sans juger, ranger sans effacer. */
+export function IconeOeilBarre({ className = "" }: IconeProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={`${base} ${className}`} aria-hidden>
+      <path
+        d="M4 12c2.2-3.6 5-5.4 8-5.4 1.26 0 2.47.32 3.62.94M20 12c-2.2 3.6-5 5.4-8 5.4-1.26 0-2.47-.32-3.62-.94"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+      <circle cx="12" cy="12" r="2.6" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M5 19 19 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 export function IconeHorloge({ className = "" }: IconeProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={`${base} ${className}`} aria-hidden>

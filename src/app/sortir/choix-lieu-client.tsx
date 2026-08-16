@@ -13,7 +13,7 @@ import {
 } from "@/lib/categories-lieu";
 import { basculerFavoriLieu, basculerMasqueLieu } from "../actions";
 import { CarteDesLieux } from "../carte-client";
-import { Bouton, IconePlus, teinte } from "../ui";
+import { Bouton, IconeOeilBarre, IconePlus, teinte } from "../ui";
 
 /**
  * Choisir le lieu, puis confirmer — en deux gestes qui se voient.
@@ -25,8 +25,9 @@ import { Bouton, IconePlus, teinte } from "../ui";
  *
  * Les favoris (l'étoile) tiennent la tête de liste : une famille sort toujours aux trois
  * mêmes endroits. L'étoile bascule sans recharger — un envoi de formulaire emporterait
- * les cercles décochés et le lieu choisi. Le masquage (✕) est son miroir : un lieu qu'on
- * ne fréquente pas sort de la liste, la puce « Masqués » le garde à portée de retour.
+ * les cercles décochés et le lieu choisi. Le masquage (l'œil barré) est son miroir : un
+ * lieu qu'on ne fréquente pas sort de la liste, la puce « Masqués » le garde à portée
+ * de retour.
  *
  * Rien ne part avant le bouton de confirmation, et lui seul.
  */
@@ -269,9 +270,9 @@ export function ChoixDuLieu({
                       type="button"
                       onClick={() => basculerMasqueIci(lieu.id)}
                       aria-label={`Masquer ${lieu.name} de ma liste`}
-                      className="flex-1 rounded-[var(--radius-carte)] px-3 text-sm text-[color:var(--color-doux)] shadow-[inset_0_0_0_2px_var(--color-trait)]"
+                      className="flex flex-1 items-center justify-center rounded-[var(--radius-carte)] px-3 text-[color:var(--color-doux)] shadow-[inset_0_0_0_2px_var(--color-trait)]"
                     >
-                      ✕
+                      <IconeOeilBarre className="h-5 w-5" />
                     </button>
                   </span>
                 )}
