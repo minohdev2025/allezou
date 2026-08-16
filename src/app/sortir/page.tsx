@@ -11,7 +11,6 @@ import { LiaisonEnfantsCercles } from "./liaison-client";
 import {
   Alerte,
   Bouton,
-  IconePlus,
   LienBouton,
   PUCE_COCHEE,
   Titre,
@@ -270,25 +269,15 @@ export default async function Sortir({
         </form>
       )}
 
-      <div className="mt-7 space-y-3 text-center">
-        <p>
-          <Link
-            href="/sortir/lieu"
-            className="inline-flex items-center gap-1 font-bold text-[color:var(--color-vert)] underline underline-offset-4"
-          >
-            <IconePlus className="h-5 w-5" />
-            Le lieu n&apos;est pas dans la liste
-          </Link>
-        </p>
-        <p>
-          <Link
-            href="/maintenant"
-            className="text-[color:var(--color-doux)] underline underline-offset-4"
-          >
-            Annuler
-          </Link>
-        </p>
-      </div>
+      {/* « Pas dans la liste » vit désormais sous la liste elle-même (choix-lieu-client). */}
+      <p className="mt-7 text-center">
+        <Link
+          href="/maintenant"
+          className="text-[color:var(--color-doux)] underline underline-offset-4"
+        >
+          Annuler
+        </Link>
+      </p>
     </main>
   );
 }

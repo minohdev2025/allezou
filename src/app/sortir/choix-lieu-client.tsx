@@ -1,10 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 
 import { type PointCarte } from "@/lib/carte";
 import { CarteDesLieux } from "../carte-client";
-import { Bouton, teinte } from "../ui";
+import { Bouton, IconePlus, teinte } from "../ui";
 
 /**
  * Choisir le lieu, puis confirmer — en deux gestes qui se voient.
@@ -114,6 +115,21 @@ export function ChoixDuLieu({
           </li>
         ))}
       </ul>
+
+      {/*
+        « Pas dans la liste » se lit juste sous la liste : c'est en la finissant sans
+        trouver qu'on en a besoin. Placé après la confirmation, il ne se découvrait
+        qu'une fois le bouton d'envoi dépassé — trop tard pour servir.
+      */}
+      <p className="mt-3">
+        <Link
+          href="/sortir/lieu"
+          className="inline-flex items-center gap-1 font-bold text-[color:var(--color-vert)] underline underline-offset-4"
+        >
+          <IconePlus className="h-5 w-5" />
+          Le lieu n&apos;est pas dans la liste
+        </Link>
+      </p>
 
       {/*
         La carte est sous la liste, jamais au-dessus : le premier lieu doit rester au
