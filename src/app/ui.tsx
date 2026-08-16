@@ -105,18 +105,23 @@ export function IconePlus({ className = "" }: IconeProps) {
   );
 }
 
-/** L'œil barré du masquage : voir sans juger, ranger sans effacer. */
+/**
+ * L'œil barré du masquage : voir sans juger, ranger sans effacer.
+ *
+ * L'amande entière et sa pupille, pas un œil stylisé : à vingt pixels, seule la forme
+ * que tout le monde a déjà vue se reconnaît d'un coup d'œil.
+ */
 export function IconeOeilBarre({ className = "" }: IconeProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={`${base} ${className}`} aria-hidden>
       <path
-        d="M4 12c2.2-3.6 5-5.4 8-5.4 1.26 0 2.47.32 3.62.94M20 12c-2.2 3.6-5 5.4-8 5.4-1.26 0-2.47-.32-3.62-.94"
+        d="M2.5 12S6.5 4.9 12 4.9 21.5 12 21.5 12 17.5 19.1 12 19.1 2.5 12 2.5 12Z"
         stroke="currentColor"
         strokeWidth="1.8"
-        strokeLinecap="round"
+        strokeLinejoin="round"
       />
-      <circle cx="12" cy="12" r="2.6" stroke="currentColor" strokeWidth="1.8" />
-      <path d="M5 19 19 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M4.5 20 19.5 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
     </svg>
   );
 }

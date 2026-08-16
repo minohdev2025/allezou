@@ -64,6 +64,7 @@ export function ChoixDuLieu({
     return !masque && lieux.some((l) => l.id === dernierLieuId) ? dernierLieuId : null;
   });
   const [ouvert, setOuvert] = useState(choisi === null);
+  const [recherche, setRecherche] = useState("");
   const [filtre, setFiltre] = useState<CategorieLieu | null>(null);
   const [vueMasques, setVueMasques] = useState(false);
   const [favoris, setFavoris] = useState<Set<string>>(new Set(favorisInitiaux ?? []));
@@ -106,8 +107,25 @@ export function ChoixDuLieu({
     lancer(() => basculerMasqueLieu(id));
   };
 
-  const visibles = lieux.filter((l) => !masques.has(l.id));
-  const listeMasques = lieux.filter((l) => masques.has(l.id));
+  /*
+    La recherche vit ici, au milieu des lieux qu'elle fouille — pas en haut de l'écran,
+    dans un espace qui parlait d'autre chose. Elle filtre sur place, sans requête : les
+    lieux sont déjà chargés, et un rechargement emporterait les cercles décochés.
+    Tolérante aux accents, comme la déduplication du catalogue.
+  */
+  const normalise = (texte: string) =>
+    texte
+      .normalize("NFD")
+      .replace(/\p{Diacritic}/gu, "")
+      .toLowerCase();
+  const requete = normalise(recherche.trim());
+  const correspond = (l: LieuChoix) =>
+    requete === "" ||
+    normalise(l.name).includes(requete) ||
+    (l.commune ? normalise(l.commune).includes(requete) : false);
+
+  const visibles = lieux.filter((l) => !masques.has(l.id) && correspond(l));
+  const listeMasques = lieux.filter((l) => masques.has(l.id) && correspond(l));
 
   const categoriesPresentes = CATEGORIES_LIEU.filter((c) =>
     visibles.some((l) => l.categorie === c),
@@ -165,6 +183,23 @@ export function ChoixDuLieu({
         </summary>
 
         <div className="mt-3 space-y-3">
+          {/*
+            Sans attribut `name`, le champ ne part pas avec le formulaire ; et Entrée y
+            déclencherait l'envoi implicite — c'est-à-dire la sortie elle-même. On la
+            neutralise : chercher un lieu ne publie rien.
+          */}
+          <input
+            type="search"
+            value={recherche}
+            onChange={(e) => setRecherche(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") e.preventDefault();
+            }}
+            placeholder="Chercher un lieu"
+            aria-label="Chercher un lieu"
+            className="w-full rounded-[var(--radius-pilule)] bg-[color:var(--color-surface)] px-5 py-3 text-base ring-2 ring-[color:var(--color-trait)] outline-none focus:ring-[color:var(--color-vert)]"
+          />
+
           {categoriesPresentes.length > 1 || listeMasques.length > 0 ? (
             <div className="flex flex-wrap gap-2">
               <PuceFiltre
@@ -283,6 +318,12 @@ export function ChoixDuLieu({
           {vueMasques && listeMasques.length === 0 ? (
             <p className="text-sm leading-snug text-[color:var(--color-doux)]">
               Plus aucun lieu masqué — tout est revenu dans la liste.
+            </p>
+          ) : null}
+
+          {!vueMasques && ordonnes.length === 0 && requete !== "" ? (
+            <p className="text-sm leading-snug text-[color:var(--color-doux)]">
+              Aucun lieu de ce nom — le lien ci-dessous permet de l&apos;ajouter.
             </p>
           ) : null}
 

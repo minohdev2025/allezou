@@ -43,15 +43,14 @@ const MESSAGES: Record<string, string> = {
 export default async function Sortir({
   searchParams,
 }: {
-  searchParams: Promise<{ erreur?: string; q?: string }>;
+  searchParams: Promise<{ erreur?: string }>;
 }) {
   const account = await requireAccount();
-  const { erreur, q } = await searchParams;
-  const recherche = (q ?? "").trim();
+  const { erreur } = await searchParams;
 
   const [lieux, cercles, defauts, enfants, derniere, cerclesParEnfant, favoris, masques] =
     await Promise.all([
-      searchPlaces(recherche, 60),
+      searchPlaces("", 60),
       readerCircles(account.id),
       defaultAudience(account.id),
       myChildren(account.id),
@@ -77,26 +76,12 @@ export default async function Sortir({
       ) : null}
 
       {/*
-        La recherche ouvre l'écran : c'est le premier geste de qui cherche un lieu précis.
         « Comme la dernière fois » a vécu ici en bouton d'envoi : un toucher par erreur
         publiait vers de vraies familles. Le dernier lieu est désormais présélectionné
         dans le choix, en dessous — même raccourci, mais la confirmation reste la porte.
-        La recherche est en dehors du formulaire de sortie : on n'imbrique pas deux
-        formulaires.
+        La recherche, elle, vit dans la zone des lieux (choix-lieu-client) : elle filtre
+        ce qu'elle a sous les yeux, sans rechargement qui emporterait les réglages.
       */}
-      {lieux.length > 8 || recherche ? (
-        <form method="get" className="mb-5 flex gap-2">
-          <input
-            name="q"
-            defaultValue={recherche}
-            placeholder="Chercher un lieu"
-            className="min-w-0 flex-1 rounded-[var(--radius-pilule)] bg-[color:var(--color-surface)] px-5 py-3 text-base ring-2 ring-[color:var(--color-trait)] outline-none focus:ring-[color:var(--color-vert)]"
-          />
-          <button className="shrink-0 rounded-[var(--radius-pilule)] px-5 py-3 font-bold shadow-[inset_0_0_0_2px_var(--color-trait)]">
-            Chercher
-          </button>
-        </form>
-      ) : null}
 
       {/*
         Sans cercle, toucher un lieu ne publierait rien : la sortie est refusée faute de
@@ -114,16 +99,10 @@ export default async function Sortir({
           </LienBouton>
         </Vide>
       ) : lieux.length === 0 ? (
-        <Vide emoji="📍" titre={recherche ? "Aucun lieu de ce nom" : "Aucun lieu dans le catalogue"}>
-          {recherche ? (
-            <Link href="/sortir" className="font-bold underline underline-offset-4">
-              Voir tous les lieux
-            </Link>
-          ) : (
-            <Link href="/sortir/lieu" className="font-bold underline underline-offset-4">
-              Ajouter le premier
-            </Link>
-          )}
+        <Vide emoji="📍" titre="Aucun lieu dans le catalogue">
+          <Link href="/sortir/lieu" className="font-bold underline underline-offset-4">
+            Ajouter le premier
+          </Link>
         </Vide>
       ) : (
         <form action={declarerSortie} data-sortie>
