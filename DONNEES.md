@@ -101,7 +101,29 @@ Trois exceptions techniques, qui ne concernent aucune donnée personnelle :
 - l'adresse d'un parc ou d'une salle est envoyée une fois à OpenStreetMap, pour en connaître
   les coordonnées et que le lien vers une carte tombe sur le bon point. C'est l'adresse d'un
   lieu public, envoyée depuis notre serveur. **Jamais la vôtre, et jamais ce que vous
-  consultez** : votre téléphone ne contacte personne d'autre que nous.
+  consultez** : votre téléphone ne contacte personne d'autre que nous — à une exception
+  près, que vous déclenchez vous-même : la carte, juste en dessous.
+
+## La carte
+
+L'agenda et « Nous sortons » proposent une carte des lieux. Elle vient de Google Maps —
+c'est la carte que la plupart des parents savent déjà lire — et un fond de carte chargé
+d'office serait un traceur tiers, exactement ce que cette page exclut. Elle obéit donc à
+une règle simple : **rien ne part vers Google sans un geste de votre part**.
+
+- **Tant que vous ne demandez pas la carte, Google ne voit rien.** Elle n'est pas chargée
+  avec la page : rien ne part avant que vous ne touchiez « Voir sur la carte ».
+- **Au moment où vous la demandez**, votre navigateur télécharge la carte chez Google,
+  comme si vous ouvriez Google Maps vous-même. Google voit alors la zone affichée — des
+  lieux publics genevois — mais jamais qui regarde quelle liste : il n'apprend ni qui vous
+  êtes dans Allezou, ni quelle sortie ou quelle activité vous lisiez, ni de quelle page
+  vous venez.
+- Les liens ↗ posés à côté des lieux suivent la même règle : ils ouvrent Google Maps au
+  moment où vous les touchez, jamais avant.
+- **Votre position n'entre jamais en jeu.** La carte montre des lieux, pas vous. Allezou ne
+  demande jamais sa position à votre téléphone — la carte n'y change rien, et le navigateur
+  le lui interdirait de toute façon. Votre position n'est donc envoyée nulle part : ni à
+  Google, ni à Allezou.
 
 ## Vos droits
 
@@ -124,4 +146,4 @@ en silence.
 
 ---
 
-*Dernière mise à jour : 15 août 2026.*
+*Dernière mise à jour : 16 août 2026.*
