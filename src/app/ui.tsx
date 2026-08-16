@@ -404,7 +404,12 @@ export function Navigation({
         ombres, qui peignaient par-dessus. `-mx-5` annule le gouttière du `main` pour
         qu'il coure d'un bord à l'autre.
       */}
-      <nav className="sticky bottom-0 z-20 -mx-5 mt-8 border-t-2 border-[color:var(--color-trait)] bg-[color:var(--color-surface)] pb-[env(safe-area-inset-bottom)]">
+      {/*
+        Un plancher sous le menu : certains téléphones dessinent la page sous leurs
+        boutons système sans annoncer de marge (env() rend 0), et les libellés se
+        faisaient rogner. Au moins 0.75rem, davantage quand l'appareil dit sa vraie marge.
+      */}
+      <nav className="sticky bottom-0 z-20 -mx-5 mt-8 border-t-2 border-[color:var(--color-trait)] bg-[color:var(--color-surface)] pb-[max(env(safe-area-inset-bottom),0.75rem)]">
         <ul className="mx-auto flex max-w-lg">
         {onglets.map(({ cle, href, texte, Icone }) => {
           const estActif = actif === cle;
