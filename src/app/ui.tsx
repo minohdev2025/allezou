@@ -394,8 +394,15 @@ export function Navigation({
   ] as const;
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 border-t-2 border-[color:var(--color-trait)] bg-[color:var(--color-surface)] pb-[env(safe-area-inset-bottom)]">
-      <ul className="mx-auto flex max-w-lg">
+    <>
+      {/*
+        Fixé, le menu ne réserve pas sa place : ce cale-pied la tient dans le flux, pour
+        que le dernier bouton d'une page ne finisse pas dessous. Et `z-20` le garde
+        au-dessus de tout — les cartes à ombres de la page compte peignaient par-dessus.
+      */}
+      <div aria-hidden className="h-20" />
+      <nav className="fixed inset-x-0 bottom-0 z-20 border-t-2 border-[color:var(--color-trait)] bg-[color:var(--color-surface)] pb-[env(safe-area-inset-bottom)]">
+        <ul className="mx-auto flex max-w-lg">
         {onglets.map(({ cle, href, texte, Icone }) => {
           const estActif = actif === cle;
           return (
@@ -415,8 +422,9 @@ export function Navigation({
             </li>
           );
         })}
-      </ul>
-    </nav>
+        </ul>
+      </nav>
+    </>
   );
 }
 
