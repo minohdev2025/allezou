@@ -162,8 +162,8 @@ export function ActiverNotifications({
       <div>
         <p className="mb-2 font-bold">Les notifications sont bloquées</p>
         <p className="text-sm leading-snug text-[color:var(--color-doux)]">
-          Vous les avez refusées pour ce site. Il faut les réautoriser dans les réglages du
-          navigateur : nous ne pouvons pas le faire à votre place.
+          Vous devez autoriser les notifications d&apos;Allezou dans les réglages de votre
+          appareil pour les recevoir.
         </p>
       </div>
     );
@@ -177,7 +177,7 @@ export function ActiverNotifications({
           onClick={desactiver}
           className={`${bouton} bg-[color:var(--color-surface)] font-semibold shadow-[inset_0_0_0_2px_var(--color-trait)]`}
         >
-          Ne plus être prévenu sur cet appareil
+          Désactiver les notifications sur cet appareil
         </button>
         {endpoint ? (
           <p className="mt-2 text-xs text-[color:var(--color-doux)]">
@@ -192,9 +192,9 @@ export function ActiverNotifications({
     <button
       onClick={activer}
       disabled={etat === "en_cours"}
-      className={`${bouton} bg-[color:var(--color-vert)] font-bold text-[color:var(--color-fond)] shadow-[0_3px_0_0_rgba(0,0,0,0.18)] disabled:opacity-60`}
+      className={`${bouton} bg-[color:var(--color-vert)] font-bold text-[color:var(--color-fond)] shadow-[0_3px_0_0_var(--color-socle-vert)] disabled:opacity-60`}
     >
-      {etat === "en_cours" ? "…" : "Être prévenu sur cet appareil 🔔"}
+      {etat === "en_cours" ? "…" : "Activer les notifications sur cet appareil 🔔"}
     </button>
   );
 }
