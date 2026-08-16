@@ -1,13 +1,12 @@
 import Link from "next/link";
 
-import { type PointCarte } from "@/lib/carte";
 import { circlesByChild, myChildren } from "@/lib/children";
 import { searchPlaces } from "@/lib/places";
 import { defaultAudience, dureesProposees, lastOuting } from "@/lib/publications";
 import { requireAccount } from "@/lib/session";
 import { readerCircles } from "@/lib/visibility";
 import { declarerSortie, refaireDerniereSortie } from "../actions";
-import { CarteDesLieux } from "../carte-client";
+import { ChoixDuLieu } from "./choix-lieu-client";
 import { LiaisonEnfantsCercles } from "./liaison-client";
 import {
   Alerte,
@@ -31,12 +30,17 @@ const MESSAGES: Record<string, string> = {
 };
 
 /**
- * Deux gestes : on arrive ici, on touche un lieu. C'est tout.
+ * Choisir un lieu — dans la liste ou sur la carte — puis confirmer. Rien ne part avant.
  *
  * L'heure et la durée sont au-dessus, déjà réglées sur « maintenant, 2 heures » — on n'y
- * touche que si l'on veut autre chose. Tout tient dans un seul formulaire : les lieux en
- * sont les boutons d'envoi, ce qui permet d'emporter les réglages sans une ligne de
- * JavaScript.
+ * touche que si l'on veut autre chose. Tout tient dans un seul formulaire : des boutons
+ * radio pour le lieu, un bouton de confirmation qui nomme ce qui va partir, et les
+ * réglages voyagent avec, sans une ligne de JavaScript obligatoire (choix-lieu-client).
+ *
+ * La première version publiait au toucher du lieu. Un geste de moins, mais c'était le
+ * geste d'un pouce qui glisse — et une sortie partait au mauvais parc, vers de vraies
+ * familles. La confirmation rend la sortie relisible avant d'exister, et donne à la
+ * carte le droit de proposer « Choisir ce lieu » sans en faire un bouton de publication.
  */
 export default async function Sortir({
   searchParams,
@@ -124,7 +128,6 @@ export default async function Sortir({
           )}
         </Vide>
       ) : (
-        <>
         <form action={declarerSortie} data-sortie>
           <LiaisonEnfantsCercles parEnfant={cerclesParEnfant} />
           {/*
@@ -252,78 +255,19 @@ export default async function Sortir({
             </div>
           </details>
 
-          {/*
-            « Où » ne disait pas que la liste est l'action. Quelqu'un qui arrive cherche un
-            bouton « valider » qui n'existe pas, parce que le lieu est ce bouton. Le titre de
-            l'écran le dit déjà, mais sur un téléphone il est trois blocs plus haut.
-          */}
-          <p className="mb-2 font-bold">
-            Touchez un lieu :{" "}
-            <span className="font-normal text-[color:var(--color-doux)]">
-              la sortie part aussitôt
-            </span>
-          </p>
-          <ul className="space-y-3">
-            {lieux.map((lieu) => (
-              <li key={lieu.id}>
-                <button
-                  name="lieu"
-                  value={lieu.id}
-                  className="flex w-full items-center gap-4 rounded-[var(--radius-carte)] bg-[color:var(--color-surface)] px-5 py-4 text-left transition-transform active:translate-y-[2px]"
-                  style={{
-                    boxShadow: `inset 0 0 0 2px var(--color-${teinte(lieu.id)}), 0 3px 0 0 var(--color-${teinte(lieu.id)}-doux)`,
-                  }}
-                >
-                  <span
-                    aria-hidden
-                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-2xl"
-                    style={{ background: `var(--color-${teinte(lieu.id)}-doux)` }}
-                  >
-                    📍
-                  </span>
-                  <span className="min-w-0">
-                    <span className="titre block text-lg font-bold leading-tight">
-                      {lieu.name}
-                    </span>
-                    {lieu.commune ? (
-                      <span className="block text-sm text-[color:var(--color-doux)]">
-                        {lieu.commune}
-                      </span>
-                    ) : null}
-                  </span>
-                </button>
-              </li>
-            ))}
-          </ul>
+          <ChoixDuLieu
+            lieux={lieux.map((lieu) => ({
+              id: lieu.id,
+              name: lieu.name,
+              commune: lieu.commune,
+              address: lieu.address,
+              lat: lieu.lat,
+              lon: lieu.lon,
+            }))}
+            cleApi={process.env.GOOGLE_MAPS_API_KEY ?? null}
+            mapId={process.env.GOOGLE_MAPS_MAP_ID ?? null}
+          />
         </form>
-
-        {/*
-          La carte est sous la liste, jamais au-dessus : le premier lieu doit rester au
-          premier écran. Elle sert l'autre moitié de la question — « lequel est près de
-          moi ? » — avec la position qui reste dans le navigateur. Déclarer la sortie,
-          en revanche, reste un geste de la liste : on ne publie pas d'un toucher de
-          marqueur posé à côté d'un autre.
-        */}
-        <CarteDesLieux
-          points={lieux.flatMap((lieu): PointCarte[] =>
-            lieu.lat != null && lieu.lon != null
-              ? [
-                  {
-                    id: lieu.id,
-                    nom: lieu.name,
-                    sousTitre: [lieu.address, lieu.commune].filter(Boolean).join(", "),
-                    lat: lieu.lat,
-                    lon: lieu.lon,
-                  },
-                ]
-              : [],
-          )}
-          sansPosition={lieux.filter((l) => l.lat == null || l.lon == null).length}
-          autourDeMoi
-          cleApi={process.env.GOOGLE_MAPS_API_KEY ?? null}
-          mapId={process.env.GOOGLE_MAPS_MAP_ID ?? null}
-        />
-        </>
       )}
 
       <div className="mt-7 space-y-3 text-center">

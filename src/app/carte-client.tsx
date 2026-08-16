@@ -38,13 +38,7 @@ import {
 
 type Position = { lat: number; lon: number };
 
-export function CarteDesLieux({
-  points,
-  sansPosition = 0,
-  autourDeMoi = false,
-  cleApi,
-  mapId,
-}: {
+type PropsCarte = {
   points: PointCarte[];
   /** Combien de lieux la carte ne peut pas montrer, faute de géocodage abouti. */
   sansPosition?: number;
@@ -54,7 +48,25 @@ export function CarteDesLieux({
   cleApi?: string | null;
   /** `GOOGLE_MAPS_MAP_ID`, facultatif — style de carte. */
   mapId?: string | null;
-}) {
+  /**
+   * La carte peut servir à choisir, pas seulement à regarder : la bulle propose alors
+   * « Choisir ce lieu », et c'est l'écran d'à côté qui décide de ce que choisir veut
+   * dire. Ici, personne ne publie rien : choisir n'est pas confirmer.
+   */
+  onChoisir?: (point: PointCarte) => void;
+  /** Le lieu déjà choisi, pour peindre son marqueur aux couleurs de la maison. */
+  choisiId?: string | null;
+};
+
+export function CarteDesLieux({
+  points,
+  sansPosition = 0,
+  autourDeMoi = false,
+  cleApi,
+  mapId,
+  onChoisir,
+  choisiId,
+}: PropsCarte) {
   const [visible, setVisible] = useState(false);
 
   // Rien à montrer et rien à voiler : une carte vide n'aide personne, on n'affiche
@@ -87,23 +99,21 @@ export function CarteDesLieux({
       autourDeMoi={autourDeMoi}
       cleApi={cleApi}
       mapId={mapId}
+      onChoisir={onChoisir}
+      choisiId={choisiId}
     />
   );
 }
 
 function CarteOuverte({
   points,
-  sansPosition,
-  autourDeMoi,
+  sansPosition = 0,
+  autourDeMoi = false,
   cleApi,
   mapId,
-}: {
-  points: PointCarte[];
-  sansPosition: number;
-  autourDeMoi: boolean;
-  cleApi?: string | null;
-  mapId?: string | null;
-}) {
+  onChoisir,
+  choisiId,
+}: PropsCarte) {
   const [selection, setSelection] = useState<PointCarte | null>(null);
   const [position, setPosition] = useState<Position | null>(null);
   const [positionRefusee, setPositionRefusee] = useState(false);
@@ -169,7 +179,13 @@ function CarteOuverte({
                 title={point.nom}
                 onClick={() => setSelection(point)}
               >
-                <Pin />
+                {/* Le lieu choisi porte le vert de la maison ; PinElement ne résout pas
+                    les variables CSS, la valeur de globals.css est donc recopiée. */}
+                {point.id === choisiId ? (
+                  <Pin background="#17784f" borderColor="#0f5236" glyphColor="#ffffff" />
+                ) : (
+                  <Pin />
+                )}
               </AdvancedMarker>
             ))}
 
@@ -197,6 +213,18 @@ function CarteOuverte({
                   {selection.sousTitre ? <span>{selection.sousTitre}</span> : null}
                   {position ? (
                     <span>à {formatDistance(distanceMetres(position, selection))} à vol d&apos;oiseau</span>
+                  ) : null}
+                  {onChoisir ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onChoisir(selection);
+                        setSelection(null);
+                      }}
+                      className="mt-1 rounded-full px-3 py-1.5 text-left font-bold text-white [background:#17784f]"
+                    >
+                      {selection.id === choisiId ? "✓ Choisi" : "Choisir ce lieu"}
+                    </button>
                   ) : null}
                   {selection.href ? (
                     <a href={selection.href} className="font-bold underline underline-offset-2">
