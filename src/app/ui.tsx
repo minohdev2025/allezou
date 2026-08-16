@@ -396,12 +396,15 @@ export function Navigation({
   return (
     <>
       {/*
-        Fixé, le menu ne réserve pas sa place : ce cale-pied la tient dans le flux, pour
-        que le dernier bouton d'une page ne finisse pas dessous. Et `z-20` le garde
-        au-dessus de tout — les cartes à ombres de la page compte peignaient par-dessus.
+        `sticky` et non `fixed` : un élément fixé se cale sur le viewport de mise en
+        page, que les barres dynamiques des navigateurs mobiles recouvrent en haut de
+        page — le menu finissait sous la barre de Brave jusqu'au premier défilement.
+        Collant, il vit dans le flux (il réserve sa place lui-même, dernier de la page)
+        et suit le bord réellement visible. `z-20` le garde au-dessus des cartes à
+        ombres, qui peignaient par-dessus. `-mx-5` annule le gouttière du `main` pour
+        qu'il coure d'un bord à l'autre.
       */}
-      <div aria-hidden className="h-20" />
-      <nav className="fixed inset-x-0 bottom-0 z-20 border-t-2 border-[color:var(--color-trait)] bg-[color:var(--color-surface)] pb-[env(safe-area-inset-bottom)]">
+      <nav className="sticky bottom-0 z-20 -mx-5 -mb-8 mt-8 border-t-2 border-[color:var(--color-trait)] bg-[color:var(--color-surface)] pb-[env(safe-area-inset-bottom)]">
         <ul className="mx-auto flex max-w-lg">
         {onglets.map(({ cle, href, texte, Icone }) => {
           const estActif = actif === cle;

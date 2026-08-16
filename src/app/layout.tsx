@@ -70,7 +70,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="fr" className={`${titre.variable} ${texte.variable}`}>
       <body className="min-h-dvh">
-        <div className="mx-auto w-full max-w-lg px-5 pb-28 pt-8">{children}</div>
+        {/* pb-8 et non plus pb-28 : le menu du bas est collant et réserve sa place lui-même. */}
+        <div className="mx-auto w-full max-w-lg px-5 pb-8 pt-8">{children}</div>
       </body>
     </html>
   );
