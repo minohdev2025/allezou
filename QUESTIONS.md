@@ -1,96 +1,143 @@
 # Questions fréquentes
 
-Les réponses courtes sont ici. Le détail de ce qui est enregistré et de qui le voit est sur
-[Vos données](/donnees).
+D'abord comment faire les choses courantes, ensuite les questions qu'on nous pose. Ce qui
+est enregistré et qui le voit est détaillé sur [Vos données](/donnees).
 
-## Pour commencer
+## Créer un cercle et y inviter des familles
 
-**Combien ça coûte ?**
-Rien. Allezou est gratuit, sans publicité et sans abonnement.
+1. Onglet « Cercles », en bas de l'écran.
+2. Tapez un nom, par exemple « Classe de 4P », puis touchez « Créer ».
+3. Ouvrez le cercle et descendez jusqu'à « Inviter des familles ».
+4. Dites combien de familles vous attendez et combien de jours le lien reste valable.
+5. Touchez « Créer le lien 🔗 », puis envoyez-le par WhatsApp ou par message.
 
-**Faut-il installer quelque chose ?**
-Non. Allezou s'ouvre dans le navigateur, comme un site. Vous pouvez l'ajouter à votre écran
-d'accueil pour le retrouver comme une application — c'est aussi ce qui permet aux
-notifications de fonctionner sur iPhone.
+Le lien ne se réaffiche jamais. Si vous le perdez, « Refaire le lien » en crée un autre et
+désactive le précédent.
 
-**Il n'y a vraiment pas de mot de passe ?**
-Non. Vous entrez votre adresse, vous recevez un lien, vous êtes connecté·e. Le lien vaut un
-quart d'heure et ne sert qu'une fois. Ensuite, votre téléphone peut se souvenir de vous : le
-bouton « Entrer avec cet appareil » vous fait entrer sans rien retaper.
+Quand quelqu'un le suit, sa demande apparaît dans le cercle avec son nom, et vous décidez.
+
+## Rejoindre un cercle
+
+1. Ouvrez le lien qu'on vous a envoyé.
+2. Connectez-vous, si ce n'est pas déjà fait.
+3. Votre demande part vers la personne qui administre le cercle.
+
+Vous y entrez quand elle l'accepte. Tant qu'elle n'a pas répondu, vous ne voyez rien du
+cercle.
+
+## Annoncer une sortie
+
+1. Touchez « Annoncer une sortie », sur l'écran d'accueil.
+2. En haut, vérifiez vers quels cercles elle part et pour combien de temps. « Changer »
+   modifie les deux.
+3. Choisissez un lieu dans la liste. S'il n'y est pas, « Le lieu n'est pas dans la liste »
+   permet de l'ajouter.
+4. Touchez « Confirmer la sortie ».
+
+Elle s'arrête toute seule à l'heure indiquée. Vous n'avez rien à faire pour la retirer.
+
+## Recevoir les notifications
+
+1. Onglet « Vous », puis « 🔔 Notifications ».
+2. Touchez « Activer les notifications sur cet appareil ».
+3. Votre téléphone vous demande l'autorisation. Acceptez.
+
+Sur iPhone, il faut d'abord avoir ajouté Allezou à l'écran d'accueil (voir plus bas). C'est
+une contrainte d'Apple, pas un choix de notre part.
+
+Sur la même page, « Les mots que vous surveillez » vous prévient quand une activité de
+l'agenda contient l'un d'eux. Et « Pause 4 h » coupe tout pour l'après-midi.
+
+## Ajouter Allezou à l'écran d'accueil
+
+Sur iPhone, touchez le bouton Partager en bas de Safari, puis « Sur l'écran d'accueil ».
+
+Sur Android, votre navigateur vous le propose souvent tout seul. Sinon, cherchez
+« Installer l'application » dans son menu, en haut à droite.
+
+Ça ne télécharge rien : c'est un raccourci, qui ouvre Allezou en plein écran et vous évite
+de vous reconnecter.
+
+## Ne plus être vu par quelqu'un
+
+Ouvrez le cercle, trouvez la personne dans la liste des membres, décochez-la. Elle ne voit
+plus vos sorties, vous ne voyez plus les siennes, et rien ne le lui signale. Vous restez
+tous les deux dans le cercle.
+
+Si vous voulez seulement qu'elle cesse de faire sonner votre téléphone, touchez plutôt la
+cloche 🔕 à côté de son nom. Vous continuez à voir ses sorties à l'écran.
+
+## Supprimer votre compte
+
+Onglet « Vous », tout en bas : « Supprimer votre compte », puis « Supprimer définitivement ».
+
+Vos sorties partent avec, et vous quittez vos cercles. C'est immédiat, et on ne peut pas
+revenir dessus.
 
 ## Les cercles
 
 **Qui peut entrer dans mon cercle ?**
-Personne sans votre accord. Suivre un lien d'invitation ne fait entrer personne : cela dépose
-une demande, que vous voyez avec le nom de la personne, et que vous acceptez ou refusez.
+Personne sans votre accord. Suivre un lien ne fait entrer personne, ça dépose une demande
+que vous acceptez ou refusez.
 
-**Et si mon lien est transféré dans un autre groupe ?**
-Il ne donne toujours aucun accès — juste le droit de frapper à la porte. Un lien vaut sept
-jours et vingt personnes au plus, et vous pouvez le révoquer à tout moment : les demandes
-déjà déposées restent, mais le lien ne fonctionne plus.
+**Et si mon lien est transféré à des gens que je ne connais pas ?**
+Il ne donne toujours aucun accès. Un lien vaut au maximum le nombre de familles et le
+nombre de jours que vous avez indiqués, et vous pouvez le désactiver quand vous voulez.
 
 **Un nom que je ne reconnais pas demande à entrer.**
-Refusez, ou renseignez-vous avant. Un lien peut avoir circulé plus loin que prévu. Et si vous
-avez accepté trop vite, un membre peut être retiré du cercle après coup.
-
-**Je ne veux pas qu'une personne du cercle voie mes sorties.**
-Décochez-la dans la liste des membres. Elle ne voit plus vos sorties, vous ne voyez plus les
-siennes, et rien ne le lui signale. Vous restez tous les deux dans le cercle.
-
-**Je veux juste ne plus être dérangé par quelqu'un.**
-C'est la cloche 🔕, à côté de son nom : vous continuez à voir ses sorties à l'écran, mais
-elles ne font plus sonner votre téléphone.
+Refusez, ou renseignez-vous d'abord. Si vous avez accepté trop vite, vous pouvez retirer
+quelqu'un du cercle après coup.
 
 **Puis-je quitter un cercle ?**
-Oui, quand vous voulez. Vous cessez immédiatement d'en voir les sorties, et ses membres de
-voir les vôtres.
+Oui, quand vous voulez. Vous cessez aussitôt d'en voir les sorties, et ses membres de voir
+les vôtres.
 
 ## Les sorties
 
 **Qui voit que nous sommes sortis ?**
-Les cercles que vous cochez au moment de publier, et personne d'autre. Un membre d'un cercle
-que vous n'avez pas coché ne voit rien.
+Les cercles que vous avez cochés au moment de publier. Un membre d'un cercle non coché ne
+voit rien.
 
 **Combien de temps ça reste affiché ?**
-Une sortie disparaît à l'heure de fin que vous avez indiquée, et s'efface définitivement
-vingt-quatre heures plus tard. Il n'y a pas d'historique à consulter, ni pour vous ni pour
-personne.
+La sortie s'arrête à l'heure de fin que vous avez donnée, et s'efface pour de bon
+vingt-quatre heures après. Personne ne peut consulter d'historique, vous non plus.
 
 **Est-ce qu'Allezou sait où je suis ?**
-Non. Vous choisissez un lieu dans une liste ; votre téléphone n'est jamais interrogé sur sa
+Non. Vous choisissez un lieu dans une liste, votre téléphone n'est jamais interrogé sur sa
 position.
 
-**Quelqu'un rejoint notre sortie et je ne le connais pas.**
-Vous ne voyez dans la liste que les personnes avec qui vous partagez déjà un cercle. Une
-famille venue par un autre cercle n'y apparaît pas.
+**Quelqu'un a rejoint notre sortie et je ne le connais pas.**
+Vous ne voyez dans la liste que les gens avec qui vous partagez déjà un cercle. Une famille
+venue par un autre cercle n'y apparaît pas.
 
 ## L'agenda
 
 **D'où viennent les activités ?**
-Des sites publics des communes genevoises, relevés plusieurs fois par jour. Vous n'avez rien
-à surveiller.
+Des sites publics des communes genevoises, relevés plusieurs fois par jour.
 
 **Je viens d'arriver et mes cercles sont vides.**
-L'agenda fonctionne quand même : les activités du canton sont là dès le premier jour, sans
-attendre que d'autres familles vous rejoignent.
+L'agenda marche quand même. Les activités du canton sont là dès le premier jour, sans
+attendre que d'autres familles arrivent.
 
-**Puis-je être prévenu d'un certain type d'activité ?**
-Oui. Indiquez les mots que vous surveillez — « piscine », « judo » — et vous êtes prévenu·e
-quand une activité publiée en contient un. Ces mots ne sont montrés à personne.
+**Une activité manque, ou une information est fausse.**
+Écrivez-nous. Les pages des communes changent souvent de forme, et certaines se lisent mal.
 
 ## Vos données
 
 **Que savez-vous de mes enfants ?**
-Leur prénom. Rien d'autre : ni nom, ni âge, ni photo, ni école.
+Leur prénom. Ni nom, ni âge, ni photo, ni école.
+
+**Combien ça coûte ?**
+Rien. Pas de publicité non plus.
+
+**Comment on se connecte, sans mot de passe ?**
+Vous entrez votre adresse, vous recevez un lien, et vous êtes connecté·e. Le lien vaut
+un quart d'heure et ne sert qu'une fois. Ensuite votre téléphone peut se souvenir de vous,
+avec « Entrer avec cet appareil ».
 
 **Les notifications passent-elles par quelqu'un d'autre ?**
-Oui, nécessairement : par Apple sur iPhone, par Google sur Android. C'est le seul chemin
-qu'un téléphone accepte. Le contenu leur est remis chiffré — ils l'acheminent sans pouvoir le
-lire.
-
-**Comment j'arrête ?**
-Écran « Vous », en bas : « Supprimer votre compte ». Vos sorties et vos cercles partent avec.
-C'est immédiat et définitif.
+Oui, forcément : par Apple sur iPhone, par Google sur Android. Aucune application n'y
+échappe. Leur contenu est chiffré, donc ils l'acheminent sans pouvoir le lire.
 
 **Une question qui n'est pas ici ?**
 Écrivez à [contact@allezou.ch](mailto:contact@allezou.ch).

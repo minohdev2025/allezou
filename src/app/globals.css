@@ -147,6 +147,16 @@ summary {
   list-style: disc;
   padding-left: 1.25rem;
 }
+/* Les guides de /questions comptent leurs étapes : sans cette règle, le reset de Tailwind
+   enlève la numérotation et « 1. 2. 3. » s'affiche comme trois phrases posées là. */
+.prose-totir ol {
+  list-style: decimal;
+  padding-left: 1.4rem;
+}
+.prose-totir ol li::marker {
+  font-weight: 700;
+  color: var(--color-vert);
+}
 .prose-totir li {
   margin: 0.35rem 0;
 }
