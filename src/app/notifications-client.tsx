@@ -57,9 +57,19 @@ export function ActiverNotifications({
 }) {
   const [etat, setEtat] = useState<Etat>("chargement");
   const [endpoint, setEndpoint] = useState<string | null>(null);
+  /*
+    Où envoyer quelqu'un dont les notifications sont refusées dépend d'où il se trouve, et
+    les deux réglages n'ont rien à voir : dans un navigateur, c'est la permission accordée
+    au site ; depuis l'app installée, c'est celle de l'application. Un parent qui vérifie
+    l'un pendant que l'autre bloque conclut que l'app se trompe.
+
+    Lu dans l'effet et non au rendu : `window` n'existe pas au premier passage côté serveur.
+  */
+  const [installee, setInstallee] = useState(false);
 
   useEffect(() => {
     async function regarder() {
+      setInstallee(estInstallee());
       if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
         setEtat(estIOS() && !estInstallee() ? "installer_dabord" : "impossible");
         return;
@@ -162,8 +172,19 @@ export function ActiverNotifications({
       <div>
         <p className="mb-2 font-bold">Les notifications sont bloquées</p>
         <p className="text-sm leading-snug text-[color:var(--color-doux)]">
-          Vous devez autoriser les notifications d&apos;Allezou dans les réglages de votre
-          appareil pour les recevoir.
+          {installee ? (
+            <>
+              Ouvrez les réglages de votre téléphone, cherchez Allezou, puis Notifications,
+              et autorisez-les.
+            </>
+          ) : (
+            <>
+              C&apos;est votre navigateur qui les refuse pour ce site, et ce réglage-là est
+              séparé de celui de votre téléphone. Touchez l&apos;icône à gauche de
+              l&apos;adresse, en haut de l&apos;écran, puis « Autorisations », et activez les
+              notifications.
+            </>
+          )}
         </p>
       </div>
     );
