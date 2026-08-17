@@ -1,7 +1,7 @@
 # Questions fréquentes
 
 D'abord comment faire les choses courantes, ensuite les questions qu'on nous pose. Ce qui
-est enregistré et qui le voit est détaillé sur [Vos données](/donnees).
+est enregistré et qui le voit est détaillé sur la page [« Vos données »](/donnees).
 
 ## Créer un cercle et y inviter des familles
 
@@ -11,8 +11,10 @@ est enregistré et qui le voit est détaillé sur [Vos données](/donnees).
 4. Dites combien de familles vous attendez et combien de jours le lien reste valable.
 5. Touchez « Créer le lien 🔗 », puis envoyez-le par WhatsApp ou par message.
 
-Le lien ne se réaffiche jamais. Si vous le perdez, « Refaire le lien » en crée un autre et
-désactive le précédent.
+Le lien ne se réaffiche jamais, même en revenant sur la page. Si vous l'avez déjà envoyé et
+que vous voulez simplement en avoir un second, refaites l'étape 4 : le premier continue de
+fonctionner. « Refaire le lien » est pour un lien perdu avant d'être envoyé, ou qui a circulé
+trop loin, car il coupe l'ancien pour tout le monde.
 
 Quand quelqu'un le suit, sa demande apparaît dans le cercle avec son nom, et vous décidez.
 

@@ -512,13 +512,20 @@ export default async function Cercle({
           </p>
           {/*
             Un lien perdu est le cas courant, pas le cas rare : il circule par message, et
-            l'on redemande à celui qui l'a envoyé. Sans ce bouton, la seule issue est de
-            révoquer puis recréer — deux gestes, avec la portée annoncée perdue au milieu.
+            l'on redemande à celui qui l'a envoyé. « Refaire le lien » évite de révoquer puis
+            recréer, deux gestes avec la portée annoncée perdue au milieu.
+
+            Mais il coupe, et il arrive avant « Créer le lien » dans la page. Quelqu'un qui
+            actualise après avoir envoyé son lien cherche à le revoir, trouve ce bouton le
+            premier, et casse sans le vouloir ce qu'il vient d'envoyer à quinze familles. Les
+            deux cas se distinguent donc par écrit, le sans-conséquence d'abord.
           */}
           <p className="mb-4 text-sm leading-snug text-[color:var(--color-doux)]">
-            Un lien ne se réaffiche jamais. « Refaire le lien » en crée un nouveau pour le
-            même nombre de familles et coupe l&apos;ancien pour tout le monde, y compris ceux
-            à qui il avait déjà été transmis.
+            Un lien ne se réaffiche jamais, même en revenant sur cette page. Si vous
+            l&apos;avez déjà envoyé, laissez-le vivre : « Inviter des familles », plus bas,
+            en crée un second sans toucher au premier. « Refaire le lien » sert à un lien
+            perdu avant d&apos;avoir été envoyé, ou parti trop loin : il coupe l&apos;ancien
+            pour tout le monde, y compris ceux qui l&apos;avaient déjà reçu.
           </p>
           <ul className="space-y-2">
             {invitations.value.map((invitation) => (

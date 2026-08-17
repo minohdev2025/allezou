@@ -170,6 +170,13 @@ summary {
 .prose-totir strong {
   font-weight: 700;
 }
+/* Un lien en prose n'avait ni couleur propre ni soulignement : il se lisait comme du texte
+   ordinaire, et personne ne pouvait deviner qu'il menait quelque part. */
+.prose-totir a {
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
 .prose-totir hr {
   border: 0;
   border-top: 2px dashed var(--color-trait);
