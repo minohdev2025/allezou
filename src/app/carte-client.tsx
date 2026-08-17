@@ -11,6 +11,7 @@ import {
 } from "@vis.gl/react-google-maps";
 
 import { cadrageInitial, lienItineraire, type PointCarte } from "@/lib/carte";
+import { Bouton } from "./ui";
 
 /**
  * La carte des lieux, voilée tant qu'on ne la demande pas.
@@ -69,14 +70,16 @@ export function CarteDesLieux({
   if (!visible) {
     return (
       <div className="mb-6">
-        {/* Le libellé seul : le pourquoi du voile est écrit sur /donnees, pas ici. */}
-        <button
-          type="button"
-          onClick={() => setVisible(true)}
-          className="w-full rounded-[var(--radius-pilule)] bg-[color:var(--color-surface)] px-5 py-3 text-left font-bold shadow-[inset_0_0_0_2px_var(--color-trait)]"
-        >
+        {/*
+          Le libellé seul : le pourquoi du voile est écrit sur /donnees, pas ici.
+
+          Et la brique commune plutôt qu'un bouton réécrit : celui d'ici était aligné à
+          gauche quand tous les autres sont centrés, et l'écart se voyait sous « Proposer
+          une activité », posé juste au-dessus.
+        */}
+        <Bouton type="button" variante="second" onClick={() => setVisible(true)}>
           🗺️ Voir sur la carte
-        </button>
+        </Bouton>
       </div>
     );
   }
