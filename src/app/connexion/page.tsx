@@ -213,6 +213,14 @@ export default async function Connexion({
             Ce qu&apos;Allezou enregistre, et qui peut le voir
           </Link>
         </p>
+        <p>
+          <Link
+            href="/questions"
+            className="font-semibold text-[color:var(--color-doux)] underline underline-offset-4"
+          >
+            Questions fréquentes
+          </Link>
+        </p>
       </div>
     </main>
   );

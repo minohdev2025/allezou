@@ -154,6 +154,15 @@ export default async function Accueil({
           Ce qu&apos;Allezou enregistre, et qui peut le voir
         </Link>
       </p>
+
+      <p className="mt-3 text-center text-sm">
+        <Link
+          href="/questions"
+          className="font-semibold text-[color:var(--color-doux)] underline underline-offset-4"
+        >
+          Questions fréquentes
+        </Link>
+      </p>
     </main>
   );
 }
