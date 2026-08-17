@@ -53,8 +53,6 @@ Chacune de ces absences se vérifie dans le code.
 - **Sur vos enfants, rien d'autre qu'un prénom.** Les membres d'un cercle connaissent déjà les
   enfants dont il est question, l'app n'a rien à ajouter. Pas de nom de famille, **pas d'âge ni
   de date de naissance**, pas de photo, pas de genre, pas d'école, pas de classe, pas de santé.
-  Le champ « année de naissance » a existé pendant la conception, puis a été supprimé faute
-  d'un usage qui le justifie.
 
 ## Qui voit quoi, exactement
 
