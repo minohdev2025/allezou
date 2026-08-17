@@ -47,14 +47,20 @@ Elle s'arrête toute seule à l'heure indiquée. Vous n'avez rien à faire pour 
 Sur iPhone, il faut d'abord avoir ajouté Allezou à l'écran d'accueil (voir plus bas). C'est
 une contrainte d'Apple, pas un choix de notre part.
 
-Si Allezou vous dit qu'elles sont bloquées alors que votre téléphone les autorise, c'est
-qu'il y a deux réglages différents et que vous regardez le mauvais. Depuis un navigateur,
-la permission est accordée au site : touchez l'icône à gauche de l'adresse, puis
-« Autorisations ». Depuis l'app installée sur l'écran d'accueil, c'est dans les réglages du
-téléphone, à Allezou.
-
 Sur la même page, « Les mots que vous surveillez » vous prévient quand une activité de
 l'agenda contient l'un d'eux. Et « Pause 4 h » coupe tout pour l'après-midi.
+
+**Allezou dit qu'elles sont bloquées, alors que mon téléphone les autorise.**
+Ce sont deux réglages différents, et vous regardez celui qui n'est pas en cause. Votre
+téléphone autorise l'application ; le navigateur, lui, autorise le site, et c'est celui-là
+qui bloque.
+
+Depuis un navigateur, touchez l'icône à gauche de l'adresse, en haut de l'écran, puis
+« Autorisations », et activez les notifications. Depuis Allezou installée sur votre écran
+d'accueil, passez par les réglages du téléphone, à Allezou.
+
+Si vous les aviez refusées une fois, votre navigateur garde ce refus et ne redemande plus
+rien : il faut aller le changer à la main.
 
 ## Ajouter Allezou à l'écran d'accueil
 
