@@ -55,9 +55,14 @@ Ce sont deux réglages différents, et vous regardez celui qui n'est pas en caus
 téléphone autorise l'application ; le navigateur, lui, autorise le site, et c'est celui-là
 qui bloque.
 
-Depuis un navigateur, touchez l'icône à gauche de l'adresse, en haut de l'écran, puis
-« Autorisations », et activez les notifications. Depuis Allezou installée sur votre écran
-d'accueil, passez par les réglages du téléphone, à Allezou.
+Pour savoir lequel vous concerne, regardez si la barre d'adresse est visible en haut.
+
+Si elle l'est, vous êtes dans un navigateur : touchez l'icône à sa gauche, puis
+« Autorisations », et activez les notifications.
+
+Si elle ne l'est pas, vous passez par le raccourci installé, sur l'écran d'accueil de votre
+téléphone ou sur votre bureau. Le réglage est alors dans les paramètres de l'appareil, à
+Allezou.
 
 Si vous les aviez refusées une fois, votre navigateur garde ce refus et ne redemande plus
 rien : il faut aller le changer à la main.

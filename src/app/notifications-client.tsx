@@ -174,8 +174,8 @@ export function ActiverNotifications({
         <p className="text-sm leading-snug text-[color:var(--color-doux)]">
           {installee ? (
             <>
-              Ouvrez les réglages de votre téléphone, cherchez Allezou, puis Notifications,
-              et autorisez-les.
+              Vous passez par le raccourci installé, donc le réglage est dans les paramètres
+              de votre appareil : cherchez Allezou, puis Notifications, et autorisez-les.
             </>
           ) : (
             <>
