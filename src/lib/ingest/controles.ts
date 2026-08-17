@@ -180,13 +180,33 @@ export function ecrituresDeLaDate(date: Date): string[] {
   return ecritures;
 }
 
-/** Les façons d'écrire une heure : « 14h », « 14 h 30 », « 14:00 ». */
+/**
+ * Les façons d'écrire une heure : « 14h », « 14 h 30 », « 14:00 », « 09:00 ».
+ *
+ * `normaliser` remplace tout ce qui n'est ni lettre ni chiffre par une espace — mais `h`
+ * est une lettre. « 09h00 » traverse donc la normalisation intact, tandis que « 09:00 »
+ * en ressort « 09 00 ». Il faut les deux formes zéro-padées, et c'est la seconde qui
+ * manquait : « 09 00 » ne se trouvait nulle part, `${heure} ${mn}` ne donnant que
+ * « 9 00 », que le début de mot exigé par `contient` empêche de reconnaître dans
+ * « 09 00 ». Une activité du matin annoncée « 09:00 » — l'écriture courante d'un agenda
+ * communal — repartait donc en file avec un `heure_absente` imaginaire.
+ *
+ * Passé dix heures, les deux écritures se confondent : le défaut ne se voyait qu'avant
+ * dix heures du matin.
+ */
 export function ecrituresDeLHeure(date: Date): string[] {
   const { heure, minute } = partiesGenevoises(date);
   const hh = String(heure).padStart(2, "0");
   const mn = String(minute).padStart(2, "0");
 
-  const ecritures = [`${heure}h${mn}`, `${hh}h${mn}`, `${heure} h ${mn}`, `${heure} ${mn}`];
+  const ecritures = [
+    `${heure}h${mn}`,
+    `${hh}h${mn}`,
+    `${heure} h ${mn}`,
+    `${hh} h ${mn}`,
+    `${heure} ${mn}`,
+    `${hh} ${mn}`,
+  ];
 
   if (minute === 0) ecritures.push(`${heure}h`, `${hh}h`, `${heure} h`, `${heure} heures`);
   if (heure === 0) ecritures.push("minuit");
