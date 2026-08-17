@@ -198,14 +198,46 @@ summary {
  * resterait lisible — seul un liseré blanc reviendrait autour.
  */
 @media (prefers-color-scheme: dark) {
-  .gm-style-iw-c,
-  .gm-style-iw-d,
-  .gm-style-iw-tc::after {
+  /*
+    Toute la famille d'un coup, plutôt qu'une liste d'éléments.
+
+    Énumérer `-c`, `-d`, `-ch`… laissait passer ce qu'on avait oublié — la barre
+    d'en-tête `-chr` tenait à elle seule une bande blanche — et n'aurait rien couvert
+    d'un nom inventé demain. Tout ce que Google pose dans la bulle porte une classe qui
+    contient `gm-style-iw` ; notre contenu, lui, n'en porte aucune. Le sélecteur attrape
+    donc l'un sans jamais toucher l'autre, et le bouton vert de la bulle garde sa couleur.
+
+    Les pseudo-éléments avec : c'est un `::after` qui dessine la pointe sous la bulle.
+  */
+  [class*="gm-style-iw"],
+  [class*="gm-style-iw"]::before,
+  [class*="gm-style-iw"]::after {
     background: var(--color-surface) !important;
   }
   .gm-style-iw-c,
   .gm-style-iw-ch {
     color: var(--color-encre);
+  }
+  /*
+    Les barres de défilement, qui tenaient le blanc restant.
+
+    Google donne à la zone de contenu un `overflow: auto` et une hauteur calculée à
+    l'ouverture ; avec du contenu à nous elle déborde d'un ou deux pixels, et deux barres
+    apparaissent — d'où l'équerre blanche au bord droit et en bas. La piste d'une barre ne
+    se peint pas avec le `background` de l'élément : il faut la viser pour elle-même,
+    `scrollbar-color` d'un côté, les pseudo-éléments WebKit de l'autre.
+  */
+  [class*="gm-style-iw"] {
+    scrollbar-color: var(--color-trait) var(--color-surface);
+  }
+  [class*="gm-style-iw"]::-webkit-scrollbar,
+  [class*="gm-style-iw"]::-webkit-scrollbar-track,
+  [class*="gm-style-iw"]::-webkit-scrollbar-corner {
+    background: var(--color-surface) !important;
+  }
+  [class*="gm-style-iw"]::-webkit-scrollbar-thumb {
+    background: var(--color-trait) !important;
+    border-radius: 999px;
   }
   /* Le ✕ est un masque teinté par background-color : sans quoi il reste noir sur noir. */
   .gm-ui-hover-effect > span {
