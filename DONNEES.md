@@ -37,7 +37,8 @@ que cette page existe.
 
 ## Ce qu'Allezou n'enregistre pas
 
-Chacune de ces absences se vérifie dans le code.
+Chacune de ces absences est un engagement. Le code qui les tient peut être montré sur
+demande.
 
 - **Aucun mot de passe.** Il n'en existe nulle part, donc aucun ne peut fuiter.
 - **Aucune position GPS, jamais.** Une sortie est un lieu que vous choisissez dans une liste,
@@ -49,7 +50,7 @@ Chacune de ces absences se vérifie dans le code.
 - **Aucune messagerie.** Il n'y a ni fil de discussion, ni message privé, ni commentaire.
 - **Aucun outil de mesure d'audience.** Pas de Google Analytics, pas de pixel publicitaire,
   pas de traceur tiers.
-- **Aucune vente, aucun partage commercial.** Vos données ne sont transmises à personne.
+- **Aucune vente, aucun partage commercial.** Vos données ne sont ni vendues ni cédées.
 - **Sur vos enfants, rien d'autre qu'un prénom.** Les membres d'un cercle connaissent déjà les
   enfants dont il est question, l'app n'a rien à ajouter. Pas de nom de famille, **pas d'âge ni
   de date de naissance**, pas de photo, pas de genre, pas d'école, pas de classe, pas de santé.
@@ -86,7 +87,7 @@ Cette règle est écrite à un seul endroit du code, et vérifiée par une séri
 
 ## Où sont les données
 
-Sur des serveurs situés **en Suisse**. Elles ne quittent pas le pays.
+Sur des serveurs situés **en Suisse**, chez **Infomaniak**. Elles ne quittent pas le pays.
 
 Trois exceptions techniques, qui ne concernent aucune donnée personnelle :
 
@@ -99,8 +100,21 @@ Trois exceptions techniques, qui ne concernent aucune donnée personnelle :
 - l'adresse d'un parc ou d'une salle est envoyée une fois à OpenStreetMap, pour en connaître
   les coordonnées et que le lien vers une carte tombe sur le bon point. C'est l'adresse d'un
   lieu public, envoyée depuis notre serveur. **Jamais la vôtre, et jamais ce que vous
-  consultez** : votre téléphone ne contacte personne d'autre que nous — à une exception
-  près, que vous déclenchez vous-même : la carte, juste en dessous.
+  consultez.**
+
+## Qui d'autre intervient
+
+Deux intermédiaires sont nécessaires pour qu'Allezou vous atteigne. Ni l'un ni l'autre
+n'apprend ce que vous faites dans l'application.
+
+- **Les notifications passent par le service de votre téléphone** — Apple sur iPhone, Google
+  sur Android. C'est le seul chemin qu'un téléphone accepte, aucune application n'y échappe.
+  Le message leur est remis **chiffré** : ils l'acheminent sans pouvoir le lire. Ils savent
+  qu'un message est parti vers votre appareil, et quand.
+- **Le courriel qui vous connecte part par Infomaniak**, notre hébergeur, en Suisse. Il ne
+  contient que votre lien de connexion.
+
+S'y ajoute la carte, que vous déclenchez vous-même — c'est la section suivante.
 
 ## La carte
 
