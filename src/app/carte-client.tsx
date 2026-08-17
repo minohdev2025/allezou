@@ -152,10 +152,17 @@ function CarteOuverte({
               <InfoWindow
                 position={{ lat: selection.lat, lng: selection.lon }}
                 pixelOffset={[0, -36]}
-                headerContent={<strong className="pr-2">{selection.nom}</strong>}
+                headerContent={
+                  <strong className="pr-2 text-[color:var(--color-encre)]">{selection.nom}</strong>
+                }
                 onCloseClick={() => setSelection(null)}
               >
-                <div className="flex flex-col gap-1">
+                {/* La bulle porte ses propres couleurs au lieu de les hériter de la
+                    page : le fond, lui, vient de Google, et reste blanc la nuit sur les
+                    styles de carte qui ignorent le thème sombre. globals.css reprend cette
+                    bulle ; ces deux classes-ci font que le texte reste lisible même le jour
+                    où les sélecteurs de Google changeraient de nom. */}
+                <div className="flex flex-col gap-1 bg-[color:var(--color-surface)] text-[color:var(--color-encre)]">
                   {selection.sousTitre ? <span>{selection.sousTitre}</span> : null}
                   {onChoisir ? (
                     <button

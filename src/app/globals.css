@@ -182,3 +182,33 @@ summary {
 .prose-totir th {
   background: var(--color-vert-doux);
 }
+
+/*
+ * La bulle qui s'ouvre sur un repère de carte.
+ *
+ * Google dessine cette bulle, nous y glissons notre contenu : la couleur du texte vient
+ * donc de la page — `--color-encre`, claire la nuit — tandis que le fond vient de Google,
+ * qui le laisse blanc dès que le style de carte ne suit pas le thème sombre. C'est le cas
+ * de `DEMO_MAP_ID`, celui qui sert tant que `GOOGLE_MAPS_MAP_ID` n'est pas renseigné.
+ * Texte clair sur fond blanc : la bulle devenait illisible la nuit.
+ *
+ * On reprend donc la bulle en mode sombre. Les classes sont celles de l'API Google, et
+ * peuvent changer sans prévenir : le contenu pose aussi ses propres couleurs
+ * (carte-client.tsx), si bien qu'un jour où ces sélecteurs ne mordraient plus, la bulle
+ * resterait lisible — seul un liseré blanc reviendrait autour.
+ */
+@media (prefers-color-scheme: dark) {
+  .gm-style-iw-c,
+  .gm-style-iw-d,
+  .gm-style-iw-tc::after {
+    background: var(--color-surface) !important;
+  }
+  .gm-style-iw-c,
+  .gm-style-iw-ch {
+    color: var(--color-encre);
+  }
+  /* Le ✕ est un masque teinté par background-color : sans quoi il reste noir sur noir. */
+  .gm-ui-hover-effect > span {
+    background-color: var(--color-encre) !important;
+  }
+}
