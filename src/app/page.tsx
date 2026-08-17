@@ -177,7 +177,7 @@ const GESTES: {
     accent: "corail",
     titre: "Créer vos cercles",
     texte:
-      "Vous réunissez les familles avec qui vos enfants aiment passer du temps : la classe, le voisinage. Vous les invitez avec un lien, par WhatsApp ou par message. Rien de ce que vous publiez ne sort de ces cercles.",
+      "Vous réunissez les familles avec qui vos enfants aiment passer du temps : la classe, le voisinage. Vous les invitez par un lien, WhatsApp ou message — même transféré, il ne fait entrer personne : il ouvre une demande, que vous acceptez ou refusez nom par nom. Rien de ce que vous publiez ne sort de ces cercles.",
   },
   {
     emoji: "🌳",
@@ -226,13 +226,18 @@ const ABSENCES: { titre: string; texte: string }[] = [
       "Une sortie disparaît 24 heures après sa fin. Personne ne peut reconstituer où votre famille est allée le mois dernier.",
   },
   {
+    titre: "Invisible à la demande",
+    texte:
+      "Dans un cercle, vous pouvez décocher quelqu'un : cette personne ne voit plus vos sorties, vous ne voyez plus les siennes, et rien ne le lui signale.",
+  },
+  {
     titre: "Pas d'inconnus",
     texte:
-      "Vous ne voyez que les membres de vos cercles. Rejoindre une sortie ne vous montre à personne d'autre.",
+      "Personne n'entre dans un cercle sans qu'un responsable l'accepte. Vous ne voyez que les membres de vos cercles, et rejoindre une sortie ne vous montre à personne d'autre.",
   },
   {
     titre: "Pas de publicité, pas de traceur",
-    texte: "Vos données ne partent chez personne, et ne sont vendues à personne.",
+    texte: "Aucun traceur, aucune publicité. Vos données ne sont ni vendues ni cédées.",
   },
   {
     titre: "Sur vos enfants, un prénom",

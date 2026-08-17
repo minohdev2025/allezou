@@ -225,6 +225,15 @@ export default async function Cercle({
               ? "Une personne demande à entrer"
               : `${demandes.value.length} personnes demandent à entrer`}
           </h2>
+          {/*
+            Le rempart du cercle est ici, et il est humain : suivre un lien ne fait entrer
+            personne, c'est cette décision-ci qui ouvre la porte. Le rappel se pose donc au
+            moment de trancher, et pas dans une page d'aide que personne n'ouvrira.
+          */}
+          <p className="mb-4 text-sm leading-snug text-[color:var(--color-doux)]">
+            Ces noms doivent tous vous être familiers. Dans le doute, renseignez-vous avant
+            d&apos;accepter — et un membre déjà entré peut être retiré.
+          </p>
           <ul className="space-y-4">
             {demandes.value.map((demande) => (
               <li key={demande.id}>
