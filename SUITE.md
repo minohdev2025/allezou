@@ -248,8 +248,13 @@ liens de fiches existent enfin. Ce qui reste dehors, et pourquoi :
   Plan-les-Ouates, Cinéma en plein air gratuit et vide-grenier rangés « Tous publics ».
   L'étiquette dit qui la commune visait, pas qui la sortie intéresse — on lit le flux
   complet, le modèle trie. La facette commune est à resonder de temps en temps : une
-  commune de plus peut s'y mettre, et la Ville de Genève y publie bien plus que les trois
-  pages de notre lecture directe — la même question du filtre se posera là.
+  commune de plus peut s'y mettre. La même question, posée le soir même à geneve.ch, a eu
+  la même réponse — 197 événements famille pour 762 « Tous publics », Fête de la rentrée
+  comprise — et la même correction : la source Ville de Genève lit l'agenda complet, cinq
+  pages, et le tri famille du modèle décide (`filtreFamille`), le doute partant en file.
+  Et la plateforme ne remplace pas les communes à agenda propre : sept sorties publiées de
+  Lancy sur huit s'y retrouvent, mais la Fête de quartier des Rambossons n'y est pas — le
+  partage reste « porte directe quand elle existe, plateforme sinon ».
 - **Genthod, Satigny, Hermance, Pregny-Chambésy, Corsier, Chêne-Bourg, Bellevue, Bernex,
   Jussy** : agendas composés dans le navigateur, page servie sans contenu ni liens, et pas
   encore sur la plateforme. Il faudrait lire l'API que leurs pages interrogent, ou attendre

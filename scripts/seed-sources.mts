@@ -4,7 +4,11 @@
  *   npm run sources:seed
  *
  * La Ville de Genève expose du schema.org `Event` en JSON-LD sur chaque fiche (titre, dates,
- * lieu, adresse). Rien n'y est interprété, donc rien n'y est inventé.
+ * lieu, adresse). Rien n'y est interprété, donc rien n'y est inventé. Son filtre « Enfants
+ * et famille », mesuré le 19 août, gardait 197 événements quand « Tous publics » en
+ * comptait 762 — Fête de la rentrée comprise. La source lit donc l'agenda complet, et le
+ * modèle trie ce qui s'adresse aux familles (`filtreFamille`) : oui, non, ou doute — le
+ * doute part en file. Le tri ne touche à aucun fait, qui restent ceux du JSON-LD.
  *
  * Les communes sans flux structuré passent par une lecture MiniMax M3. Leurs agendas
  * paginent en `?page=N` quand ils paginent ; un site qui ignore le paramètre rend une page
@@ -91,12 +95,17 @@ const s = await import("../src/lib/db/schema.ts");
 const SOURCES = [
   /* ------------------------------------------------------------ les vétérans */
   {
-    name: "Ville de Genève — agenda enfants et famille",
-    url: "https://www.geneve.ch/fr/agenda?f%5B0%5D=for_who%3A167",
+    name: "Ville de Genève — agenda, tri famille",
+    url: "https://www.geneve.ch/fr/agenda",
     kind: "jsonld" as const,
     commune: "Genève",
-    autoPublish: true,
-    config: { itemPattern: "/agenda/", maxPages: 3 },
+    // Revenir à true après un tour de file : le tri famille est neuf, la source ne l'est
+    // pas, et c'est lui qu'on regarde travailler avant de lui rendre les clés.
+    autoPublish: false,
+    // Quatorze pages, parce que l'agenda complet avance d'une dizaine d'activités par
+    // jour : cinq pages ne couvraient que la semaine, et une fenêtre plus courte que
+    // l'horizon d'une famille faisait sortir de l'agenda des activités bien réelles.
+    config: { itemPattern: "/agenda/", maxPages: 14, filtreFamille: true },
   },
   {
     name: "Lancy — agenda communal",
@@ -348,6 +357,20 @@ const SOURCES = [
 ];
 
 /**
+ * Les sources dont l'adresse change sans changer d'identité. On déplace la ligne au lieu
+ * d'en créer une autre : ses activités la suivent, et leurs identités — l'URL de leur
+ * fiche — ne bougent pas. C'est ce qui évite qu'un déménagement fabrique des doublons.
+ */
+const DEMENAGEES = [
+  {
+    // Le filtre « Enfants et famille » gardait 197 événements sur ~950 : la Fête de la
+    // rentrée dormait dans « Tous publics ». La même source lit désormais tout, et trie.
+    de: "https://www.geneve.ch/fr/agenda?f%5B0%5D=for_who%3A167",
+    vers: "https://www.geneve.ch/fr/agenda",
+  },
+];
+
+/**
  * Les sources qu'une meilleure porte a remplacées. On les endort au lieu de les effacer :
  * leurs activités portent leur histoire, et une source inactive ne coûte rien.
  */
@@ -364,6 +387,22 @@ const RETIREES = [
   "https://www.geneve-communes.ch/agenda?f%5B0%5D=public%3A33&f%5B1%5D=commune%3A272",
   "https://www.geneve-communes.ch/agenda?f%5B0%5D=public%3A33&f%5B1%5D=commune%3A259",
 ];
+
+for (const { de, vers } of DEMENAGEES) {
+  const [deja] = await db
+    .select({ id: s.source.id })
+    .from(s.source)
+    .where(eq(s.source.url, vers))
+    .limit(1);
+  if (deja) continue;
+
+  const [demenagee] = await db
+    .update(s.source)
+    .set({ url: vers })
+    .where(eq(s.source.url, de))
+    .returning({ name: s.source.name });
+  if (demenagee) console.log(`déménagée   : ${demenagee.name}`);
+}
 
 for (const source of SOURCES) {
   const [existing] = await db

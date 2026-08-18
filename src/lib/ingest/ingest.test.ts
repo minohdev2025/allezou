@@ -1124,6 +1124,86 @@ describe("Relecture croisée", () => {
   });
 });
 
+describe("Le tri famille des sources structurées", () => {
+  const muet = async () => [];
+
+  it("n'entre pas ce que le tri écarte, mais le compte comme trouvé", async () => {
+    const source = await createSource({
+      kind: "jsonld",
+      autoPublish: true,
+      config: { filtreFamille: true },
+    });
+
+    const rapport = await runSource(
+      source.id,
+      adaptateur([
+        unEvenement(),
+        unEvenement({
+          externalId: "https://example.test/agenda/seance-conseil",
+          title: "Séance du Conseil municipal",
+        }),
+      ]),
+      muet,
+      async () => ["oui", "non"],
+    );
+
+    expect(rapport.found).toBe(2);
+    expect(rapport.created).toBe(1);
+    expect(rapport.published).toBe(1);
+
+    const rows = await db.execute<{ title: string }>(sql`select title from event`);
+    expect(rows.map((r) => r.title)).toEqual(["Atelier chocolat"]);
+  });
+
+  it("met en file ce dont le tri doute, avec son motif", async () => {
+    const source = await createSource({
+      kind: "jsonld",
+      autoPublish: true,
+      config: { filtreFamille: true },
+    });
+
+    const rapport = await runSource(
+      source.id,
+      adaptateur([unEvenement()]),
+      muet,
+      async () => ["doute"],
+    );
+
+    expect(rapport.held).toBe(1);
+    const attente = await pendingReview();
+    expect(attente[0].controles.map((c) => c.code)).toEqual(["public_douteux"]);
+  });
+
+  it("une panne du tri fait échouer la source plutôt que d'inonder l'agenda", async () => {
+    const source = await createSource({
+      kind: "jsonld",
+      autoPublish: true,
+      config: { filtreFamille: true },
+    });
+
+    const rapport = await runSource(source.id, adaptateur([unEvenement()]), muet, async () => {
+      throw new Error("triage injoignable");
+    });
+
+    expect(rapport.ok).toBe(false);
+    expect(rapport.error).toContain("triage");
+    expect(rapport.created).toBe(0);
+  });
+
+  it("ne trie pas sans qu'on le demande", async () => {
+    const source = await createSource({ kind: "jsonld", autoPublish: true });
+    const appels = { total: 0 };
+
+    const rapport = await runSource(source.id, adaptateur([unEvenement()]), muet, async () => {
+      appels.total += 1;
+      return ["non"];
+    });
+
+    expect(appels.total).toBe(0);
+    expect(rapport.published).toBe(1);
+  });
+});
+
 describe("Lecture de fiche", () => {
   const uneListe = (overrides: Partial<RawEvent> = {}): RawEvent => ({
     externalId: "atelier chocolat|2026-09-12",

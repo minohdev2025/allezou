@@ -21,7 +21,12 @@ import type { Acces, Tarif } from "./tarif";
 import { icalAdapter } from "./ical";
 import { jsonLdAdapter } from "./jsonld";
 import { minimaxAdapter } from "./minimax";
-import { verifierExtraction, type Verificateur } from "./verification";
+import {
+  trierPourFamilles,
+  verifierExtraction,
+  type TrieurFamilles,
+  type Verificateur,
+} from "./verification";
 import { clamp, jourGenevois, type Adapter, type RawEvent, type Source } from "./types";
 
 /** Au-delà de ce délai sans succès, la source est signalée dans l'interface. */
@@ -66,10 +71,16 @@ function verificationActive(config: Source["config"]): boolean {
   return (config as { verifierIA?: unknown } | null)?.verifierIA !== false;
 }
 
+/** Le tri famille se demande par source : `config.filtreFamille: true`. */
+function triageDemande(config: Source["config"]): boolean {
+  return (config as { filtreFamille?: unknown } | null)?.filtreFamille === true;
+}
+
 export async function runSource(
   sourceId: string,
   adapters: Adapters = defaultAdapters,
   verifier: Verificateur = verifierExtraction,
+  trieur: TrieurFamilles = trierPourFamilles,
 ): Promise<IngestReport> {
   const [source] = await db.select().from(s.source).where(eq(s.source.id, sourceId)).limit(1);
   if (!source) throw new Error(`Source inconnue : ${sourceId}`);
@@ -95,7 +106,20 @@ export async function runSource(
     const events = await adapter(source);
     report.found = events.length;
 
-    for (const event of events) {
+    /*
+      Le tri famille, pour les sources structurées lues sans filtre éditorial.
+
+      Un « non » n'entre pas : l'activité n'est simplement pas vue ce passage-ci, et si
+      elle était entrée sous un ancien filtre, la disparition la retirera comme n'importe
+      quelle annulation. Un « doute » entre en file, avec son motif. Et un tri en panne
+      fait échouer la source entière : sans lui, une lecture non filtrée déverserait les
+      séances du Conseil municipal dans un agenda qui promet des sorties aux familles.
+    */
+    const verdictsFamille = triageDemande(source.config) ? await trieur(events) : null;
+
+    for (const [rang, event] of events.entries()) {
+      if (verdictsFamille?.[rang] === "non") continue;
+
       const [existing] = await db
         .select({
           id: s.event.id,
@@ -110,6 +134,13 @@ export async function runSource(
         ...controler(event, { source, texteSource: event.texteSource }),
         ...(await chercherDoublon(event, source.id)),
       ];
+
+      if (verdictsFamille?.[rang] === "doute") {
+        echecs.push({
+          code: "public_douteux",
+          detail: "Le tri famille n'a pas su dire si cette sortie s'adresse aux familles.",
+        });
+      }
 
       /*
         La relecture croisée garde la porte de la première publication, et elle seule.

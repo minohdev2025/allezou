@@ -121,6 +121,89 @@ export function echecsDuVerdict(verdict: Verdict): Echec[] {
 
 export type Verificateur = (event: RawEvent) => Promise<Echec[]>;
 
+/* ------------------------------------------------------------- le tri famille */
+
+/**
+ * Les sources structurées n'ont pas de modèle pour trier : leur JSON-LD dit tout, sauf si
+ * la sortie intéresse une famille. Leurs filtres éditoriaux le disent mal — la Ville de
+ * Genève range sa Fête de la rentrée dans « Tous publics », pas dans « Enfants et
+ * famille » : l'étiquette dit qui la commune visait, pas qui la sortie intéresse.
+ *
+ * Ce tri-là est donc le seul travail qu'on confie au modèle sur ces sources : oui, non,
+ * ou doute. Jamais un fait — les dates, lieux et titres restent ceux du flux structuré.
+ */
+export type VerdictFamille = "oui" | "non" | "doute";
+
+export type TrieurFamilles = (events: RawEvent[]) => Promise<VerdictFamille[]>;
+
+/** Cinquante par appel : la réponse reste courte, et un appel perdu ne perd pas le reste. */
+const TRIAGE_PAR_LOT = 50;
+
+const SYSTEME_TRIAGE = [
+  "Tu tries l'agenda d'une collectivité suisse romande pour un agenda destiné aux familles",
+  "avec enfants.",
+  'Réponds uniquement par un objet JSON, sans texte autour : {"verdicts":[{"rang":0,"famille":"oui"}]}',
+  "- « famille » vaut « oui », « non » ou « doute », un verdict par entrée, dans l'ordre,",
+  "  avec le rang recopié.",
+  "- « oui » : une sortie qu'un parent pourrait faire avec un enfant — fête, atelier,",
+  "  spectacle jeune public, cinéma en plein air, vide-grenier, bibliothèque, marché,",
+  "  sport ou animation ouverts à tous.",
+  "- « non » : sans place pour un enfant — séance administrative ou politique, activité",
+  "  réservée aux aînés ou aux adultes, conférence spécialisée, soirée dansante, cours de",
+  "  sport pour adultes, vernissage, concert de soirée sans mention des familles.",
+  "- « doute » : rare. Réserve-le aux entrées dont le titre et la description ne disent",
+  "  vraiment rien du public. Une activité pensée pour les adultes est un « non » franc,",
+  "  même si un enfant pourrait techniquement s'y asseoir.",
+].join("\n");
+
+const verdictsTriageSchema = z.object({
+  verdicts: z.array(
+    z.object({
+      rang: z.number().int(),
+      famille: z.enum(["oui", "non", "doute"]),
+    }),
+  ),
+});
+
+/**
+ * Range les verdicts rendus par le modèle face aux rangs demandés. Fonction pure : c'est
+ * elle que les tests verrouillent. Un rang que le modèle a oublié devient un doute — il
+ * sera regardé par quelqu'un, ce qui est le sort le plus honnête pour un oubli.
+ */
+export function alignerVerdicts(
+  brut: unknown,
+  nombre: number,
+): VerdictFamille[] {
+  const { verdicts } = verdictsTriageSchema.parse(brut);
+  const parRang = new Map(verdicts.map((v) => [v.rang, v.famille]));
+  return Array.from({ length: nombre }, (_, rang) => parRang.get(rang) ?? "doute");
+}
+
+/**
+ * Trie un lot d'activités structurées : familles, pas familles, ou doute.
+ *
+ * Contrairement au vérificateur, une panne ici ne se tait pas : elle fait échouer la
+ * source. Une source non filtrée qui s'ingérerait sans tri déverserait les séances du
+ * Conseil municipal dans l'agenda des familles — mieux vaut une source en erreur, visible
+ * dans sa santé, qu'un agenda qui ne ressemble plus à sa promesse.
+ */
+export async function trierPourFamilles(events: RawEvent[]): Promise<VerdictFamille[]> {
+  const verdicts: VerdictFamille[] = [];
+
+  for (let debut = 0; debut < events.length; debut += TRIAGE_PAR_LOT) {
+    const lot = events.slice(debut, debut + TRIAGE_PAR_LOT);
+    const lignes = lot.map((event, rang) => {
+      const description = event.description ? ` — ${event.description}` : "";
+      return `${rang}. ${event.title}${description}`;
+    });
+
+    const contenu = await appelMiniMax(SYSTEME_TRIAGE, lignes.join("\n"));
+    verdicts.push(...alignerVerdicts(parseModelJson(contenu), lot.length));
+  }
+
+  return verdicts;
+}
+
 /**
  * Relit le bloc d'une activité et rend les échecs que le verdict impose.
  *

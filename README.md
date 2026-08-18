@@ -126,8 +126,11 @@ millisecondes d'écart suffisent à faire sortir un membre avant son entrée, ou
 Le canton a été passé en revue le 14 août 2026, puis le 18 août, avec les privés cette
 fois.
 
-- **Ville de Genève**, filtre « Enfants et famille » : chaque fiche expose du schema.org
-  `Event` en JSON-LD. Rien n'y est interprété.
+- **Ville de Genève** : chaque fiche expose du schema.org `Event` en JSON-LD. Rien n'y est
+  interprété. Son filtre « Enfants et famille » gardait 197 événements quand « Tous
+  publics » en comptait 762, Fête de la rentrée comprise : la source lit donc l'agenda
+  complet, et le modèle trie ce qui s'adresse aux familles — oui, non, ou doute, le doute
+  partant en file. Le tri ne touche à aucun fait.
 - **Plan-les-Ouates, Thônex, Versoix, Confignon, Veyrier**, par la plateforme mutualisée
   [geneve-communes.ch](https://www.geneve-communes.ch/agenda), une facette commune par
   source. Son filtre « Enfants et famille » s'est révélé plus étroit que la question qu'on

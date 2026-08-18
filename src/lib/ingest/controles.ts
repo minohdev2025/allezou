@@ -34,7 +34,10 @@ export type CodeControle =
   // second modèle relit le bloc et dit ce qui cloche. Le code vit dans le même type parce
   // que la file de relecture les affiche de la même façon, quel que soit leur auteur.
   | "verification_ia"
-  | "activite_annulee";
+  | "activite_annulee"
+  // Posé par le tri famille des sources structurées : le modèle n'a pas su dire si la
+  // sortie s'adresse aux familles. Quelqu'un tranchera en la lisant.
+  | "public_douteux";
 
 /** Un contrôle qui n'est pas passé, écrit pour être lu sur l'écran de relecture. */
 export type Echec = { code: CodeControle; detail: string };

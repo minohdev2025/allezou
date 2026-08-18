@@ -10,6 +10,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  alignerVerdicts,
   echecsDuVerdict,
   presenterLActivite,
   SEUIL_CERTITUDE,
@@ -89,6 +90,34 @@ describe("Lecture du verdict rendu par le modèle", () => {
 
   it("refuse une certitude hors de l'intervalle", () => {
     expect(verdictSchema.safeParse({ certitude: 1.4 }).success).toBe(false);
+  });
+});
+
+describe("Alignement des verdicts du tri famille", () => {
+  it("range chaque verdict à son rang, même rendus dans le désordre", () => {
+    const verdicts = alignerVerdicts(
+      {
+        verdicts: [
+          { rang: 2, famille: "non" },
+          { rang: 0, famille: "oui" },
+          { rang: 1, famille: "doute" },
+        ],
+      },
+      3,
+    );
+    expect(verdicts).toEqual(["oui", "doute", "non"]);
+  });
+
+  it("un rang oublié devient un doute, le sort le plus honnête pour un oubli", () => {
+    expect(
+      alignerVerdicts({ verdicts: [{ rang: 0, famille: "oui" }] }, 3),
+    ).toEqual(["oui", "doute", "doute"]);
+  });
+
+  it("refuse un verdict hors vocabulaire plutôt que de l'interpréter", () => {
+    expect(() =>
+      alignerVerdicts({ verdicts: [{ rang: 0, famille: "peut-être" }] }, 1),
+    ).toThrow();
   });
 });
 
