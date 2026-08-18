@@ -15,6 +15,15 @@
 > une relecture croisée par un second passage du modèle — et le tour du canton a été refait,
 > privés compris : seize sources de plus. La section « sources laissées de côté » a été
 > réécrite en conséquence.
+>
+> **Mis en ligne le 19 août 2026**, avec le rappel avant les activités et vingt-cinq sources
+> inscrites en production. Deux choses à regarder au premier passage complet, qui prend
+> désormais des heures et non des minutes : qu'il tienne dans les six heures qui le séparent
+> du suivant — le verrou consultatif interdit le chevauchement, mais un job qui déborde
+> systématiquement finirait par retarder tous les autres — et ce que le tri famille laisse
+> entrer, maintenant qu'il décide seul. Le seed est passé en JavaScript
+> (`scripts/seed-sources.mjs`) pour la raison qui avait déjà fait naître `migrer.mjs` :
+> l'image de production n'embarque ni `tsx` ni `typescript`.
 
 ## Ce qui a été fait
 
