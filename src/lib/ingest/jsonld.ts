@@ -7,6 +7,7 @@
  * la donnée structurée — aucune interprétation, aucune date inventée.
  */
 
+import { htmlToText } from "./minimax";
 import { lireTarifEtAcces, type Tarif } from "./tarif";
 import {
   clamp,
@@ -197,7 +198,13 @@ export const jsonLdAdapter: Adapter = async (source) => {
         r.ok ? lireTexte(r) : "",
       );
       if (!html) continue;
-      events.push(...eventsFromHtml(html, lien));
+      // Le texte de la fiche accompagne l'événement, sans entrer en base : les données
+      // viennent du JSON-LD et n'ont rien à lui demander, mais la seconde lecture du tri
+      // famille s'en sert quand le titre seul ne dit pas à qui s'adresse la sortie.
+      const texteSource = clamp(htmlToText(html), 12_000);
+      events.push(
+        ...eventsFromHtml(html, lien).map((event) => ({ ...event, texteSource })),
+      );
     } catch {
       // Une fiche illisible ne fait pas échouer la source entière.
     }

@@ -21,10 +21,14 @@
  * pas débrayée (`verifierIA: false`) : un second passage du modèle relit chaque activité
  * avant sa première publication.
  *
- * `autoPublish: true` ne veut pas dire « publier les yeux fermés » : chaque activité passe
- * les contrôles de `src/lib/ingest/controles.ts`, et ce qui en échoue un seul retombe en
- * file. Une source qu'on vient d'ajouter reste à `autoPublish: false` le temps de regarder
- * ce qu'elle rapporte vraiment — c'est le cas de toutes celles du tour du 18 août.
+ * `autoPublish: true` partout, et ce n'est pas « publier les yeux fermés » : trois couches
+ * machines gardent la porte — les contrôles littéraux de `controles.ts`, la relecture
+ * croisée et le tri famille de `verification.ts` — et ce qui échoue à une seule retombe en
+ * file. La doctrine de la période d'observation (`autoPublish: false` pour toute source
+ * neuve) date du temps où les contrôles étaient seuls juges ; depuis le 19 août, la file
+ * n'est plus un péage mais une liste d'exceptions : ce que les machines retiennent n'entre
+ * pas à l'agenda, et expire de soi-même quand sa date passe. La relire est un luxe, plus
+ * un travail.
  *
  * Plusieurs communes tiennent leur agenda sous WordPress avec le greffon « The Events
  * Calendar », qui publie tout en iCalendar derrière `?ical=1`. C'est la meilleure source
@@ -99,9 +103,7 @@ const SOURCES = [
     url: "https://www.geneve.ch/fr/agenda",
     kind: "jsonld" as const,
     commune: "Genève",
-    // Revenir à true après un tour de file : le tri famille est neuf, la source ne l'est
-    // pas, et c'est lui qu'on regarde travailler avant de lui rendre les clés.
-    autoPublish: false,
+    autoPublish: true,
     // Quatorze pages, parce que l'agenda complet avance d'une dizaine d'activités par
     // jour : cinq pages ne couvraient que la semaine, et une fenêtre plus courte que
     // l'horizon d'une famille faisait sortir de l'agenda des activités bien réelles.
@@ -169,7 +171,7 @@ const SOURCES = [
     url: "https://www.chancy.ch/agenda-communal/?ical=1",
     kind: "ical" as const,
     commune: "Chancy",
-    autoPublish: false,
+    autoPublish: true,
     config: {},
   },
   {
@@ -177,7 +179,7 @@ const SOURCES = [
     url: "https://carouge.ch/agenda",
     kind: "html_ai" as const,
     commune: "Carouge",
-    autoPublish: false,
+    autoPublish: true,
     config: { maxPages: 3, itemPattern: "/agenda/", lireFiches: true },
   },
   {
@@ -185,7 +187,7 @@ const SOURCES = [
     url: "https://www.meyrin.ch/fr/agenda",
     kind: "html_ai" as const,
     commune: "Meyrin",
-    autoPublish: false,
+    autoPublish: true,
     // La liste sert ses liens mais compose ses dates dans le navigateur : rien à extraire
     // d'elle, tout à lire derrière. Chaque fiche fait l'événement.
     config: { maxPages: 3, itemPattern: "/fr/agenda/", modeFiches: true },
@@ -195,7 +197,7 @@ const SOURCES = [
     url: "https://www.grand-saconnex.ch/agenda",
     kind: "html_ai" as const,
     commune: "Grand-Saconnex",
-    autoPublish: false,
+    autoPublish: true,
     config: { maxPages: 3, itemPattern: "/agenda/", lireFiches: true },
   },
   {
@@ -203,7 +205,7 @@ const SOURCES = [
     url: "https://anieres.ch/agenda",
     kind: "html_ai" as const,
     commune: "Anières",
-    autoPublish: false,
+    autoPublish: true,
     config: { maxPages: 2, itemPattern: "/agenda/", lireFiches: true },
   },
   {
@@ -211,7 +213,7 @@ const SOURCES = [
     url: "https://www.vandoeuvres.ch/actualites/agenda/",
     kind: "html_ai" as const,
     commune: "Vandœuvres",
-    autoPublish: false,
+    autoPublish: true,
     config: { maxPages: 2, itemPattern: "/evenement/", lireFiches: true },
   },
   {
@@ -219,7 +221,7 @@ const SOURCES = [
     url: "https://collex-bossy.ch/fr/agenda/",
     kind: "html_ai" as const,
     commune: "Collex-Bossy",
-    autoPublish: false,
+    autoPublish: true,
     // Pagine en `/page-1/`, pas en `?page=N` : une seule page lue, qui suffit à un petit
     // agenda.
     config: { maxPages: 1, itemPattern: "/fr/agenda/", lireFiches: true },
@@ -229,7 +231,7 @@ const SOURCES = [
     url: "https://www.perly-certoux.ch/fr/agenda/",
     kind: "html_ai" as const,
     commune: "Perly-Certoux",
-    autoPublish: false,
+    autoPublish: true,
     config: { maxPages: 1, itemPattern: "/fr/agenda/", lireFiches: true },
   },
   {
@@ -237,7 +239,7 @@ const SOURCES = [
     url: "https://cologny.ch/agenda",
     kind: "html_ai" as const,
     commune: "Cologny",
-    autoPublish: false,
+    autoPublish: true,
     config: { maxPages: 1, itemPattern: "/agenda/", lireFiches: true },
   },
   {
@@ -245,7 +247,7 @@ const SOURCES = [
     url: "https://troinex.ch/vivre-ici/vie-sociale/manifestation-communales-et-agenda/",
     kind: "html_ai" as const,
     commune: "Troinex",
-    autoPublish: false,
+    autoPublish: true,
     config: { maxPages: 1 },
   },
   {
@@ -253,7 +255,7 @@ const SOURCES = [
     url: "https://www.russin.ch/evenements/",
     kind: "html_ai" as const,
     commune: "Russin",
-    autoPublish: false,
+    autoPublish: true,
     config: { maxPages: 1 },
   },
   /*
@@ -273,7 +275,7 @@ const SOURCES = [
     url: "https://www.geneve-communes.ch/agenda?f%5B0%5D=commune%3A25",
     kind: "html_ai" as const,
     commune: "Plan-les-Ouates",
-    autoPublish: false,
+    autoPublish: true,
     // Une soixantaine d'événements, douze par page : quatre pages couvrent l'essentiel,
     // les plus proches d'abord.
     config: { maxPages: 4, itemPattern: "/agenda/", lireFiches: true },
@@ -283,7 +285,7 @@ const SOURCES = [
     url: "https://www.geneve-communes.ch/agenda?f%5B0%5D=commune%3A61",
     kind: "html_ai" as const,
     commune: "Thônex",
-    autoPublish: false,
+    autoPublish: true,
     config: { maxPages: 2, itemPattern: "/agenda/", lireFiches: true },
   },
   {
@@ -291,7 +293,7 @@ const SOURCES = [
     url: "https://www.geneve-communes.ch/agenda?f%5B0%5D=commune%3A271",
     kind: "html_ai" as const,
     commune: "Versoix",
-    autoPublish: false,
+    autoPublish: true,
     config: { maxPages: 2, itemPattern: "/agenda/", lireFiches: true },
   },
   {
@@ -299,7 +301,7 @@ const SOURCES = [
     url: "https://www.geneve-communes.ch/agenda?f%5B0%5D=commune%3A272",
     kind: "html_ai" as const,
     commune: "Confignon",
-    autoPublish: false,
+    autoPublish: true,
     config: { maxPages: 2, itemPattern: "/agenda/", lireFiches: true },
   },
   {
@@ -309,7 +311,7 @@ const SOURCES = [
     url: "https://www.geneve-communes.ch/agenda?f%5B0%5D=commune%3A259",
     kind: "html_ai" as const,
     commune: "Veyrier",
-    autoPublish: false,
+    autoPublish: true,
     config: { maxPages: 2, itemPattern: "/agenda/", lireFiches: true },
   },
 
@@ -319,7 +321,7 @@ const SOURCES = [
     url: "https://www.lancycentre.ch/actualites/",
     kind: "html_ai" as const,
     commune: "Lancy",
-    autoPublish: false,
+    autoPublish: true,
     // Les fiches sont des articles à la racine du site — pas de segment « /actualites/ »
     // dans leurs adresses. Le motif large laisse passer la navigation, que l'appariement
     // par titre écarte, et la lecture de fiche démasque ce qui resterait.
@@ -335,7 +337,7 @@ const SOURCES = [
     url: "https://www.balexert.ch/evenements/",
     kind: "html_ai" as const,
     commune: "Vernier",
-    autoPublish: false,
+    autoPublish: true,
     // Les cartes de la liste se composent dans le navigateur : les dates se lisent, pas
     // les liens. Les activités renvoient donc à la liste, ce qui est moins bien qu'un lien
     // direct et mieux qu'un lien deviné.
@@ -346,7 +348,7 @@ const SOURCES = [
     url: "https://lancy.le-centre.ch/evenements/",
     kind: "html_ai" as const,
     commune: "Lancy",
-    autoPublish: false,
+    autoPublish: true,
     config: {
       maxPages: 1,
       itemPattern: "/evenement",

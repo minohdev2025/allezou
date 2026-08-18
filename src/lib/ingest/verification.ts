@@ -166,6 +166,27 @@ const verdictsTriageSchema = z.object({
 });
 
 /**
+ * La seconde lecture d'un doute : une seule activité, la fiche entière cette fois.
+ *
+ * Le premier tri ne voit que le titre et une description tronquée — de quoi trancher
+ * l'évident, pas les cas limites. Plutôt que d'envoyer chaque hésitation à un humain, on
+ * paie une lecture de plus : la fiche complète dit presque toujours à qui elle s'adresse.
+ * Ce qui résiste aux deux lectures est un vrai doute, et il y en a peu.
+ */
+const SYSTEME_SECOND_AVIS = [
+  "Tu tries l'agenda d'une collectivité suisse romande pour un agenda destiné aux familles",
+  "avec enfants. Un premier tri, sur le seul titre, n'a pas su trancher pour cette",
+  "activité : voici sa fiche entière.",
+  'Réponds uniquement par un objet JSON, sans texte autour : {"famille":"oui"}',
+  "- « oui » : une sortie qu'un parent pourrait faire avec un enfant.",
+  "- « non » : sans place pour un enfant — activité pensée pour les adultes, même si un",
+  "  enfant pourrait techniquement s'y asseoir.",
+  "- « doute » : seulement si la fiche entière ne dit vraiment rien du public.",
+].join("\n");
+
+const secondAvisSchema = z.object({ famille: z.enum(["oui", "non", "doute"]) });
+
+/**
  * Range les verdicts rendus par le modèle face aux rangs demandés. Fonction pure : c'est
  * elle que les tests verrouillent. Un rang que le modèle a oublié devient un doute — il
  * sera regardé par quelqu'un, ce qui est le sort le plus honnête pour un oubli.
@@ -199,6 +220,26 @@ export async function trierPourFamilles(events: RawEvent[]): Promise<VerdictFami
 
     const contenu = await appelMiniMax(SYSTEME_TRIAGE, lignes.join("\n"));
     verdicts.push(...alignerVerdicts(parseModelJson(contenu), lot.length));
+  }
+
+  /*
+    Les doutes ont droit à une seconde lecture, la fiche entière sous les yeux.
+
+    Elle échoue en silence : un second avis qui tousse laisse le doute en place, et le
+    doute finit en file — c'est déjà le sort le plus prudent. Seul le premier tri, sans
+    lequel rien ne protège l'agenda, a le droit de faire échouer la source.
+  */
+  for (let rang = 0; rang < events.length; rang += 1) {
+    if (verdicts[rang] !== "doute" || !events[rang].texteSource) continue;
+    try {
+      const contenu = await appelMiniMax(
+        SYSTEME_SECOND_AVIS,
+        `${events[rang].title}\n\n${events[rang].texteSource}`,
+      );
+      verdicts[rang] = secondAvisSchema.parse(parseModelJson(contenu)).famille;
+    } catch {
+      // Le doute reste un doute.
+    }
   }
 
   return verdicts;

@@ -269,6 +269,17 @@ liens de fiches existent enfin. Ce qui reste dehors, et pourquoi :
   **la Maison de la Créativité** (programme composé dans le navigateur). Tous à resonder :
   ce sont exactement les lieux que les familles cherchent.
 
+### La relecture humaine est devenue un luxe, et c'est un choix daté du 19 août
+
+Michael ne veut pas d'un péage manuel, et les couches machines — contrôles littéraux,
+relecture croisée, tri famille avec seconde lecture des cas limites — permettent de le
+lui offrir : toutes les sources publient seules, la file ne reçoit que ce que les machines
+retiennent, et ces retenues expirent d'elles-mêmes à leur date. Ce que ça change à
+surveiller : une erreur de tri se voit désormais à l'agenda, plus dans la file. Si un
+événement adulte s'y glisse ou qu'une sortie famille manque à l'appel, c'est la consigne
+du tri qu'il faut resserrer — les deux consignes vivent dans `verification.ts`, et le
+geste « la retirer » de `/relecture` reste là pour l'urgence.
+
 ### Ce que la lecture en couches va coûter et rapporter, et qu'on ne saura qu'en regardant
 
 - **Un passage complet dure plus longtemps** : chaque source à `lireFiches` ouvre jusqu'à

@@ -129,8 +129,9 @@ fois.
 - **Ville de Genève** : chaque fiche expose du schema.org `Event` en JSON-LD. Rien n'y est
   interprété. Son filtre « Enfants et famille » gardait 197 événements quand « Tous
   publics » en comptait 762, Fête de la rentrée comprise : la source lit donc l'agenda
-  complet, et le modèle trie ce qui s'adresse aux familles — oui, non, ou doute, le doute
-  partant en file. Le tri ne touche à aucun fait.
+  complet, et le modèle trie ce qui s'adresse aux familles — oui, non, ou doute. Un doute
+  a droit à une seconde lecture, la fiche entière sous les yeux ; ce qui doute encore part
+  en file. Le tri ne touche à aucun fait.
 - **Plan-les-Ouates, Thônex, Versoix, Confignon, Veyrier**, par la plateforme mutualisée
   [geneve-communes.ch](https://www.geneve-communes.ch/agenda), une facette commune par
   source. Son filtre « Enfants et famille » s'est révélé plus étroit que la question qu'on
@@ -217,5 +218,8 @@ Deux règles tiennent le reste :
   contrôles. Une source qui se met à mal lire ne peut pas réécrire en silence ce qui a été
   vérifié.
 
-Une source qu'on vient d'ajouter garde `autoPublish: false` le temps qu'on regarde ce
-qu'elle rapporte : tout passe alors par la file, contrôles ou pas.
+Toutes les sources publient seules (`autoPublish: true`) : la garde est machine de bout en
+bout — contrôles littéraux, relecture croisée, tri famille avec seconde lecture des cas
+limites — et la file de relecture n'est plus un péage mais une liste d'exceptions. Ce que
+les machines retiennent n'entre pas à l'agenda, et expire de soi-même quand sa date passe :
+la relire est un luxe, pas un travail dû.
