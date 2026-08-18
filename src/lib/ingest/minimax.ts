@@ -212,19 +212,12 @@ function blocEquilibre(texte: string, debut: number): string | null {
   return null;
 }
 
-const SYSTEME = [
-  "Tu extrais des événements d'une page d'agenda communal suisse romand.",
-  "Réponds uniquement par un objet JSON, sans texte autour, de la forme :",
-  '{"evenements":[{"titre":"...","ancre":"...","description":"...","debut":"2026-01-04T14:00:00+01:00","fin":"...","lieu":"...","url":"...","age":"...","recurrence":"..."}]}',
-  "Règles strictes :",
-  "- « ancre » recopie mot pour mot les premiers mots du passage de la page qui décrit cet",
-  "  événement, une dizaine de mots, en commençant tout au début du passage : par la rubrique",
-  "  ou par la date si elles sont écrites avant le titre. Ce champ ne décrit pas l'événement,",
-  "  il sert à retrouver son emplacement exact dans la page. Recopie, ne reformule pas, et",
-  "  n'invente rien : une ancre introuvable dans la page est inutile.",
-  "- « titre » ne reprend pas la rubrique affichée à côté du titre (« Concert », « Animation »,",
-  "  « Exposition », « Sport », « Spectacle - Théâtre »…), ni la date. Le titre seul, tel que",
-  "  la page le donne. La rubrique va dans l'ancre, pas dans le titre.",
+/**
+ * Les règles de fidélité, communes à la lecture d'une liste et à celle d'une fiche : ce
+ * sont elles que les contrôles relisent ensuite, champ par champ. Les écrire deux fois,
+ * c'était garantir qu'elles finissent par diverger.
+ */
+const REGLES_FIDELITE = [
   "- N'invente jamais une date. Si le jour ou le mois d'un événement est absent, ne le retourne pas.",
   "- Les dates sont au format ISO 8601 avec fuseau horaire, heure de Genève (+01:00 en hiver, +02:00 en été).",
   "- Si l'année n'est pas écrite à côté de la date, déduis-la de la date du jour : prends la",
@@ -240,13 +233,50 @@ const SYSTEME = [
   "  activité répétée en plusieurs événements, et n'invente jamais les dates de ses occurrences.",
   "- Si la page n'annonce aucun rythme, omets « recurrence » : une activité qui dure trois mois",
   "  sans rythme écrit est une exposition, pas un cours hebdomadaire.",
+];
+
+// « Suisse romande » et non plus « communal » : les centres commerciaux, salles de loisirs
+// et musées annoncent leurs animations sur le même genre de page, et la consigne n'a rien
+// de communal en dehors de son premier mot.
+const SYSTEME = [
+  "Tu extrais des événements d'une page d'agenda suisse romande — commune, centre commercial, salle de loisirs, musée, théâtre.",
+  "Réponds uniquement par un objet JSON, sans texte autour, de la forme :",
+  '{"evenements":[{"titre":"...","ancre":"...","description":"...","debut":"2026-01-04T14:00:00+01:00","fin":"...","lieu":"...","url":"...","age":"...","recurrence":"..."}]}',
+  "Règles strictes :",
+  "- « ancre » recopie mot pour mot les premiers mots du passage de la page qui décrit cet",
+  "  événement, une dizaine de mots, en commençant tout au début du passage : par la rubrique",
+  "  ou par la date si elles sont écrites avant le titre. Ce champ ne décrit pas l'événement,",
+  "  il sert à retrouver son emplacement exact dans la page. Recopie, ne reformule pas, et",
+  "  n'invente rien : une ancre introuvable dans la page est inutile.",
+  "- « titre » ne reprend pas la rubrique affichée à côté du titre (« Concert », « Animation »,",
+  "  « Exposition », « Sport », « Spectacle - Théâtre »…), ni la date. Le titre seul, tel que",
+  "  la page le donne. La rubrique va dans l'ancre, pas dans le titre.",
+  ...REGLES_FIDELITE,
   "- Si la page ne contient aucun événement exploitable, réponds {\"evenements\":[]}.",
 ].join("\n");
 
-export async function extractEventsWithMiniMax(
-  pageText: string,
-  pageUrl: string,
-): Promise<RawEvent[]> {
+/**
+ * La consigne des pages de détail. Une fiche ne décrit qu'une activité : pas d'ancre à
+ * recopier, pas de frontières à trouver, mais une tentation nouvelle — les encarts « à voir
+ * aussi » qui bordent la fiche et qu'il ne faut pas prendre pour le sujet de la page.
+ */
+const SYSTEME_FICHE = [
+  "Tu lis la page de détail d'une seule activité, tirée d'un agenda suisse romand.",
+  "Réponds uniquement par un objet JSON, sans texte autour, de la forme :",
+  '{"evenements":[{"titre":"...","description":"...","debut":"2026-01-04T14:00:00+01:00","fin":"...","lieu":"...","age":"...","recurrence":"..."}]}',
+  "Règles strictes :",
+  "- Au plus un événement : celui que la page détaille. Ignore les activités que la page",
+  "  suggère en marge (« à voir aussi », « prochainement », « autres événements »).",
+  "- « titre » est celui de l'activité détaillée, tel que la page l'écrit, sans la rubrique.",
+  ...REGLES_FIDELITE,
+  "- Si la page ne détaille pas une activité datée ouverte au public, réponds {\"evenements\":[]}.",
+].join("\n");
+
+/**
+ * Un appel au modèle, une réponse texte. Les trois lecteurs — liste, fiche, vérification —
+ * partagent ce chemin : même clé, même température nulle, même façon d'échouer.
+ */
+export async function appelMiniMax(systeme: string, utilisateur: string): Promise<string> {
   const response = await fetch(MINIMAX_URL, {
     method: "POST",
     headers: {
@@ -258,11 +288,8 @@ export async function extractEventsWithMiniMax(
       temperature: 0,
       response_format: { type: "json_object" },
       messages: [
-        { role: "system", content: SYSTEME },
-        {
-          role: "user",
-          content: `Page : ${pageUrl}\nDate du jour : ${new Date().toISOString()}\n\n${pageText}`,
-        },
+        { role: "system", content: systeme },
+        { role: "user", content: utilisateur },
       ],
     }),
   });
@@ -276,6 +303,17 @@ export async function extractEventsWithMiniMax(
   };
   const content = body.choices?.[0]?.message?.content;
   if (!content) throw new Error("MiniMax : réponse vide");
+  return content;
+}
+
+export async function extractEventsWithMiniMax(
+  pageText: string,
+  pageUrl: string,
+): Promise<RawEvent[]> {
+  const content = await appelMiniMax(
+    SYSTEME,
+    `Page : ${pageUrl}\nDate du jour : ${new Date().toISOString()}\n\n${pageText}`,
+  );
 
   const events = eventsFromPayload(parseModelJson(content), pageUrl);
 
@@ -581,15 +619,22 @@ export function ancresDeFiches(html: string, base: string, motif: string): Map<s
 /**
  * Le lien de la fiche qui porte ce titre.
  *
- * Deux formes acceptées, et pas une de plus : le libellé du lien est le titre, ou il
- * commence par lui. Lancy écrit le titre seul, Vernier le fait suivre de la date et du
- * début de la description. Chercher le titre n'importe où dans le libellé ouvrirait la
- * porte à un mauvais lien, et un parent envoyé sur la mauvaise activité est plus mal servi
- * que celui qu'on renvoie à la page de la commune.
+ * Deux formes toujours acceptées : le libellé du lien est le titre, ou il commence par
+ * lui. Lancy écrit le titre seul, Vernier le fait suivre de la date et du début de la
+ * description. Chercher le titre n'importe où dans le libellé ouvrirait la porte à un
+ * mauvais lien, et un parent envoyé sur la mauvaise activité est plus mal servi que celui
+ * qu'on renvoie à la page de la commune.
+ *
+ * La forme `tolerante` accepte en plus le titre au milieu du libellé — Onex écrit la date
+ * avant le titre dans ses cartes — mais à deux conditions : un seul candidat, et une
+ * source qui relit la fiche derrière (`lireFiches`). C'est la relecture qui rend cette
+ * tolérance honnête : un lien qui parle d'autre chose est démasqué à l'ouverture de la
+ * fiche et retombe sur la page de la liste.
  */
 export function lienDeLActivite(
   liens: Map<string, string>,
   titre: string,
+  tolerante = false,
 ): string | undefined {
   const cible = normaliser(titre);
   if (cible.length < 3) return undefined;
@@ -601,7 +646,148 @@ export function lienDeLActivite(
     if (libelle.startsWith(cible)) return url;
   }
 
-  return undefined;
+  if (!tolerante) return undefined;
+
+  const candidats = [...liens].filter(([libelle]) => contient(libelle, cible));
+  return candidats.length === 1 ? candidats[0][1] : undefined;
+}
+
+/**
+ * Extrait l'activité que détaille une page de fiche, ou rien si la page n'en détaille pas.
+ *
+ * Passe par le même schéma et les mêmes fenêtres de plausibilité que la lecture de liste :
+ * une fiche qui daterait son activité dans deux ans est écartée de la même main.
+ */
+export async function extraireFiche(
+  texteFiche: string,
+  urlFiche: string,
+): Promise<RawEvent | undefined> {
+  const content = await appelMiniMax(
+    SYSTEME_FICHE,
+    `Page : ${urlFiche}\nDate du jour : ${new Date().toISOString()}\n\n${texteFiche}`,
+  );
+  return eventsFromPayload(parseModelJson(content), urlFiche)[0];
+}
+
+/**
+ * Vrai si la fiche parle bien de l'activité de la liste : l'un des deux titres contient
+ * l'autre. C'est le garde-fou du lien : l'appariement par libellé peut tomber sur la
+ * mauvaise fiche, et un parent envoyé sur la mauvaise activité est plus mal servi que
+ * celui qu'on renvoie à la page de la liste.
+ */
+export function ficheParleDeLActivite(liste: RawEvent, fiche: RawEvent): boolean {
+  const a = normaliser(liste.title);
+  const b = normaliser(fiche.title);
+  if (a.length < 3 || b.length < 3) return false;
+  return contient(a, b) || contient(b, a);
+}
+
+/**
+ * Fond la lecture de fiche dans celle de la liste, ou rend null si les deux ne parlent
+ * pas du même jour.
+ *
+ * Le refus du jour différent n'est pas une méfiance gratuite : la fiche d'une activité
+ * répétée annonce volontiers la première date de la série, quand la liste annonce
+ * l'occurrence de la semaine. Fusionner reviendrait à déplacer la sortie du parent.
+ *
+ * L'identité et le titre restent ceux de la liste : c'est elle qui énumère, et changer
+ * l'identité à chaque lecture de fiche ferait renaître l'activité sous un autre nom à
+ * chaque passage. Le texte confronté devient la somme des deux lectures — le bloc de
+ * liste soutient ce qui en vient, la fiche soutient ce qu'elle apporte, et les contrôles
+ * relisent le tout.
+ */
+export function fusionnerFiche(
+  liste: RawEvent,
+  fiche: RawEvent,
+  texteFiche: string,
+): RawEvent | null {
+  if (jourGenevois(fiche.startsAt) !== jourGenevois(liste.startsAt)) return null;
+
+  const texte = clamp(`${liste.texteSource ?? ""} ${texteFiche}`, 30_000)!;
+
+  // Une fiche sans horaire écrit rend minuit ; si la liste, elle, annonçait une heure,
+  // c'est elle qui la connaît. Dans tous les autres cas la fiche fait foi : c'est la page
+  // de l'activité, la liste n'en donnait qu'un résumé.
+  const ficheSansHeure = sansHoraireAnnonce(fiche.startsAt, texteFiche);
+  const startsAt = ficheSansHeure && !liste.allDay ? liste.startsAt : fiche.startsAt;
+  const endsAt = fiche.endsAt ?? (startsAt === liste.startsAt ? liste.endsAt : undefined);
+
+  return {
+    ...liste,
+    startsAt,
+    endsAt,
+    description: fiche.description ?? liste.description,
+    placeLabel: fiche.placeLabel ?? liste.placeLabel,
+    minAge: fiche.minAge ?? liste.minAge,
+    maxAge: fiche.maxAge ?? liste.maxAge,
+    recurrence: fiche.recurrence ?? liste.recurrence,
+    tarif: (fiche.tarif ?? "inconnu") !== "inconnu" ? fiche.tarif : liste.tarif,
+    acces: (fiche.acces ?? "inconnu") !== "inconnu" ? fiche.acces : liste.acces,
+    ancre: undefined,
+    texteSource: texte,
+    allDay: sansHoraireAnnonce(startsAt, texte),
+  };
+}
+
+/**
+ * Combien de fiches une source peut ouvrir par passage, et le souffle entre deux.
+ *
+ * Quarante fiches couvrent large — les plus proches dans le temps d'abord, qui sont
+ * celles qu'un parent regarde. Le reste attend le passage suivant, six heures plus tard :
+ * un agenda ne se remplit pas à la minute. La pause tient le rythme d'un lecteur poli sur
+ * un site communal qui n'a rien demandé.
+ */
+const FICHES_MAX_PAR_PASSAGE = 40;
+const PAUSE_ENTRE_FICHES_MS = 250;
+
+/**
+ * Ouvre la fiche des activités dont le lien a été retrouvé, et enrichit ce qu'on en lit.
+ *
+ * Trois issues par fiche, du meilleur au pire :
+ *  - la fiche parle de l'activité, le même jour : lecture fusionnée, texte confronté élargi ;
+ *  - la fiche parle de l'activité, un autre jour : la liste reste telle quelle, lien compris —
+ *    c'est une série, et le lien mène au bon endroit ;
+ *  - la fiche parle d'autre chose : le lien était faux, il retombe sur la page de la source.
+ *
+ * Une fiche qui ne se lit pas — réseau, modèle — laisse l'activité comme elle était. La
+ * lecture de liste reste le socle ; la fiche n'est qu'un supplément.
+ */
+async function lireLesFiches(
+  events: RawEvent[],
+  liens: Map<number, string>,
+  urlSource: string,
+): Promise<RawEvent[]> {
+  const enrichis = [...events];
+
+  const rangs = [...liens.keys()]
+    .sort((a, b) => events[a].startsAt.getTime() - events[b].startsAt.getTime())
+    .slice(0, FICHES_MAX_PAR_PASSAGE);
+
+  for (const rang of rangs) {
+    const lien = liens.get(rang)!;
+    try {
+      const reponse = await fetch(lien, { headers: { "User-Agent": USER_AGENT } });
+      if (!reponse.ok) continue;
+
+      const texteFiche = htmlToText(await lireTexte(reponse));
+      const fiche = await extraireFiche(texteFiche, lien);
+      if (!fiche) continue;
+
+      if (!ficheParleDeLActivite(enrichis[rang], fiche)) {
+        enrichis[rang] = { ...enrichis[rang], url: clamp(urlSource, 500) };
+        continue;
+      }
+
+      const fusion = fusionnerFiche(enrichis[rang], fiche, texteFiche);
+      if (fusion) enrichis[rang] = fusion;
+    } catch {
+      // La fiche n'a rien donné : la lecture de liste suffit, comme avant cette étape.
+    } finally {
+      await new Promise((r) => setTimeout(r, PAUSE_ENTRE_FICHES_MS));
+    }
+  }
+
+  return enrichis;
 }
 
 type MiniMaxConfig = {
@@ -615,6 +801,24 @@ type MiniMaxConfig = {
    * cherche pas de lien et chaque activité renvoie à la page de liste, comme avant.
    */
   itemPattern?: string;
+  /**
+   * Ouvrir la fiche de chaque activité retrouvée pour en tirer l'heure exacte, la
+   * description, l'âge, le tarif. Demande `itemPattern` : sans lien, pas de fiche.
+   */
+  lireFiches?: boolean;
+  /**
+   * La liste ne sert que ses liens : chaque fiche fait l'événement. Pour les sites dont
+   * la liste n'écrit pas les dates (Meyrin les compose dans le navigateur) — il n'y a
+   * alors rien à extraire de la liste, mais tout à lire derrière ses liens. Demande
+   * `itemPattern`, et rend `lireFiches` sans objet.
+   */
+  modeFiches?: boolean;
+  /**
+   * Le lieu à inscrire quand la page n'en écrit pas : un centre commercial n'écrit pas
+   * son adresse sur chaque animation. Ce lieu vient de la configuration, et les contrôles
+   * savent qu'il n'a pas à être cherché sur la page.
+   */
+  lieuParDefaut?: string;
 };
 
 /**
@@ -705,11 +909,58 @@ async function lirePages(
   return { pages, liens };
 }
 
+/**
+ * Le mode « fiches d'abord » : les événements sortent des fiches, pas de la liste.
+ *
+ * L'identité d'une activité est ici l'adresse de sa fiche — le plus stable des
+ * identifiants, puisque c'est le site qui le donne. Une fiche qui ne détaille aucune
+ * activité datée rend simplement rien : les liens de navigation attrapés par le motif
+ * coûtent une lecture et ne produisent aucun événement.
+ */
+async function lireDepuisLesFiches(
+  liens: Map<string, string>,
+  lieuParDefaut: string | undefined,
+): Promise<RawEvent[]> {
+  const uniques = [...new Set(liens.values())].slice(0, FICHES_MAX_PAR_PASSAGE);
+  const events: RawEvent[] = [];
+
+  for (const lien of uniques) {
+    try {
+      const reponse = await fetch(lien, { headers: { "User-Agent": USER_AGENT } });
+      if (!reponse.ok) continue;
+
+      const texte = htmlToText(await lireTexte(reponse));
+      const fiche = await extraireFiche(texte, lien);
+      if (!fiche) continue;
+
+      events.push({
+        ...fiche,
+        externalId: clamp(lien, 200)!,
+        url: clamp(lien, 500),
+        placeLabel: fiche.placeLabel ?? lieuParDefaut,
+        ancre: undefined,
+        texteSource: texte,
+        allDay: sansHoraireAnnonce(fiche.startsAt, texte),
+      });
+    } catch {
+      // Une fiche illisible ne vaut pas d'arrêter la tournée des autres.
+    } finally {
+      await new Promise((r) => setTimeout(r, PAUSE_ENTRE_FICHES_MS));
+    }
+  }
+
+  return events;
+}
+
 export const minimaxAdapter: Adapter = async (source) => {
   const config = (source.config ?? {}) as MiniMaxConfig;
   const maxPages = Math.min(Math.max(config.maxPages ?? 3, 1), 15);
 
   const { pages, liens } = await lirePages(source.url, maxPages, config.itemPattern);
+
+  if (config.modeFiches) {
+    return lireDepuisLesFiches(liens, config.lieuParDefaut);
+  }
 
   /*
     Une page, un appel — et non plus six pages réunies en un seul.
@@ -758,8 +1009,22 @@ export const minimaxAdapter: Adapter = async (source) => {
 
   // Le lien de la fiche remplace celui de la liste quand on l'a retrouvé. Sinon rien ne
   // change : mieux vaut la page de la commune qu'une adresse devinée.
-  return events.map((event) => {
-    const lien = lienDeLActivite(liens, event.title);
-    return lien ? { ...event, url: clamp(lien, 500) } : event;
+  const liensParRang = new Map<number, string>();
+  const avecLiens = events.map((event, rang) => {
+    const lien = lienDeLActivite(liens, event.title, config.lireFiches === true);
+    if (!lien) return event;
+    liensParRang.set(rang, lien);
+    return { ...event, url: clamp(lien, 500) };
   });
+
+  const lus = config.lireFiches
+    ? await lireLesFiches(avecLiens, liensParRang, source.url)
+    : avecLiens;
+
+  // Le lieu de la maison, pour les sources qui n'écrivent pas leur adresse sur chaque
+  // annonce. Posé en dernier : une activité dont la page nomme un lieu garde le sien.
+  if (!config.lieuParDefaut) return lus;
+  return lus.map((event) =>
+    event.placeLabel ? event : { ...event, placeLabel: config.lieuParDefaut },
+  );
 };

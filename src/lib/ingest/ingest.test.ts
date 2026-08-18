@@ -11,11 +11,13 @@ import { beforeEach, describe, expect, it } from "vitest";
 
 import { db } from "@/lib/db";
 import { eventsFromHtml } from "@/lib/ingest/jsonld";
-import { controler } from "@/lib/ingest/controles";
+import { controler, type Echec } from "@/lib/ingest/controles";
 import {
   ancresDeFiches,
   blocsParActivite,
   eventsFromPayload,
+  ficheParleDeLActivite,
+  fusionnerFiche,
   htmlToText,
   lienDeLActivite,
   parseModelJson,
@@ -300,6 +302,24 @@ describe("Retrouver le lien d'une fiche dans la page de liste", () => {
 
   it("refuse un titre trop court pour désigner quoi que ce soit", () => {
     expect(lienDeLActivite(agenda, "à")).toBeUndefined();
+  });
+
+  it("retrouve, en tolérant, un titre écrit au milieu de sa carte", () => {
+    // La carte d'Onex écrit la date avant le titre : ni égalité, ni préfixe. La forme
+    // tolérante n'existe que pour les sources qui relisent la fiche derrière.
+    const cartes = ancresDeFiches(
+      `<a href="/agenda/zumba-6415">sam 12 sept Cours de Zumba place du 150e</a>
+       <a href="/agenda/pilates-6389">dim 13 sept Cours de Pilates parc Brot</a>`,
+      "https://www.onex.ch/mes-loisirs/agenda/",
+      "/agenda/",
+    );
+
+    expect(lienDeLActivite(cartes, "Cours de Zumba")).toBeUndefined();
+    expect(lienDeLActivite(cartes, "Cours de Zumba", true)).toBe(
+      "https://www.onex.ch/agenda/zumba-6415",
+    );
+    // Deux cartes citent « Cours » : impossible de choisir, donc personne.
+    expect(lienDeLActivite(cartes, "Cours", true)).toBeUndefined();
   });
 });
 
@@ -991,5 +1011,218 @@ describe("Santé des sources", () => {
 
     expect(rapport.ok).toBe(false);
     expect(rapport.error).toContain("ical");
+  });
+});
+
+describe("Relecture croisée", () => {
+  /** Un vérificateur de test : il répond ce qu'on lui dicte et compte ses appels. */
+  function verificateur(echecs: Echec[]) {
+    const appels = { total: 0 };
+    const relire = async () => {
+      appels.total += 1;
+      return echecs;
+    };
+    return { appels, relire };
+  }
+
+  const conteste: Echec = {
+    code: "verification_ia",
+    detail: "La page parle du marché voisin, pas de cet atelier.",
+  };
+
+  it("retient une activité que le vérificateur conteste", async () => {
+    const source = await createSource({ kind: "html_ai", autoPublish: true, config: {} });
+    const event = unEvenement();
+
+    const rapport = await runSource(
+      source.id,
+      adaptateur([{ ...event, texteSource: pageQuiDitTout(event) }]),
+      async () => [conteste],
+    );
+
+    expect(rapport.published).toBe(0);
+    expect(rapport.held).toBe(1);
+
+    const attente = await pendingReview();
+    expect(attente[0].controles.map((c) => c.code)).toEqual(["verification_ia"]);
+  });
+
+  it("publie ce que le vérificateur confirme", async () => {
+    const source = await createSource({ kind: "html_ai", autoPublish: true, config: {} });
+    const event = unEvenement();
+    const { appels, relire } = verificateur([]);
+
+    const rapport = await runSource(
+      source.id,
+      adaptateur([{ ...event, texteSource: pageQuiDitTout(event) }]),
+      relire,
+    );
+
+    expect(rapport.published).toBe(1);
+    expect(appels.total).toBe(1);
+  });
+
+  it("ne relit pas une activité déjà publiée", async () => {
+    // Le contenu affiché a été vérifié à son entrée. Un vérificateur pris d'un doute
+    // passager rangerait sinon des activités saines parmi les signalées, toutes les six
+    // heures.
+    const source = await createSource({ kind: "html_ai", autoPublish: true, config: {} });
+    const event = unEvenement();
+    const lecture = { ...event, texteSource: pageQuiDitTout(event) };
+    const { appels, relire } = verificateur([]);
+
+    await runSource(source.id, adaptateur([lecture]), relire);
+    await runSource(source.id, adaptateur([lecture]), relire);
+
+    expect(appels.total).toBe(1);
+  });
+
+  it("ne relit pas ce que les contrôles retiennent déjà", async () => {
+    // L'activité attend de toute façon une relecture humaine : payer un appel pour le
+    // dire deux fois n'apprend rien à personne.
+    const source = await createSource({ kind: "html_ai", autoPublish: true, config: {} });
+    const { appels, relire } = verificateur([]);
+
+    const rapport = await runSource(
+      source.id,
+      adaptateur([unEvenement({ texteSource: "page muette" })]),
+      relire,
+    );
+
+    expect(rapport.held).toBe(1);
+    expect(appels.total).toBe(0);
+  });
+
+  it("se débraye par configuration, source par source", async () => {
+    const source = await createSource({
+      kind: "html_ai",
+      autoPublish: true,
+      config: { verifierIA: false },
+    });
+    const event = unEvenement();
+    const { appels, relire } = verificateur([conteste]);
+
+    const rapport = await runSource(
+      source.id,
+      adaptateur([{ ...event, texteSource: pageQuiDitTout(event) }]),
+      relire,
+    );
+
+    expect(rapport.published).toBe(1);
+    expect(appels.total).toBe(0);
+  });
+
+  it("laisse les flux structurés tranquilles", async () => {
+    // Rien n'y est interprété, il n'y a donc rien à faire relire.
+    const source = await createSource({ kind: "jsonld", autoPublish: true, config: {} });
+    const { appels, relire } = verificateur([conteste]);
+
+    const rapport = await runSource(source.id, adaptateur([unEvenement()]), relire);
+
+    expect(rapport.published).toBe(1);
+    expect(appels.total).toBe(0);
+  });
+});
+
+describe("Lecture de fiche", () => {
+  const uneListe = (overrides: Partial<RawEvent> = {}): RawEvent => ({
+    externalId: "atelier chocolat|2026-09-12",
+    title: "Atelier chocolat",
+    startsAt: new Date("2026-09-12T14:00:00+02:00"),
+    endsAt: new Date("2026-09-12T16:00:00+02:00"),
+    url: "https://example.test/agenda/atelier",
+    texteSource: "12 septembre 14h00 Atelier chocolat salle des fetes",
+    allDay: false,
+    ...overrides,
+  });
+
+  it("reconnaît la fiche qui parle d'autre chose", () => {
+    const liste = uneListe();
+    expect(
+      ficheParleDeLActivite(liste, uneListe({ title: "Marché de Noël" })),
+    ).toBe(false);
+    // Le sous-titre de la fiche ne la disqualifie pas : c'est la même activité, dite plus
+    // longuement.
+    expect(
+      ficheParleDeLActivite(
+        liste,
+        uneListe({ title: "Atelier chocolat — pour les familles" }),
+      ),
+    ).toBe(true);
+  });
+
+  it("la fiche enrichit ce que la liste taisait, sans toucher à l'identité", () => {
+    const liste = uneListe();
+    const fiche = uneListe({
+      externalId: "autre-identite",
+      title: "Atelier chocolat des familles",
+      startsAt: new Date("2026-09-12T14:30:00+02:00"),
+      description: "Fabrication de pralinés, dès 5 ans, sur inscription.",
+      placeLabel: "Maison de quartier du Plateau",
+      minAge: 5,
+    });
+
+    const fusion = fusionnerFiche(
+      liste,
+      fiche,
+      "Samedi 12 septembre 2026, 14h30. Fabrication de pralinés, dès 5 ans.",
+    );
+
+    expect(fusion).not.toBeNull();
+    expect(fusion!.externalId).toBe(liste.externalId);
+    expect(fusion!.title).toBe(liste.title);
+    expect(fusion!.startsAt).toEqual(fiche.startsAt);
+    expect(fusion!.description).toBe(fiche.description);
+    expect(fusion!.placeLabel).toBe(fiche.placeLabel);
+    expect(fusion!.minAge).toBe(5);
+    // Le texte confronté porte les deux lectures : ce qui vient de la liste comme ce qui
+    // vient de la fiche doit pouvoir se retrouver quelque part.
+    expect(fusion!.texteSource).toContain("salle des fetes");
+    expect(fusion!.texteSource).toContain("pralinés");
+  });
+
+  it("refuse de changer le jour", () => {
+    // La fiche d'une activité répétée annonce volontiers la première date de la série :
+    // fusionner déplacerait la sortie du parent.
+    const fusion = fusionnerFiche(
+      uneListe(),
+      uneListe({ startsAt: new Date("2026-09-05T14:00:00+02:00") }),
+      "Du 5 septembre au 19 décembre, les samedis.",
+    );
+    expect(fusion).toBeNull();
+  });
+
+  it("garde l'heure de la liste quand la fiche n'en écrit pas", () => {
+    const liste = uneListe();
+    const fusion = fusionnerFiche(
+      liste,
+      uneListe({ startsAt: new Date("2026-09-12T00:00:00+02:00") }),
+      "Samedi 12 septembre 2026, toute la journee.",
+    );
+
+    expect(fusion).not.toBeNull();
+    expect(fusion!.startsAt).toEqual(liste.startsAt);
+    expect(fusion!.endsAt).toEqual(liste.endsAt);
+    expect(fusion!.allDay).toBe(false);
+  });
+
+  it("ne laisse pas un tarif muet recouvrir un tarif connu", () => {
+    const liste = uneListe({ tarif: "gratuit", acces: "libre" });
+
+    const muette = fusionnerFiche(
+      liste,
+      uneListe({ tarif: "inconnu", acces: "inconnu" }),
+      "Samedi 12 septembre 2026, 14h00.",
+    );
+    expect(muette!.tarif).toBe("gratuit");
+    expect(muette!.acces).toBe("libre");
+
+    const disante = fusionnerFiche(
+      liste,
+      uneListe({ tarif: "payant", acces: "inscription" }),
+      "Samedi 12 septembre 2026, 14h00. Sur inscription, 10 francs.",
+    );
+    expect(disante!.tarif).toBe("payant");
+    expect(disante!.acces).toBe("inscription");
   });
 });

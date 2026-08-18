@@ -181,6 +181,22 @@ describe("Les champs absents de la page mais présents dans la réponse", () => 
     );
   });
 
+  it("laisse passer le lieu que la configuration impose", () => {
+    // Un centre commercial n'écrit pas son adresse sur chaque animation : le lieu vient de
+    // la configuration de la source, pas d'une lecture, et il n'y a rien à confronter.
+    const source = {
+      ...SOURCE_LUE,
+      config: { lieuParDefaut: "Lancy Centre, Grand-Lancy" },
+    };
+    expect(
+      codes(uneLecture({ placeLabel: "Lancy Centre, Grand-Lancy" }), PAGE, source),
+    ).toEqual([]);
+    // Le même lieu écrit à la main par le modèle, sans configuration : le contrôle reprend.
+    expect(codes(uneLecture({ placeLabel: "Lancy Centre, Grand-Lancy" }))).toContain(
+      "lieu_absent",
+    );
+  });
+
   it("signale une description dont les mots sortent de nulle part", () => {
     expect(
       codes(uneLecture({ description: "Spectacle de marionnettes suivi d'un concours" })),

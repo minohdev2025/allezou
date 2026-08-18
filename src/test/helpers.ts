@@ -239,6 +239,7 @@ export async function createSource(options: {
   kind?: "ical" | "jsonld" | "html_ai";
   autoPublish?: boolean;
   active?: boolean;
+  config?: unknown;
 }): Promise<typeof s.source.$inferSelect> {
   const [row] = await db
     .insert(s.source)
@@ -248,6 +249,10 @@ export async function createSource(options: {
       kind: options.kind ?? "jsonld",
       autoPublish: options.autoPublish ?? false,
       active: options.active ?? true,
+      // Sans relecture croisée, sauf demande expresse : les tests des contrôles et de la
+      // mécanique d'ingestion ne doivent dépendre ni d'une clé, ni d'un modèle, ni du
+      // réseau. La relecture croisée a ses propres tests, qui la branchent en le disant.
+      config: options.config ?? { verifierIA: false },
     })
     .returning();
   return row;

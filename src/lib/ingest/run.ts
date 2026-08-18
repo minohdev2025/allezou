@@ -21,6 +21,7 @@ import type { Acces, Tarif } from "./tarif";
 import { icalAdapter } from "./ical";
 import { jsonLdAdapter } from "./jsonld";
 import { minimaxAdapter } from "./minimax";
+import { verifierExtraction, type Verificateur } from "./verification";
 import { clamp, jourGenevois, type Adapter, type RawEvent, type Source } from "./types";
 
 /** Au-delà de ce délai sans succès, la source est signalée dans l'interface. */
@@ -60,9 +61,15 @@ export type IngestReport = {
   error?: string;
 };
 
+/** La relecture croisée se débraye par source : `config.verifierIA: false`. */
+function verificationActive(config: Source["config"]): boolean {
+  return (config as { verifierIA?: unknown } | null)?.verifierIA !== false;
+}
+
 export async function runSource(
   sourceId: string,
   adapters: Adapters = defaultAdapters,
+  verifier: Verificateur = verifierExtraction,
 ): Promise<IngestReport> {
   const [source] = await db.select().from(s.source).where(eq(s.source.id, sourceId)).limit(1);
   if (!source) throw new Error(`Source inconnue : ${sourceId}`);
@@ -89,10 +96,38 @@ export async function runSource(
     report.found = events.length;
 
     for (const event of events) {
+      const [existing] = await db
+        .select({
+          id: s.event.id,
+          publishedAt: s.event.publishedAt,
+          rejectedAt: s.event.rejectedAt,
+        })
+        .from(s.event)
+        .where(and(eq(s.event.sourceId, source.id), eq(s.event.externalId, event.externalId)))
+        .limit(1);
+
       const echecs = [
         ...controler(event, { source, texteSource: event.texteSource }),
         ...(await chercherDoublon(event, source.id)),
       ];
+
+      /*
+        La relecture croisée garde la porte de la première publication, et elle seule.
+
+        Elle ne relit que ce que les contrôles littéraux laissent passer : ce qui a déjà
+        échoué attend de toute façon une relecture humaine, et payer un appel pour le dire
+        deux fois n'apprend rien. Elle ne relit pas non plus ce qui est déjà publié : le
+        contenu affiché a été vérifié à son entrée, et un vérificateur qui aurait un doute
+        passager rangerait des activités saines parmi les signalées, passage après passage.
+      */
+      if (
+        source.kind === "html_ai" &&
+        echecs.length === 0 &&
+        !existing?.publishedAt &&
+        verificationActive(source.config)
+      ) {
+        echecs.push(...(await verifier(event)));
+      }
 
       const contenu = {
         title: event.title,
@@ -109,16 +144,6 @@ export async function runSource(
         recurrence: event.recurrence,
         commune: source.commune,
       };
-
-      const [existing] = await db
-        .select({
-          id: s.event.id,
-          publishedAt: s.event.publishedAt,
-          rejectedAt: s.event.rejectedAt,
-        })
-        .from(s.event)
-        .where(and(eq(s.event.sourceId, source.id), eq(s.event.externalId, event.externalId)))
-        .limit(1);
 
       if (existing) {
         // Un événement écarté à la main ne réapparaît pas, et un événement publié le reste :

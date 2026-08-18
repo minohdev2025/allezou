@@ -29,7 +29,12 @@ export type CodeControle =
   | "recurrence_absente"
   | "url_hors_domaine"
   | "duree_invraisemblable"
-  | "doublon";
+  | "doublon"
+  // Posés par la relecture croisée de `verification.ts`, pas par les contrôles d'ici : un
+  // second modèle relit le bloc et dit ce qui cloche. Le code vit dans le même type parce
+  // que la file de relecture les affiche de la même façon, quel que soit leur auteur.
+  | "verification_ia"
+  | "activite_annulee";
 
 /** Un contrôle qui n'est pas passé, écrit pour être lu sur l'écran de relecture. */
 export type Echec = { code: CodeControle; detail: string };
@@ -237,10 +242,23 @@ export function memeDomaine(urlFiche: string, urlSource: string): boolean {
 }
 
 export type ContexteControle = {
-  source: Pick<Source, "url" | "kind">;
+  source: Pick<Source, "url" | "kind"> & Partial<Pick<Source, "config">>;
   /** Le texte de la page tel qu'il a été envoyé au modèle. Absent pour un flux structuré. */
   texteSource?: string;
 };
+
+/**
+ * Le lieu que la configuration de la source impose quand la page n'en écrit pas.
+ *
+ * Un centre commercial ou une salle d'escalade n'écrit pas son adresse sur chaque
+ * annonce : le lieu, c'est la maison. Ce lieu-là vient de la configuration, pas d'une
+ * lecture — il n'y a donc rien à confronter à la page, et le contrôle du lieu doit le
+ * laisser passer au lieu de le prendre pour une invention du modèle.
+ */
+function lieuImpose(config: Source["config"] | undefined): string | undefined {
+  const lieu = (config as { lieuParDefaut?: unknown } | null | undefined)?.lieuParDefaut;
+  return typeof lieu === "string" ? lieu : undefined;
+}
 
 /**
  * Les contrôles qui ne demandent que l'activité et sa page. Fonction pure : c'est elle que
@@ -349,7 +367,11 @@ export function controler(event: RawEvent, contexte: ContexteControle): Echec[] 
     });
   }
 
-  if (event.placeLabel && couverture(event.placeLabel, page) < 0.8) {
+  if (
+    event.placeLabel &&
+    event.placeLabel !== lieuImpose(contexte.source.config) &&
+    couverture(event.placeLabel, page) < 0.8
+  ) {
     echecs.push({
       code: "lieu_absent",
       detail: `« ${event.placeLabel} » ne se retrouve pas sur la page.`,
