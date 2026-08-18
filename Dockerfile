@@ -55,10 +55,11 @@ COPY --from=builder --chown=nextjs:nodejs /app/drizzle ./drizzle
 COPY --from=builder --chown=nextjs:nodejs /app/drizzle.config.ts ./drizzle.config.ts
 COPY --from=builder --chown=nextjs:nodejs /app/scripts ./scripts
 
-# La page /donnees lit ce fichier sur le disque : il doit voyager avec le serveur, sinon
-# les parents tomberaient sur une erreur à l'endroit précis où on leur promet la clarté.
-COPY --from=builder --chown=nextjs:nodejs /app/DONNEES.md ./DONNEES.md
-COPY --from=builder --chown=nextjs:nodejs /app/QUESTIONS.md ./QUESTIONS.md
+# Les pages /donnees et /questions lisent ces fichiers sur le disque : ils doivent voyager
+# avec le serveur, sinon les parents tomberaient sur une erreur à l'endroit précis où on leur
+# promet la clarté. Le joker embarque aussi les traductions (DONNEES.sq.md…) — sans elles,
+# le repli silencieux vers le français cacherait leur absence en production.
+COPY --from=builder --chown=nextjs:nodejs /app/DONNEES*.md /app/QUESTIONS*.md ./
 
 USER nextjs
 EXPOSE 4100
