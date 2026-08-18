@@ -123,16 +123,24 @@ millisecondes d'écart suffisent à faire sortir un membre avant son entrée, ou
 
 ## Sources de l'agenda
 
-Le canton a été passé en revue le 14 août 2026.
+Le canton a été passé en revue le 14 août 2026, puis le 18 août, avec les privés cette
+fois.
 
 - **Ville de Genève**, filtre « Enfants et famille » : chaque fiche expose du schema.org
   `Event` en JSON-LD. Rien n'y est interprété.
-- **Chêne-Bougeries, Laconnex** : agenda WordPress avec le greffon « The Events Calendar »,
-  qui publie tout en iCalendar derrière `?ical=1`. C'est la meilleure source possible, et
-  `categoriesIgnorees` écarte les séances du Conseil municipal et les levées d'encombrants.
-- **Vernier, Lancy, Onex** : aucun flux structuré. Lecture par MiniMax M3.
+- **Chêne-Bougeries, Laconnex, Chancy** : agenda WordPress avec le greffon « The Events
+  Calendar », qui publie tout en iCalendar derrière `?ical=1`. C'est la meilleure source
+  possible, et `categoriesIgnorees` écarte les séances du Conseil municipal et les levées
+  d'encombrants.
+- **Vernier, Lancy, Onex, Carouge, Meyrin, Grand-Saconnex, Anières, Vandœuvres,
+  Collex-Bossy, Perly-Certoux, Cologny, Troinex, Russin, Veyrier**, et la plateforme
+  mutualisée **geneve-communes.ch** : aucun flux structuré. Lecture par MiniMax M3.
+- **Lancy Centre, Balexert, Le Centre Lancy-Onex** : les centres commerciaux annoncent
+  leurs animations comme les communes, sur une page de liste. Même lecture, avec un
+  `lieuParDefaut` parce qu'une enseigne n'écrit pas son adresse sur chaque annonce.
 
-Ce que le tour du canton a écarté, et pourquoi, est écrit en tête de
+Ce que les deux tours ont écarté, et pourquoi — agendas composés dans le navigateur,
+iCal vides, PDF, lieux sans agenda daté — est écrit en tête de
 [seed-sources.mts](scripts/seed-sources.mts).
 
 Une source qui répond correctement mais ne rapporte plus rien est signalée comme muette.
@@ -170,6 +178,23 @@ caractères : une amputation silencieuse sur les grosses sources, et une seule r
 pour cent activités — les réponses tronquées ont leur message d'erreur dans `minimax.ts`.
 Chaque page est désormais lue par son propre appel, et une page qui échoue n'emporte plus les
 autres.
+
+**La fiche après la liste.** Pour les sources à `lireFiches`, la fiche de chaque activité
+retrouvée est ouverte à son tour : le lien exact remplace la page de liste — c'est lui
+qu'un parent veut — et la fiche apporte l'heure, la description, l'âge, le tarif que la
+liste résume ou tait. Une fiche qui parle d'un autre jour ne fusionne pas (c'est une série,
+la liste connaît l'occurrence) ; une fiche qui parle d'autre chose démasque un mauvais
+lien, qui retombe sur la page de la source. Le texte confronté devient la somme des deux
+lectures.
+
+**La relecture croisée.** Avant sa première publication, chaque activité lue par le modèle
+est relue par un second passage indépendant (`src/lib/ingest/verification.ts`) : on lui
+donne le bloc d'origine et les champs extraits, il rend une certitude, les contradictions
+qu'il voit, et si la page annonce une annulation — « COMPLET » à côté d'un titre laisse
+tous les contrôles littéraux indifférents, c'est exactement ce qu'une relecture attrape.
+Son verdict ne publie jamais rien : il ne sait que retenir en file. Une panne le rend muet
+plutôt que sévère, et les contrôles déterministes restent seuls juges, comme avant lui.
+`verifierIA: false` le débraye source par source.
 
 Ce qui passe tous les contrôles est publié sans que personne n'intervienne. Ce qui en échoue
 un seul attend sur `/relecture`, qui affiche le motif. La file existe toujours ; elle est

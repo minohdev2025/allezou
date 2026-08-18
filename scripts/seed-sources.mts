@@ -1,37 +1,74 @@
 /**
- * Sources de l'agenda genevois — état vérifié le 14 août 2026.
+ * Sources de l'agenda genevois — état vérifié le 18 août 2026.
  *
  *   npm run sources:seed
  *
  * La Ville de Genève expose du schema.org `Event` en JSON-LD sur chaque fiche (titre, dates,
  * lieu, adresse). Rien n'y est interprété, donc rien n'y est inventé.
  *
- * Les communes (Lancy, Onex, Carouge) n'exposent ni JSON-LD, ni iCal, ni RSS — vérifié.
- * Elles passent donc par une lecture MiniMax M3. Leurs agendas paginent en `?page=N` à partir
- * de zéro : `maxPages` dit combien de pages lire, réunies en un seul appel au modèle.
+ * Les communes sans flux structuré passent par une lecture MiniMax M3. Leurs agendas
+ * paginent en `?page=N` quand ils paginent ; un site qui ignore le paramètre rend une page
+ * identique à la première, que la lecture reconnaît et ignore.
+ *
+ * `lireFiches: true` ouvre la fiche de chaque activité dont le lien a été retrouvé : le
+ * lien exact remplace la page de liste, et la fiche apporte l'heure, la description, l'âge,
+ * le tarif. `lieuParDefaut` inscrit l'adresse de la maison pour les enseignes qui ne
+ * l'écrivent pas sur chaque annonce. La relecture croisée est active partout où on ne l'a
+ * pas débrayée (`verifierIA: false`) : un second passage du modèle relit chaque activité
+ * avant sa première publication.
  *
  * `autoPublish: true` ne veut pas dire « publier les yeux fermés » : chaque activité passe
  * les contrôles de `src/lib/ingest/controles.ts`, et ce qui en échoue un seul retombe en
- * file. C'est ce qui a levé la limite de deux communes inscrite ici jusqu'au 14 août 2026 :
- * le coût d'une commune de plus ne se compte plus en minutes de relecture hebdomadaire.
- *
- * Une source qu'on vient d'ajouter reste à `autoPublish: false` le temps de regarder ce
- * qu'elle rapporte vraiment. C'est le seul cas où tout passe par la file.
+ * file. Une source qu'on vient d'ajouter reste à `autoPublish: false` le temps de regarder
+ * ce qu'elle rapporte vraiment — c'est le cas de toutes celles du tour du 18 août.
  *
  * Plusieurs communes tiennent leur agenda sous WordPress avec le greffon « The Events
  * Calendar », qui publie tout en iCalendar derrière `?ical=1`. C'est la meilleure source
  * possible : rien à interpréter, un identifiant stable, un fuseau déclaré.
  *
- * Le tour du canton, fait le 14 août 2026, et ce qu'il a écarté :
+ * Le tour du canton du 14 août avait retenu six sources ; celui du 18 août rouvre le
+ * dossier, et voici ce qu'il a trouvé — et écarté :
  *
- * - Chancy et Soral exposent `?ical=1`, mais leur feuille est vide ce jour-là. À reprendre
- *   si elle se remplit ; une source qui ne rapporte rien serait signalée muette.
- * - Carouge et Meyrin composent leur agenda dans le navigateur : la page servie ne contient
- *   aucune activité, ni pour nous ni pour le modèle.
- * - Anières, Thônex et Troinex publient un flux RSS de leur agenda, mais un RSS ne porte que
- *   la date de publication de l'article, pas celle de l'activité. Rien de gagné sur du HTML.
- * - Le flux `ge.ch/rss/evenement` de l'État est institutionnel (ventes de parcelles,
- *   consultations) et ne s'adresse pas aux familles.
+ * - **Onex a refait son site** (rendu serveur Nuxt) : les liens de fiches existent
+ *   maintenant dans la page servie. L'agenda gagne `itemPattern` et `lireFiches`.
+ * - **Carouge et Meyrin** ne composent plus tout dans le navigateur : leurs listes servent
+ *   les liens de fiches. Meyrin n'écrit guère de dates sur sa liste — si la source reste
+ *   muette, c'est là qu'il faudra regarder.
+ * - **Chancy** a rempli son iCal (`/agenda-communal/?ical=1`), vide le 14 août. **Soral**
+ *   garde le sien vide ; à resonder.
+ * - **geneve-communes.ch** est une plateforme mutualisée où de petites communes (Meinier,
+ *   Puplinge…) publient leur agenda. Une seule source la lit ; la commune de chaque
+ *   activité est celle que sa fiche annonce, pas une valeur unique.
+ * - **Cologny** affiche un agenda OpenAgenda dont l'export JSON public répond
+ *   (agenda 10019287, 17 événements au 18 août). La page se lit très bien en HTML ; le
+ *   jour où un adaptateur structuré vaut la peine, l'identifiant est là.
+ * - **Plan-les-Ouates** passe aussi par OpenAgenda (portail acg-plan-les-ouates.oa.events)
+ *   mais sa page d'agenda ne sert ni dates ni identifiant lisibles. **Presinge** pointe un
+ *   agenda OpenAgenda vide (81186525). À reprendre tous les deux.
+ * - **Genthod, Satigny, Hermance, Confignon, Pregny-Chambésy, Corsier, Chêne-Bourg,
+ *   Bellevue, Thônex, Bernex, Jussy** : agendas composés dans le navigateur, page servie
+ *   sans contenu ni liens. Rien à lire, ni pour nous ni pour le modèle.
+ * - **Choulex** publie sa liste annuelle en PDF. **Céligny** ne parle de manifestations
+ *   que pour les autorisations. **Aire-la-Ville, Bardonnex, Cartigny, Dardagny, Gy,
+ *   Avully, Avusy** : pas d'agenda trouvable sur leur site.
+ * - Le flux `ge.ch/rss/evenement` de l'État reste institutionnel, et les RSS communaux ne
+ *   portent que la date de publication de l'article, pas celle de l'activité.
+ *
+ * Côté privés, le même tour a regardé ce que les parents demandent :
+ *
+ * - **Lancy Centre** annonce ses animations (Miniville, ateliers) sur `/actualites/`,
+ *   142 mentions de dates côté serveur. Les fiches sont des articles à la racine du site,
+ *   d'où l'`itemPattern` large — l'appariement par titre et la relecture de fiche font le
+ *   tri.
+ * - **Balexert** a un vrai type « événement » (Mini Migros, LEGO, ateliers en boutique) ;
+ *   sa liste sert les dates mais compose ses cartes en JavaScript : les liens de fiches
+ *   ne sont pas dans la page servie, les activités renvoient donc à la liste.
+ * - **Le Centre (Lancy-Onex)** tient une page `/evenements/` sous WordPress.
+ * - **Écartés pour l'instant** : Airloop (offre permanente, pas d'agenda daté servi),
+ *   Le Môll (site applicatif, cinq dates lisibles sur toute la page), La Praille (son
+ *   Kids Club n'écrit pas de dates côté serveur), la Maison de la Créativité (programme
+ *   composé dans le navigateur, archive `/event/` ancienne). Tous à resonder : ce sont
+ *   exactement les lieux que les familles cherchent.
  */
 
 import { config } from "dotenv";
@@ -43,6 +80,7 @@ const { db } = await import("../src/lib/db/index.ts");
 const s = await import("../src/lib/db/schema.ts");
 
 const SOURCES = [
+  /* ------------------------------------------------------------ les vétérans */
   {
     name: "Ville de Genève — agenda enfants et famille",
     url: "https://www.geneve.ch/fr/agenda?f%5B0%5D=for_who%3A167",
@@ -60,7 +98,7 @@ const SOURCES = [
     // `itemPattern` sert à retrouver le lien de chaque fiche dans la page de liste : le
     // texte envoyé au modèle est débarrassé de ses balises, donc il n'y voit aucun `href`.
     // Lancy écrit le titre seul dans le lien, ce qui suffit à les rapprocher.
-    config: { maxPages: 3, itemPattern: "/agenda/" },
+    config: { maxPages: 3, itemPattern: "/agenda/", lireFiches: true },
   },
   {
     name: "Chêne-Bougeries — agenda communal",
@@ -88,10 +126,10 @@ const SOURCES = [
     kind: "html_ai" as const,
     commune: "Vernier",
     autoPublish: true,
-    // La plus grande commune du canton après la Ville, et aucun flux structuré. Quatre pages
-    // de liste, qui paginent en `?page=N` comme les autres. Le lien de fiche porte le titre
-    // suivi de la date, ce que la recherche par préfixe retrouve.
-    config: { maxPages: 4, itemPattern: "/evenements/" },
+    // La plus grande commune du canton après la Ville. Quatre pages de liste, qui paginent
+    // en `?page=N`. Le lien de fiche porte le titre suivi de la date, ce que la recherche
+    // par préfixe retrouve.
+    config: { maxPages: 4, itemPattern: "/evenements/", lireFiches: true },
   },
   {
     name: "Onex — agenda communal",
@@ -99,14 +137,166 @@ const SOURCES = [
     kind: "html_ai" as const,
     commune: "Onex",
     autoPublish: true,
-    // Treize pages de neuf entrées, dont la première ne contient guère que des cours de
-    // fitness pour adultes : s'arrêter là donnait une source « ok » qui ne rapportait rien.
-    // Six pages couvrent environ deux mois.
-    //
-    // Pas d'`itemPattern` : Onex compose ses fiches dans le navigateur, et la page servie ne
-    // porte aucun lien vers elles. Ses activités renvoient donc à l'agenda de la commune, ce
-    // qui est moins bien qu'un lien direct et mieux qu'un lien deviné.
-    config: { maxPages: 6 },
+    // Six pages couvrent environ deux mois ; la première ne contient guère que des cours
+    // de fitness pour adultes, s'arrêter là donnait une source « ok » qui ne rapportait
+    // rien. Le site refait en août sert enfin les liens de fiches : la carte écrit la date
+    // avant le titre, c'est l'appariement tolérant — couvert par la lecture de fiche — qui
+    // les retrouve.
+    config: { maxPages: 6, itemPattern: "/agenda/", lireFiches: true },
+  },
+
+  /* ------------------------------------- le tour du 18 août : communes */
+  {
+    name: "Chancy — agenda communal",
+    url: "https://www.chancy.ch/agenda-communal/?ical=1",
+    kind: "ical" as const,
+    commune: "Chancy",
+    autoPublish: false,
+    config: {},
+  },
+  {
+    name: "Carouge — agenda communal",
+    url: "https://carouge.ch/agenda",
+    kind: "html_ai" as const,
+    commune: "Carouge",
+    autoPublish: false,
+    config: { maxPages: 3, itemPattern: "/agenda/", lireFiches: true },
+  },
+  {
+    name: "Meyrin — agenda communal",
+    url: "https://www.meyrin.ch/fr/agenda",
+    kind: "html_ai" as const,
+    commune: "Meyrin",
+    autoPublish: false,
+    // La liste sert ses liens mais compose ses dates dans le navigateur : rien à extraire
+    // d'elle, tout à lire derrière. Chaque fiche fait l'événement.
+    config: { maxPages: 3, itemPattern: "/fr/agenda/", modeFiches: true },
+  },
+  {
+    name: "Grand-Saconnex — agenda communal",
+    url: "https://www.grand-saconnex.ch/agenda",
+    kind: "html_ai" as const,
+    commune: "Grand-Saconnex",
+    autoPublish: false,
+    config: { maxPages: 3, itemPattern: "/agenda/", lireFiches: true },
+  },
+  {
+    name: "Anières — agenda communal",
+    url: "https://anieres.ch/agenda",
+    kind: "html_ai" as const,
+    commune: "Anières",
+    autoPublish: false,
+    config: { maxPages: 2, itemPattern: "/agenda/", lireFiches: true },
+  },
+  {
+    name: "Vandœuvres — agenda communal",
+    url: "https://www.vandoeuvres.ch/actualites/agenda/",
+    kind: "html_ai" as const,
+    commune: "Vandœuvres",
+    autoPublish: false,
+    config: { maxPages: 2, itemPattern: "/evenement/", lireFiches: true },
+  },
+  {
+    name: "Collex-Bossy — agenda communal",
+    url: "https://collex-bossy.ch/fr/agenda/",
+    kind: "html_ai" as const,
+    commune: "Collex-Bossy",
+    autoPublish: false,
+    // Pagine en `/page-1/`, pas en `?page=N` : une seule page lue, qui suffit à un petit
+    // agenda.
+    config: { maxPages: 1, itemPattern: "/fr/agenda/", lireFiches: true },
+  },
+  {
+    name: "Perly-Certoux — agenda communal",
+    url: "https://www.perly-certoux.ch/fr/agenda/",
+    kind: "html_ai" as const,
+    commune: "Perly-Certoux",
+    autoPublish: false,
+    config: { maxPages: 1, itemPattern: "/fr/agenda/", lireFiches: true },
+  },
+  {
+    name: "Cologny — agenda communal",
+    url: "https://cologny.ch/agenda",
+    kind: "html_ai" as const,
+    commune: "Cologny",
+    autoPublish: false,
+    config: { maxPages: 1, itemPattern: "/agenda/", lireFiches: true },
+  },
+  {
+    name: "Troinex — manifestations communales",
+    url: "https://troinex.ch/vivre-ici/vie-sociale/manifestation-communales-et-agenda/",
+    kind: "html_ai" as const,
+    commune: "Troinex",
+    autoPublish: false,
+    config: { maxPages: 1 },
+  },
+  {
+    name: "Russin — événements",
+    url: "https://www.russin.ch/evenements/",
+    kind: "html_ai" as const,
+    commune: "Russin",
+    autoPublish: false,
+    config: { maxPages: 1 },
+  },
+  {
+    name: "Veyrier — manifestations communales",
+    url: "https://veyrier.ch/vivre-a-veyrier/culture-sports-et-loisirs/manifestations-communales/",
+    kind: "html_ai" as const,
+    commune: "Veyrier",
+    autoPublish: false,
+    config: { maxPages: 1 },
+  },
+  {
+    name: "GE Communes — agenda mutualisé",
+    url: "https://geneve-communes.ch/agenda",
+    kind: "html_ai" as const,
+    // La plateforme sert plusieurs petites communes à la fois : la commune d'une activité
+    // est celle que sa fiche annonce, pas une valeur unique posée ici.
+    commune: null,
+    autoPublish: false,
+    config: { maxPages: 2, itemPattern: "/agenda/", lireFiches: true },
+  },
+
+  /* --------------------------------------- le tour du 18 août : privés */
+  {
+    name: "Lancy Centre — animations",
+    url: "https://www.lancycentre.ch/actualites/",
+    kind: "html_ai" as const,
+    commune: "Lancy",
+    autoPublish: false,
+    // Les fiches sont des articles à la racine du site — pas de segment « /actualites/ »
+    // dans leurs adresses. Le motif large laisse passer la navigation, que l'appariement
+    // par titre écarte, et la lecture de fiche démasque ce qui resterait.
+    config: {
+      maxPages: 1,
+      itemPattern: "lancycentre.ch/",
+      lireFiches: true,
+      lieuParDefaut: "Lancy Centre, Grand-Lancy",
+    },
+  },
+  {
+    name: "Balexert — événements",
+    url: "https://www.balexert.ch/evenements/",
+    kind: "html_ai" as const,
+    commune: "Vernier",
+    autoPublish: false,
+    // Les cartes de la liste se composent dans le navigateur : les dates se lisent, pas
+    // les liens. Les activités renvoient donc à la liste, ce qui est moins bien qu'un lien
+    // direct et mieux qu'un lien deviné.
+    config: { maxPages: 1, lieuParDefaut: "Centre commercial Balexert, Vernier" },
+  },
+  {
+    name: "Le Centre Lancy-Onex — événements",
+    url: "https://lancy.le-centre.ch/evenements/",
+    kind: "html_ai" as const,
+    commune: "Lancy",
+    autoPublish: false,
+    config: {
+      maxPages: 1,
+      itemPattern: "/evenement",
+      lireFiches: true,
+      lieuParDefaut: "Le Centre, Lancy-Onex",
+    },
   },
 ];
 
