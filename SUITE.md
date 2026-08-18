@@ -241,15 +241,19 @@ Meyrin servent désormais leurs pages et sont branchées aussi ; Onex a refait s
 liens de fiches existent enfin. Ce qui reste dehors, et pourquoi :
 
 - **Soral** garde son `?ical=1` vide. À resonder.
-- **Genthod, Satigny, Hermance, Confignon, Pregny-Chambésy, Corsier, Chêne-Bourg, Bellevue,
-  Thônex, Bernex, Jussy** : agendas composés dans le navigateur, page servie sans contenu ni
-  liens. Il faudrait lire l'API que leurs pages interrogent, ou attendre qu'ils refassent
-  leur site — Onex et Carouge montrent que ça arrive.
-- **Presinge, Cologny et Plan-les-Ouates** passent par OpenAgenda. Cologny se lit très bien
-  en HTML (branchée) et son export JSON public répond — agenda 10019287 — le jour où un
-  adaptateur structuré vaudra la peine. Presinge pointe un agenda vide (81186525),
-  Plan-les-Ouates cache le sien derrière un portail (acg-plan-les-ouates.oa.events) sans
-  identifiant lisible.
+- **La plateforme mutualisée geneve-communes.ch a rouvert quatre portes le 19 août** :
+  Plan-les-Ouates, Thônex, Versoix et Confignon y publient en JSON-LD, filtrables par
+  famille et par commune — quatre sources structurées, plus Veyrier dont la page communale
+  n'était qu'une liste annuelle. La facette commune est à resonder de temps en temps : une
+  commune de plus peut s'y mettre, et la Ville de Genève y compte 174 événements famille
+  quand la lecture directe s'arrête à trois pages.
+- **Genthod, Satigny, Hermance, Pregny-Chambésy, Corsier, Chêne-Bourg, Bellevue, Bernex,
+  Jussy** : agendas composés dans le navigateur, page servie sans contenu ni liens, et pas
+  encore sur la plateforme. Il faudrait lire l'API que leurs pages interrogent, ou attendre
+  — Onex et Carouge montrent que les sites se refont.
+- **Presinge et Cologny** passent par OpenAgenda. Cologny se lit très bien en HTML
+  (branchée) et son export JSON public répond — agenda 10019287 — le jour où un adaptateur
+  structuré vaudra la peine. Presinge pointe un agenda vide (81186525).
 - **Choulex** publie sa liste annuelle en PDF ; **Aire-la-Ville, Bardonnex, Cartigny,
   Dardagny, Gy, Avully, Avusy, Céligny** n'ont pas d'agenda trouvable.
 - Côté privés : **Airloop** (offre permanente, pas d'agenda daté), **Le Môll** (site

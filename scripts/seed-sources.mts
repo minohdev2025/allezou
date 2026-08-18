@@ -36,18 +36,25 @@
  *   muette, c'est là qu'il faudra regarder.
  * - **Chancy** a rempli son iCal (`/agenda-communal/?ical=1`), vide le 14 août. **Soral**
  *   garde le sien vide ; à resonder.
- * - **geneve-communes.ch** est une plateforme mutualisée où de petites communes (Meinier,
- *   Puplinge…) publient leur agenda. Une seule source la lit ; la commune de chaque
- *   activité est celle que sa fiche annonce, pas une valeur unique.
+ * - **geneve-communes.ch** est la plateforme mutualisée des communes genevoises, sur le
+ *   même socle que geneve.ch : chaque fiche expose du schema.org `Event` en JSON-LD, et la
+ *   liste se filtre par facettes — `public:33` pour « Familles », `commune:NN` pour une
+ *   commune. On ne la lit que pour les communes qu'on ne sait pas lire en direct :
+ *   Plan-les-Ouates (25), Thônex (61), Versoix (271), Confignon (272) — et Veyrier (259),
+ *   dont la page communale n'est qu'une liste annuelle sans horaires. Les autres communes
+ *   présentes (Ville de Genève, Lancy, Onex, Carouge, Cologny) ont leur propre source, plus
+ *   riche : les lire deux fois ne ferait que des doublons. La facette est à resonder de
+ *   temps en temps — une commune de plus peut s'y mettre ; la Ville de Genève y compte 174
+ *   événements famille quand notre lecture directe s'arrête à trois pages, c'est la piste
+ *   si l'agenda genevois semble un jour trop court.
  * - **Cologny** affiche un agenda OpenAgenda dont l'export JSON public répond
  *   (agenda 10019287, 17 événements au 18 août). La page se lit très bien en HTML ; le
  *   jour où un adaptateur structuré vaut la peine, l'identifiant est là.
- * - **Plan-les-Ouates** passe aussi par OpenAgenda (portail acg-plan-les-ouates.oa.events)
- *   mais sa page d'agenda ne sert ni dates ni identifiant lisibles. **Presinge** pointe un
- *   agenda OpenAgenda vide (81186525). À reprendre tous les deux.
- * - **Genthod, Satigny, Hermance, Confignon, Pregny-Chambésy, Corsier, Chêne-Bourg,
- *   Bellevue, Thônex, Bernex, Jussy** : agendas composés dans le navigateur, page servie
- *   sans contenu ni liens. Rien à lire, ni pour nous ni pour le modèle.
+ * - **Presinge** pointe un agenda OpenAgenda vide (81186525). À reprendre.
+ * - **Genthod, Satigny, Hermance, Pregny-Chambésy, Corsier, Chêne-Bourg, Bellevue,
+ *   Bernex, Jussy** : agendas composés dans le navigateur, page servie sans contenu ni
+ *   liens. Rien à lire, ni pour nous ni pour le modèle — sauf à ce qu'ils rejoignent la
+ *   plateforme mutualisée, où on les trouvera.
  * - **Choulex** publie sa liste annuelle en PDF. **Céligny** ne parle de manifestations
  *   que pour les autorisations. **Aire-la-Ville, Bardonnex, Cartigny, Dardagny, Gy,
  *   Avully, Avusy** : pas d'agenda trouvable sur leur site.
@@ -238,23 +245,55 @@ const SOURCES = [
     autoPublish: false,
     config: { maxPages: 1 },
   },
+  /*
+    La plateforme mutualisée, une commune à la fois.
+
+    Même socle que geneve.ch : JSON-LD sur chaque fiche, rien à interpréter. Le filtre
+    « Familles » (public:33) et la facette commune font le tri à la source. On n'y lit que
+    les communes sans porte directe — les autres ont leur propre source, plus complète, et
+    les lire deux fois ne ferait que remplir la file de doublons.
+  */
   {
-    name: "Veyrier — manifestations communales",
-    url: "https://veyrier.ch/vivre-a-veyrier/culture-sports-et-loisirs/manifestations-communales/",
-    kind: "html_ai" as const,
-    commune: "Veyrier",
+    name: "Plan-les-Ouates — agenda famille (plateforme des communes)",
+    url: "https://www.geneve-communes.ch/agenda?f%5B0%5D=public%3A33&f%5B1%5D=commune%3A25",
+    kind: "jsonld" as const,
+    commune: "Plan-les-Ouates",
     autoPublish: false,
-    config: { maxPages: 1 },
+    config: { itemPattern: "/agenda/", maxPages: 2 },
   },
   {
-    name: "GE Communes — agenda mutualisé",
-    url: "https://geneve-communes.ch/agenda",
-    kind: "html_ai" as const,
-    // La plateforme sert plusieurs petites communes à la fois : la commune d'une activité
-    // est celle que sa fiche annonce, pas une valeur unique posée ici.
-    commune: null,
+    name: "Thônex — agenda famille (plateforme des communes)",
+    url: "https://www.geneve-communes.ch/agenda?f%5B0%5D=public%3A33&f%5B1%5D=commune%3A61",
+    kind: "jsonld" as const,
+    commune: "Thônex",
     autoPublish: false,
-    config: { maxPages: 2, itemPattern: "/agenda/", lireFiches: true },
+    config: { itemPattern: "/agenda/", maxPages: 2 },
+  },
+  {
+    name: "Versoix — agenda famille (plateforme des communes)",
+    url: "https://www.geneve-communes.ch/agenda?f%5B0%5D=public%3A33&f%5B1%5D=commune%3A271",
+    kind: "jsonld" as const,
+    commune: "Versoix",
+    autoPublish: false,
+    config: { itemPattern: "/agenda/", maxPages: 2 },
+  },
+  {
+    name: "Confignon — agenda famille (plateforme des communes)",
+    url: "https://www.geneve-communes.ch/agenda?f%5B0%5D=public%3A33&f%5B1%5D=commune%3A272",
+    kind: "jsonld" as const,
+    commune: "Confignon",
+    autoPublish: false,
+    config: { itemPattern: "/agenda/", maxPages: 2 },
+  },
+  {
+    // La page communale de Veyrier n'est qu'une liste annuelle sans horaires : la
+    // plateforme, elle, porte de vraies fiches datées.
+    name: "Veyrier — agenda famille (plateforme des communes)",
+    url: "https://www.geneve-communes.ch/agenda?f%5B0%5D=public%3A33&f%5B1%5D=commune%3A259",
+    kind: "jsonld" as const,
+    commune: "Veyrier",
+    autoPublish: false,
+    config: { itemPattern: "/agenda/", maxPages: 2 },
   },
 
   /* --------------------------------------- le tour du 18 août : privés */
@@ -300,6 +339,17 @@ const SOURCES = [
   },
 ];
 
+/**
+ * Les sources qu'une meilleure porte a remplacées. On les endort au lieu de les effacer :
+ * leurs activités portent leur histoire, et une source inactive ne coûte rien.
+ */
+const RETIREES = [
+  // Remplacée par les sources « plateforme des communes », une commune à la fois.
+  "https://geneve-communes.ch/agenda",
+  // La liste annuelle sans horaires ; la plateforme porte les vraies fiches de Veyrier.
+  "https://veyrier.ch/vivre-a-veyrier/culture-sports-et-loisirs/manifestations-communales/",
+];
+
 for (const source of SOURCES) {
   const [existing] = await db
     .select({ id: s.source.id })
@@ -314,6 +364,15 @@ for (const source of SOURCES) {
     await db.insert(s.source).values(source);
     console.log(`ajoutée     : ${source.name}`);
   }
+}
+
+for (const url of RETIREES) {
+  const [endormie] = await db
+    .update(s.source)
+    .set({ active: false })
+    .where(eq(s.source.url, url))
+    .returning({ name: s.source.name });
+  if (endormie) console.log(`endormie    : ${endormie.name}`);
 }
 
 process.exit(0);
