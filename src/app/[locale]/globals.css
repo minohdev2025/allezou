@@ -35,6 +35,14 @@
   --color-rose: #b32e72;
   --color-rose-doux: #fbcfe3;
 
+  /* Socles : l'ombre dure sous les pastilles pleines, qui donne aux boutons leur relief
+     de touche. Un voile noir suffit sur le fond clair ; en sombre il s'y perdrait —
+     c'est la teinte profonde de chaque pastille (sa valeur du mode clair) qui prend
+     le relais. */
+  --color-socle-vert: rgba(0, 0, 0, 0.18);
+  --color-socle-ambre: rgba(0, 0, 0, 0.18);
+  --color-socle-corail: rgba(0, 0, 0, 0.18);
+
   --radius-carte: 1.5rem;
   --radius-pilule: 999px;
 }
@@ -64,6 +72,10 @@
     --color-violet-doux: #2b2046;
     --color-rose: #f186b7;
     --color-rose-doux: #3d1932;
+
+    --color-socle-vert: #17784f;
+    --color-socle-ambre: #9c5c00;
+    --color-socle-corail: #c0362f;
   }
 }
 
@@ -135,6 +147,16 @@ summary {
   list-style: disc;
   padding-left: 1.25rem;
 }
+/* Les guides de /questions comptent leurs étapes : sans cette règle, le reset de Tailwind
+   enlève la numérotation et « 1. 2. 3. » s'affiche comme trois phrases posées là. */
+.prose-totir ol {
+  list-style: decimal;
+  padding-left: 1.4rem;
+}
+.prose-totir ol li::marker {
+  font-weight: 700;
+  color: var(--color-vert);
+}
 .prose-totir li {
   margin: 0.35rem 0;
 }
@@ -147,6 +169,13 @@ summary {
 }
 .prose-totir strong {
   font-weight: 700;
+}
+/* Un lien en prose n'avait ni couleur propre ni soulignement : il se lisait comme du texte
+   ordinaire, et personne ne pouvait deviner qu'il menait quelque part. */
+.prose-totir a {
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 4px;
 }
 .prose-totir hr {
   border: 0;
@@ -169,4 +198,66 @@ summary {
 }
 .prose-totir th {
   background: var(--color-vert-doux);
+}
+
+/*
+ * La bulle qui s'ouvre sur un repère de carte.
+ *
+ * Google dessine cette bulle, nous y glissons notre contenu : la couleur du texte vient
+ * donc de la page — `--color-encre`, claire la nuit — tandis que le fond vient de Google,
+ * qui le laisse blanc dès que le style de carte ne suit pas le thème sombre. C'est le cas
+ * de `DEMO_MAP_ID`, celui qui sert tant que `GOOGLE_MAPS_MAP_ID` n'est pas renseigné.
+ * Texte clair sur fond blanc : la bulle devenait illisible la nuit.
+ *
+ * On reprend donc la bulle en mode sombre. Les classes sont celles de l'API Google, et
+ * peuvent changer sans prévenir : le contenu pose aussi ses propres couleurs
+ * (carte-client.tsx), si bien qu'un jour où ces sélecteurs ne mordraient plus, la bulle
+ * resterait lisible — seul un liseré blanc reviendrait autour.
+ */
+@media (prefers-color-scheme: dark) {
+  /*
+    Toute la famille d'un coup, plutôt qu'une liste d'éléments.
+
+    Énumérer `-c`, `-d`, `-ch`… laissait passer ce qu'on avait oublié — la barre
+    d'en-tête `-chr` tenait à elle seule une bande blanche — et n'aurait rien couvert
+    d'un nom inventé demain. Tout ce que Google pose dans la bulle porte une classe qui
+    contient `gm-style-iw` ; notre contenu, lui, n'en porte aucune. Le sélecteur attrape
+    donc l'un sans jamais toucher l'autre, et le bouton vert de la bulle garde sa couleur.
+
+    Les pseudo-éléments avec : c'est un `::after` qui dessine la pointe sous la bulle.
+  */
+  [class*="gm-style-iw"],
+  [class*="gm-style-iw"]::before,
+  [class*="gm-style-iw"]::after {
+    background: var(--color-surface) !important;
+  }
+  .gm-style-iw-c,
+  .gm-style-iw-ch {
+    color: var(--color-encre);
+  }
+  /*
+    Les barres de défilement, qui tenaient le blanc restant.
+
+    Google donne à la zone de contenu un `overflow: auto` et une hauteur calculée à
+    l'ouverture ; avec du contenu à nous elle déborde d'un ou deux pixels, et deux barres
+    apparaissent — d'où l'équerre blanche au bord droit et en bas. La piste d'une barre ne
+    se peint pas avec le `background` de l'élément : il faut la viser pour elle-même,
+    `scrollbar-color` d'un côté, les pseudo-éléments WebKit de l'autre.
+  */
+  [class*="gm-style-iw"] {
+    scrollbar-color: var(--color-trait) var(--color-surface);
+  }
+  [class*="gm-style-iw"]::-webkit-scrollbar,
+  [class*="gm-style-iw"]::-webkit-scrollbar-track,
+  [class*="gm-style-iw"]::-webkit-scrollbar-corner {
+    background: var(--color-surface) !important;
+  }
+  [class*="gm-style-iw"]::-webkit-scrollbar-thumb {
+    background: var(--color-trait) !important;
+    border-radius: 999px;
+  }
+  /* Le ✕ est un masque teinté par background-color : sans quoi il reste noir sur noir. */
+  .gm-ui-hover-effect > span {
+    background-color: var(--color-encre) !important;
+  }
 }

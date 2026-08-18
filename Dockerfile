@@ -58,6 +58,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/scripts ./scripts
 # La page /donnees lit ce fichier sur le disque : il doit voyager avec le serveur, sinon
 # les parents tomberaient sur une erreur à l'endroit précis où on leur promet la clarté.
 COPY --from=builder --chown=nextjs:nodejs /app/DONNEES.md ./DONNEES.md
+COPY --from=builder --chown=nextjs:nodejs /app/QUESTIONS.md ./QUESTIONS.md
 
 USER nextjs
 EXPOSE 4100

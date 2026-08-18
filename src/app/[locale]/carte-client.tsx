@@ -12,6 +12,7 @@ import {
 } from "@vis.gl/react-google-maps";
 
 import { cadrageInitial, lienItineraire, type PointCarte } from "@/lib/carte";
+import { Bouton } from "./ui";
 
 /**
  * La carte des lieux, voilée tant qu'on ne la demande pas.
@@ -71,14 +72,16 @@ export function CarteDesLieux({
   if (!visible) {
     return (
       <div className="mb-6">
-        {/* Le libellé seul : le pourquoi du voile est écrit sur /donnees, pas ici. */}
-        <button
-          type="button"
-          onClick={() => setVisible(true)}
-          className="w-full rounded-[var(--radius-pilule)] bg-[color:var(--color-surface)] px-5 py-3 text-left font-bold shadow-[inset_0_0_0_2px_var(--color-trait)]"
-        >
+        {/*
+          Le libellé seul : le pourquoi du voile est écrit sur /donnees, pas ici.
+
+          Et la brique commune plutôt qu'un bouton réécrit : celui d'ici était aligné à
+          gauche quand tous les autres sont centrés, et l'écart se voyait sous « Proposer
+          une activité », posé juste au-dessus.
+        */}
+        <Bouton type="button" variante="second" onClick={() => setVisible(true)}>
           {t("voirSurLaCarte")}
-        </button>
+        </Bouton>
       </div>
     );
   }
@@ -154,10 +157,17 @@ function CarteOuverte({
               <InfoWindow
                 position={{ lat: selection.lat, lng: selection.lon }}
                 pixelOffset={[0, -36]}
-                headerContent={<strong className="pr-2">{selection.nom}</strong>}
+                headerContent={
+                  <strong className="pr-2 text-[color:var(--color-encre)]">{selection.nom}</strong>
+                }
                 onCloseClick={() => setSelection(null)}
               >
-                <div className="flex flex-col gap-1">
+                {/* La bulle porte ses propres couleurs au lieu de les hériter de la
+                    page : le fond, lui, vient de Google, et reste blanc la nuit sur les
+                    styles de carte qui ignorent le thème sombre. globals.css reprend cette
+                    bulle ; ces deux classes-ci font que le texte reste lisible même le jour
+                    où les sélecteurs de Google changeraient de nom. */}
+                <div className="flex flex-col gap-1 bg-[color:var(--color-surface)] text-[color:var(--color-encre)]">
                   {selection.sousTitre ? <span>{selection.sousTitre}</span> : null}
                   {onChoisir ? (
                     <button

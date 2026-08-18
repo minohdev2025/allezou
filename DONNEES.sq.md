@@ -37,7 +37,8 @@ për këtë ekziston kjo faqe.
 
 ## Çfarë nuk regjistron Allezou
 
-Secila prej këtyre mungesave verifikohet në kod.
+Secila prej këtyre mungesave është një angazhim. Kodi që i mban ato mund
+të tregohet me kërkesë.
 
 - **Asnjë fjalëkalim.** Nuk ekziston askund, pra asnjë nuk mund të rrjedhë.
 - **Asnjë pozicion GPS, kurrë.** Një dalje është një vend që zgjidhni nga një listë,
@@ -49,12 +50,12 @@ Secila prej këtyre mungesave verifikohet në kod.
 - **Asnjë mesazhe.** Nuk ka as bisedë, as mesazh privat, as koment.
 - **Asnjë mjet matjeje audience.** Pa Google Analytics, pa piksel reklamash,
   pa gjurmues të palëve të treta.
-- **Asnjë shitje, asnjë ndarje tregtare.** Të dhënat tuaja nuk i transmetohen askujt.
+- **Asnjë shitje, asnjë ndarje tregtare.** Të dhënat tuaja nuk shiten dhe nuk u kalohen
+  askujt.
 - **Për fëmijët tuaj, asgjë tjetër përveç një emri.** Anëtarët e një rrethi i njohin
   tashmë fëmijët për të cilët bëhet fjalë, aplikacioni nuk ka çfarë të shtojë. Pa
   mbiemër, **pa moshë as datëlindje**, pa foto, pa gjini, pa shkollë, pa klasë, pa
-  shëndet. Fusha « viti i lindjes » ka ekzistuar gjatë hartimit, pastaj u hoq për
-  mungesë përdorimi që ta justifikonte.
+  shëndet.
 
 ## Kush sheh çfarë, saktësisht
 
@@ -89,7 +90,7 @@ me kërkesë.
 
 ## Ku ndodhen të dhënat
 
-Në servera të vendosur **në Zvicër**. Ato nuk e lënë vendin.
+Në servera të vendosur **në Zvicër**, tek **Infomaniak**. Ato nuk e lënë vendin.
 
 Tri përjashtime teknike, që nuk kanë të bëjnë me asnjë të dhënë personale:
 
@@ -102,8 +103,22 @@ Tri përjashtime teknike, që nuk kanë të bëjnë me asnjë të dhënë person
 - adresa e një parku ose salle i dërgohet një herë OpenStreetMap-it, për t'i
   njohur koordinatat dhe që lidhja drejt një harte të bjerë në pikën e saktë.
   Është adresa e një vendi publik, dërguar nga serveri ynë. **Kurrë e juaja, dhe
-  kurrë çfarë shqyrtoni ju**: telefoni juaj nuk kontakton askënd tjetër përveç
-  nesh — me një përjashtim, që e nisni vetë ju: harta, menjëherë më poshtë.
+  kurrë çfarë shqyrtoni ju.**
+
+## Kush tjetër ndërhyn
+
+Nevojiten dy ndërmjetës që Allezou t'ju arrijë. Asnjëri prej tyre nuk mëson çfarë
+bëni në aplikacion.
+
+- **Njoftimet kalojnë nëpër shërbimin e njoftimeve të telefonit tuaj** — Apple në
+  iPhone, Google në Android. Është i vetmi rrugëtim që pranon një telefon, asnjë
+  aplikacion nuk i shpëton kësaj. Mesazhi u dorëzohet atyre **i shifruar**: ata e
+  përcjellin pa mundur ta lexojnë. Ata dinë që një mesazh ka nisur drejt pajisjes
+  suaj, dhe kur.
+- **Email-i që ju fut brenda kalon nëpër Infomaniak**, strehuesin tonë, në Zvicër.
+  Ai përmban vetëm lidhjen tuaj të hyrjes.
+
+I shtohet kësaj harta, të cilën e nisni vetë ju — ky është seksioni tjetër.
 
 ## Harta
 

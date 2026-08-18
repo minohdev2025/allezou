@@ -37,7 +37,8 @@ página.
 
 ## Lo que Allezou no guarda
 
-Cada una de estas ausencias se puede comprobar en el código.
+Cada una de estas ausencias es un compromiso. El código que las mantiene se
+puede mostrar bajo petición.
 
 - **Ninguna contraseña.** No existe en ningún sitio, así que ninguna puede filtrarse.
 - **Ninguna posición GPS, nunca.** Una salida es un lugar que eliges de una lista, con una
@@ -49,12 +50,11 @@ Cada una de estas ausencias se puede comprobar en el código.
 - **Ninguna mensajería.** No hay chats, ni mensajes privados, ni comentarios.
 - **Ninguna herramienta de medición de audiencia.** Nada de Google Analytics, nada de píxeles
   publicitarios, nada de rastreadores de terceros.
-- **Ninguna venta, ningún uso comercial compartido.** Tus datos no se transmiten a nadie.
+- **Ninguna venta, ningún uso comercial compartido.** Tus datos no se venden ni se ceden.
 - **De tus hijos, nada más que un nombre de pila.** Los miembros de un círculo ya conocen a
   los niños de los que se habla, la aplicación no tiene nada que añadir. Sin apellidos, **sin
   edad ni fecha de nacimiento**, sin foto, sin género, sin colegio, sin clase, sin datos de
-  salud. El campo «año de nacimiento» existió durante el diseño, y se eliminó por falta de un
-  uso que lo justificara.
+  salud.
 
 ## Quién ve qué, exactamente
 
@@ -86,7 +86,7 @@ que enumeran los casos uno por uno. Es una demostración, que se puede mostrar b
 
 ## Dónde están los datos
 
-En servidores situados **en Suiza**. No salen del país.
+En servidores situados **en Suiza**, con **Infomaniak**. No salen del país.
 
 Tres excepciones técnicas, que no afectan a ningún dato personal:
 
@@ -99,9 +99,21 @@ Tres excepciones técnicas, que no afectan a ningún dato personal:
   agenda y espera una comprobación manual;
 - la dirección de un parque o una sala se envía una vez a OpenStreetMap, para conocer sus
   coordenadas y que el enlace a un mapa caiga en el punto correcto. Es la dirección de un
-  lugar público, enviada desde nuestro servidor. **Nunca la tuya, y nunca lo que consultas**:
-  tu teléfono no contacta con nadie más que con nosotros — con una excepción, que activas
-  tú: el mapa, justo debajo.
+  lugar público, enviada desde nuestro servidor. **Nunca la tuya, y nunca lo que consultas.**
+
+## Quién más interviene
+
+Se necesitan dos intermediarios para que Allezou llegue hasta ti. Ninguno de los dos sabe
+lo que haces en la aplicación.
+
+- **Las notificaciones pasan por el servicio de notificaciones de tu teléfono** — Apple en
+  iPhone, Google en Android. Es el único camino que acepta un teléfono: ninguna aplicación
+  se libra de él. El mensaje se les entrega **cifrado**: lo transmiten sin poder leerlo.
+  Saben que se ha enviado un mensaje a tu dispositivo, y cuándo.
+- **El correo que te conecta pasa por Infomaniak**, nuestro proveedor de alojamiento, en
+  Suiza. Solo contiene tu enlace de conexión.
+
+A esto se suma el mapa, que solo tú activas — es la siguiente sección.
 
 ## El mapa
 

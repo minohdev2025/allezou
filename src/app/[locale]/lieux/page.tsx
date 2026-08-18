@@ -203,7 +203,7 @@ export default async function Lieux({
                       ) : (
                         <form action={validerRenommage}>
                           <input type="hidden" name="proposition" value={correction.id} />
-                          <button className="shrink-0 rounded-[var(--radius-pilule)] px-4 py-2 text-sm font-bold text-[color:var(--color-fond)] shadow-[0_2px_0_0_rgba(0,0,0,0.18)] [background:var(--color-ambre)]">
+                          <button className="shrink-0 rounded-[var(--radius-pilule)] px-4 py-2 text-sm font-bold text-[color:var(--color-fond)] shadow-[0_2px_0_0_var(--color-socle-ambre)] [background:var(--color-ambre)]">
                             {t("jeValide")}
                           </button>
                         </form>
@@ -243,7 +243,7 @@ export default async function Lieux({
                       </summary>
                       <form action={retirerLieu} className="mt-2">
                         <input type="hidden" name="lieu" value={lieu.id} />
-                        <button className="rounded-[var(--radius-pilule)] px-4 py-2 text-sm font-bold text-[color:var(--color-fond)] shadow-[0_2px_0_0_rgba(0,0,0,0.18)] [background:var(--color-corail)]">
+                        <button className="rounded-[var(--radius-pilule)] px-4 py-2 text-sm font-bold text-[color:var(--color-fond)] shadow-[0_2px_0_0_var(--color-socle-corail)] [background:var(--color-corail)]">
                           {t("retirerCatalogue")}
                         </button>
                       </form>

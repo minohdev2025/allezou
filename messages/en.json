@@ -46,7 +46,7 @@
     "gestes": {
       "cercles": {
         "titre": "Create your circles",
-        "texte": "You bring together the families your kids love spending time with: their class, the neighborhood. You invite them with a link, by WhatsApp or text message. Nothing you post ever leaves these circles."
+        "texte": "You bring together the families your kids love spending time with: their class, the neighborhood. You invite them with a link, by WhatsApp or text message — even if it's forwarded, it doesn't let anyone in: it opens a request, which you accept or decline, name by name. Nothing you post ever leaves these circles."
       },
       "sortir": {
         "titre": "Say you're heading out",
@@ -94,22 +94,27 @@
       },
       "inconnus": {
         "titre": "No strangers",
-        "texte": "You only see members of your circles. Joining an outing doesn't show you to anyone else."
+        "texte": "No one enters a circle without an admin accepting them. You only see members of your circles, and joining an outing doesn't show you to anyone else."
       },
       "publicite": {
         "titre": "No ads, no trackers",
-        "texte": "Your data doesn't go to anyone, and is never sold to anyone."
+        "texte": "No trackers, no ads. Your data is never sold or shared."
       },
       "prenom": {
         "titre": "About your kids: just a first name",
         "texte": "And nothing more: that's all Allezou knows about them."
+      },
+      "invisible": {
+        "titre": "Invisible on request",
+        "texte": "In a circle, you can uncheck someone: this person no longer sees your outings, you no longer see theirs, and nothing tells them it happened."
       }
     },
     "gratuitTitre": "Free, and hosted in Switzerland",
     "gratuitTexte": "There's no company behind Allezou, and nothing costs anything. The servers are in Switzerland. The agenda fills itself in automatically from the websites of Geneva's municipalities.",
     "nePlusAfficher": "Don't show this page again on this device",
     "entrer": "Enter",
-    "lienDonnees": "What Allezou stores, and who can see it"
+    "lienDonnees": "What Allezou stores, and who can see it",
+    "lienQuestions": "Frequently asked questions"
   },
   "Maquette": {
     "descriptionEcran": "Example screen: Sophie is at Parc du Gué with Léa and Matéo, until 17:00. Two other families are there too, and an “Us too” button lets you join them.",
@@ -285,7 +290,7 @@
     "defautActiverBouton": "Post here by default",
     "invitationsTitre": "{count, plural, one {One invitation link is active} other {# invitation links are active}}",
     "invitationsAide1": "As long as a link is alive, anyone who has it can ask to join. Revoke one that's traveled too far. Once it expires, the circle carries on as normal: only new entries stop.",
-    "invitationsAide2": "A link is never shown again after that. “Make a new link” creates one for the same number of families and cuts off the old one for everyone, including anyone it had already been passed to.",
+    "invitationsAide2": "A link is never shown again, even if you come back to this page. If you've already sent it, let it be: “Invite families,” further down, creates a second one without touching the first. “Make a new link” is for a link lost before it was sent, or one that traveled too far: it cuts off the old one for everyone, including anyone who had already received it.",
     "entreesSur": "{useCount, plural, one {# join} other {# joins}} out of {maxUses}",
     "invitationDates": "created {creeNombre} {creeMois}, expires {expireNombre} {expireMois}",
     "refaireLienBouton": "Make a new link 🔗",
@@ -296,7 +301,8 @@
     "valableJoursLabel": "Valid for (days)",
     "creerLienBouton": "Create the link 🔗",
     "quitterBouton": "Leave this circle",
-    "retourLien": "Back to circles"
+    "retourLien": "Back to circles",
+    "demandesRappel": "These names should all be familiar to you. When in doubt, ask around before accepting — and a member who's already in can be removed."
   },
   "Partage": {
     "partager": "Share",
@@ -382,7 +388,8 @@
     "supprimerBouton": "Delete permanently",
     "donneesLien": "What Allezou stores",
     "nousEcrire": "Contact us",
-    "deconnexion": "Sign out"
+    "deconnexion": "Sign out",
+    "lienQuestions": "Frequently asked questions"
   },
   "Lieux": {
     "titre": "Places",
@@ -497,7 +504,8 @@
     "boutonCommencer": "Get started",
     "boutonRecevoirLien": "Send me my link",
     "lienAPropos": "What is Allezou for?",
-    "lienDonnees": "What Allezou stores, and who can see it"
+    "lienDonnees": "What Allezou stores, and who can see it",
+    "lienQuestions": "Frequently asked questions"
   },
   "CleAcces": {
     "erreurs": {
@@ -520,16 +528,16 @@
     "installerTexte": "On iPhone, notifications only work from the installed app. Tap the share button at the bottom of Safari, then “Add to Home Screen.” Then come back here from the icon.",
     "impossibleTexte": "This browser doesn't support notifications. You can still open the app to see who's outside.",
     "refuseeTitre": "Notifications are blocked",
-    "refuseeTexte": "You declined them for this site. You'll need to re-enable them in your browser settings: we can't do that for you.",
     "activeTitre": "Notifications are on ✅",
     "boutonDesactiver": "Stop notifications on this device",
     "reglageAppareil": "This setting is specific to this device.",
-    "boutonActiver": "Turn on notifications for this device 🔔"
+    "boutonActiver": "Turn on notifications for this device 🔔",
+    "refuseeTexteInstallee": "You're using the installed shortcut, so the setting lives in your device's settings: look for Allezou, then Notifications, and allow them.",
+    "refuseeTexteNavigateur": "It's your browser that's blocking them for this site, and that setting is separate from your phone's. Tap the icon to the left of the address bar, at the top of the screen, then “Permissions,” and turn notifications on."
   },
   "Maintenant": {
     "bonjour": "Hi {nom} 👋",
     "titre": "Who's outside?",
-    "nousSortons": "We're heading out",
     "titreAucunCercle": "No circles yet",
     "texteAucunCercle": "This is where outings get shared.",
     "rejoindreOuCreer": "Join or create a circle",
@@ -549,7 +557,8 @@
     "pasEncorePrevenu": "no one's been notified yet",
     "vousYEtes": "You're there",
     "nousAussi": "Us too",
-    "autresFamilles": "{n, plural, one {# other family} other {# other families}}"
+    "autresFamilles": "{n, plural, one {# other family} other {# other families}}",
+    "annoncerSortie": "Announce an outing"
   },
   "Sortie": {
     "erreurs": {
@@ -693,5 +702,9 @@
       "inscription": "Registration required",
       "inconnu": "Registration not specified"
     }
+  },
+  "Questions": {
+    "titreOnglet": "Frequently asked questions",
+    "retour": "Back"
   }
 }

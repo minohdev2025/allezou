@@ -56,9 +56,15 @@ export default async function Maintenant() {
       </header>
 
       <div className="mb-7">
+        {/*
+          « Annoncer une sortie » et pas « Nous sortons » : sous « Qui est dehors ? », le
+          présent se lisait comme un constat — un état de la famille — alors que ce bouton
+          ouvre la déclaration. Le verbe rend l'invitation ; « Nous sortons » reste le
+          titre de l'écran qui s'ouvre.
+        */}
         <LienBouton href="/sortir" variante="principal" className="!py-5 !text-xl">
           <IconeArbre className="h-7 w-7" />
-          {t("nousSortons")}
+          {t("annoncerSortie")}
         </LienBouton>
       </div>
 

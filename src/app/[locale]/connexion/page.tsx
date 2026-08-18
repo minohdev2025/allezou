@@ -202,6 +202,14 @@ export default async function Connexion({
             {t("lienDonnees")}
           </Link>
         </p>
+        <p>
+          <Link
+            href="/questions"
+            className="font-semibold text-[color:var(--color-doux)] underline underline-offset-4"
+          >
+            {t("lienQuestions")}
+          </Link>
+        </p>
       </div>
     </main>
   );

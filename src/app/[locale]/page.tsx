@@ -142,6 +142,15 @@ export default async function Accueil({
           {t("lienDonnees")}
         </Link>
       </p>
+
+      <p className="mt-3 text-center text-sm">
+        <Link
+          href="/questions"
+          className="font-semibold text-[color:var(--color-doux)] underline underline-offset-4"
+        >
+          {t("lienQuestions")}
+        </Link>
+      </p>
     </main>
   );
 }
@@ -172,6 +181,7 @@ const ABSENCES: { cle: string }[] = [
   { cle: "messagerie" },
   { cle: "position" },
   { cle: "historique" },
+  { cle: "invisible" },
   { cle: "inconnus" },
   { cle: "publicite" },
   { cle: "prenom" },

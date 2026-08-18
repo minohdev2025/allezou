@@ -46,7 +46,7 @@
     "gestes": {
       "cercles": {
         "titre": "Créer vos cercles",
-        "texte": "Vous réunissez les familles avec qui vos enfants aiment passer du temps : la classe, le voisinage. Vous les invitez avec un lien, par WhatsApp ou par message. Rien de ce que vous publiez ne sort de ces cercles."
+        "texte": "Vous réunissez les familles avec qui vos enfants aiment passer du temps : la classe, le voisinage. Vous les invitez par un lien, WhatsApp ou message — même transféré, il ne fait entrer personne : il ouvre une demande, que vous acceptez ou refusez nom par nom. Rien de ce que vous publiez ne sort de ces cercles."
       },
       "sortir": {
         "titre": "Dire que vous sortez",
@@ -94,22 +94,27 @@
       },
       "inconnus": {
         "titre": "Pas d'inconnus",
-        "texte": "Vous ne voyez que les membres de vos cercles. Rejoindre une sortie ne vous montre à personne d'autre."
+        "texte": "Personne n'entre dans un cercle sans qu'un responsable l'accepte. Vous ne voyez que les membres de vos cercles, et rejoindre une sortie ne vous montre à personne d'autre."
       },
       "publicite": {
         "titre": "Pas de publicité, pas de traceur",
-        "texte": "Vos données ne partent chez personne, et ne sont vendues à personne."
+        "texte": "Aucun traceur, aucune publicité. Vos données ne sont ni vendues ni cédées."
       },
       "prenom": {
         "titre": "Sur vos enfants, un prénom",
         "texte": "Et rien de plus : c'est tout ce qu'Allezou sait d'eux."
+      },
+      "invisible": {
+        "titre": "Invisible à la demande",
+        "texte": "Dans un cercle, vous pouvez décocher quelqu'un : cette personne ne voit plus vos sorties, vous ne voyez plus les siennes, et rien ne le lui signale."
       }
     },
     "gratuitTitre": "Gratuit, et hébergé en Suisse",
     "gratuitTexte": "Il n'y a pas d'entreprise derrière Allezou et rien n'est payant. Les serveurs sont en Suisse. L'agenda se remplit tout seul depuis les sites des communes genevoises.",
     "nePlusAfficher": "Ne plus afficher cette page sur cet appareil",
     "entrer": "Entrer",
-    "lienDonnees": "Ce qu'Allezou enregistre, et qui peut le voir"
+    "lienDonnees": "Ce qu'Allezou enregistre, et qui peut le voir",
+    "lienQuestions": "Questions fréquentes"
   },
   "Maquette": {
     "descriptionEcran": "Exemple d'écran : Sophie est au parc du Gué avec Léa et Matéo, jusqu'à 17h. Deux autres familles sont avec eux, et un bouton « Nous aussi » permet de les rejoindre.",
@@ -285,7 +290,7 @@
     "defautActiverBouton": "Y publier par défaut",
     "invitationsTitre": "{count, plural, one {Un lien d'invitation est actif} other {# liens d'invitation sont actifs}}",
     "invitationsAide1": "Tant qu'un lien vit, quiconque l'a reçu peut demander à entrer. Révoquez celui qui a circulé trop loin. Passé sa date, le cercle continue de vivre : c'est seulement l'entrée qui se referme.",
-    "invitationsAide2": "Un lien ne se réaffiche jamais. « Refaire le lien » en crée un nouveau pour le même nombre de familles et coupe l'ancien pour tout le monde, y compris ceux à qui il avait déjà été transmis.",
+    "invitationsAide2": "Un lien ne se réaffiche jamais, même en revenant sur cette page. Si vous l'avez déjà envoyé, laissez-le vivre : « Inviter des familles », plus bas, en crée un second sans toucher au premier. « Refaire le lien » sert à un lien perdu avant d'avoir été envoyé, ou parti trop loin : il coupe l'ancien pour tout le monde, y compris ceux qui l'avaient déjà reçu.",
     "entreesSur": "{useCount, plural, one {# entrée} other {# entrées}} sur {maxUses}",
     "invitationDates": "créé le {creeNombre} {creeMois}, expire le {expireNombre} {expireMois}",
     "refaireLienBouton": "Refaire le lien 🔗",
@@ -296,7 +301,8 @@
     "valableJoursLabel": "Valable (jours)",
     "creerLienBouton": "Créer le lien 🔗",
     "quitterBouton": "Quitter ce cercle",
-    "retourLien": "Retour aux cercles"
+    "retourLien": "Retour aux cercles",
+    "demandesRappel": "Ces noms doivent tous vous être familiers. Dans le doute, renseignez-vous avant d'accepter — et un membre déjà entré peut être retiré."
   },
   "Partage": {
     "partager": "Partager",
@@ -382,7 +388,8 @@
     "supprimerBouton": "Supprimer définitivement",
     "donneesLien": "Ce qu'Allezou enregistre",
     "nousEcrire": "Nous écrire",
-    "deconnexion": "Se déconnecter"
+    "deconnexion": "Se déconnecter",
+    "lienQuestions": "Questions fréquentes"
   },
   "Lieux": {
     "titre": "Les lieux",
@@ -497,7 +504,8 @@
     "boutonCommencer": "Commencer",
     "boutonRecevoirLien": "Recevoir mon lien",
     "lienAPropos": "À quoi sert Allezou ?",
-    "lienDonnees": "Ce qu'Allezou enregistre, et qui peut le voir"
+    "lienDonnees": "Ce qu'Allezou enregistre, et qui peut le voir",
+    "lienQuestions": "Questions fréquentes"
   },
   "CleAcces": {
     "erreurs": {
@@ -520,16 +528,16 @@
     "installerTexte": "Sur iPhone, les notifications ne fonctionnent que depuis l'application installée. Touchez le bouton de partage en bas de Safari, puis « Sur l'écran d'accueil ». Revenez ensuite ici depuis l'icône.",
     "impossibleTexte": "Ce navigateur ne permet pas les notifications. Vous pouvez continuer à ouvrir l'application pour voir qui est dehors.",
     "refuseeTitre": "Les notifications sont bloquées",
-    "refuseeTexte": "Vous les avez refusées pour ce site. Il faut les réautoriser dans les réglages du navigateur : nous ne pouvons pas le faire à votre place.",
     "activeTitre": "Les notifications sont activées ✅",
-    "boutonDesactiver": "Ne plus être prévenu sur cet appareil",
+    "boutonDesactiver": "Désactiver les notifications sur cet appareil",
     "reglageAppareil": "Réglage propre à cet appareil.",
-    "boutonActiver": "Être prévenu sur cet appareil 🔔"
+    "boutonActiver": "Activer les notifications sur cet appareil 🔔",
+    "refuseeTexteInstallee": "Vous passez par le raccourci installé, donc le réglage est dans les paramètres de votre appareil : cherchez Allezou, puis Notifications, et autorisez-les.",
+    "refuseeTexteNavigateur": "C'est votre navigateur qui les refuse pour ce site, et ce réglage-là est séparé de celui de votre téléphone. Touchez l'icône à gauche de l'adresse, en haut de l'écran, puis « Autorisations », et activez les notifications."
   },
   "Maintenant": {
     "bonjour": "Bonjour {nom} 👋",
     "titre": "Qui est dehors ?",
-    "nousSortons": "Nous sortons",
     "titreAucunCercle": "Aucun cercle pour l'instant",
     "texteAucunCercle": "C'est là que se partagent les sorties.",
     "rejoindreOuCreer": "Rejoindre ou créer un cercle",
@@ -549,7 +557,8 @@
     "pasEncorePrevenu": "personne n'est encore prévenu",
     "vousYEtes": "Vous y êtes",
     "nousAussi": "Nous aussi",
-    "autresFamilles": "{n, plural, one {# autre famille} other {# autres familles}}"
+    "autresFamilles": "{n, plural, one {# autre famille} other {# autres familles}}",
+    "annoncerSortie": "Annoncer une sortie"
   },
   "Sortie": {
     "erreurs": {
@@ -693,5 +702,9 @@
       "inscription": "Sur inscription",
       "inconnu": "Inscription non définie"
     }
+  },
+  "Questions": {
+    "titreOnglet": "Questions fréquentes",
+    "retour": "Retour"
   }
 }

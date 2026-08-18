@@ -59,9 +59,19 @@ export function ActiverNotifications({
   const t = useTranslations("NotificationsClient");
   const [etat, setEtat] = useState<Etat>("chargement");
   const [endpoint, setEndpoint] = useState<string | null>(null);
+  /*
+    Où envoyer quelqu'un dont les notifications sont refusées dépend d'où il se trouve, et
+    les deux réglages n'ont rien à voir : dans un navigateur, c'est la permission accordée
+    au site ; depuis l'app installée, c'est celle de l'application. Un parent qui vérifie
+    l'un pendant que l'autre bloque conclut que l'app se trompe.
+
+    Lu dans l'effet et non au rendu : `window` n'existe pas au premier passage côté serveur.
+  */
+  const [installee, setInstallee] = useState(false);
 
   useEffect(() => {
     async function regarder() {
+      setInstallee(estInstallee());
       if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
         setEtat(estIOS() && !estInstallee() ? "installer_dabord" : "impossible");
         return;
@@ -159,7 +169,7 @@ export function ActiverNotifications({
       <div>
         <p className="mb-2 font-bold">{t("refuseeTitre")}</p>
         <p className="text-sm leading-snug text-[color:var(--color-doux)]">
-          {t("refuseeTexte")}
+          {installee ? t("refuseeTexteInstallee") : t("refuseeTexteNavigateur")}
         </p>
       </div>
     );
@@ -186,7 +196,7 @@ export function ActiverNotifications({
     <button
       onClick={activer}
       disabled={etat === "en_cours"}
-      className={`${bouton} bg-[color:var(--color-vert)] font-bold text-[color:var(--color-fond)] shadow-[0_3px_0_0_rgba(0,0,0,0.18)] disabled:opacity-60`}
+      className={`${bouton} bg-[color:var(--color-vert)] font-bold text-[color:var(--color-fond)] shadow-[0_3px_0_0_var(--color-socle-vert)] disabled:opacity-60`}
     >
       {etat === "en_cours" ? "…" : t("boutonActiver")}
     </button>

@@ -223,6 +223,14 @@ export default async function Cercle({
           <h2 className="titre mb-4 text-lg font-bold">
             {t("demandesTitre", { count: demandes.value.length })}
           </h2>
+          {/*
+            Le rempart du cercle est ici, et il est humain : suivre un lien ne fait entrer
+            personne, c'est cette décision-ci qui ouvre la porte. Le rappel se pose donc au
+            moment de trancher, et pas dans une page d'aide que personne n'ouvrira.
+          */}
+          <p className="mb-4 text-sm leading-snug text-[color:var(--color-doux)]">
+            {t("demandesRappel")}
+          </p>
           <ul className="space-y-4">
             {demandes.value.map((demande) => (
               <li key={demande.id}>
@@ -487,8 +495,13 @@ export default async function Cercle({
           </p>
           {/*
             Un lien perdu est le cas courant, pas le cas rare : il circule par message, et
-            l'on redemande à celui qui l'a envoyé. Sans ce bouton, la seule issue est de
-            révoquer puis recréer — deux gestes, avec la portée annoncée perdue au milieu.
+            l'on redemande à celui qui l'a envoyé. « Refaire le lien » évite de révoquer puis
+            recréer, deux gestes avec la portée annoncée perdue au milieu.
+
+            Mais il coupe, et il arrive avant « Créer le lien » dans la page. Quelqu'un qui
+            actualise après avoir envoyé son lien cherche à le revoir, trouve ce bouton le
+            premier, et casse sans le vouloir ce qu'il vient d'envoyer à quinze familles. Les
+            deux cas se distinguent donc par écrit, le sans-conséquence d'abord.
           */}
           <p className="mb-4 text-sm leading-snug text-[color:var(--color-doux)]">
             {t("invitationsAide2")}

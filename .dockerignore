@@ -21,4 +21,5 @@ docker-compose*.yml
 tsconfig.tsbuildinfo
 *.log
 
-# DONNEES.md reste, lui : le serveur le lit à l'exécution pour la page /donnees.
+# DONNEES.md et QUESTIONS.md restent : le serveur les lit à l'exécution, pour /donnees
+# et /questions.

@@ -46,7 +46,7 @@
     "gestes": {
       "cercles": {
         "titre": "Krijoni rrethet tuaja",
-        "texte": "Mblidhni familjet me të cilat fëmijëve tuaj u pëlqen të kalojnë kohë: klasën, lagjen. I ftoni me një lidhje, në WhatsApp ose me mesazh. Asgjë nga ç'botoni nuk del jashtë këtyre rretheve."
+        "texte": "Mblidhni familjet me të cilat fëmijëve tuaj u pëlqen të kalojnë kohë: klasën, lagjen. I ftoni me një lidhje, në WhatsApp ose me mesazh — edhe nëse është përcjellë, ajo nuk fut askënd: hap një kërkesë, që ju e pranoni ose refuzoni, emër për emër. Asgjë nga ç'botoni nuk del jashtë këtyre rretheve."
       },
       "sortir": {
         "titre": "Thoni kur dilni",
@@ -94,22 +94,27 @@
       },
       "inconnus": {
         "titre": "Pa të panjohur",
-        "texte": "Shihni vetëm anëtarët e rretheve tuaja. Bashkimi me një dalje nuk ju shfaq te askush tjetër."
+        "texte": "Askush nuk hyn në një rreth pa u pranuar nga një administrator. Shihni vetëm anëtarët e rretheve tuaja, dhe bashkimi me një dalje nuk ju shfaq te askush tjetër."
       },
       "publicite": {
         "titre": "Pa reklama, pa gjurmues",
-        "texte": "Të dhënat tuaja nuk shkojnë te askush, dhe nuk i shiten askujt."
+        "texte": "Asnjë gjurmues, asnjë reklamë. Të dhënat tuaja nuk shiten dhe nuk u kalohen askujt."
       },
       "prenom": {
         "titre": "Për fëmijët tuaj, vetëm një emër",
         "texte": "Dhe asgjë më shumë: kjo është gjithçka që di Allezou për ta."
+      },
+      "invisible": {
+        "titre": "I padukshëm me kërkesë",
+        "texte": "Në një rreth, mund t'i hiqni shenjën dikujt: ky person nuk i sheh më daljet tuaja, ju nuk i shihni më të tijat, dhe asgjë nuk e njofton për këtë."
       }
     },
     "gratuitTitre": "Falas, dhe i strehuar në Zvicër",
     "gratuitTexte": "Nuk ka asnjë kompani pas Allezou dhe asgjë nuk paguhet. Serverat janë në Zvicër. Agjenda mbushet vetvetiu nga faqet e komunave të Gjenevës.",
     "nePlusAfficher": "Të mos shfaqet më kjo faqe në këtë pajisje",
     "entrer": "Hyni",
-    "lienDonnees": "Çfarë regjistron Allezou, dhe kush mund ta shohë"
+    "lienDonnees": "Çfarë regjistron Allezou, dhe kush mund ta shohë",
+    "lienQuestions": "Pyetje të shpeshta"
   },
   "Maquette": {
     "descriptionEcran": "Shembull ekrani: Sophie është te parku i Gué me Léa dhe Matéo, deri në orën 17:00. Dy familje të tjera janë me ta, dhe një buton « Ne gjithashtu » lejon t'u bashkoheni.",
@@ -285,7 +290,7 @@
     "defautActiverBouton": "Botoni aty si parazgjedhje",
     "invitationsTitre": "{count, plural, one {Një lidhje ftese është aktive} other {# lidhje ftese janë aktive}}",
     "invitationsAide1": "Për sa kohë një lidhje është aktive, kushdo që e ka marrë mund të kërkojë të hyjë. Shfuqizoni atë që ka qarkulluar tepër larg. Pas datës së saj, rrethi vazhdon të ekzistojë: mbyllet vetëm hyrja.",
-    "invitationsAide2": "Një lidhje nuk shfaqet kurrë sërish. « Rikrijoni lidhjen » krijon një të re për të njëjtin numër familjesh dhe e ndërpret të vjetrën për të gjithë, përfshirë ata të cilëve u ishte dërguar tashmë.",
+    "invitationsAide2": "Një lidhje nuk shfaqet kurrë sërish, edhe nëse ktheheni në këtë faqe. Nëse e keni dërguar tashmë, lëreni aktive: « Ftoni familje », më poshtë, krijon një të dytë pa prekur të parën. « Rikrijoni lidhjen » shërben për një lidhje të humbur përpara se të dërgohej, ose që ka shkuar shumë larg: ajo ndërpret të vjetrën për të gjithë, përfshirë ata që e kishin marrë tashmë.",
     "entreesSur": "{useCount, plural, one {# hyrje} other {# hyrje}} nga {maxUses}",
     "invitationDates": "krijuar më {creeNombre} {creeMois}, skadon më {expireNombre} {expireMois}",
     "refaireLienBouton": "Rikrijoni lidhjen 🔗",
@@ -296,7 +301,8 @@
     "valableJoursLabel": "E vlefshme (ditë)",
     "creerLienBouton": "Krijoni lidhjen 🔗",
     "quitterBouton": "Dilni nga ky rreth",
-    "retourLien": "Kthehuni te rrethet"
+    "retourLien": "Kthehuni te rrethet",
+    "demandesRappel": "Të gjithë këta emra duhet t'ju jenë të njohur. Nëse dyshoni, informohuni përpara se të pranoni — dhe një anëtar që ka hyrë tashmë mund të hiqet."
   },
   "Partage": {
     "partager": "Ndani",
@@ -382,7 +388,8 @@
     "supprimerBouton": "Fshini përfundimisht",
     "donneesLien": "Çfarë regjistron Allezou",
     "nousEcrire": "Na shkruani",
-    "deconnexion": "Dilni"
+    "deconnexion": "Dilni",
+    "lienQuestions": "Pyetje të shpeshta"
   },
   "Lieux": {
     "titre": "Vendet",
@@ -497,7 +504,8 @@
     "boutonCommencer": "Filloni",
     "boutonRecevoirLien": "Merrni lidhjen time",
     "lienAPropos": "Për çfarë shërben Allezou?",
-    "lienDonnees": "Çfarë regjistron Allezou, dhe kush mund ta shohë"
+    "lienDonnees": "Çfarë regjistron Allezou, dhe kush mund ta shohë",
+    "lienQuestions": "Pyetje të shpeshta"
   },
   "CleAcces": {
     "erreurs": {
@@ -520,16 +528,16 @@
     "installerTexte": "Në iPhone, njoftimet funksionojnë vetëm nga aplikacioni i instaluar. Prekni butonin e ndarjes poshtë Safari-t, pastaj « Në ekranin bazë ». Pastaj kthehuni këtu nga ikona.",
     "impossibleTexte": "Ky shfletues nuk i lejon njoftimet. Mund të vazhdoni të hapni aplikacionin për të parë kush është jashtë.",
     "refuseeTitre": "Njoftimet janë të bllokuara",
-    "refuseeTexte": "I keni refuzuar për këtë faqe. Duhen rilejuar te cilësimet e shfletuesit: ne nuk mund ta bëjmë këtë në vendin tuaj.",
     "activeTitre": "Njoftimet janë aktivizuar ✅",
     "boutonDesactiver": "Çaktivizoni njoftimet në këtë pajisje",
     "reglageAppareil": "Cilësim i veçantë për këtë pajisje.",
-    "boutonActiver": "Aktivizoni njoftimet në këtë pajisje 🔔"
+    "boutonActiver": "Aktivizoni njoftimet në këtë pajisje 🔔",
+    "refuseeTexteInstallee": "Po kaloni nga shkurtorja e instaluar, prandaj cilësimi gjendet te cilësimet e pajisjes suaj: kërkoni Allezou, pastaj Njoftimet, dhe lejojini.",
+    "refuseeTexteNavigateur": "Është shfletuesi juaj që i refuzon për këtë faqe, dhe ai cilësim është i ndarë nga ai i telefonit tuaj. Prekni ikonën në të majtë të adresës, lart në ekran, pastaj « Lejet », dhe aktivizoni njoftimet."
   },
   "Maintenant": {
     "bonjour": "Mirëdita {nom} 👋",
     "titre": "Kush është jashtë?",
-    "nousSortons": "Ne dalim",
     "titreAucunCercle": "Asnjë rreth për momentin",
     "texteAucunCercle": "Aty ndahen daljet.",
     "rejoindreOuCreer": "Bashkohuni ose krijoni një rreth",
@@ -549,7 +557,8 @@
     "pasEncorePrevenu": "askush nuk është njoftuar ende",
     "vousYEtes": "Ju jeni atje",
     "nousAussi": "Ne gjithashtu",
-    "autresFamilles": "{n, plural, one {# familje tjetër} other {# familje të tjera}}"
+    "autresFamilles": "{n, plural, one {# familje tjetër} other {# familje të tjera}}",
+    "annoncerSortie": "Shpallni një dalje"
   },
   "Sortie": {
     "erreurs": {
@@ -693,5 +702,9 @@
       "inscription": "Me regjistrim",
       "inconnu": "Regjistrimi i papërcaktuar"
     }
+  },
+  "Questions": {
+    "titreOnglet": "Pyetje të shpeshta",
+    "retour": "Prapa"
   }
 }

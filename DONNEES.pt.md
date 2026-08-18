@@ -37,7 +37,8 @@ que esta página existe.
 
 ## O que o Allezou não regista
 
-Cada uma destas ausências pode ser verificada no código.
+Cada uma destas ausências é um compromisso. O código que as mantém pode
+ser mostrado a pedido.
 
 - **Nenhuma palavra-passe.** Não existe nenhuma em lado nenhum, por isso não há nenhuma
   que possa vazar.
@@ -50,13 +51,12 @@ Cada uma destas ausências pode ser verificada no código.
 - **Nenhuma mensagem.** Não há fio de conversa, nem mensagens privadas, nem comentários.
 - **Nenhuma ferramenta de análise de audiência.** Sem Google Analytics, sem pixel
   publicitário, sem rastreadores de terceiros.
-- **Nenhuma venda, nenhuma partilha comercial.** Os seus dados não são transmitidos a
-  ninguém.
+- **Nenhuma venda, nenhuma partilha comercial.** Os seus dados não são vendidos nem
+  cedidos.
 - **Sobre os seus filhos, nada além do primeiro nome.** Os membros de um círculo já
   conhecem as crianças em questão, a aplicação não tem nada a acrescentar. Sem apelido,
   **sem idade nem data de nascimento**, sem fotografia, sem género, sem escola, sem
-  turma, sem dados de saúde. O campo « ano de nascimento » existiu durante a conceção,
-  e foi depois removido por falta de uma utilização que o justificasse.
+  turma, sem dados de saúde.
 
 ## Quem vê o quê, exatamente
 
@@ -91,7 +91,7 @@ pedido.
 
 ## Onde estão os dados
 
-Em servidores situados **na Suíça**. Não saem do país.
+Em servidores situados **na Suíça**, na **Infomaniak**. Não saem do país.
 
 Três exceções técnicas, que não dizem respeito a nenhum dado pessoal:
 
@@ -105,8 +105,21 @@ Três exceções técnicas, que não dizem respeito a nenhum dado pessoal:
 - a morada de um parque ou de uma sala é enviada uma vez ao OpenStreetMap, para
   conhecer as suas coordenadas e para que a ligação para um mapa caia no ponto certo. É
   a morada de um local público, enviada a partir do nosso servidor. **Nunca a sua, e
-  nunca o que consulta**: o seu telemóvel não contacta mais ninguém além de nós — com
-  uma exceção, desencadeada por si próprio(a): o mapa, logo a seguir.
+  nunca o que consulta.**
+
+## Quem mais está envolvido
+
+São precisos dois intermediários para que o Allezou chegue até si. Nenhum dos dois fica
+a saber o que faz na aplicação.
+
+- **As notificações passam pelo serviço de notificações do seu telemóvel** — a Apple no
+  iPhone, a Google no Android. É o único caminho que um telemóvel aceita, nenhuma
+  aplicação escapa a isso. A mensagem é-lhes entregue **cifrada**: eles encaminham-na
+  sem a poderem ler. Sabem que uma mensagem partiu para o seu dispositivo, e quando.
+- **O e-mail que lhe permite entrar passa pela Infomaniak**, o nosso alojamento, na
+  Suíça. Só contém a sua ligação de acesso.
+
+Junta-se a isto o mapa, acionado por si — é a secção seguinte.
 
 ## O mapa
 

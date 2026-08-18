@@ -38,7 +38,12 @@ export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
       userAgent: "*",
-      allow: ["/", "/donnees", ...prefixes.flatMap((l) => [`/${l}`, `/${l}/donnees`])],
+      allow: [
+        "/",
+        "/donnees",
+        "/questions",
+        ...prefixes.flatMap((l) => [`/${l}`, `/${l}/donnees`, `/${l}/questions`]),
+      ],
       disallow: PRIVEES.flatMap((chemin) => [
         chemin,
         ...prefixes.map((l) => `/${l}${chemin}`),

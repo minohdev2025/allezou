@@ -46,7 +46,7 @@
     "gestes": {
       "cercles": {
         "titre": "Crear tus círculos",
-        "texte": "Reúnes a las familias con quienes a tus hijos les gusta pasar el tiempo: la clase, el vecindario. Las invitas con un enlace, por WhatsApp o por mensaje. Nada de lo que publiques sale de esos círculos."
+        "texte": "Reúnes a las familias con quienes a tus hijos les gusta pasar el tiempo: la clase, el vecindario. Las invitas con un enlace, por WhatsApp o por mensaje — incluso reenviado, no hace entrar a nadie: abre una solicitud, que aceptas o rechazas, nombre por nombre. Nada de lo que publiques sale de esos círculos."
       },
       "sortir": {
         "titre": "Avisar que sales",
@@ -94,22 +94,27 @@
       },
       "inconnus": {
         "titre": "Sin desconocidos",
-        "texte": "Solo ves a los miembros de tus círculos. Unirte a una salida no te muestra a nadie más."
+        "texte": "Nadie entra en un círculo sin que lo acepte un administrador. Solo ves a los miembros de tus círculos, y unirte a una salida no te muestra a nadie más."
       },
       "publicite": {
         "titre": "Sin publicidad, sin rastreadores",
-        "texte": "Tus datos no van a parar a nadie, y no se venden a nadie."
+        "texte": "Ningún rastreador, ninguna publicidad. Tus datos no se venden ni se ceden."
       },
       "prenom": {
         "titre": "De tus hijos, un nombre de pila",
         "texte": "Y nada más: eso es todo lo que Allezou sabe de ellos."
+      },
+      "invisible": {
+        "titre": "Invisible a petición",
+        "texte": "En un círculo, puedes desmarcar a alguien: esa persona deja de ver tus salidas, tú dejas de ver las suyas, y nada se lo indica."
       }
     },
     "gratuitTitre": "Gratis, y alojada en Suiza",
     "gratuitTexte": "No hay ninguna empresa detrás de Allezou y nada es de pago. Los servidores están en Suiza. La agenda se rellena sola a partir de las webs de los municipios de Ginebra.",
     "nePlusAfficher": "No volver a mostrar esta página en este dispositivo",
     "entrer": "Entrar",
-    "lienDonnees": "Lo que Allezou guarda, y quién puede verlo"
+    "lienDonnees": "Lo que Allezou guarda, y quién puede verlo",
+    "lienQuestions": "Preguntas frecuentes"
   },
   "Maquette": {
     "descriptionEcran": "Ejemplo de pantalla: Sophie está en el parque du Gué con Léa y Matéo, hasta las 17:00. Hay otras dos familias con ellos, y un botón «Nosotros también» permite unirse a ellos.",
@@ -285,7 +290,7 @@
     "defautActiverBouton": "Publicar ahí por defecto",
     "invitationsTitre": "{count, plural, one {Hay un enlace de invitación activo} other {Hay # enlaces de invitación activos}}",
     "invitationsAide1": "Mientras un enlace esté activo, cualquiera que lo haya recibido puede pedir entrar. Revoca el que haya circulado demasiado. Pasada su fecha, el círculo sigue existiendo: lo único que se cierra es la entrada.",
-    "invitationsAide2": "Un enlace nunca se vuelve a mostrar. «Rehacer el enlace» crea uno nuevo para el mismo número de familias y corta el anterior para todo el mundo, incluidos aquellos a quienes ya se les había pasado.",
+    "invitationsAide2": "Un enlace nunca se vuelve a mostrar, aunque vuelvas a esta página. Si ya lo has enviado, déjalo activo: «Invitar a familias», más abajo, crea un segundo sin tocar el primero. «Rehacer el enlace» sirve para un enlace perdido antes de enviarlo, o que ha circulado demasiado: corta el anterior para todo el mundo, incluidos quienes ya lo habían recibido.",
     "entreesSur": "{useCount, plural, one {# entrada} other {# entradas}} de {maxUses}",
     "invitationDates": "creado el {creeNombre} de {creeMois}, caduca el {expireNombre} de {expireMois}",
     "refaireLienBouton": "Rehacer el enlace 🔗",
@@ -296,7 +301,8 @@
     "valableJoursLabel": "Válido (días)",
     "creerLienBouton": "Crear el enlace 🔗",
     "quitterBouton": "Salir de este círculo",
-    "retourLien": "Volver a los círculos"
+    "retourLien": "Volver a los círculos",
+    "demandesRappel": "Todos estos nombres deben resultarte familiares. Si tienes dudas, infórmate antes de aceptar — y un miembro que ya haya entrado siempre se puede quitar."
   },
   "Partage": {
     "partager": "Compartir",
@@ -382,7 +388,8 @@
     "supprimerBouton": "Eliminar definitivamente",
     "donneesLien": "Lo que Allezou guarda",
     "nousEcrire": "Escríbenos",
-    "deconnexion": "Cerrar sesión"
+    "deconnexion": "Cerrar sesión",
+    "lienQuestions": "Preguntas frecuentes"
   },
   "Lieux": {
     "titre": "Los lugares",
@@ -497,7 +504,8 @@
     "boutonCommencer": "Empezar",
     "boutonRecevoirLien": "Recibir mi enlace",
     "lienAPropos": "¿Para qué sirve Allezou?",
-    "lienDonnees": "Lo que Allezou guarda, y quién puede verlo"
+    "lienDonnees": "Lo que Allezou guarda, y quién puede verlo",
+    "lienQuestions": "Preguntas frecuentes"
   },
   "CleAcces": {
     "erreurs": {
@@ -520,16 +528,16 @@
     "installerTexte": "En iPhone, las notificaciones solo funcionan desde la aplicación instalada. Toca el botón de compartir abajo en Safari, y luego «Añadir a pantalla de inicio». Después vuelve aquí desde el icono.",
     "impossibleTexte": "Este navegador no permite notificaciones. Puedes seguir abriendo la aplicación para ver quién está fuera.",
     "refuseeTitre": "Las notificaciones están bloqueadas",
-    "refuseeTexte": "Las has rechazado para este sitio. Hay que volver a autorizarlas en los ajustes del navegador: nosotros no podemos hacerlo por ti.",
     "activeTitre": "Las notificaciones están activadas ✅",
     "boutonDesactiver": "Dejar de recibir avisos en este dispositivo",
     "reglageAppareil": "Ajuste propio de este dispositivo.",
-    "boutonActiver": "Recibir avisos en este dispositivo 🔔"
+    "boutonActiver": "Recibir avisos en este dispositivo 🔔",
+    "refuseeTexteInstallee": "Estás usando el acceso directo instalado, así que el ajuste está en los ajustes de tu dispositivo: busca Allezou, luego Notificaciones, y autorízalas.",
+    "refuseeTexteNavigateur": "Es tu navegador el que las rechaza para este sitio, y ese ajuste es independiente del de tu teléfono. Toca el icono a la izquierda de la dirección, arriba de la pantalla, luego «Permisos», y activa las notificaciones."
   },
   "Maintenant": {
     "bonjour": "Hola {nom} 👋",
     "titre": "¿Quién está fuera?",
-    "nousSortons": "Salimos",
     "titreAucunCercle": "Todavía ningún círculo",
     "texteAucunCercle": "Ahí es donde se comparten las salidas.",
     "rejoindreOuCreer": "Unirse o crear un círculo",
@@ -549,7 +557,8 @@
     "pasEncorePrevenu": "todavía no se ha avisado a nadie",
     "vousYEtes": "Estás ahí",
     "nousAussi": "Nosotros también",
-    "autresFamilles": "{n, plural, one {# familia más} other {# familias más}}"
+    "autresFamilles": "{n, plural, one {# familia más} other {# familias más}}",
+    "annoncerSortie": "Anunciar una salida"
   },
   "Sortie": {
     "erreurs": {
@@ -693,5 +702,9 @@
       "inscription": "Con inscripción",
       "inconnu": "Inscripción sin especificar"
     }
+  },
+  "Questions": {
+    "titreOnglet": "Preguntas frecuentes",
+    "retour": "Volver"
   }
 }

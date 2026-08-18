@@ -37,7 +37,8 @@ this page exists.
 
 ## What Allezou doesn't store
 
-Each of these absences can be verified in the code.
+Each of these absences is a commitment. The code that keeps them can be
+shown on request.
 
 - **No password.** None exists anywhere, so none can ever leak.
 - **No GPS location, ever.** An outing is a place you choose from a list,
@@ -49,13 +50,11 @@ Each of these absences can be verified in the code.
 - **No messaging.** There's no chat thread, no private message, no comment.
 - **No audience-measurement tools.** No Google Analytics, no advertising
   pixel, no third-party tracker.
-- **No sales, no commercial sharing.** Your data is never handed over to
-  anyone.
+- **No sales, no commercial sharing.** Your data is never sold or shared.
 - **About your children, nothing but a first name.** Members of a circle
   already know the children in question; the app has nothing to add. No
   last name, **no age or date of birth**, no photo, no gender, no school,
-  no class, no health information. A "birth year" field existed during
-  design, then was removed for lack of any use that justified it.
+  no class, no health information.
 
 ## Who sees what, exactly
 
@@ -91,7 +90,8 @@ can be shown on request.
 
 ## Where the data is
 
-On servers located **in Switzerland**. It never leaves the country.
+On servers located **in Switzerland**, at **Infomaniak**. It never leaves
+the country.
 
 Three technical exceptions, none of which involve any personal data:
 
@@ -106,8 +106,22 @@ Three technical exceptions, none of which involve any personal data:
 - the address of a park or hall is sent once to OpenStreetMap, to look up
   its coordinates so a map link lands on the right spot. It's the address
   of a public place, sent from our server. **Never yours, and never what
-  you're looking at**: your phone never contacts anyone but us — with one
-  exception, which you trigger yourself: the map, right below.
+  you're looking at.**
+
+## Who else is involved
+
+Two intermediaries are needed for Allezou to reach you. Neither one learns
+what you do in the app.
+
+- **Notifications go through your phone's notification service** — Apple
+  on iPhone, Google on Android. It's the only path a phone allows: no app
+  is exempt from it. The message is handed to them **encrypted**: they
+  relay it without being able to read it. They know a message was sent to
+  your device, and when.
+- **The email that signs you in goes through Infomaniak**, our host, in
+  Switzerland. It contains nothing but your sign-in link.
+
+There's also the map, which you trigger yourself — that's the next section.
 
 ## The map
 
