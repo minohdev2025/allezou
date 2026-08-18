@@ -764,8 +764,10 @@ export async function notifyUpcomingAttendances(send: Sender): Promise<NotifyRep
     account_id: string;
     event_id: string;
     starts_at: Date;
+    locale: string;
   }>(sql`
-    select p.id as publication_id, p.author_id as account_id, e.id as event_id, e.starts_at
+    select p.id as publication_id, p.author_id as account_id, e.id as event_id, e.starts_at,
+           a.locale
     from publication p
     join event e on e.id = p.event_id
     join account a on a.id = p.author_id and a.deleted_at is null
@@ -785,6 +787,8 @@ export async function notifyUpcomingAttendances(send: Sender): Promise<NotifyRep
   const report: NotifyReport = { sent: 0, failed: 0, recipients: rows.length };
 
   for (const row of rows) {
+    // « 14:30 » s'écrit pareil dans les cinq langues servies : l'heure n'a pas besoin du
+    // traducteur, seul le fuseau compte.
     const heure = new Intl.DateTimeFormat("fr-CH", {
       timeZone: "Europe/Zurich",
       hour: "2-digit",
@@ -792,12 +796,14 @@ export async function notifyUpcomingAttendances(send: Sender): Promise<NotifyRep
       hour12: false,
     }).format(asDateOrNull(row.starts_at) ?? new Date());
 
+    const t = traducteur(row.locale, "Notifications");
     await envoyerA(
       row.account_id,
       {
-        title: "Agenda",
-        body: `C'est bientôt : votre activité commence à ${heure}`,
-        url: `/agenda/${row.event_id}`,
+        title: t("agendaTitre"),
+        body: t("rappelBientot", { heure }),
+        url: cheminLocalise(row.locale, `/agenda/${row.event_id}`),
+        lang: localeSure(row.locale),
       },
       send,
       report,

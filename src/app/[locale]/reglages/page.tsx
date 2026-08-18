@@ -148,21 +148,23 @@ export default async function Reglages({
 
         <Carte className="mt-4" accent="bleu">
           <div className="mb-3 flex items-center justify-between gap-3">
-            <span className="font-bold">Le rappel avant vos activités</span>
+            <span className="font-bold">{t("rappelTitre")}</span>
             <Pastille couleur={rappelHeures ? "vert" : "ambre"}>
-              {rappelHeures ? (rappelHeures >= 24 ? "la veille" : `${rappelHeures} h avant`) : "coupé"}
+              {rappelHeures
+                ? rappelHeures >= 24
+                  ? t("rappelVeille")
+                  : t("rappel2h")
+                : t("etatCoupe")}
             </Pastille>
           </div>
           <p className="mb-4 text-sm leading-snug text-[color:var(--color-doux)]">
-            Quand vous dites « nous y serons », votre téléphone peut vous le rappeler avant
-            le début. Personne d&apos;autre n&apos;est prévenu : c&apos;est un rendez-vous
-            avec vous-même.
+            {t("rappelTexte")}
           </p>
           <form action={reglerRappel} className="flex gap-2">
             {[
-              { heures: 0, libelle: "Coupé" },
-              { heures: 2, libelle: "2 h avant" },
-              { heures: 24, libelle: "La veille" },
+              { heures: 0, libelle: t("etatCoupe") },
+              { heures: 2, libelle: t("rappel2h") },
+              { heures: 24, libelle: t("rappelVeille") },
             ].map((choix) => {
               const actif = (rappelHeures ?? 0) === choix.heures;
               return (

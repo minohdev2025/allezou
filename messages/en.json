@@ -19,7 +19,8 @@
     "demandeAdhesion": "Someone wants to join this circle",
     "agendaTitre": "Agenda",
     "motCorrespond": "An activity matches “{mot}”",
-    "inscriptionParue": "A registration-required activity was just posted"
+    "inscriptionParue": "A registration-required activity was just posted",
+    "rappelBientot": "Starting soon: your activity begins at {heure}"
   },
   "MailConnexion": {
     "sujet": "Your Allezou sign-in link",
@@ -465,7 +466,11 @@
     "reprendre": "Resume",
     "pause4h": "Pause 4h",
     "pause24h": "Pause 24h",
-    "membresTexte": "To stop getting notified about one particular person, open <lien>the member list</lien>."
+    "membresTexte": "To stop getting notified about one particular person, open <lien>the member list</lien>.",
+    "rappelTitre": "The reminder before your activities",
+    "rappelTexte": "When you say “we'll be there”, your phone can remind you before it starts. Nobody else is notified: it's an appointment with yourself.",
+    "rappel2h": "2 h before",
+    "rappelVeille": "The day before"
   },
   "Connexion": {
     "accroche": "So our kids can meet up outside.",

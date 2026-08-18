@@ -19,7 +19,8 @@
     "demandeAdhesion": "Quelqu'un demande à rejoindre ce cercle",
     "agendaTitre": "Agenda",
     "motCorrespond": "Une activité correspond à « {mot} »",
-    "inscriptionParue": "Une activité sur inscription vient de paraître"
+    "inscriptionParue": "Une activité sur inscription vient de paraître",
+    "rappelBientot": "C'est bientôt : votre activité commence à {heure}"
   },
   "MailConnexion": {
     "sujet": "Votre lien de connexion à Allezou",
@@ -465,7 +466,11 @@
     "reprendre": "Reprendre",
     "pause4h": "Pause 4 h",
     "pause24h": "Pause 24 h",
-    "membresTexte": "Pour ne plus être prévenu d'une personne en particulier, ouvrez <lien>la liste des membres</lien>."
+    "membresTexte": "Pour ne plus être prévenu d'une personne en particulier, ouvrez <lien>la liste des membres</lien>.",
+    "rappelTitre": "Le rappel avant vos activités",
+    "rappelTexte": "Quand vous dites « nous y serons », votre téléphone peut vous le rappeler avant le début. Personne d'autre n'est prévenu : c'est un rendez-vous avec vous-même.",
+    "rappel2h": "2 h avant",
+    "rappelVeille": "La veille"
   },
   "Connexion": {
     "accroche": "Pour que nos enfants se retrouvent dehors.",

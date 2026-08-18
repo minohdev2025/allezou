@@ -19,7 +19,8 @@
     "demandeAdhesion": "Dikush kërkon të bashkohet me këtë rreth",
     "agendaTitre": "Agjenda",
     "motCorrespond": "Një aktivitet përputhet me « {mot} »",
-    "inscriptionParue": "Sapo u shfaq një aktivitet me regjistrim"
+    "inscriptionParue": "Sapo u shfaq një aktivitet me regjistrim",
+    "rappelBientot": "Fillon së shpejti: aktiviteti juaj nis në {heure}"
   },
   "MailConnexion": {
     "sujet": "Lidhja juaj e hyrjes në Allezou",
@@ -465,7 +466,11 @@
     "reprendre": "Rifilloni",
     "pause4h": "Pauzë 4 orë",
     "pause24h": "Pauzë 24 orë",
-    "membresTexte": "Për të mos u njoftuar më nga një person i caktuar, hapni <lien>listën e anëtarëve</lien>."
+    "membresTexte": "Për të mos u njoftuar më nga një person i caktuar, hapni <lien>listën e anëtarëve</lien>.",
+    "rappelTitre": "Kujtesa para aktiviteteve tuaja",
+    "rappelTexte": "Kur thoni «do të jemi aty», telefoni juaj mund t'jua kujtojë para fillimit. Askush tjetër nuk njoftohet: është një takim me veten.",
+    "rappel2h": "2 orë para",
+    "rappelVeille": "Një ditë para"
   },
   "Connexion": {
     "accroche": "Që fëmijët tanë të takohen jashtë.",

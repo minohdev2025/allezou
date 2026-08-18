@@ -19,7 +19,8 @@
     "demandeAdhesion": "Alguien quiere unirse a este círculo",
     "agendaTitre": "Agenda",
     "motCorrespond": "Hay una actividad que coincide con «{mot}»",
-    "inscriptionParue": "Se acaba de publicar una actividad con inscripción"
+    "inscriptionParue": "Se acaba de publicar una actividad con inscripción",
+    "rappelBientot": "Empieza pronto: su actividad comienza a las {heure}"
   },
   "MailConnexion": {
     "sujet": "Tu enlace de conexión a Allezou",
@@ -465,7 +466,11 @@
     "reprendre": "Reanudar",
     "pause4h": "Pausa 4 h",
     "pause24h": "Pausa 24 h",
-    "membresTexte": "Para dejar de recibir avisos de una persona en concreto, abre <lien>la lista de miembros</lien>."
+    "membresTexte": "Para dejar de recibir avisos de una persona en concreto, abre <lien>la lista de miembros</lien>.",
+    "rappelTitre": "El recordatorio antes de sus actividades",
+    "rappelTexte": "Cuando dice «allí estaremos», su teléfono puede recordárselo antes del inicio. No se avisa a nadie más: es una cita con usted mismo.",
+    "rappel2h": "2 h antes",
+    "rappelVeille": "La víspera"
   },
   "Connexion": {
     "accroche": "Para que nuestros hijos se encuentren al aire libre.",
