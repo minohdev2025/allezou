@@ -1,7 +1,12 @@
 /**
- * Sources de l'agenda genevois — état vérifié le 18 août 2026.
+ * Sources de l'agenda genevois — état vérifié le 19 août 2026.
  *
  *   npm run sources:seed
+ *
+ * Volontairement en JavaScript et non en TypeScript, comme `migrer.mjs` et pour la même
+ * raison : ce script doit tourner en production, dans une image d'où `tsx` et `typescript`
+ * ont été retirés. Il parle donc à Postgres directement, sans passer par le schéma drizzle —
+ * une table, trois requêtes, rien qui mérite une chaîne de construction.
  *
  * La Ville de Genève expose du schema.org `Event` en JSON-LD sur chaque fiche (titre, dates,
  * lieu, adresse). Rien n'y est interprété, donc rien n'y est inventé. Son filtre « Enfants
@@ -67,7 +72,9 @@
  *   plateforme mutualisée, où on les trouvera.
  * - **Choulex** publie sa liste annuelle en PDF. **Céligny** ne parle de manifestations
  *   que pour les autorisations. **Aire-la-Ville, Bardonnex, Cartigny, Dardagny, Gy,
- *   Avully, Avusy** : pas d'agenda trouvable sur leur site.
+ *   Avully, Avusy** : pas d'agenda trouvable sur leur site. Le 19 août, ces communes-là
+ *   ont été écartées pour de bon : trop petites, trop loin, trop rarement une sortie qui
+ *   vaille la traversée du canton.
  * - Le flux `ge.ch/rss/evenement` de l'État reste institutionnel, et les RSS communaux ne
  *   portent que la date de publication de l'article, pas celle de l'activité.
  *
@@ -81,27 +88,38 @@
  *   sa liste sert les dates mais compose ses cartes en JavaScript : les liens de fiches
  *   ne sont pas dans la page servie, les activités renvoient donc à la liste.
  * - **Le Centre (Lancy-Onex)** tient une page `/evenements/` sous WordPress.
- * - **Écartés pour l'instant** : Airloop (offre permanente, pas d'agenda daté servi),
- *   Le Môll (site applicatif, cinq dates lisibles sur toute la page), La Praille (son
- *   Kids Club n'écrit pas de dates côté serveur), la Maison de la Créativité (programme
- *   composé dans le navigateur, archive `/event/` ancienne). Tous à resonder : ce sont
- *   exactement les lieux que les familles cherchent.
+ * - **Écartés pour de bon** : Airloop (offre permanente, pas d'agenda daté servi), Le Môll
+ *   (site applicatif, cinq dates lisibles sur toute la page), La Praille (son Kids Club
+ *   n'écrit pas de dates côté serveur), la Maison de la Créativité (programme composé dans
+ *   le navigateur). Aucun n'expose d'agenda lisible ; tant pis pour eux s'ils ne sont pas
+ *   référencés.
  */
 
-import { config } from "dotenv";
-import { eq } from "drizzle-orm";
+import postgres from "postgres";
 
-config({ path: ".env.local" });
+// dotenv est un outil de développement, absent de l'image de production — où la variable
+// vient de l'environnement du conteneur. D'où ce chargement facultatif.
+try {
+  const { config } = await import("dotenv");
+  config({ path: ".env.local" });
+} catch {
+  // Pas de dotenv : on est en production, DATABASE_URL est déjà là.
+}
 
-const { db } = await import("../src/lib/db/index.ts");
-const s = await import("../src/lib/db/schema.ts");
+const url = process.env.DATABASE_URL;
+if (!url) {
+  console.error("DATABASE_URL manquant : impossible d'inscrire les sources.");
+  process.exit(1);
+}
+
+const sql = postgres(url, { max: 1 });
 
 const SOURCES = [
   /* ------------------------------------------------------------ les vétérans */
   {
     name: "Ville de Genève — agenda, tri famille",
     url: "https://www.geneve.ch/fr/agenda",
-    kind: "jsonld" as const,
+    kind: "jsonld",
     commune: "Genève",
     autoPublish: true,
     // Quatorze pages, parce que l'agenda complet avance d'une dizaine d'activités par
@@ -112,7 +130,7 @@ const SOURCES = [
   {
     name: "Lancy — agenda communal",
     url: "https://www.lancy.ch/agenda",
-    kind: "html_ai" as const,
+    kind: "html_ai",
     commune: "Lancy",
     autoPublish: true,
     // `itemPattern` sert à retrouver le lien de chaque fiche dans la page de liste : le
@@ -123,7 +141,7 @@ const SOURCES = [
   {
     name: "Chêne-Bougeries — agenda communal",
     url: "https://chene-bougeries.ch/evenements/?ical=1",
-    kind: "ical" as const,
+    kind: "ical",
     commune: "Chêne-Bougeries",
     autoPublish: true,
     // Le greffon range les séances du Conseil municipal avec le reste de l'agenda. Un
@@ -134,7 +152,7 @@ const SOURCES = [
   {
     name: "Laconnex — agenda communal",
     url: "https://www.laconnex.ch/agenda/?ical=1",
-    kind: "ical" as const,
+    kind: "ical",
     commune: "Laconnex",
     autoPublish: true,
     // « Politique » couvre les séances du Conseil, « Ferraille » les levées d'encombrants.
@@ -143,7 +161,7 @@ const SOURCES = [
   {
     name: "Vernier — agenda communal",
     url: "https://www.vernier.ch/evenements",
-    kind: "html_ai" as const,
+    kind: "html_ai",
     commune: "Vernier",
     autoPublish: true,
     // La plus grande commune du canton après la Ville. Quatre pages de liste, qui paginent
@@ -154,7 +172,7 @@ const SOURCES = [
   {
     name: "Onex — agenda communal",
     url: "https://www.onex.ch/mes-loisirs/agenda/",
-    kind: "html_ai" as const,
+    kind: "html_ai",
     commune: "Onex",
     autoPublish: true,
     // Six pages couvrent environ deux mois ; la première ne contient guère que des cours
@@ -169,7 +187,7 @@ const SOURCES = [
   {
     name: "Chancy — agenda communal",
     url: "https://www.chancy.ch/agenda-communal/?ical=1",
-    kind: "ical" as const,
+    kind: "ical",
     commune: "Chancy",
     autoPublish: true,
     config: {},
@@ -177,7 +195,7 @@ const SOURCES = [
   {
     name: "Carouge — agenda communal",
     url: "https://carouge.ch/agenda",
-    kind: "html_ai" as const,
+    kind: "html_ai",
     commune: "Carouge",
     autoPublish: true,
     config: { maxPages: 3, itemPattern: "/agenda/", lireFiches: true },
@@ -185,7 +203,7 @@ const SOURCES = [
   {
     name: "Meyrin — agenda communal",
     url: "https://www.meyrin.ch/fr/agenda",
-    kind: "html_ai" as const,
+    kind: "html_ai",
     commune: "Meyrin",
     autoPublish: true,
     // La liste sert ses liens mais compose ses dates dans le navigateur : rien à extraire
@@ -195,7 +213,7 @@ const SOURCES = [
   {
     name: "Grand-Saconnex — agenda communal",
     url: "https://www.grand-saconnex.ch/agenda",
-    kind: "html_ai" as const,
+    kind: "html_ai",
     commune: "Grand-Saconnex",
     autoPublish: true,
     config: { maxPages: 3, itemPattern: "/agenda/", lireFiches: true },
@@ -203,7 +221,7 @@ const SOURCES = [
   {
     name: "Anières — agenda communal",
     url: "https://anieres.ch/agenda",
-    kind: "html_ai" as const,
+    kind: "html_ai",
     commune: "Anières",
     autoPublish: true,
     config: { maxPages: 2, itemPattern: "/agenda/", lireFiches: true },
@@ -211,7 +229,7 @@ const SOURCES = [
   {
     name: "Vandœuvres — agenda communal",
     url: "https://www.vandoeuvres.ch/actualites/agenda/",
-    kind: "html_ai" as const,
+    kind: "html_ai",
     commune: "Vandœuvres",
     autoPublish: true,
     config: { maxPages: 2, itemPattern: "/evenement/", lireFiches: true },
@@ -219,7 +237,7 @@ const SOURCES = [
   {
     name: "Collex-Bossy — agenda communal",
     url: "https://collex-bossy.ch/fr/agenda/",
-    kind: "html_ai" as const,
+    kind: "html_ai",
     commune: "Collex-Bossy",
     autoPublish: true,
     // Pagine en `/page-1/`, pas en `?page=N` : une seule page lue, qui suffit à un petit
@@ -229,7 +247,7 @@ const SOURCES = [
   {
     name: "Perly-Certoux — agenda communal",
     url: "https://www.perly-certoux.ch/fr/agenda/",
-    kind: "html_ai" as const,
+    kind: "html_ai",
     commune: "Perly-Certoux",
     autoPublish: true,
     config: { maxPages: 1, itemPattern: "/fr/agenda/", lireFiches: true },
@@ -237,7 +255,7 @@ const SOURCES = [
   {
     name: "Cologny — agenda communal",
     url: "https://cologny.ch/agenda",
-    kind: "html_ai" as const,
+    kind: "html_ai",
     commune: "Cologny",
     autoPublish: true,
     config: { maxPages: 1, itemPattern: "/agenda/", lireFiches: true },
@@ -245,7 +263,7 @@ const SOURCES = [
   {
     name: "Troinex — manifestations communales",
     url: "https://troinex.ch/vivre-ici/vie-sociale/manifestation-communales-et-agenda/",
-    kind: "html_ai" as const,
+    kind: "html_ai",
     commune: "Troinex",
     autoPublish: true,
     config: { maxPages: 1 },
@@ -253,11 +271,12 @@ const SOURCES = [
   {
     name: "Russin — événements",
     url: "https://www.russin.ch/evenements/",
-    kind: "html_ai" as const,
+    kind: "html_ai",
     commune: "Russin",
     autoPublish: true,
     config: { maxPages: 1 },
   },
+
   /*
     La plateforme mutualisée, une commune à la fois — et sans son filtre famille.
 
@@ -273,7 +292,7 @@ const SOURCES = [
   {
     name: "Plan-les-Ouates — agenda (plateforme des communes)",
     url: "https://www.geneve-communes.ch/agenda?f%5B0%5D=commune%3A25",
-    kind: "html_ai" as const,
+    kind: "html_ai",
     commune: "Plan-les-Ouates",
     autoPublish: true,
     // Une soixantaine d'événements, douze par page : quatre pages couvrent l'essentiel,
@@ -283,7 +302,7 @@ const SOURCES = [
   {
     name: "Thônex — agenda (plateforme des communes)",
     url: "https://www.geneve-communes.ch/agenda?f%5B0%5D=commune%3A61",
-    kind: "html_ai" as const,
+    kind: "html_ai",
     commune: "Thônex",
     autoPublish: true,
     config: { maxPages: 2, itemPattern: "/agenda/", lireFiches: true },
@@ -291,7 +310,7 @@ const SOURCES = [
   {
     name: "Versoix — agenda (plateforme des communes)",
     url: "https://www.geneve-communes.ch/agenda?f%5B0%5D=commune%3A271",
-    kind: "html_ai" as const,
+    kind: "html_ai",
     commune: "Versoix",
     autoPublish: true,
     config: { maxPages: 2, itemPattern: "/agenda/", lireFiches: true },
@@ -299,7 +318,7 @@ const SOURCES = [
   {
     name: "Confignon — agenda (plateforme des communes)",
     url: "https://www.geneve-communes.ch/agenda?f%5B0%5D=commune%3A272",
-    kind: "html_ai" as const,
+    kind: "html_ai",
     commune: "Confignon",
     autoPublish: true,
     config: { maxPages: 2, itemPattern: "/agenda/", lireFiches: true },
@@ -309,7 +328,7 @@ const SOURCES = [
     // plateforme, elle, porte de vraies fiches datées.
     name: "Veyrier — agenda (plateforme des communes)",
     url: "https://www.geneve-communes.ch/agenda?f%5B0%5D=commune%3A259",
-    kind: "html_ai" as const,
+    kind: "html_ai",
     commune: "Veyrier",
     autoPublish: true,
     config: { maxPages: 2, itemPattern: "/agenda/", lireFiches: true },
@@ -319,7 +338,7 @@ const SOURCES = [
   {
     name: "Lancy Centre — animations",
     url: "https://www.lancycentre.ch/actualites/",
-    kind: "html_ai" as const,
+    kind: "html_ai",
     commune: "Lancy",
     autoPublish: true,
     // Les fiches sont des articles à la racine du site — pas de segment « /actualites/ »
@@ -335,7 +354,7 @@ const SOURCES = [
   {
     name: "Balexert — événements",
     url: "https://www.balexert.ch/evenements/",
-    kind: "html_ai" as const,
+    kind: "html_ai",
     commune: "Vernier",
     autoPublish: true,
     // Les cartes de la liste se composent dans le navigateur : les dates se lisent, pas
@@ -346,7 +365,7 @@ const SOURCES = [
   {
     name: "Le Centre Lancy-Onex — événements",
     url: "https://lancy.le-centre.ch/evenements/",
-    kind: "html_ai" as const,
+    kind: "html_ai",
     commune: "Lancy",
     autoPublish: true,
     config: {
@@ -390,45 +409,54 @@ const RETIREES = [
   "https://www.geneve-communes.ch/agenda?f%5B0%5D=public%3A33&f%5B1%5D=commune%3A259",
 ];
 
-for (const { de, vers } of DEMENAGEES) {
-  const [deja] = await db
-    .select({ id: s.source.id })
-    .from(s.source)
-    .where(eq(s.source.url, vers))
-    .limit(1);
-  if (deja) continue;
+try {
+  for (const { de, vers } of DEMENAGEES) {
+    const [deja] = await sql`select id from source where url = ${vers} limit 1`;
+    if (deja) continue;
 
-  const [demenagee] = await db
-    .update(s.source)
-    .set({ url: vers })
-    .where(eq(s.source.url, de))
-    .returning({ name: s.source.name });
-  if (demenagee) console.log(`déménagée   : ${demenagee.name}`);
-}
-
-for (const source of SOURCES) {
-  const [existing] = await db
-    .select({ id: s.source.id })
-    .from(s.source)
-    .where(eq(s.source.url, source.url))
-    .limit(1);
-
-  if (existing) {
-    await db.update(s.source).set(source).where(eq(s.source.id, existing.id));
-    console.log(`mise à jour : ${source.name}`);
-  } else {
-    await db.insert(s.source).values(source);
-    console.log(`ajoutée     : ${source.name}`);
+    const [demenagee] = await sql`
+      update source set url = ${vers} where url = ${de} returning name
+    `;
+    if (demenagee) console.log(`déménagée   : ${demenagee.name}`);
   }
-}
 
-for (const url of RETIREES) {
-  const [endormie] = await db
-    .update(s.source)
-    .set({ active: false })
-    .where(eq(s.source.url, url))
-    .returning({ name: s.source.name });
-  if (endormie) console.log(`endormie    : ${endormie.name}`);
-}
+  for (const source of SOURCES) {
+    const [existante] = await sql`select id from source where url = ${source.url} limit 1`;
 
-process.exit(0);
+    if (existante) {
+      // `active` n'est pas touché : une source éteinte à la main l'a été pour une raison,
+      // et un passage du seed n'est pas le bon endroit pour la ressusciter en silence.
+      await sql`
+        update source set
+          name = ${source.name},
+          kind = ${source.kind},
+          commune = ${source.commune ?? null},
+          auto_publish = ${source.autoPublish},
+          config = ${sql.json(source.config ?? {})}
+        where id = ${existante.id}
+      `;
+      console.log(`mise à jour : ${source.name}`);
+    } else {
+      await sql`
+        insert into source (name, url, kind, commune, auto_publish, config)
+        values (
+          ${source.name}, ${source.url}, ${source.kind}, ${source.commune ?? null},
+          ${source.autoPublish}, ${sql.json(source.config ?? {})}
+        )
+      `;
+      console.log(`ajoutée     : ${source.name}`);
+    }
+  }
+
+  for (const url of RETIREES) {
+    const [endormie] = await sql`
+      update source set active = false where url = ${url} returning name
+    `;
+    if (endormie) console.log(`endormie    : ${endormie.name}`);
+  }
+} catch (erreur) {
+  console.error("sources en échec :", erreur instanceof Error ? erreur.message : erreur);
+  process.exitCode = 1;
+} finally {
+  await sql.end();
+}
