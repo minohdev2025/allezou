@@ -294,14 +294,22 @@ geste « la retirer » de `/relecture` reste là pour l'urgence.
   couverture : si la file se remplit de `verification_ia` sur des activités justes, c'est le
   seuil qu'il faut bouger, pas la relecture.
 
-### Le rappel de présence, mis de côté en le disant
+### Le rappel de présence, demandé le 18, construit le 19
 
-Demandé le 18 août, pas encore construit : pouvoir se programmer un rappel quand on dit
-qu'on sera présent à une activité. Tout existe pour le faire sans IA — les inscriptions,
-les réglages de notification, l'infrastructure push et le planificateur — il manque un job
-« rappels » qui envoie « c'est bientôt » quelques heures avant le début, un réglage pour
-choisir ce délai, et une colonne pour ne pas envoyer deux fois. C'est le prochain chantier
-qui ne dépend d'aucune source.
+Quand on dit « nous y serons », le téléphone peut le rappeler avant le début — deux heures
+avant ou la veille, réglé sur le compte, éteint par défaut comme tout ce qui sonne. Le
+message donne l'heure, jamais le titre ni le lieu : un rendez-vous avec soi-même, dont un
+écran verrouillé n'apprend rien. `remindedAt` interdit de sonner deux fois, une activité
+retirée de l'agenda ne sonne pas, une inscription retirée non plus. Le job « rappels »
+passe toutes les cinq minutes, et la lecture directe de la table des publications qu'il a
+fallu ajouter est inscrite au registre de `visibility-frontiere.test.ts` : elle ne
+s'adresse qu'à l'auteur.
+
+Le 18 août avait aussi noté deux pistes qu'on referme en le disant, décision de Michael :
+les privés qui résistent (Airloop, Le Môll, La Praille, Maison de la Créativité) ne seront
+pas resondés — tant pis pour eux s'ils ne sont pas référencés — et les petites communes
+restantes non plus : trop petites, trop loin, trop rarement une sortie qui vaille la
+traversée du canton.
 
 ### Vernier, l'exception qui reste
 
