@@ -10,6 +10,11 @@
 >
 > Repris le 16 août 2026 : la carte, dont une section expliquait l'absence, est arrivée.
 > La même section dit maintenant ce qui l'a débloquée.
+>
+> Repris le 18 août 2026 : la lecture se fait en couches — la fiche après la liste, puis
+> une relecture croisée par un second passage du modèle — et le tour du canton a été refait,
+> privés compris : seize sources de plus. La section « sources laissées de côté » a été
+> réécrite en conséquence.
 
 ## Ce qui a été fait
 
@@ -231,13 +236,49 @@ que de résumer ; il faut regarder au prochain passage si elle suffit.
 
 ### Les sources laissées de côté
 
-- **Chancy** et **Soral** exposent bien un `?ical=1`, mais leur feuille est vide. À reprendre
-  si elle se remplit.
-- **Carouge** et **Meyrin** composent leur agenda dans le navigateur : la page servie ne
-  contient aucune activité, ni pour nous ni pour le modèle. Il faudrait lire l'API que leur
-  page interroge, ou renoncer.
-- **Onex** n'a pas été revue depuis les contrôles. Elle rapportait vingt-sept activités ;
-  combien en passent maintenant, on ne le saura qu'au prochain passage.
+Réécrit le 18 août, après le second tour. Chancy s'est remplie et est branchée ; Carouge et
+Meyrin servent désormais leurs pages et sont branchées aussi ; Onex a refait son site et ses
+liens de fiches existent enfin. Ce qui reste dehors, et pourquoi :
+
+- **Soral** garde son `?ical=1` vide. À resonder.
+- **Genthod, Satigny, Hermance, Confignon, Pregny-Chambésy, Corsier, Chêne-Bourg, Bellevue,
+  Thônex, Bernex, Jussy** : agendas composés dans le navigateur, page servie sans contenu ni
+  liens. Il faudrait lire l'API que leurs pages interrogent, ou attendre qu'ils refassent
+  leur site — Onex et Carouge montrent que ça arrive.
+- **Presinge, Cologny et Plan-les-Ouates** passent par OpenAgenda. Cologny se lit très bien
+  en HTML (branchée) et son export JSON public répond — agenda 10019287 — le jour où un
+  adaptateur structuré vaudra la peine. Presinge pointe un agenda vide (81186525),
+  Plan-les-Ouates cache le sien derrière un portail (acg-plan-les-ouates.oa.events) sans
+  identifiant lisible.
+- **Choulex** publie sa liste annuelle en PDF ; **Aire-la-Ville, Bardonnex, Cartigny,
+  Dardagny, Gy, Avully, Avusy, Céligny** n'ont pas d'agenda trouvable.
+- Côté privés : **Airloop** (offre permanente, pas d'agenda daté), **Le Môll** (site
+  applicatif, cinq dates lisibles), **La Praille** (Kids Club sans dates côté serveur),
+  **la Maison de la Créativité** (programme composé dans le navigateur). Tous à resonder :
+  ce sont exactement les lieux que les familles cherchent.
+
+### Ce que la lecture en couches va coûter et rapporter, et qu'on ne saura qu'en regardant
+
+- **Un passage complet dure plus longtemps** : chaque source à `lireFiches` ouvre jusqu'à
+  quarante fiches, une lecture du modèle chacune, et la relecture croisée repasse derrière
+  chaque activité candidate à sa première publication. À la cadence de six heures, c'est
+  tenable ; si un passage se met à mordre sur le suivant, la première économie est de ne
+  relire une fiche que quand la liste a changé.
+- **Les fiches re-lues à chaque passage** tant qu'une activité n'est pas publiée : le
+  forfait MiniMax l'absorbe sans y penser (moins d'un pour cent utilisé), mais le nombre est
+  à regarder une fois les seize nouvelles sources passées en `autoPublish`.
+- **Le seuil de certitude du vérificateur (0.6)** est un pari, comme les seuils de
+  couverture : si la file se remplit de `verification_ia` sur des activités justes, c'est le
+  seuil qu'il faut bouger, pas la relecture.
+
+### Le rappel de présence, mis de côté en le disant
+
+Demandé le 18 août, pas encore construit : pouvoir se programmer un rappel quand on dit
+qu'on sera présent à une activité. Tout existe pour le faire sans IA — les inscriptions,
+les réglages de notification, l'infrastructure push et le planificateur — il manque un job
+« rappels » qui envoie « c'est bientôt » quelques heures avant le début, un réglage pour
+choisir ce délai, et une colonne pour ne pas envoyer deux fois. C'est le prochain chantier
+qui ne dépend d'aucune source.
 
 ### Vernier, l'exception qui reste
 
