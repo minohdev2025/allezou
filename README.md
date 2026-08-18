@@ -129,8 +129,10 @@ fois.
 - **Ville de Genève**, filtre « Enfants et famille » : chaque fiche expose du schema.org
   `Event` en JSON-LD. Rien n'y est interprété.
 - **Plan-les-Ouates, Thônex, Versoix, Confignon, Veyrier**, par la plateforme mutualisée
-  [geneve-communes.ch](https://www.geneve-communes.ch/agenda) : même socle que geneve.ch,
-  JSON-LD sur chaque fiche, filtre « Familles » et facette commune à la source. On n'y lit
+  [geneve-communes.ch](https://www.geneve-communes.ch/agenda), une facette commune par
+  source. Son filtre « Enfants et famille » s'est révélé plus étroit que la question qu'on
+  pose (le Cinéma en plein air gratuit y est « Tous publics ») : on lit donc le flux
+  complet de chaque commune, et le modèle fait le tri famille, comme ailleurs. On n'y lit
   que les communes sans porte directe, pour ne pas fabriquer de doublons.
 - **Chêne-Bougeries, Laconnex, Chancy** : agenda WordPress avec le greffon « The Events
   Calendar », qui publie tout en iCalendar derrière `?ical=1`. C'est la meilleure source

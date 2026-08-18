@@ -242,11 +242,14 @@ liens de fiches existent enfin. Ce qui reste dehors, et pourquoi :
 
 - **Soral** garde son `?ical=1` vide. À resonder.
 - **La plateforme mutualisée geneve-communes.ch a rouvert quatre portes le 19 août** :
-  Plan-les-Ouates, Thônex, Versoix et Confignon y publient en JSON-LD, filtrables par
-  famille et par commune — quatre sources structurées, plus Veyrier dont la page communale
-  n'était qu'une liste annuelle. La facette commune est à resonder de temps en temps : une
-  commune de plus peut s'y mettre, et la Ville de Genève y compte 174 événements famille
-  quand la lecture directe s'arrête à trois pages.
+  Plan-les-Ouates, Thônex, Versoix et Confignon y publient, filtrables par commune — plus
+  Veyrier, dont la page communale n'était qu'une liste annuelle. Son filtre « Enfants et
+  famille » a d'abord servi, puis la mesure l'a disqualifié : 13 événements sur 62 à
+  Plan-les-Ouates, Cinéma en plein air gratuit et vide-grenier rangés « Tous publics ».
+  L'étiquette dit qui la commune visait, pas qui la sortie intéresse — on lit le flux
+  complet, le modèle trie. La facette commune est à resonder de temps en temps : une
+  commune de plus peut s'y mettre, et la Ville de Genève y publie bien plus que les trois
+  pages de notre lecture directe — la même question du filtre se posera là.
 - **Genthod, Satigny, Hermance, Pregny-Chambésy, Corsier, Chêne-Bourg, Bellevue, Bernex,
   Jussy** : agendas composés dans le navigateur, page servie sans contenu ni liens, et pas
   encore sur la plateforme. Il faudrait lire l'API que leurs pages interrogent, ou attendre
