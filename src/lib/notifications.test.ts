@@ -18,10 +18,13 @@ import {
   notifyJoinRequest,
   notifyNewlyPublished,
   notifyPublication,
+  notifyUpcomingAttendances,
   pauseCircle,
   payloadFor,
+  rappelPresenceHeures,
   recipientsFor,
   reglerAlerteInscription,
+  reglerRappelPresence,
   retirerMotCle,
   setPrefs,
   subscribe,
@@ -35,6 +38,7 @@ import {
   createEvent,
   createPlace,
   cutLink,
+  declareAttendance,
   declarePresence,
   join,
   leave,
@@ -616,5 +620,95 @@ describe("La minute de silence", () => {
     const seconde = expediteur();
     expect(await notifyPendingPublications(seconde.send)).toBe(0);
     expect(seconde.envois).toEqual([]);
+  });
+});
+
+describe("Le rappel avant une activité", () => {
+  it("sonne l'auteur quand l'activité approche, et une seule fois", async () => {
+    const alice = await createAccount("Alice");
+    await abonner(alice);
+    await reglerRappelPresence(alice.id, 2);
+    const activite = await createEvent({ startsAt: minutesFromNow(90) });
+    await declareAttendance({ author: alice, event: activite, circles: [] });
+
+    const { envois, send } = expediteur();
+    const rapport = await notifyUpcomingAttendances(send);
+
+    expect(rapport.recipients).toBe(1);
+    expect(envois).toHaveLength(1);
+    expect(envois[0].accountId).toBe(alice.id);
+    expect(envois[0].payload.url).toBe(`/agenda/${activite.id}`);
+
+    // Le message donne l'heure, jamais le titre ni le lieu : un écran verrouillé posé sur
+    // une table apprend au mieux qu'on a prévu quelque chose.
+    expect(envois[0].payload.title).toBe("Agenda");
+    expect(envois[0].payload.body).toMatch(/commence à \d{2}:\d{2}/);
+    expect(envois[0].payload.body).not.toContain("Muséum");
+
+    const second = expediteur();
+    expect((await notifyUpcomingAttendances(second.send)).recipients).toBe(0);
+    expect(second.envois).toEqual([]);
+  });
+
+  it("attend que l'activité entre dans le délai choisi", async () => {
+    const alice = await createAccount("Alice");
+    await abonner(alice);
+    await reglerRappelPresence(alice.id, 2);
+    const lointaine = await createEvent({ startsAt: minutesFromNow(60 * 5) });
+    await declareAttendance({ author: alice, event: lointaine, circles: [] });
+
+    const { envois, send } = expediteur();
+    expect((await notifyUpcomingAttendances(send)).recipients).toBe(0);
+    expect(envois).toEqual([]);
+  });
+
+  it("ne sonne pas sans réglage : le rappel se demande", async () => {
+    const alice = await createAccount("Alice");
+    await abonner(alice);
+    const activite = await createEvent({ startsAt: minutesFromNow(30) });
+    await declareAttendance({ author: alice, event: activite, circles: [] });
+
+    const { envois, send } = expediteur();
+    expect((await notifyUpcomingAttendances(send)).recipients).toBe(0);
+    expect(envois).toEqual([]);
+  });
+
+  it("se tait pour une activité retirée de l'agenda", async () => {
+    // Rappeler une sortie annulée enverrait une famille devant une porte close.
+    const alice = await createAccount("Alice");
+    await abonner(alice);
+    await reglerRappelPresence(alice.id, 2);
+    const annulee = await createEvent({ startsAt: minutesFromNow(30), retiree: true });
+    await declareAttendance({ author: alice, event: annulee, circles: [] });
+
+    const { envois, send } = expediteur();
+    expect((await notifyUpcomingAttendances(send)).recipients).toBe(0);
+    expect(envois).toEqual([]);
+  });
+
+  it("se tait pour une inscription retirée", async () => {
+    const alice = await createAccount("Alice");
+    await abonner(alice);
+    await reglerRappelPresence(alice.id, 2);
+    const activite = await createEvent({ startsAt: minutesFromNow(30) });
+    const inscription = await declareAttendance({ author: alice, event: activite, circles: [] });
+    await withdraw(alice.id, inscription.id);
+
+    const { envois, send } = expediteur();
+    expect((await notifyUpcomingAttendances(send)).recipients).toBe(0);
+    expect(envois).toEqual([]);
+  });
+
+  it("ramène un délai fantaisiste au plus proche des délais proposés", async () => {
+    const alice = await createAccount("Alice");
+
+    await reglerRappelPresence(alice.id, 5);
+    expect(await rappelPresenceHeures(alice.id)).toBe(2);
+
+    await reglerRappelPresence(alice.id, 300);
+    expect(await rappelPresenceHeures(alice.id)).toBe(24);
+
+    await reglerRappelPresence(alice.id, null);
+    expect(await rappelPresenceHeures(alice.id)).toBeNull();
   });
 });

@@ -24,6 +24,7 @@ import { purgeAll } from "./maintenance";
 import {
   notifyNewlyPublished,
   notifyPendingPublications,
+  notifyUpcomingAttendances,
   webPushSender,
 } from "./notifications";
 
@@ -71,6 +72,21 @@ export const JOBS: Job[] = [
     // une journée sans peser sur un service bénévole. Rien n'attend ces coordonnées, seuls
     // les liens de carte gagnent en précision quand elles arrivent.
     run: geocoderCeQuiManque,
+  },
+  {
+    // Chaque tick : un rappel réglé « 2 h avant » qui partirait avec une heure de retard
+    // n'aurait plus grand-chose d'un rappel.
+    name: "rappels",
+    everyMinutes: 5,
+    libelle: "Rappels avant les activités",
+    run: async () => {
+      try {
+        return { rappels: await notifyUpcomingAttendances(await webPushSender()) };
+      } catch {
+        // Pas de clés VAPID (développement, tests) : personne à rappeler.
+        return { rappels: null };
+      }
+    },
   },
   {
     // Chaque tick (5 minutes) : le rattrapage doit passer vite, la sortie est en cours.

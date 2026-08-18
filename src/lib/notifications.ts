@@ -708,3 +708,108 @@ export async function notifyNewlyPublished(send: Sender, limit = 50): Promise<No
 
   return report;
 }
+
+/* ------------------------------------------------- rappels de présence */
+
+/**
+ * Le rappel avant une activité où l'on a dit « présent ».
+ *
+ * C'est la seule notification qui ne parle de personne d'autre : un rendez-vous avec
+ * soi-même, réglé sur le compte — deux heures avant, la veille, ou jamais. Le message
+ * suit la règle de tous les autres : ni titre, ni lieu — un écran verrouillé posé sur une
+ * table apprend au mieux qu'on a prévu quelque chose. L'heure suffit à se souvenir de
+ * quoi, et le détail est à un toucher de là.
+ */
+
+/** Les délais proposés à l'écran. Une valeur hors liste est ramenée à la plus proche. */
+export const DELAIS_RAPPEL_HEURES = [2, 24] as const;
+
+export async function reglerRappelPresence(
+  accountId: string,
+  heures: number | null,
+): Promise<void> {
+  const admis =
+    heures === null
+      ? null
+      : [...DELAIS_RAPPEL_HEURES].reduce((a, b) =>
+          Math.abs(b - heures) < Math.abs(a - heures) ? b : a,
+        );
+
+  await db
+    .update(s.account)
+    .set({ rappelHeuresAvant: admis })
+    .where(eq(s.account.id, accountId));
+}
+
+export async function rappelPresenceHeures(accountId: string): Promise<number | null> {
+  const [compte] = await db
+    .select({ heures: s.account.rappelHeuresAvant })
+    .from(s.account)
+    .where(eq(s.account.id, accountId))
+    .limit(1);
+  return compte?.heures ?? null;
+}
+
+/**
+ * Envoie « c'est bientôt » aux personnes inscrites dont l'activité approche.
+ *
+ * L'inscription est une publication : `remindedAt` y joue le rôle que `notifiedAt` joue
+ * pour les alertes, et interdit de sonner deux fois. Une activité retirée de l'agenda ne
+ * sonne pas — rappeler une sortie annulée enverrait une famille devant une porte close —
+ * et une inscription retirée non plus.
+ */
+export async function notifyUpcomingAttendances(send: Sender): Promise<NotifyReport> {
+  const rows = await db.execute<{
+    publication_id: string;
+    account_id: string;
+    event_id: string;
+    starts_at: Date;
+  }>(sql`
+    select p.id as publication_id, p.author_id as account_id, e.id as event_id, e.starts_at
+    from publication p
+    join event e on e.id = p.event_id
+    join account a on a.id = p.author_id and a.deleted_at is null
+    where p.kind = 'attendance'
+      and p.withdrawn_at is null
+      and p.reminded_at is null
+      and a.rappel_heures_avant is not null
+      and e.published_at is not null
+      and e.withdrawn_at is null
+      and e.rejected_at is null
+      and e.starts_at > now()
+      and e.starts_at <= now() + make_interval(hours => a.rappel_heures_avant)
+    order by e.starts_at asc
+    limit 200
+  `);
+
+  const report: NotifyReport = { sent: 0, failed: 0, recipients: rows.length };
+
+  for (const row of rows) {
+    const heure = new Intl.DateTimeFormat("fr-CH", {
+      timeZone: "Europe/Zurich",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    }).format(asDateOrNull(row.starts_at) ?? new Date());
+
+    await envoyerA(
+      row.account_id,
+      {
+        title: "Agenda",
+        body: `C'est bientôt : votre activité commence à ${heure}`,
+        url: `/agenda/${row.event_id}`,
+      },
+      send,
+      report,
+    );
+
+    // Marquée même sans appareil abonné : un rappel qui n'a nulle part où sonner
+    // aujourd'hui n'a pas plus de raison de sonner demain.
+    await db
+      .update(s.publication)
+      .set({ remindedAt: sql`now()` })
+      .where(eq(s.publication.id, row.publication_id));
+  }
+
+  return report;
+}

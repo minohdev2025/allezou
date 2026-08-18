@@ -48,13 +48,15 @@ const TOLEREES: Record<string, { lectures: number; pourquoi: string }> = {
       "lit que ses propres lignes.",
   },
   "lib/notifications.ts": {
-    lectures: 3,
+    lectures: 4,
     pourquoi:
       "la forme de la publication pour choisir le mot du message — avec son retrait et " +
       "sa date d'envoi, qui décident si le message part du tout (la minute de " +
       "silence) ; les noms de cercles ajoutés à une liste de destinataires qui vient " +
-      "déjà, elle, de readersOfPublication ; et le rattrapage des alertes, qui ne lit " +
-      "que des identifiants pour les repasser au même chemin d'envoi.",
+      "déjà, elle, de readersOfPublication ; le rattrapage des alertes, qui ne lit " +
+      "que des identifiants pour les repasser au même chemin d'envoi ; et le rappel " +
+      "de présence, qui ne s'adresse qu'à l'auteur de l'inscription — on ne montre à " +
+      "personne ce qui ne lui appartient pas déjà.",
   },
 };
 

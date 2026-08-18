@@ -57,6 +57,7 @@ import {
   notifyNewlyPublished,
   notifyPublication,
   reglerAlerteInscription,
+  reglerRappelPresence,
   retirerMotCle,
   pauseCircle,
   setPrefs,
@@ -555,6 +556,13 @@ export async function retirerMotCleAgenda(formData: FormData) {
 export async function basculerAlerteInscription(formData: FormData) {
   const account = await requireAccount();
   await reglerAlerteInscription(account.id, formData.get("actif") === "1");
+  redirect("/reglages");
+}
+
+export async function reglerRappel(formData: FormData) {
+  const account = await requireAccount();
+  const heures = Number(formData.get("heures"));
+  await reglerRappelPresence(account.id, heures > 0 ? heures : null);
   redirect("/reglages");
 }
 

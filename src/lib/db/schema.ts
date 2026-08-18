@@ -63,6 +63,13 @@ export const account = pgTable(
      * depuis la langue de la page où le lien magique a été demandé, changée sur /compte.
      */
     locale: varchar({ length: 5 }).notNull().default("fr"),
+    /**
+     * Le rappel avant une activité où l'on a dit « présent » : combien d'heures avant le
+     * début le téléphone doit sonner. Nul, personne ne sonne — éteint par défaut, comme
+     * tout ce qui fait sonner un téléphone. Le réglage vit sur le compte : c'est un
+     * rendez-vous avec soi-même, aucun cercle n'a son mot à dire.
+     */
+    rappelHeuresAvant: integer(),
     /** Compte supprimé : invisible partout, y compris dans les cercles. */
     deletedAt: timestamp({ withTimezone: true }),
   },
@@ -598,6 +605,12 @@ export const publication = pgTable(
      * que l'envoi n'a pas eu lieu, ce qui interdit aussi de sonner deux fois.
      */
     notifiedAt: timestamp({ withTimezone: true }),
+    /**
+     * Quand le rappel « c'est bientôt » est parti vers son auteur — inscriptions à
+     * l'agenda seulement. Nul tant qu'il n'a pas sonné, ce qui interdit de sonner deux
+     * fois, sur le modèle de `notifiedAt`.
+     */
+    remindedAt: timestamp({ withTimezone: true }),
     createdAt: timestamp({ withTimezone: true }).notNull().default(now),
   },
   (t) => [

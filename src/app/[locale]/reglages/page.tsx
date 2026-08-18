@@ -7,6 +7,7 @@ import {
   alerteInscriptionActive,
   mesMotsCles,
   prefsParCercle,
+  rappelPresenceHeures,
 } from "@/lib/notifications";
 import { requireAccount } from "@/lib/session";
 import {
@@ -16,6 +17,7 @@ import {
   mettreEnPause,
   oublierAbonnement,
   reglerCercle,
+  reglerRappel,
   retirerMotCleAgenda,
 } from "../actions";
 import { ActiverNotifications } from "../notifications-client";
@@ -39,10 +41,11 @@ export default async function Reglages({
 }) {
   const t = await getTranslations("Reglages");
   const account = await requireAccount();
-  const [cercles, motsCles, surInscription, { erreur }] = await Promise.all([
+  const [cercles, motsCles, surInscription, rappelHeures, { erreur }] = await Promise.all([
     prefsParCercle(account.id),
     mesMotsCles(account.id),
     alerteInscriptionActive(account.id),
+    rappelPresenceHeures(account.id),
     searchParams,
   ]);
   const clePublique = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? "";
@@ -140,6 +143,47 @@ export default async function Reglages({
             <Bouton variante="second" className="!py-2.5 !text-base">
               {surInscription ? t("arreterPrevenir") : t("prevenir")}
             </Bouton>
+          </form>
+        </Carte>
+
+        <Carte className="mt-4" accent="bleu">
+          <div className="mb-3 flex items-center justify-between gap-3">
+            <span className="font-bold">Le rappel avant vos activités</span>
+            <Pastille couleur={rappelHeures ? "vert" : "ambre"}>
+              {rappelHeures ? (rappelHeures >= 24 ? "la veille" : `${rappelHeures} h avant`) : "coupé"}
+            </Pastille>
+          </div>
+          <p className="mb-4 text-sm leading-snug text-[color:var(--color-doux)]">
+            Quand vous dites « nous y serons », votre téléphone peut vous le rappeler avant
+            le début. Personne d&apos;autre n&apos;est prévenu : c&apos;est un rendez-vous
+            avec vous-même.
+          </p>
+          <form action={reglerRappel} className="flex gap-2">
+            {[
+              { heures: 0, libelle: "Coupé" },
+              { heures: 2, libelle: "2 h avant" },
+              { heures: 24, libelle: "La veille" },
+            ].map((choix) => {
+              const actif = (rappelHeures ?? 0) === choix.heures;
+              return (
+                <button
+                  key={choix.heures}
+                  name="heures"
+                  value={choix.heures}
+                  className="flex-1 rounded-[var(--radius-pilule)] px-3 py-2 text-sm font-bold"
+                  style={
+                    actif
+                      ? { background: "var(--color-vert-doux)", color: "var(--color-vert)" }
+                      : {
+                          color: "var(--color-doux)",
+                          boxShadow: "inset 0 0 0 2px var(--color-trait)",
+                        }
+                  }
+                >
+                  {choix.libelle}
+                </button>
+              );
+            })}
           </form>
         </Carte>
       </section>
