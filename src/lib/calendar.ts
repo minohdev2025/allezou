@@ -76,20 +76,11 @@ export function agesDemandes(param: string | undefined): number[] {
 export const FENETRES = ["aujourd_hui", "demain", "week_end", "quinzaine"] as const;
 export type Fenetre = (typeof FENETRES)[number];
 
-export const LIBELLES_FENETRE: Record<Fenetre, string> = {
-  aujourd_hui: "Aujourd'hui",
-  demain: "Demain",
-  week_end: "Ce week-end",
-  quinzaine: "15 jours",
-};
-
-/** Tranches proposées à l'écran. L'âge choisi n'est jamais enregistré. */
-export const TRANCHES_AGE = [
-  { valeur: 2, libelle: "0-3 ans" },
-  { valeur: 5, libelle: "4-6 ans" },
-  { valeur: 8, libelle: "7-10 ans" },
-  { valeur: 12, libelle: "11 ans et +" },
-] as const;
+/**
+ * Tranches proposées à l'écran. L'âge choisi n'est jamais enregistré.
+ * Les libellés (« 0-3 ans »…) vivent dans messages/*.json, Etiquettes.age, clé = la valeur.
+ */
+export const TRANCHES_AGE = [2, 5, 8, 12] as const;
 
 export type FiltreAgenda = {
   quand?: Fenetre;

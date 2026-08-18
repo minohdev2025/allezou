@@ -1,3 +1,4 @@
+import createNextIntlPlugin from "next-intl/plugin";
 import type { NextConfig } from "next";
 
 /**
@@ -31,4 +32,5 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+// Le plugin trouve src/i18n/request.ts tout seul — c'est son emplacement par défaut.
+export default createNextIntlPlugin()(nextConfig);

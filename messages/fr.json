@@ -1,0 +1,697 @@
+{
+  "Introuvable": {
+    "titre": "Cette page n'existe pas",
+    "sousTitre": "Le lien est peut-être incomplet, ou la sortie qu'il montrait a déjà expiré.",
+    "retour": "Revenir à l'accueil"
+  },
+  "ChoixLangue": {
+    "label": "Langue"
+  },
+  "Navigation": {
+    "sorties": "Sorties",
+    "agenda": "Agenda",
+    "cercles": "Cercles",
+    "vous": "Vous"
+  },
+  "Notifications": {
+    "sortieEnCours": "Une sortie est en cours",
+    "inscriptionAjoutee": "Une inscription vient d'être ajoutée",
+    "demandeAdhesion": "Quelqu'un demande à rejoindre ce cercle",
+    "agendaTitre": "Agenda",
+    "motCorrespond": "Une activité correspond à « {mot} »",
+    "inscriptionParue": "Une activité sur inscription vient de paraître"
+  },
+  "MailConnexion": {
+    "sujet": "Votre lien de connexion à Allezou",
+    "corps": "Bonjour,\n\nVoici votre lien pour vous connecter à Allezou :\n{url}\n\nCe lien est valable 15 minutes et ne fonctionne qu'une fois.\nSi vous n'avez rien demandé, ignorez ce message : personne n'a accès à votre compte."
+  },
+  "MessageInvitation": {
+    "texte": "Bonjour ! J'utilise Allezou pour que nos enfants se retrouvent dehors : on y dit quand\non sort au parc, et on y voit les activités des communes genevoises.\n\nC'est gratuit, hébergé en Suisse, sans publicité, et sur les enfants on n'y met qu'un\nprénom.\n\nVoici le lien pour rejoindre notre cercle « {cercle} » :\n{lien}\nIl fonctionne jusqu'au {date}.\n\nCe que le site enregistre et qui peut le voir : {donnees}"
+  },
+  "Metadata": {
+    "promesse": "Pour que nos enfants se retrouvent dehors. Sorties partagées et agenda des familles genevoises.",
+    "accroche": "Pour que nos enfants se retrouvent dehors"
+  },
+  "Donnees": {
+    "titreOnglet": "Vos données",
+    "retour": "Retour"
+  },
+  "Accueil": {
+    "titre": "Allezou",
+    "accroche": "Pour que nos enfants se retrouvent dehors.",
+    "presentation": "Bonjour, je m'appelle Michael. Je suis papa de deux petites filles scolarisées au Petit-Lancy.",
+    "constat": "Un parc peut être plein de monde sans qu'un enfant y trouve quelqu'un qu'il connaît. Il joue dix minutes, puis vient demander quand on rentre. Les copains de sa classe étaient peut-être au parc d'à côté, ou passés une heure plus tôt.",
+    "mission": "J'ai créé Allezou pour ça : que nos enfants retrouvent le plaisir de jouer dehors, entourés d'enfants avec qui ils aiment passer du temps.",
+    "titreGestes": "Ce qu'on y fait",
+    "gestes": {
+      "cercles": {
+        "titre": "Créer vos cercles",
+        "texte": "Vous réunissez les familles avec qui vos enfants aiment passer du temps : la classe, le voisinage. Vous les invitez avec un lien, par WhatsApp ou par message. Rien de ce que vous publiez ne sort de ces cercles."
+      },
+      "sortir": {
+        "titre": "Dire que vous sortez",
+        "texte": "Vous choisissez un parc dans la liste et l'heure à laquelle vous repartez. Les familles de vos cercles le voient aussitôt. La sortie s'efface toute seule une fois l'heure passée."
+      },
+      "voir": {
+        "titre": "Voir qui est dehors",
+        "texte": "Vous voyez qui est sorti en ce moment, et vous les rejoignez en un clic si vous en avez envie."
+      },
+      "agenda": {
+        "titre": "Suivre l'agenda du canton",
+        "texte": "Les activités pour les familles à Genève et dans les communes. Leurs sites sont relevés plusieurs fois par jour, vous n'avez rien à surveiller. Vous cochez celles où vous irez, et vous voyez qui de vos cercles y sera aussi."
+      },
+      "notifications": {
+        "titre": "Être prévenu de ce qui vous intéresse",
+        "texte": "Vous choisissez vos mots : « piscine », « contes », « judo ». Dès qu'une activité qui en contient un paraît à l'agenda, votre téléphone vous le dit. Vous pouvez aussi demander à être averti de toutes les activités sur inscription, où s'y prendre tard revient souvent à ne pas y aller."
+      }
+    },
+    "installation": {
+      "titre": "L'ajouter à votre téléphone",
+      "intro": "Allezou est un site web, pas une vraie application à télécharger dans un magasin. Selon votre navigateur, il vous proposera peut-être de l'installer tout seul. Vous pouvez accepter : c'est un raccourci vers cette page, qui l'ouvre en plein écran et vous évite de vous reconnecter à chaque fois.",
+      "sansProposition": {
+        "titre": "Si rien ne vous est proposé",
+        "texte": "Cherchez « Installer l'application » dans le menu de votre navigateur, souvent en haut à droite."
+      },
+      "iphone": {
+        "titre": "Sur iPhone",
+        "texte": "Touchez le bouton Partager, en bas de l'écran, puis « Sur l'écran d'accueil ». C'est aussi la seule façon d'y recevoir les notifications."
+      }
+    },
+    "absencesTitre": "Ce qu'Allezou ne fait pas",
+    "absencesIntro": "Une application qui parle d'enfants doit dire où elle s'arrête.",
+    "absences": {
+      "messagerie": {
+        "titre": "Pas de messagerie",
+        "texte": "Il n'y a ni fil de discussion, ni message privé."
+      },
+      "position": {
+        "titre": "Pas de position GPS",
+        "texte": "Vous choisissez un lieu dans une liste. L'application ne demande jamais à votre téléphone où vous êtes."
+      },
+      "historique": {
+        "titre": "Pas d'historique",
+        "texte": "Une sortie disparaît 24 heures après sa fin. Personne ne peut reconstituer où votre famille est allée le mois dernier."
+      },
+      "inconnus": {
+        "titre": "Pas d'inconnus",
+        "texte": "Vous ne voyez que les membres de vos cercles. Rejoindre une sortie ne vous montre à personne d'autre."
+      },
+      "publicite": {
+        "titre": "Pas de publicité, pas de traceur",
+        "texte": "Vos données ne partent chez personne, et ne sont vendues à personne."
+      },
+      "prenom": {
+        "titre": "Sur vos enfants, un prénom",
+        "texte": "Et rien de plus : c'est tout ce qu'Allezou sait d'eux."
+      }
+    },
+    "gratuitTitre": "Gratuit, et hébergé en Suisse",
+    "gratuitTexte": "Il n'y a pas d'entreprise derrière Allezou et rien n'est payant. Les serveurs sont en Suisse. L'agenda se remplit tout seul depuis les sites des communes genevoises.",
+    "nePlusAfficher": "Ne plus afficher cette page sur cet appareil",
+    "entrer": "Entrer",
+    "lienDonnees": "Ce qu'Allezou enregistre, et qui peut le voir"
+  },
+  "Maquette": {
+    "descriptionEcran": "Exemple d'écran : Sophie est au parc du Gué avec Léa et Matéo, jusqu'à 17h. Deux autres familles sont avec eux, et un bouton « Nous aussi » permet de les rejoindre.",
+    "heureLimite": "jusqu'à {heure}",
+    "avecEnfants": "avec Léa et Matéo",
+    "nousAussi": "Nous aussi",
+    "autresFamilles": "{n, plural, one {# autre famille} other {# autres familles}}"
+  },
+  "Bienvenue": {
+    "titre": "Bienvenue",
+    "sousTitre": "Deux questions, et c'est fini.",
+    "erreur": "Il faut écrire quelque chose.",
+    "label": "Sous quel nom voulez-vous apparaître ?",
+    "aide": "C'est ce que verront les membres de vos cercles. « Sophie », « Maman de Léa », ce que vous voulez.",
+    "placeholder": "Maman de Léa",
+    "continuer": "Continuer"
+  },
+  "BienvenueEnfants": {
+    "titre": "Vos enfants",
+    "sousTitre": "Leur prénom sert à dire qui est présent à une sortie. Allezou n'enregistre rien d'autre à leur sujet : ni âge, ni nom de famille.",
+    "erreur": "Il faut un prénom.",
+    "label": "Prénom",
+    "ajouter": "Ajouter",
+    "terminer": "C'est bon",
+    "passer": "Passer cette étape"
+  },
+  "Agenda": {
+    "titre": "Agenda",
+    "sousTitre": "Les activités du canton, et qui de vos cercles y va.",
+    "filtresResume": "Quand, âge, commune, prix, qui y va",
+    "tousLesAges": "Tous les âges",
+    "partout": "Partout",
+    "tousLesPrix": "Tous les prix",
+    "avecOuSansInscription": "Avec ou sans inscription",
+    "monCercle": "👥 Où va quelqu'un de mes cercles",
+    "proposerActivite": "📅 Proposer une activité",
+    "enCeMoment": "En ce moment",
+    "enCeMomentCarte": "en ce moment",
+    "rienNeCorrespond": "Rien ne correspond",
+    "elargirFiltres": "Essayez d'élargir les filtres, ou <lien>tout voir</lien>.",
+    "activitesApparaitront": "Les activités genevoises apparaîtront ici.",
+    "nActivites": "{n, plural, one {# activité} other {# activités}}",
+    "etAutresEncore": "Et {n, plural, one {# autre qui dure encore} other {# autres qui durent encore}}",
+    "jusquAu": "jusqu'au",
+    "enCours": "en cours",
+    "touteLaJournee": "toute la journée",
+    "plusAnnoncee": "Plus annoncée",
+    "surInscription": "Sur inscription",
+    "vousYAllez": "Vous y allez",
+    "avecVousYAllez": "{noms} et vous y allez",
+    "yVont": "{noms} {n, plural, one {y va} other {y vont}}"
+  },
+  "AgendaActivite": {
+    "jusquAu": "jusqu'au",
+    "enCours": "en cours",
+    "touteLaJournee": "Toute la journée",
+    "voirDetails": "Voir tous les détails ↗",
+    "erreurs": {
+      "aucun_destinataire": "Choisissez au moins un cercle, sinon personne ne verra que vous y allez.",
+      "cercle_interdit": "Un de ces cercles ne vous appartient pas.",
+      "activite_inconnue": "Cette activité n'existe plus."
+    },
+    "erreurGenerique": "L'inscription n'a pas pu être faite.",
+    "elleNestPlusAnnoncee": "Elle n'est plus annoncée",
+    "organisateurRetire": "L'organisateur ne la publie plus sur son site. Elle a sans doute été annulée ou déplacée. Vérifiez sur sa page avant de vous déplacer.",
+    "familles": "{n, plural, one {Une famille y va} other {Ces familles y vont}}",
+    "vous": "Vous",
+    "inscritRetireInfo": "Vous étiez inscrit·e. Votre inscription reste visible de vos cercles, pour que personne ne se déplace en croyant vous y retrouver. Retirez-la si vous n'y allez plus.",
+    "rejoindreCercle": "Rejoignez un cercle pour pouvoir dire que vous y allez.",
+    "vousYAllezTitre": "Vous y allez",
+    "vousYAllezQuestion": "Vous y allez ?",
+    "choisissezQuiLeVoit": "Choisissez qui le voit. L'activité, elle, reste visible de tous : c'est votre inscription qui est privée.",
+    "visiblePar": "Visible par",
+    "avec": "Avec",
+    "mettreAJour": "Mettre à jour",
+    "nousYAllons": "Nous y allons",
+    "finalementNon": "Finalement non",
+    "source": "Source : {nom} · mise à jour le {jour} {mois}",
+    "retourAgenda": "Retour à l'agenda"
+  },
+  "AgendaNouveau": {
+    "titre": "Proposer une activité",
+    "sousTitre": "Un atelier, une fête de quartier, une sortie au musée : ce que l'agenda du canton ne connaît pas.",
+    "erreurs": {
+      "titre_invalide": "Il faut un titre, de 3 à 120 caractères.",
+      "dates_invalides": "La date de début est nécessaire, et la fin doit venir après.",
+      "aucun_destinataire": "Choisissez au moins un cercle, sinon personne ne le verra.",
+      "cercle_interdit": "Un de ces cercles ne vous appartient pas."
+    },
+    "erreurGenerique": "L'activité n'a pas pu être créée.",
+    "rejoindreCercle": "Rejoignez un cercle avant de proposer une activité : il faut bien quelqu'un à qui la montrer.",
+    "labelQuoi": "Quoi ?",
+    "placeholderTitre": "Atelier poterie à la Ludothèque",
+    "debut": "Début",
+    "fin": "Fin",
+    "ou": "Où ?",
+    "aideLieu": "Un lieu du catalogue, ou écrivez-le en dessous s'il n'y est pas.",
+    "choisirLieu": "Choisir un lieu",
+    "placeholderLieuLibre": "Ou un lieu en toutes lettres",
+    "visiblePar": "Visible par",
+    "vousYAllezAvec": "Vous y allez avec",
+    "proposerEtSInscrire": "Proposer et s'y inscrire",
+    "retourAgenda": "Retour à l'agenda"
+  },
+  "Cercles": {
+    "titre": "Vos cercles",
+    "sousTitre": "Une classe, une école, un voisinage : des gens que vous connaissez déjà.",
+    "erreurs": {
+      "1": "Il faut un nom de cercle.",
+      "lien_vide": "Collez le lien que vous avez reçu, ou seulement le code qu'il contient."
+    },
+    "erreurGenerique": "Cela n'a pas marché.",
+    "videTitre": "Vous n'avez encore aucun cercle",
+    "videTexte": "Un cercle, c'est une classe, une école, un voisinage : les familles à qui vos sorties seront visibles. Tant qu'il n'y en a aucun, personne ne voit les vôtres et vous ne voyez celles de personne.",
+    "membresCount": "{count, plural, one {# famille} other {# familles}}",
+    "etiquetteAdmin": "admin",
+    "invitationLabel": "J'ai reçu une invitation",
+    "invitationAide": "Collez le lien reçu par message, ou seulement le code qu'il contient.",
+    "invitationPlaceholder": "https://…/rejoindre/…",
+    "invitationBouton": "Suivre l'invitation",
+    "creationLabel": "Créer un cercle",
+    "creationAide": "Vous en serez l'administrateur : c'est vous qui validerez les entrées.",
+    "creationPlaceholder": "Classe de 4P",
+    "creationBouton": "Créer"
+  },
+  "Cercle": {
+    "erreurs": {
+      "pas_admin": "Seul un administrateur peut faire cela.",
+      "cible_inconnue": "Cette personne n'est plus membre du cercle.",
+      "action_sur_soi": "Pour partir, utilisez « Quitter ce cercle ».",
+      "pas_membre": "Vous ne faites pas partie de ce cercle.",
+      "invitation_inconnue": "Cette invitation n'existe plus."
+    },
+    "erreurGenerique": "Cela n'a pas marché.",
+    "administrateurPastille": "vous l'administrez",
+    "statutMembres": "<strong>{count, plural, =1 {Vous êtes seul·e} other {# familles}}</strong> dans ce cercle",
+    "demandesAValider": "<strong>{count, plural, one {# demande} other {# demandes}}</strong> à valider",
+    "placesOuvertesTexte": "{count, plural, one {# place ouverte} other {# places ouvertes}} sur vos liens",
+    "soloTitre": "Il manque du monde",
+    "soloTexte": "Tant que vous y êtes seul·e, vos sorties ne sont vues par personne. Envoyez un lien d'invitation aux familles avec qui vos enfants aiment jouer.",
+    "invitationCreeTitre": "Lien d'invitation créé 🔗",
+    "invitationEnvoyerAdmin": "Envoyez-le maintenant aux familles concernées, ou faites-leur scanner le carré. Chaque personne qui le suivra devra être validée par vous.",
+    "invitationEnvoyerAutre": "Envoyez-le maintenant aux familles concernées, ou faites-leur scanner le carré. Chaque personne qui le suivra devra être validée par un administrateur.",
+    "invitationUniqueAffichage": "C'est la seule fois qu'il s'affiche. Copiez-le ou envoyez-le tout de suite : plus bas, vous ne verrez que sa durée et le nombre d'entrées.",
+    "messageLabel": "À envoyer par message, si vous voulez",
+    "demandesTitre": "{count, plural, one {Une personne demande à entrer} other {# personnes demandent à entrer}}",
+    "accepterBouton": "Accepter",
+    "refuserBouton": "Refuser",
+    "membresTitre": "{count, plural, one {# membre} other {# membres}}",
+    "decocherExplication": "<strong>Décocher</strong> coupe la visibilité dans les deux sens : cette personne ne voit plus vos sorties, vous ne voyez plus les siennes, et rien ne le lui signale.",
+    "sourdineExplication": "<strong>🔔 et 🔕</strong> ne touchent qu'au téléphone : mettre quelqu'un en sourdine, c'est ne plus être prévenu de ses sorties tout en continuant à les voir à l'écran.",
+    "vousMeme": "Vous",
+    "roleAdministrateur": "administrateur",
+    "sourdineAriaActiver": "Être à nouveau prévenu des sorties de {nom}",
+    "sourdineAriaCouper": "Ne plus être prévenu des sorties de {nom}",
+    "sourdineTitreActiver": "Être à nouveau prévenu",
+    "sourdineTitreCouper": "Ne plus être prévenu",
+    "lienRetablir": "Rétablir",
+    "lienDecocher": "Décocher",
+    "administrerSommaire": "Administrer cette personne",
+    "retirerRoleAdmin": "Retirer le rôle d'administrateur",
+    "nommerAdmin": "Nommer administrateur",
+    "retirerDuCercle": "Retirer du cercle",
+    "renommerLabel": "Comment vous l'appelez",
+    "renommerAide": "Ce nom n'est visible que de vous. Laissez-le tel quel pour garder celui du cercle, qui suivra si son administrateur le change.",
+    "enregistrerBouton": "Enregistrer",
+    "enfantsTitre": "Qui est concerné par ce cercle",
+    "enfantsAide": "Personne d'autre ne le voit. Ça sert à ce qu'une sortie sans l'aîné ne parte pas vers sa classe. Un cercle de voisinage peut n'en concerner aucun.",
+    "defautActifTitre": "Vos sorties partent vers ce cercle",
+    "defautInactifTitre": "Vos sorties ne partent pas vers ce cercle",
+    "defautAide": "C'est le réglage par défaut au moment de publier. Vous voyez toujours les sorties des autres, quoi qu'il en soit.",
+    "defautDesactiverBouton": "Ne plus y publier par défaut",
+    "defautActiverBouton": "Y publier par défaut",
+    "invitationsTitre": "{count, plural, one {Un lien d'invitation est actif} other {# liens d'invitation sont actifs}}",
+    "invitationsAide1": "Tant qu'un lien vit, quiconque l'a reçu peut demander à entrer. Révoquez celui qui a circulé trop loin. Passé sa date, le cercle continue de vivre : c'est seulement l'entrée qui se referme.",
+    "invitationsAide2": "Un lien ne se réaffiche jamais. « Refaire le lien » en crée un nouveau pour le même nombre de familles et coupe l'ancien pour tout le monde, y compris ceux à qui il avait déjà été transmis.",
+    "entreesSur": "{useCount, plural, one {# entrée} other {# entrées}} sur {maxUses}",
+    "invitationDates": "créé le {creeNombre} {creeMois}, expire le {expireNombre} {expireMois}",
+    "refaireLienBouton": "Refaire le lien 🔗",
+    "revoquerBouton": "Révoquer",
+    "inviterTitre": "Inviter des familles",
+    "inviterAide": "Annoncez combien de familles vous attendez : le lien cesse de fonctionner une fois ce nombre atteint, même s'il a été transféré plus loin.",
+    "combienFamillesLabel": "Combien de familles",
+    "valableJoursLabel": "Valable (jours)",
+    "creerLienBouton": "Créer le lien 🔗",
+    "quitterBouton": "Quitter ce cercle",
+    "retourLien": "Retour aux cercles"
+  },
+  "Partage": {
+    "partager": "Partager",
+    "copie": "Copié ✓",
+    "copierLien": "Copier le lien",
+    "copierMessage": "Copier le message"
+  },
+  "Rejoindre": {
+    "erreurs": {
+      "invitation_inconnue": "Ce lien d'invitation n'existe pas.",
+      "invitation_revoquee": "Cette invitation a été annulée.",
+      "invitation_expiree": "Cette invitation a expiré. Demandez-en une nouvelle.",
+      "invitation_epuisee": "Cette invitation a déjà servi au nombre de personnes prévu.",
+      "deja_membre": "Vous faites déjà partie de ce cercle."
+    },
+    "erreurGenerique": "Cette invitation ne fonctionne pas.",
+    "expireeTitre": "Cette invitation ne fonctionne plus",
+    "expireeSous": "Elle a peut-être expiré, ou déjà servi au nombre de familles prévu. Le parent qui vous l'a envoyée peut en refaire une.",
+    "expireeRetour": "Retour",
+    "expireeDecouvrir": "Voir à quoi sert Allezou",
+    "titre": "Rejoindre un cercle",
+    "titreSous": "Un parent vous invite dans « {nomCercle} ».",
+    "explication": "Suivre ce lien ne vous fait pas entrer tout de suite : un administrateur du cercle validera votre demande. Tant qu'elle est en attente, vous ne voyez rien de ce qui s'y partage.",
+    "demanderBouton": "Demander à rejoindre",
+    "pasMaintenant": "Pas maintenant",
+    "continuerBouton": "Continuer",
+    "sansMotDePasse": "Il n'y a pas de mot de passe à choisir : votre adresse électronique suffit."
+  },
+  "RejoindreMerci": {
+    "titre": "Demande envoyée",
+    "sousTitre": "Un administrateur du cercle va la recevoir. Vous verrez le cercle apparaître dans votre liste une fois qu'elle sera acceptée.",
+    "continuerBouton": "Continuer"
+  },
+  "Compte": {
+    "titre": "Votre compte",
+    "erreurs": {
+      "nom": "Il faut écrire quelque chose.",
+      "prenom": "Il faut un prénom.",
+      "confirmation": "Écrivez {mot} en toutes lettres pour confirmer.",
+      "invitation_inconnue": "Ce lien de co-parent n'existe pas.",
+      "invitation_utilisee": "Ce lien a déjà servi.",
+      "invitation_expiree": "Ce lien a expiré.",
+      "invitation_revoquee": "Ce lien a été annulé.",
+      "invitation_a_soi": "Ce lien est le vôtre : donnez-le à l'autre parent."
+    },
+    "erreurGenerique": "Cela n'a pas marché.",
+    "coparentTitre": "Lien pour l'autre parent 🔗",
+    "coparentTexte": "Donnez-le à la personne qui élève les mêmes enfants. Il vaut 14 jours et ne sert qu'une fois. Elle verra alors les mêmes prénoms que vous.",
+    "rejoindreTitre": "Rejoindre les enfants d'un parent",
+    "rejoindreTexte": "Vous verrez les mêmes prénoms d'enfants que la personne qui vous a envoyé ce lien, et pourrez les déclarer présents à vos sorties.",
+    "accepter": "Accepter",
+    "nomLabel": "Nom affiché",
+    "nomAide": "Ce que voient les membres de vos cercles.",
+    "enregistrer": "Enregistrer",
+    "langueTitre": "Votre langue",
+    "langueTexte": "Les écrans, les courriels et les notifications vous parleront dans cette langue.",
+    "enfantsTitre": "Vos enfants",
+    "renommer": "Renommer",
+    "retirer": "Retirer",
+    "ajouterEnfantLabel": "Ajouter un enfant",
+    "ajouterEnfantPlaceholder": "Léa",
+    "ajouter": "Ajouter",
+    "autreParentTitre": "L'autre parent",
+    "autreParentTexte": "Si vous élevez ces enfants à deux, l'autre parent peut avoir son propre compte et voir les mêmes prénoms. Chacun garde ses cercles et ses réglages.",
+    "creerLien": "Créer un lien pour l'autre parent",
+    "recuLienLabel": "Vous avez reçu un lien ?",
+    "recuLienAide": "Collez-le ici pour rejoindre les enfants de l'autre parent.",
+    "recuLienPlaceholder": "Le code du lien reçu",
+    "rejoindreBouton": "Rejoindre",
+    "passkeyTitre": "Revenir sans courriel",
+    "passkeyTexte": "Enregistrez cet appareil et vous entrerez ensuite comme vous le déverrouillez : empreinte, visage ou code, selon votre téléphone. Rien de tout cela ne nous est transmis : l'appareil garde une clé qu'il ne révèle à personne, et nous n'en connaissons que la moitié publique. Le lien par courriel reste là si vous changez de téléphone.",
+    "dernier": "dernière entrée le {date}",
+    "jamaisUtilise": "jamais utilisé",
+    "oublier": "Oublier",
+    "appareilParDefaut": "Cet appareil",
+    "lienNotifications": "🔔 Notifications",
+    "lienLieux": "📍 Les lieux",
+    "lienRelecture": "🧐 Relire l'agenda",
+    "lienMesures": "📊 Quelques nombres",
+    "supprimerTitre": "Supprimer votre compte",
+    "supprimerTexte": "Vos sorties, vos réglages, votre adresse et votre nom disparaissent. Les cercles que vous avez créés continuent d'exister pour leurs membres. Un enfant dont vous êtes le seul parent est effacé ; s'il a un second parent, il lui reste. C'est définitif.",
+    "confirmerLabel": "Écrivez {mot} pour confirmer",
+    "supprimerBouton": "Supprimer définitivement",
+    "donneesLien": "Ce qu'Allezou enregistre",
+    "nousEcrire": "Nous écrire",
+    "deconnexion": "Se déconnecter"
+  },
+  "Lieux": {
+    "titre": "Les lieux",
+    "sousTitre": "Les lieux que vous proposez à vos cercles. Un nom mal écrit se corrige à {n}.",
+    "erreurs": {
+      "nom_invalide": "Ce nom ne convient pas : de 2 à 80 caractères.",
+      "lieu_inconnu": "Ce lieu n'existe plus.",
+      "adresse_invalide": "Cette adresse ne convient pas : 160 caractères au plus.",
+      "adresse_deja_connue": "Quelqu'un vient de la donner. Rechargez pour la voir.",
+      "categorie_invalide": "Cette catégorie n'existe pas.",
+      "categorie_deja_connue": "Quelqu'un vient de le classer. Rechargez pour le voir.",
+      "proposition_close": "Cette correction a déjà été tranchée.",
+      "proposition_inconnue": "Cette correction n'existe pas."
+    },
+    "erreurGenerique": "Cela n'a pas marché.",
+    "renomme": "Le lieu est renommé pour tout le monde.",
+    "adresseTrouvee": "Merci : le lieu se trouve maintenant.",
+    "categoriseTexte": "Merci : le lieu est classé.",
+    "retireTexte": "Le lieu est retiré du catalogue.",
+    "proposeTexte": "Votre correction est proposée. Elle s'appliquera quand {n} personnes l'auront validée, et la vôtre compte déjà.",
+    "chercherPlaceholder": "Chercher un lieu",
+    "chercher": "Chercher",
+    "videTitreRecherche": "Aucun lieu de ce nom",
+    "videTitre": "Aucun lieu",
+    "voirTousLieux": "Voir tous les lieux",
+    "ajouterPremier": "Ajouter le premier",
+    "adressePlaceholder": "Où est-ce ? Une adresse, un repère",
+    "donner": "Donner",
+    "categorieResume": "C'est quoi, ce lieu ? Parc, piscine…",
+    "nouveauNom": "nouveau nom",
+    "nouvelleAdresse": "nouvelle adresse",
+    "votesSur": "{votes} sur {needed} validations",
+    "voixCompte": "votre voix compte",
+    "jeValide": "Je valide",
+    "renommerResume": "Le nom est mal écrit ?",
+    "proposer": "Proposer",
+    "retirerResume": "Ce lieu est en trop ? (relecture)",
+    "retirerCatalogue": "Retirer du catalogue",
+    "adresseFausseResume": "L'adresse est fausse ?",
+    "adresseFausseTexte": "Comme pour le nom, il faut {n} validations : c'est elle qui envoie les familles au bon endroit.",
+    "ajouterLieu": "Ajouter un lieu"
+  },
+  "Reglages": {
+    "titre": "Notifications",
+    "sousTitre": "Chaque notification doit avoir une raison claire. Sinon coupez-la.",
+    "clesManquantes": "Les clés de notification ne sont pas configurées sur ce serveur.",
+    "erreurs": {
+      "mot_trop_court": "Un mot de trois lettres au moins : en deçà, il remonterait la moitié de l'agenda.",
+      "trop_de_mots": "Dix mots suffisent. Retirez-en un pour en ajouter un autre."
+    },
+    "erreurGenerique": "Cela n'a pas marché.",
+    "agendaTitre": "L'agenda du canton",
+    "motsTitre": "Les mots que vous surveillez",
+    "motsTexte": "« piscine », « contes », « judo ». Vous êtes prévenu·e quand une activité publiée contient l'un d'eux, au moment où elle paraît.",
+    "retirerMot": "retirer",
+    "ajouterMotLabel": "Ajouter un mot",
+    "ajouterMotPlaceholder": "piscine",
+    "ajouter": "Ajouter",
+    "motsMax": "Dix mots, c'est le maximum. Retirez-en un pour en ajouter un autre.",
+    "inscriptionTitre": "Les activités sur inscription",
+    "etatActif": "activé",
+    "etatCoupe": "coupé",
+    "inscriptionTexte": "Prévenu·e dès qu'une activité sur inscription paraît, sans attendre. Pour celles-là, être prévenu·e tard revient à ne pas l'être.",
+    "arreterPrevenir": "Ne plus me prévenir",
+    "prevenir": "Me prévenir",
+    "cerclesTitre": "Vos cercles",
+    "videTitre": "Aucun cercle",
+    "videTexte": "Les réglages apparaîtront ici dès que vous ferez partie d'un cercle.",
+    "enPauseJusqua": "en pause jusqu'à {heure}",
+    "presencesLibelle": "Les sorties en cours",
+    "inscriptionsLibelle": "Les inscriptions aux activités",
+    "enregistrer": "Enregistrer",
+    "reprendre": "Reprendre",
+    "pause4h": "Pause 4 h",
+    "pause24h": "Pause 24 h",
+    "membresTexte": "Pour ne plus être prévenu d'une personne en particulier, ouvrez <lien>la liste des membres</lien>."
+  },
+  "Connexion": {
+    "accroche": "Pour que nos enfants se retrouvent dehors.",
+    "envoyeTitre": "C'est parti 📬",
+    "envoyeTexte": "Regardez votre boîte de réception. Le lien est valable un quart d'heure et ne fonctionne qu'une fois.",
+    "erreurInconnue": "Ce lien ne fonctionne pas.",
+    "erreurs": {
+      "adresse_invalide": "Cette adresse ne semble pas valide.",
+      "trop_de_demandes": "Un lien vient déjà d'être envoyé à cette adresse. Attendez une minute avant d'en redemander un.",
+      "lien_inconnu": "Ce lien n'existe pas. Il a peut-être été mal recopié.",
+      "lien_expire": "Ce lien a expiré. Les liens ne sont valables qu'un quart d'heure.",
+      "lien_deja_utilise": "Ce lien a déjà servi. Chaque lien ne fonctionne qu'une fois."
+    },
+    "repriseTitre": "Une invitation vous attend 🔗",
+    "repriseTexte": "Connectez-vous et vous y reviendrez tout seul.",
+    "ongletExistant": "J'ai déjà un compte",
+    "ongletNouveau": "Je n'ai pas encore de compte",
+    "etapes": {
+      "email": {
+        "titre": "Vous entrez votre adresse électronique",
+        "texte": "Après avoir entré votre adresse électronique ci-dessous, vous recevez un lien de connexion. Il ne sert qu'une fois et est valable 15 minutes."
+      },
+      "noms": {
+        "titre": "Vous choisissez un nom et vous ajoutez ceux de vos enfants",
+        "texte": "Ce sont les noms que les autres utilisateurs verront et avec lesquels ils pourront vous identifier."
+      },
+      "cercle": {
+        "titre": "Vous rejoignez un cercle, ou vous créez le vôtre",
+        "texte": "Si un autre parent vous a envoyé un lien, il vous fait entrer dans son cercle. Sinon, créez le vôtre et invitez les familles de votre choix."
+      }
+    },
+    "champEmailLabel": "Votre adresse électronique",
+    "champEmailAidePremiere": "C'est tout ce qu'il faut. Le lien que vous recevrez ouvrira votre compte.",
+    "champEmailAideRetour": "Pas de mot de passe à retenir : vous recevez un lien qui vous connecte.",
+    "champEmailPlaceholder": "sophie@exemple.ch",
+    "boutonCommencer": "Commencer",
+    "boutonRecevoirLien": "Recevoir mon lien",
+    "lienAPropos": "À quoi sert Allezou ?",
+    "lienDonnees": "Ce qu'Allezou enregistre, et qui peut le voir"
+  },
+  "CleAcces": {
+    "erreurs": {
+      "defi_absent": "La demande a expiré. Réessayez.",
+      "cle_inconnue": "Cet appareil n'est enregistré sur aucun compte.",
+      "cle_deja_enregistree": "Cet appareil est déjà enregistré.",
+      "verification_echouee": "La vérification a échoué."
+    },
+    "erreurGenerique": "Cela n'a pas marché.",
+    "navigateurIncompatibleAjout": "Ce navigateur ne sait pas enregistrer d'appareil. Vous continuerez à recevoir un lien par courriel.",
+    "enregistrementAnnule": "Enregistrement annulé.",
+    "appareilEnregistre": "Cet appareil est enregistré ✅ La prochaine fois, ouvrir l'application suffira.",
+    "boutonAjouter": "Enregistrer cet appareil 🔐",
+    "navigateurIncompatibleConnexion": "Ce navigateur ne sait pas reconnaître un appareil enregistré.",
+    "boutonEntrer": "Entrer avec cet appareil 🔐",
+    "aideEntrer": "Si vous avez déjà enregistré ce téléphone."
+  },
+  "NotificationsClient": {
+    "installerTitre": "Ajoutez d'abord Allezou à votre écran d'accueil",
+    "installerTexte": "Sur iPhone, les notifications ne fonctionnent que depuis l'application installée. Touchez le bouton de partage en bas de Safari, puis « Sur l'écran d'accueil ». Revenez ensuite ici depuis l'icône.",
+    "impossibleTexte": "Ce navigateur ne permet pas les notifications. Vous pouvez continuer à ouvrir l'application pour voir qui est dehors.",
+    "refuseeTitre": "Les notifications sont bloquées",
+    "refuseeTexte": "Vous les avez refusées pour ce site. Il faut les réautoriser dans les réglages du navigateur : nous ne pouvons pas le faire à votre place.",
+    "activeTitre": "Les notifications sont activées ✅",
+    "boutonDesactiver": "Ne plus être prévenu sur cet appareil",
+    "reglageAppareil": "Réglage propre à cet appareil.",
+    "boutonActiver": "Être prévenu sur cet appareil 🔔"
+  },
+  "Maintenant": {
+    "bonjour": "Bonjour {nom} 👋",
+    "titre": "Qui est dehors ?",
+    "nousSortons": "Nous sortons",
+    "titreAucunCercle": "Aucun cercle pour l'instant",
+    "texteAucunCercle": "C'est là que se partagent les sorties.",
+    "rejoindreOuCreer": "Rejoindre ou créer un cercle",
+    "titreCanton": "Les prochaines sorties du canton",
+    "sousTitreCanton": "Les activités des communes genevoises, ouvertes à tous.",
+    "jusquAu": "jusqu'au",
+    "voirAgenda": "Voir tout l'agenda",
+    "titrePersonneDehors": "Personne n'est dehors",
+    "textePersonneDehors": "Parmi vos cercles, personne n'a déclaré de sortie en cours.",
+    "titreAVenir": "À venir",
+    "aVenirDate": "{jour} dès {heure}",
+    "enCoursJusqua": "jusqu'à {heure}",
+    "vous": "Vous",
+    "avecEnfants": "avec {liste}",
+    "annuler": "Annuler",
+    "rentres": "Rentrés",
+    "pasEncorePrevenu": "personne n'est encore prévenu",
+    "vousYEtes": "Vous y êtes",
+    "nousAussi": "Nous aussi",
+    "autresFamilles": "{n, plural, one {# autre famille} other {# autres familles}}"
+  },
+  "Sortie": {
+    "erreurs": {
+      "duree_invalide": "Une sortie ne peut pas dépasser huit heures. Déclarez-en une nouvelle.",
+      "note_invalide": "Ce mot est trop long : 140 caractères au maximum.",
+      "pas_auteur": "Seule la personne qui a déclaré la sortie peut la modifier."
+    },
+    "erreurAjustement": "L'ajustement n'a pas pu être fait.",
+    "dateAVenir": "{jour} {nombre} {mois}, de {debut} à {fin}",
+    "dateEnCours": "jusqu'à {fin}",
+    "familles": "{n, plural, one {Une famille} other {# familles}}",
+    "vous": "Vous",
+    "avecEnfants": "avec {liste}",
+    "aPropose": "a proposé",
+    "quiEstAvecVous": "Qui est avec vous ?",
+    "decochez": "Décochez celui ou celle qui n'est finalement pas là.",
+    "mettreAJour": "Mettre à jour",
+    "motLabel": "Un mot pour les autres",
+    "motAide": "« Pataugeoire ouverte », « on est côté toboggan ». 140 caractères.",
+    "motPlaceholder": "On est côté toboggan",
+    "enregistrer": "Enregistrer",
+    "encoreUneHeure": "Encore une heure ⏱️",
+    "annulerCetteSortie": "Annuler cette sortie",
+    "nousRentrons": "Nous rentrons",
+    "finalementNousNeVenonsPas": "Finalement nous ne venons pas",
+    "retour": "Retour"
+  },
+  "Sortir": {
+    "titre": "Nous sortons",
+    "sousTitre": "Choisissez le lieu, puis confirmez.",
+    "erreurGenerique": "La sortie n'a pas pu être déclarée.",
+    "erreurs": {
+      "aucun_destinataire": "Cochez au moins un cercle : une sortie que personne ne verrait n'a pas de destinataire.",
+      "cercle_interdit": "Vous n'êtes pas membre d'un des cercles cochés.",
+      "lieu_inconnu": "Ce lieu n'existe plus.",
+      "duree_invalide": "Cette durée n'est pas possible.",
+      "debut_invalide": "Cette heure ne convient pas : une sortie s'annonce jusqu'à deux semaines à l'avance, pas dans le passé."
+    },
+    "videCercleTitre": "Il vous faut d'abord un cercle",
+    "videCercleTexte": "Une sortie s'adresse aux familles d'un cercle. Sans cercle, personne ne la verrait, et Allezou refuse de la publier dans le vide.",
+    "creerRejoindreCercle": "Créer ou rejoindre un cercle",
+    "videLieuTitre": "Aucun lieu dans le catalogue",
+    "ajouterPremierLieu": "Ajouter le premier",
+    "visiblePar": "Visible par",
+    "aucunCercle": "Vous n'avez encore aucun cercle.",
+    "resumeAvecEnfants": "Avec <strong>{noms}</strong> · <strong>{duree}</strong> · maintenant",
+    "resumeSansEnfants": "<strong>{duree}</strong> · maintenant",
+    "changer": "Changer",
+    "quiVient": "Qui vient",
+    "combienDeTemps": "Combien de temps",
+    "aPartirDeQuand": "À partir de quand",
+    "laissezVide": "Laissez vide si vous y êtes déjà.",
+    "annuler": "Annuler"
+  },
+  "SortirLieu": {
+    "titre": "Ajouter un lieu",
+    "sousTitre": "Il rejoint le catalogue commun. Si son nom est mal écrit, n'importe qui pourra proposer une correction : elle s'applique quand trois personnes l'ont validée.",
+    "erreurGenerique": "Ce nom de lieu ne convient pas.",
+    "erreurs": {
+      "adresse_invalide": "Cette adresse est trop longue : 160 caractères au plus.",
+      "position_invalide": "Ce point ne ressemble pas à un endroit sur Terre. Reposez-le sur la carte."
+    },
+    "labelNom": "Nom du lieu",
+    "placeholderNom": "Parc du Gué",
+    "typeLegend": "C'est quoi ?",
+    "labelCommune": "Commune",
+    "placeholderCommune": "Petit-Lancy",
+    "labelAdresse": "Où est-ce ?",
+    "aideAdresse": "Une adresse ou un repère, pour la famille qui ne connaît pas le quartier. Vous pouvez laisser vide.",
+    "placeholderAdresse": "Chemin du Gué 12, derrière l'école",
+    "ajouter": "Ajouter",
+    "retour": "Retour"
+  },
+  "ChoixLieu": {
+    "choisirUnLieu": "Choisissez un lieu",
+    "changer": "Changer",
+    "ouvrir": "Ouvrir",
+    "chercherUnLieu": "Chercher un lieu",
+    "tous": "Tous",
+    "masques": "🙈 Masqués ({n})",
+    "reafficher": "Réafficher",
+    "retirerDesFavoris": "Retirer {nom} des favoris",
+    "mettreEnFavori": "Mettre {nom} en favori",
+    "masquerDeLaListe": "Masquer {nom} de ma liste",
+    "aucunLieuMasque": "Plus aucun lieu masqué.",
+    "aucunLieuDeCeNom": "Aucun lieu de ce nom.",
+    "lieuPasDansListe": "Le lieu n'est pas dans la liste",
+    "corrigerUnLieu": "Corriger un lieu",
+    "confirmerLaSortie": "Confirmer la sortie",
+    "confirmationDetail": "Part vers les cercles cochés ; membres prévenus <strong>dans une minute</strong> — le temps d'annuler.",
+    "choisirDabordUnLieu": "Choisissez d'abord un lieu."
+  },
+  "Position": {
+    "geolocaliser": "🗺️ Géolocaliser sur la carte",
+    "carteNonBranchee": "La carte n'est pas encore branchée : il manque <code>GOOGLE_MAPS_API_KEY</code> (voir <code>docs/google-maps.md</code>). Sans point posé, le lieu sera géocodé depuis son nom et son adresse — moins précis, mais rien n'est bloqué.",
+    "pointPose": "Point posé : {lat}, {lon}",
+    "retirer": "Retirer",
+    "touchezEndroit": "Touchez l'endroit exact."
+  },
+  "Carte": {
+    "voirSurLaCarte": "🗺️ Voir sur la carte",
+    "carteNonBranchee": "La carte n'est pas encore branchée : il manque <code>GOOGLE_MAPS_API_KEY</code> — la marche à suivre est dans <code>docs/google-maps.md</code>. Les liens ↗ vers Google Maps fonctionnent déjà, eux.",
+    "choisi": "✓ Choisi",
+    "choisirCeLieu": "Choisir ce lieu",
+    "voirLaFiche": "Voir la fiche",
+    "itineraire": "Itinéraire ↗",
+    "sansPosition": "{n, plural, one {# lieu sans position connue.} other {# lieux sans position connue.}}",
+    "sansPositionSeuls": "{n, plural, one {# lieu sans position connue — la carte viendra avec le géocodage.} other {# lieux sans position connue — la carte viendra avec le géocodage.}}"
+  },
+  "Etiquettes": {
+    "categorie": {
+      "parc": "Parc",
+      "aire_de_jeux": "Aire de jeux",
+      "piscine": "Piscine",
+      "patinoire": "Patinoire",
+      "ludotheque": "Ludothèque",
+      "bibliotheque": "Bibliothèque",
+      "musee": "Musée",
+      "maison_quartier": "Maison de quartier",
+      "autre": "Autre"
+    },
+    "fenetre": {
+      "aujourd_hui": "Aujourd'hui",
+      "demain": "Demain",
+      "week_end": "Ce week-end",
+      "quinzaine": "15 jours"
+    },
+    "age": {
+      "2": "0-3 ans",
+      "5": "4-6 ans",
+      "8": "7-10 ans",
+      "12": "11 ans et +"
+    },
+    "tarif": {
+      "gratuit": "Gratuit",
+      "payant": "Payant",
+      "inconnu": "Prix non défini"
+    },
+    "acces": {
+      "libre": "Entrée libre",
+      "inscription": "Sur inscription",
+      "inconnu": "Inscription non définie"
+    }
+  }
+}

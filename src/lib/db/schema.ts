@@ -55,12 +55,22 @@ export const account = pgTable(
      * est publique et n'appartient à aucun cercle.
      */
     alerteInscription: boolean().notNull().default(false),
+    /**
+     * La langue de cette personne : écrans, e-mails et notifications.
+     *
+     * C'est elle qui fait qu'une notification de sortie part en albanais vers un téléphone
+     * et en français vers un autre, pour la même sortie. Posée à la création du compte
+     * depuis la langue de la page où le lien magique a été demandé, changée sur /compte.
+     */
+    locale: varchar({ length: 5 }).notNull().default("fr"),
     /** Compte supprimé : invisible partout, y compris dans les cercles. */
     deletedAt: timestamp({ withTimezone: true }),
   },
   (t) => [
     uniqueIndex("account_email_key").on(t.email),
     check("account_email_lowercase", sql`${t.email} = lower(${t.email})`),
+    // La liste vit aussi dans src/i18n/routing.ts : ajouter une langue = une migration.
+    check("account_locale_connue", sql`${t.locale} in ('fr', 'en', 'es', 'pt', 'sq')`),
   ],
 );
 
@@ -777,6 +787,11 @@ export const magicLink = pgTable(
     id: uuid().primaryKey().defaultRandom(),
     email: varchar({ length: 254 }).notNull(),
     tokenHash: varchar({ length: 64 }).notNull(),
+    /**
+     * La langue de la page d'où le lien a été demandé : celle de l'e-mail envoyé, et celle
+     * du compte si ce lien le crée. Avant toute connexion, c'est la seule trace du choix.
+     */
+    locale: varchar({ length: 5 }).notNull().default("fr"),
     expiresAt: timestamp({ withTimezone: true }).notNull(),
     usedAt: timestamp({ withTimezone: true }),
     createdAt: timestamp({ withTimezone: true }).notNull().default(now),

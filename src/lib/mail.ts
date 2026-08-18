@@ -8,6 +8,8 @@
 
 import nodemailer, { type Transporter } from "nodemailer";
 
+import { traducteur } from "./traduire";
+
 let transporter: Transporter | null = null;
 
 function smtpConfigured(): boolean {
@@ -74,18 +76,12 @@ export async function sendMail(mail: Mail): Promise<void> {
   });
 }
 
-export function sendLoginLink(email: string, url: string): Promise<void> {
+/** Le courriel part dans la langue de la page d'où le lien a été demandé. */
+export function sendLoginLink(email: string, url: string, locale = "fr"): Promise<void> {
+  const t = traducteur(locale, "MailConnexion");
   return sendMail({
     to: email,
-    subject: "Votre lien de connexion à Allezou",
-    text: [
-      "Bonjour,",
-      "",
-      "Voici votre lien pour vous connecter à Allezou :",
-      url,
-      "",
-      "Ce lien est valable 15 minutes et ne fonctionne qu'une fois.",
-      "Si vous n'avez rien demandé, ignorez ce message : personne n'a accès à votre compte.",
-    ].join("\n"),
+    subject: t("sujet"),
+    text: t("corps", { url }),
   });
 }

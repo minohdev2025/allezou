@@ -55,8 +55,14 @@ export type MagicLinkRequest =
 /**
  * Demande un lien de connexion. Ne révèle jamais si un compte existe déjà pour cette
  * adresse — le compte est créé au premier lien effectivement suivi, pas ici.
+ *
+ * `locale` est la langue de la page d'où la demande part : celle de l'e-mail envoyé, et
+ * celle du compte si ce lien finit par le créer.
  */
-export async function requestMagicLink(rawEmail: string): Promise<MagicLinkRequest> {
+export async function requestMagicLink(
+  rawEmail: string,
+  locale: string = "fr",
+): Promise<MagicLinkRequest> {
   const parsed = emailSchema.safeParse(rawEmail);
   if (!parsed.success) {
     return { ok: false, reason: "adresse_invalide" };
@@ -85,11 +91,12 @@ export async function requestMagicLink(rawEmail: string): Promise<MagicLinkReque
   await db.insert(s.magicLink).values({
     email,
     tokenHash: hashToken(token),
+    locale,
     expiresAt: sql`now() + interval '${sql.raw(MAGIC_LINK_TTL)}'`,
   });
 
   const appUrl = process.env.APP_URL ?? "http://localhost:3000";
-  await sendLoginLink(email, `${appUrl}/connexion/${token}`);
+  await sendLoginLink(email, `${appUrl}/connexion/${token}`, locale);
 
   return { ok: true };
 }
@@ -109,10 +116,11 @@ export async function consumeMagicLink(token: string): Promise<LoginResult> {
     const rows = await tx.execute<{
       id: string;
       email: string;
+      locale: string;
       used_at: Date | null;
       expired: boolean;
     }>(sql`
-      select id, email, used_at, (expires_at <= now()) as expired
+      select id, email, locale, used_at, (expires_at <= now()) as expired
       from magic_link
       where token_hash = ${tokenHash}
       for update
@@ -140,7 +148,8 @@ export async function consumeMagicLink(token: string): Promise<LoginResult> {
       const provisional = link.email.split("@")[0].slice(0, 60);
       const created = await tx
         .insert(s.account)
-        .values({ email: link.email, displayName: provisional })
+        // La langue du lien suivi : celle dans laquelle cette personne nous a lus.
+        .values({ email: link.email, displayName: provisional, locale: link.locale })
         .returning();
       account = created[0];
       isNew = true;
@@ -217,6 +226,16 @@ export async function destroySession(sessionToken: string): Promise<void> {
 /** Déconnecte toutes les sessions d'un compte (appareil perdu, doute sur un accès). */
 export async function destroyAllSessions(accountId: string): Promise<void> {
   await db.execute(sql`delete from session where account_id = ${accountId}`);
+}
+
+/**
+ * Change la langue du compte. La valeur est contrôlée par l'appelant contre la liste des
+ * langues servies (routing.ts) ; la base a son propre garde-fou (`account_locale_connue`).
+ */
+export async function setAccountLocale(accountId: string, locale: string): Promise<void> {
+  await db.execute(sql`
+    update account set locale = ${locale} where id = ${accountId}
+  `);
 }
 
 export type DisplayNameResult = { ok: true } | { ok: false; reason: string };

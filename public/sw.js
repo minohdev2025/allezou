@@ -24,7 +24,8 @@ self.addEventListener("push", (event) => {
       body: contenu.body,
       icon: "/icon",
       badge: "/icon",
-      lang: "fr",
+      // La charge dit sa langue — chaque destinataire reçoit la sienne depuis le serveur.
+      lang: contenu.lang || "fr",
       // Une seule notification par cercle à l'écran : on remplace plutôt que d'empiler.
       tag: contenu.title,
       renotify: true,

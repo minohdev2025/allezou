@@ -22,17 +22,8 @@ export const CATEGORIES_LIEU = [
 
 export type CategorieLieu = (typeof CATEGORIES_LIEU)[number];
 
-export const LIBELLES_CATEGORIE: Record<CategorieLieu, string> = {
-  parc: "Parc",
-  aire_de_jeux: "Aire de jeux",
-  piscine: "Piscine",
-  patinoire: "Patinoire",
-  ludotheque: "Ludothèque",
-  bibliotheque: "Bibliothèque",
-  musee: "Musée",
-  maison_quartier: "Maison de quartier",
-  autre: "Autre",
-};
+// Les libellés vivent dans messages/*.json (namespace Etiquettes.categorie) : un libellé
+// est une chaîne d'écran comme une autre, et il se traduit avec les autres.
 
 /** L'emoji tient lieu d'icône : lisible, léger, et déjà dans toutes les polices. */
 export const EMOJIS_CATEGORIE: Record<CategorieLieu, string> = {

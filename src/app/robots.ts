@@ -1,5 +1,7 @@
 import type { MetadataRoute } from "next";
 
+import { routing } from "@/i18n/routing";
+
 /**
  * Ce qu'un moteur a le droit d'explorer.
  *
@@ -14,25 +16,33 @@ import type { MetadataRoute } from "next";
  *
  * Pas de plan de site : deux pages n'en font pas un.
  */
+const PRIVEES = [
+  "/connexion",
+  "/bienvenue",
+  "/maintenant",
+  "/sortir",
+  "/sortie",
+  "/agenda",
+  "/cercles",
+  "/rejoindre",
+  "/lieux",
+  "/reglages",
+  "/compte",
+  "/relecture",
+];
+
 export default function robots(): MetadataRoute.Robots {
+  // Chaque page privée existe aussi sous son préfixe de langue (/en/connexion…) : une règle
+  // par langue, écrite depuis la même liste — deux listes finiraient par diverger.
+  const prefixes = routing.locales.filter((l) => l !== routing.defaultLocale);
   return {
     rules: {
       userAgent: "*",
-      allow: ["/", "/donnees"],
-      disallow: [
-        "/connexion",
-        "/bienvenue",
-        "/maintenant",
-        "/sortir",
-        "/sortie",
-        "/agenda",
-        "/cercles",
-        "/rejoindre",
-        "/lieux",
-        "/reglages",
-        "/compte",
-        "/relecture",
-      ],
+      allow: ["/", "/donnees", ...prefixes.flatMap((l) => [`/${l}`, `/${l}/donnees`])],
+      disallow: PRIVEES.flatMap((chemin) => [
+        chemin,
+        ...prefixes.map((l) => `/${l}${chemin}`),
+      ]),
     },
   };
 }

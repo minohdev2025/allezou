@@ -258,3 +258,15 @@ précisément pourquoi la minimisation n'est pas une posture ici.
   inscription se modifie sans être republiée — changer de destinataires n'est pas une
   nouvelle publication — et ne peut jamais tomber à zéro destinataire : une publication que
   plus personne ne voit doit être retirée, pas vidée en silence.
+- **L'application parle cinq langues** : français (référence), anglais, espagnol, portugais
+  et albanais — la carte réelle des familles genevoises, pas celle des langues nationales.
+  Pas d'allemand : ce n'est pas la langue des familles d'ici, et celles qui le parlent lisent
+  l'anglais. Le français vit aux adresses d'origine, sans préfixe ; les autres langues sous
+  `/en`, `/es`, `/pt`, `/sq`. La langue est un réglage du compte, héritée de la page où le
+  lien de connexion a été demandé, et chaque courriel comme chaque notification part dans la
+  langue de son destinataire — pour la même sortie, un téléphone sonne en albanais et l'autre
+  en français. Ce qui vient des communes reste tel qu'elles l'écrivent : traduire leur
+  contenu demanderait un service externe, et une traduction automatique d'une adresse ou d'un
+  horaire fabrique des erreurs invisibles. Les écrans d'administration (/relecture, /mesures)
+  restent français : ils ne servent qu'au responsable. La page des données existe par langue
+  (DONNEES.en.md…), le français faisant foi et servant de repli.

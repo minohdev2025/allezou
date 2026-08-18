@@ -19,12 +19,15 @@ import { db } from "./db";
 import { asDateOrNull } from "./db/rows";
 import * as s from "./db/schema";
 import { contient, normaliser } from "./texte";
+import { cheminLocalise, localeSure, traducteur } from "./traduire";
 import { readersOfPublication } from "./visibility";
 
 export type PushPayload = {
   title: string;
   body: string;
   url: string;
+  /** La langue du texte, que le service worker répète à la notification affichée. */
+  lang?: string;
 };
 
 export type PushTarget = {
@@ -218,6 +221,8 @@ export type Recipient = {
   accountId: string;
   circleId: string;
   circleName: string;
+  /** La langue du destinataire : chaque téléphone sonne dans la sienne. */
+  locale: string;
 };
 
 /**
@@ -234,13 +239,15 @@ export async function recipientsFor(publicationId: string): Promise<Recipient[]>
     account_id: string;
     circle_id: string;
     circle_name: string;
+    locale: string;
   }>(sql`
     select distinct
       m.account_id,
       c.id as circle_id,
       -- Le titre de la notification est un nom de cercle : celui du destinataire, pas
       -- celui de l'auteur. Les deux peuvent différer, et c'est tout l'objet de l'alias.
-      coalesce(m.alias, c.name) as circle_name
+      coalesce(m.alias, c.name) as circle_name,
+      dest.locale
     from publication p
     join publication_circle pc on pc.publication_id = p.id
     join circle c on c.id = pc.circle_id and c.archived_at is null
@@ -248,6 +255,7 @@ export async function recipientsFor(publicationId: string): Promise<Recipient[]>
       on m.circle_id = c.id
      and m.left_at is null
      and m.account_id = any(${sql.param(lecteurs)}::uuid[])
+    join account dest on dest.id = m.account_id
     left join notification_pref np
       on np.account_id = m.account_id and np.circle_id = c.id
     where p.id = ${publicationId}
@@ -301,6 +309,7 @@ export async function recipientsFor(publicationId: string): Promise<Recipient[]>
     accountId: r.account_id,
     circleId: r.circle_id,
     circleName: r.circle_name,
+    locale: r.locale,
   }));
 }
 
@@ -312,14 +321,14 @@ export async function recipientsFor(publicationId: string): Promise<Recipient[]>
 export function payloadFor(
   kind: "presence" | "attendance",
   circleName: string,
+  locale = "fr",
 ): PushPayload {
+  const t = traducteur(locale, "Notifications");
   return {
     title: circleName,
-    body:
-      kind === "presence"
-        ? "Une sortie est en cours"
-        : "Une inscription vient d'être ajoutée",
-    url: kind === "presence" ? "/maintenant" : "/agenda",
+    body: kind === "presence" ? t("sortieEnCours") : t("inscriptionAjoutee"),
+    url: cheminLocalise(locale, kind === "presence" ? "/maintenant" : "/agenda"),
+    lang: localeSure(locale),
   };
 }
 
@@ -388,8 +397,12 @@ export async function notifyJoinRequest(
   circleId: string,
   send: Sender,
 ): Promise<NotifyReport> {
-  const admins = await db.execute<{ account_id: string; circle_name: string }>(sql`
-    select m.account_id, coalesce(m.alias, c.name) as circle_name
+  const admins = await db.execute<{
+    account_id: string;
+    circle_name: string;
+    locale: string;
+  }>(sql`
+    select m.account_id, coalesce(m.alias, c.name) as circle_name, a.locale
     from circle_membership m
     join circle c on c.id = m.circle_id and c.archived_at is null
     join account a on a.id = m.account_id and a.deleted_at is null
@@ -404,12 +417,14 @@ export async function notifyJoinRequest(
   const report: NotifyReport = { sent: 0, failed: 0, recipients: admins.length };
 
   for (const admin of admins) {
+    const t = traducteur(admin.locale, "Notifications");
     await envoyerA(
       admin.account_id,
       {
         title: admin.circle_name,
-        body: "Quelqu'un demande à rejoindre ce cercle",
-        url: `/cercles/${circleId}`,
+        body: t("demandeAdhesion"),
+        url: cheminLocalise(admin.locale, `/cercles/${circleId}`),
+        lang: localeSure(admin.locale),
       },
       send,
       report,
@@ -454,7 +469,7 @@ export async function notifyPublication(
   for (const recipient of parCompte.values()) {
     await envoyerA(
       recipient.accountId,
-      payloadFor(publication.kind, recipient.circleName),
+      payloadFor(publication.kind, recipient.circleName, recipient.locale),
       send,
       report,
     );
@@ -633,6 +648,7 @@ export async function notifyNewlyPublished(send: Sender, limit = 50): Promise<No
       accountId: s.agendaKeyword.accountId,
       word: s.agendaKeyword.word,
       label: s.agendaKeyword.label,
+      locale: s.account.locale,
     })
     .from(s.agendaKeyword)
     .innerJoin(
@@ -641,7 +657,7 @@ export async function notifyNewlyPublished(send: Sender, limit = 50): Promise<No
     );
 
   const guetteurs = await db
-    .select({ id: s.account.id })
+    .select({ id: s.account.id, locale: s.account.locale })
     .from(s.account)
     .where(and(eq(s.account.alerteInscription, true), isNull(s.account.deletedAt)));
 
@@ -652,10 +668,12 @@ export async function notifyNewlyPublished(send: Sender, limit = 50): Promise<No
     for (const mot of mots) {
       if (aPrevenir.has(mot.accountId)) continue;
       if (contient(texte, mot.word)) {
+        const t = traducteur(mot.locale, "Notifications");
         aPrevenir.set(mot.accountId, {
-          title: "Agenda",
-          body: `Une activité correspond à « ${mot.label} »`,
-          url: `/agenda/${activite.id}`,
+          title: t("agendaTitre"),
+          body: t("motCorrespond", { mot: mot.label }),
+          url: cheminLocalise(mot.locale, `/agenda/${activite.id}`),
+          lang: localeSure(mot.locale),
         });
       }
     }
@@ -665,10 +683,12 @@ export async function notifyNewlyPublished(send: Sender, limit = 50): Promise<No
     if (activite.acces === "inscription") {
       for (const guetteur of guetteurs) {
         if (aPrevenir.has(guetteur.id)) continue;
+        const t = traducteur(guetteur.locale, "Notifications");
         aPrevenir.set(guetteur.id, {
-          title: "Agenda",
-          body: "Une activité sur inscription vient de paraître",
-          url: `/agenda/${activite.id}`,
+          title: t("agendaTitre"),
+          body: t("inscriptionParue"),
+          url: cheminLocalise(guetteur.locale, `/agenda/${activite.id}`),
+          lang: localeSure(guetteur.locale),
         });
       }
     }

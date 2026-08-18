@@ -1,4 +1,14 @@
-import { NextResponse, type NextRequest } from "next/server";
+import createMiddleware from "next-intl/middleware";
+import type { NextRequest } from "next/server";
+
+import { routing } from "./i18n/routing";
+
+/**
+ * Le routage des langues : réécrit /agenda vers /fr/agenda en interne, redirige un
+ * navigateur anglophone de / vers /en, pose l'en-tête de locale que lisent les actions
+ * serveur, et le `Link` d'alternates que lisent les moteurs.
+ */
+const routageLangues = createMiddleware(routing);
 
 /**
  * En-tête de sécurité du contenu, avec un nonce par requête.
@@ -42,11 +52,13 @@ export function proxy(request: NextRequest) {
     .replace(/\s{2,}/g, " ")
     .trim();
 
-  const entrantes = new Headers(request.headers);
-  entrantes.set("x-nonce", nonce);
-  entrantes.set("Content-Security-Policy", csp);
+  // Muter les en-têtes de la requête AVANT le routage des langues : il les recopie dans
+  // celle qu'il transmet à l'application, nonce et CSP compris (vérifié dans son code,
+  // middleware.js copie `request.headers`).
+  request.headers.set("x-nonce", nonce);
+  request.headers.set("Content-Security-Policy", csp);
 
-  const reponse = NextResponse.next({ request: { headers: entrantes } });
+  const reponse = routageLangues(request);
 
   reponse.headers.set("Content-Security-Policy", csp);
   reponse.headers.set("X-Content-Type-Options", "nosniff");
@@ -59,14 +71,13 @@ export function proxy(request: NextRequest) {
   return reponse;
 }
 
+/**
+ * Les prefetches ne sont plus sautés : une adresse française sans préfixe (/agenda) n'existe
+ * qu'à travers la réécriture du proxy, et un prefetch qui la manquerait ferait un 404 pour
+ * rien. Le coût d'un nonce par prefetch est le prix d'un routage juste.
+ *
+ * Les chemins à point (favicon.ico, sw.js, robots.txt, manifest…) restent hors langue.
+ */
 export const config = {
-  matcher: [
-    {
-      source: "/((?!_next/static|_next/image|favicon.ico|sw.js).*)",
-      missing: [
-        { type: "header", key: "next-router-prefetch" },
-        { type: "header", key: "purpose", value: "prefetch" },
-      ],
-    },
-  ],
+  matcher: ["/((?!_next|_vercel|.*\\..*).*)"],
 };

@@ -247,6 +247,24 @@ C'est la source à reprendre en premier, et probablement une question de découp
 que de consigne — le même découpage qui permettrait de confronter chaque activité à son propre
 bloc plutôt qu'à la page entière.
 
+### Ce que les cinq langues laissent à faire
+
+L'application parle désormais français, anglais, espagnol, portugais et albanais
+(18 août 2026, décision dans PRODUIT.md). Trois choses restent derrière :
+
+- **L'albanais doit être relu par un locuteur natif** avant qu'on s'y fie. La traduction
+  liste elle-même ses hésitations (impératifs polis ou courts, « rrethe » ou « rrathë »,
+  « ludotekë » qui est un néologisme) — c'est par là qu'une relecture doit commencer. Les
+  trois autres langues mériteront le même regard, avec moins d'urgence.
+- **Le manifeste PWA reste français.** C'est un fichier unique, servi sans contexte de
+  langue : le nom « Allezou » passe partout, mais la description et le raccourci
+  « Nous sortons » ne se traduisent pas sans dupliquer le manifeste — à revoir seulement
+  si des familles installent l'application sans lire le français.
+- **DONNEES.md fait foi en français.** Les quatre traductions promettent la même chose,
+  mais toute modification du texte français doit se répercuter dans les quatre fichiers,
+  et rien ne le vérifie automatiquement — le test de parité ne couvre que les catalogues
+  d'écran, pas les Markdown.
+
 ### Questions produit ouvertes
 
 Elles ne se règlent pas en écrivant du code, et aucune n'a de réponse aujourd'hui. Les noter

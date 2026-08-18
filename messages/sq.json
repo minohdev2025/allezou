@@ -1,0 +1,697 @@
+{
+  "Introuvable": {
+    "titre": "Kjo faqe nuk ekziston",
+    "sousTitre": "Lidhja mund të jetë e paplotë, ose dalja që tregonte ka skaduar tashmë.",
+    "retour": "Kthehuni në faqen kryesore"
+  },
+  "ChoixLangue": {
+    "label": "Gjuha"
+  },
+  "Navigation": {
+    "sorties": "Daljet",
+    "agenda": "Agjenda",
+    "cercles": "Rrethet",
+    "vous": "Ju"
+  },
+  "Notifications": {
+    "sortieEnCours": "Një dalje është në vazhdim",
+    "inscriptionAjoutee": "Sapo u shtua një regjistrim",
+    "demandeAdhesion": "Dikush kërkon të bashkohet me këtë rreth",
+    "agendaTitre": "Agjenda",
+    "motCorrespond": "Një aktivitet përputhet me « {mot} »",
+    "inscriptionParue": "Sapo u shfaq një aktivitet me regjistrim"
+  },
+  "MailConnexion": {
+    "sujet": "Lidhja juaj e hyrjes në Allezou",
+    "corps": "Mirëdita,\n\nJa lidhja juaj për të hyrë në Allezou:\n{url}\n\nKjo lidhje vlen 15 minuta dhe funksionon vetëm një herë.\nNëse nuk keni kërkuar asgjë, mos e merrni parasysh këtë mesazh: askush nuk ka qasje në llogarinë tuaj."
+  },
+  "MessageInvitation": {
+    "texte": "Mirëdita! Përdor Allezou që fëmijët tanë të takohen jashtë: aty themi kur\ndalim në park, dhe aty shohim aktivitetet e komunave të Gjenevës.\n\nËshtë falas, e strehuar në Zvicër, pa reklama, dhe për fëmijët shënojmë vetëm\nemrin.\n\nJa lidhja për t'u bashkuar me rrethin tonë « {cercle} »:\n{lien}\nVlen deri më {date}.\n\nÇfarë regjistron faqja dhe kush mund ta shohë: {donnees}"
+  },
+  "Metadata": {
+    "promesse": "Që fëmijët tanë të takohen jashtë. Dalje të përbashkëta dhe agjendë e familjeve të Gjenevës.",
+    "accroche": "Që fëmijët tanë të takohen jashtë"
+  },
+  "Donnees": {
+    "titreOnglet": "Të dhënat tuaja",
+    "retour": "Prapa"
+  },
+  "Accueil": {
+    "titre": "Allezou",
+    "accroche": "Që fëmijët tanë të takohen jashtë.",
+    "presentation": "Mirëdita, quhem Michael. Jam babai i dy vajzave të vogla që shkojnë në shkollë në Petit-Lancy.",
+    "constat": "Një park mund të jetë plot njerëz, pa e gjetur fëmija dikë që njeh. Luan dhjetë minuta, pastaj vjen e pyet kur po kthehemi. Shokët e klasës së tij ndoshta ishin te parku fqinj, ose kishin kaluar aty një orë më parë.",
+    "mission": "E krijova Allezou pikërisht për këtë: që fëmijët tanë ta rigjejnë kënaqësinë e lojës jashtë, të rrethuar nga fëmijë me të cilët duan të kalojnë kohë.",
+    "titreGestes": "Çfarë bëjmë atje",
+    "gestes": {
+      "cercles": {
+        "titre": "Krijoni rrethet tuaja",
+        "texte": "Mblidhni familjet me të cilat fëmijëve tuaj u pëlqen të kalojnë kohë: klasën, lagjen. I ftoni me një lidhje, në WhatsApp ose me mesazh. Asgjë nga ç'botoni nuk del jashtë këtyre rretheve."
+      },
+      "sortir": {
+        "titre": "Thoni kur dilni",
+        "texte": "Zgjidhni një park nga lista dhe orën kur do të ktheheni. Familjet e rretheve tuaja e shohin menjëherë. Dalja fshihet vetvetiu sapo kalon ora."
+      },
+      "voir": {
+        "titre": "Shihni kush është jashtë",
+        "texte": "Shihni kush ka dalë tani, dhe bashkoheni me ta me një klik, nëse doni."
+      },
+      "agenda": {
+        "titre": "Ndiqni agjendën e kantonit",
+        "texte": "Aktivitetet për familjet në Gjenevë dhe në komuna. Faqet e tyre kontrollohen disa herë në ditë, ju nuk keni asgjë për të mbikëqyrur. Shënoni ato ku do të shkoni, dhe shihni kush nga rrethet tuaja do të jetë aty."
+      },
+      "notifications": {
+        "titre": "Merrni njoftime për atë që ju intereson",
+        "texte": "Zgjidhni fjalët tuaja: « pishinë », « përralla », « xhudo ». Sapo shfaqet në agjendë një aktivitet që përmban njërën prej tyre, telefoni juaj ju lajmëron. Mund të kërkoni edhe të njoftoheni për të gjitha aktivitetet me regjistrim, ku të veprosh vonë shpesh do të thotë të mos shkosh fare."
+      }
+    },
+    "installation": {
+      "titre": "Shtojeni në telefonin tuaj",
+      "intro": "Allezou është një faqe interneti, jo një aplikacion i vërtetë për t'u shkarkuar nga një dyqan aplikacionesh. Në varësi të shfletuesit tuaj, ai mund t'ju propozojë vetë ta instaloni. Mund ta pranoni: është një shkurtore drejt kësaj faqeje, që e hap në ekran të plotë dhe ju kursen rilidhjen çdo herë.",
+      "sansProposition": {
+        "titre": "Nëse nuk ju propozohet asgjë",
+        "texte": "Kërkoni « Instaloni aplikacionin » në menynë e shfletuesit tuaj, zakonisht lart djathtas."
+      },
+      "iphone": {
+        "titre": "Në iPhone",
+        "texte": "Prekni butonin Ndaj, poshtë ekranit, pastaj « Në ekranin bazë ». Kjo është edhe mënyra e vetme për të marrë njoftime aty."
+      }
+    },
+    "absencesTitre": "Çfarë nuk bën Allezou",
+    "absencesIntro": "Një aplikacion që flet për fëmijë duhet të thotë ku ndalet.",
+    "absences": {
+      "messagerie": {
+        "titre": "Pa mesazhe",
+        "texte": "Nuk ka as biseda, as mesazhe private."
+      },
+      "position": {
+        "titre": "Pa pozicion GPS",
+        "texte": "Zgjidhni një vend nga një listë. Aplikacioni nuk i kërkon kurrë telefonit tuaj se ku jeni."
+      },
+      "historique": {
+        "titre": "Pa historik",
+        "texte": "Një dalje zhduket 24 orë pas mbarimit të saj. Askush nuk mund të rindërtojë ku ka shkuar familja juaj muajin e kaluar."
+      },
+      "inconnus": {
+        "titre": "Pa të panjohur",
+        "texte": "Shihni vetëm anëtarët e rretheve tuaja. Bashkimi me një dalje nuk ju shfaq te askush tjetër."
+      },
+      "publicite": {
+        "titre": "Pa reklama, pa gjurmues",
+        "texte": "Të dhënat tuaja nuk shkojnë te askush, dhe nuk i shiten askujt."
+      },
+      "prenom": {
+        "titre": "Për fëmijët tuaj, vetëm një emër",
+        "texte": "Dhe asgjë më shumë: kjo është gjithçka që di Allezou për ta."
+      }
+    },
+    "gratuitTitre": "Falas, dhe i strehuar në Zvicër",
+    "gratuitTexte": "Nuk ka asnjë kompani pas Allezou dhe asgjë nuk paguhet. Serverat janë në Zvicër. Agjenda mbushet vetvetiu nga faqet e komunave të Gjenevës.",
+    "nePlusAfficher": "Të mos shfaqet më kjo faqe në këtë pajisje",
+    "entrer": "Hyni",
+    "lienDonnees": "Çfarë regjistron Allezou, dhe kush mund ta shohë"
+  },
+  "Maquette": {
+    "descriptionEcran": "Shembull ekrani: Sophie është te parku i Gué me Léa dhe Matéo, deri në orën 17:00. Dy familje të tjera janë me ta, dhe një buton « Ne gjithashtu » lejon t'u bashkoheni.",
+    "heureLimite": "deri në {heure}",
+    "avecEnfants": "me Léa dhe Matéo",
+    "nousAussi": "Ne gjithashtu",
+    "autresFamilles": "{n, plural, one {# familje tjetër} other {# familje të tjera}}"
+  },
+  "Bienvenue": {
+    "titre": "Mirë se vini",
+    "sousTitre": "Dy pyetje, dhe kaq.",
+    "erreur": "Duhet të shkruani diçka.",
+    "label": "Me çfarë emri doni të shfaqeni?",
+    "aide": "Kjo është ajo që do të shohin anëtarët e rretheve tuaja. « Sophie », « Mamaja e Léas », çfarë të doni.",
+    "placeholder": "Mamaja e Léas",
+    "continuer": "Vazhdoni"
+  },
+  "BienvenueEnfants": {
+    "titre": "Fëmijët tuaj",
+    "sousTitre": "Emri i tyre shërben për të thënë kush është i pranishëm në një dalje. Allezou nuk regjistron asgjë tjetër për ta: as moshë, as mbiemër.",
+    "erreur": "Duhet një emër.",
+    "label": "Emri",
+    "ajouter": "Shtoni",
+    "terminer": "Gati",
+    "passer": "Kaloni këtë hap"
+  },
+  "Agenda": {
+    "titre": "Agjenda",
+    "sousTitre": "Aktivitetet e kantonit, dhe kush nga rrethet tuaja shkon.",
+    "filtresResume": "Kur, mosha, komuna, çmimi, kush shkon",
+    "tousLesAges": "Të gjitha moshat",
+    "partout": "Kudo",
+    "tousLesPrix": "Të gjitha çmimet",
+    "avecOuSansInscription": "Me ose pa regjistrim",
+    "monCercle": "👥 Ku shkon dikush nga rrethet e mia",
+    "proposerActivite": "📅 Propozoni një aktivitet",
+    "enCeMoment": "Tani",
+    "enCeMomentCarte": "tani",
+    "rienNeCorrespond": "Asgjë nuk përputhet",
+    "elargirFiltres": "Provoni t'i zgjeroni filtrat, ose <lien>shihni gjithçka</lien>.",
+    "activitesApparaitront": "Aktivitetet e Gjenevës do të shfaqen këtu.",
+    "nActivites": "{n, plural, one {# aktivitet} other {# aktivitete}}",
+    "etAutresEncore": "Dhe {n, plural, one {# tjetër që vazhdon ende} other {# të tjerë që vazhdojnë ende}}",
+    "jusquAu": "deri më",
+    "enCours": "në vazhdim",
+    "touteLaJournee": "gjithë ditën",
+    "plusAnnoncee": "Nuk publikohet më",
+    "surInscription": "Me regjistrim",
+    "vousYAllez": "Ju shkoni",
+    "avecVousYAllez": "{noms} dhe ju shkoni",
+    "yVont": "{noms} {n, plural, one {shkon} other {shkojnë}}"
+  },
+  "AgendaActivite": {
+    "jusquAu": "deri më",
+    "enCours": "në vazhdim",
+    "touteLaJournee": "Gjithë ditën",
+    "voirDetails": "Shihni të gjitha detajet ↗",
+    "erreurs": {
+      "aucun_destinataire": "Zgjidhni të paktën një rreth, përndryshe askush nuk do ta shohë që do të shkoni.",
+      "cercle_interdit": "Njëri nga këto rrethe nuk ju përket.",
+      "activite_inconnue": "Ky aktivitet nuk ekziston më."
+    },
+    "erreurGenerique": "Regjistrimi nuk u bë dot.",
+    "elleNestPlusAnnoncee": "Nuk publikohet më",
+    "organisateurRetire": "Organizatori nuk e publikon më në faqen e tij. Ndoshta është anuluar ose zhvendosur. Kontrolloni në faqen e tij përpara se të shkoni.",
+    "familles": "{n, plural, one {Një familje shkon} other {Këto familje shkojnë}}",
+    "vous": "Ju",
+    "inscritRetireInfo": "Kishit bërë një regjistrim. Regjistrimi juaj mbetet i dukshëm për rrethet tuaja, që askush të mos shkojë duke besuar se do t'ju gjejë atje. Hiqeni nëse nuk shkoni më.",
+    "rejoindreCercle": "Bashkohuni me një rreth që të mund të thoni se do të shkoni.",
+    "vousYAllezTitre": "Ju shkoni",
+    "vousYAllezQuestion": "Do të shkoni?",
+    "choisissezQuiLeVoit": "Zgjidhni kush e sheh. Vetë aktiviteti mbetet i dukshëm për të gjithë: regjistrimi juaj është ai që është privat.",
+    "visiblePar": "E dukshme për",
+    "avec": "Me",
+    "mettreAJour": "Përditësoni",
+    "nousYAllons": "Ne shkojmë",
+    "finalementNon": "Përfundimisht jo",
+    "source": "Burimi: {nom} · përditësuar më {jour} {mois}",
+    "retourAgenda": "Kthehuni te agjenda"
+  },
+  "AgendaNouveau": {
+    "titre": "Propozoni një aktivitet",
+    "sousTitre": "Një atelie, një festë lagjeje, një vizitë në muze: çka agjenda e kantonit nuk e njeh.",
+    "erreurs": {
+      "titre_invalide": "Duhet një titull, nga 3 deri në 120 shkronja.",
+      "dates_invalides": "Data e fillimit është e nevojshme, dhe mbarimi duhet të vijë pas saj.",
+      "aucun_destinataire": "Zgjidhni të paktën një rreth, përndryshe askush nuk do ta shohë.",
+      "cercle_interdit": "Njëri nga këto rrethe nuk ju përket."
+    },
+    "erreurGenerique": "Aktiviteti nuk u krijua dot.",
+    "rejoindreCercle": "Bashkohuni me një rreth përpara se të propozoni një aktivitet: duhet patjetër dikush të cilit t'ia tregoni.",
+    "labelQuoi": "Çfarë?",
+    "placeholderTitre": "Atelie qeramike në Ludotekë",
+    "debut": "Fillimi",
+    "fin": "Mbarimi",
+    "ou": "Ku?",
+    "aideLieu": "Një vend nga katalogu, ose shkruajeni më poshtë nëse nuk gjendet.",
+    "choisirLieu": "Zgjidhni një vend",
+    "placeholderLieuLibre": "Ose një vend i shkruar plotësisht",
+    "visiblePar": "E dukshme për",
+    "vousYAllezAvec": "Ju shkoni me",
+    "proposerEtSInscrire": "Propozojeni dhe regjistrohuni",
+    "retourAgenda": "Kthehuni te agjenda"
+  },
+  "Cercles": {
+    "titre": "Rrethet tuaja",
+    "sousTitre": "Një klasë, një shkollë, një lagje: njerëz që i njihni tashmë.",
+    "erreurs": {
+      "1": "Duhet një emër rrethi.",
+      "lien_vide": "Ngjisni lidhjen që keni marrë, ose vetëm kodin që përmban."
+    },
+    "erreurGenerique": "Kjo nuk funksionoi.",
+    "videTitre": "Nuk keni ende asnjë rreth",
+    "videTexte": "Një rreth është një klasë, një shkollë, një lagje: familjet për të cilat do të jenë të dukshme daljet tuaja. Për sa kohë nuk keni asnjë, askush nuk i sheh tuajat dhe ju nuk shihni të askujt.",
+    "membresCount": "{count, plural, one {# familje} other {# familje}}",
+    "etiquetteAdmin": "admin",
+    "invitationLabel": "Kam marrë një ftesë",
+    "invitationAide": "Ngjisni lidhjen e marrë me mesazh, ose vetëm kodin që përmban.",
+    "invitationPlaceholder": "https://…/rejoindre/…",
+    "invitationBouton": "Ndiqni ftesën",
+    "creationLabel": "Krijoni një rreth",
+    "creationAide": "Do të jeni administratori i tij: ju do t'i miratoni hyrjet.",
+    "creationPlaceholder": "Klasa e 4P",
+    "creationBouton": "Krijoni"
+  },
+  "Cercle": {
+    "erreurs": {
+      "pas_admin": "Vetëm një administrator mund ta bëjë këtë.",
+      "cible_inconnue": "Ky person nuk është më anëtar i rrethit.",
+      "action_sur_soi": "Për të dalë, përdorni « Dilni nga ky rreth ».",
+      "pas_membre": "Ju nuk bëni pjesë në këtë rreth.",
+      "invitation_inconnue": "Kjo ftesë nuk ekziston më."
+    },
+    "erreurGenerique": "Kjo nuk funksionoi.",
+    "administrateurPastille": "ju e administroni",
+    "statutMembres": "<strong>{count, plural, =1 {Jeni vetëm} other {# familje}}</strong> në këtë rreth",
+    "demandesAValider": "<strong>{count, plural, one {# kërkesë} other {# kërkesa}}</strong> për miratim",
+    "placesOuvertesTexte": "{count, plural, one {# vend i lirë} other {# vende të lira}} në lidhjet tuaja",
+    "soloTitre": "Mungojnë njerëz",
+    "soloTexte": "Për sa kohë jeni vetëm në të, daljet tuaja nuk shihen nga askush. Dërgojani një lidhje ftese familjeve me të cilat u pëlqen fëmijëve tuaj të luajnë.",
+    "invitationCreeTitre": "Lidhja e ftesës u krijua 🔗",
+    "invitationEnvoyerAdmin": "Dërgojani tani familjeve përkatëse, ose bëjuani të skanojnë katrorin. Çdo person që do ta ndjekë do të duhet ta miratoni ju.",
+    "invitationEnvoyerAutre": "Dërgojani tani familjeve përkatëse, ose bëjuani të skanojnë katrorin. Çdo person që do ta ndjekë do të duhet të miratohet nga një administrator.",
+    "invitationUniqueAffichage": "Kjo është hera e vetme që shfaqet. Kopjojeni ose dërgojeni menjëherë: më poshtë, do të shihni vetëm kohëzgjatjen dhe numrin e hyrjeve.",
+    "messageLabel": "Për ta dërguar me mesazh, nëse doni",
+    "demandesTitre": "{count, plural, one {Një person kërkon të hyjë} other {# persona kërkojnë të hyjnë}}",
+    "accepterBouton": "Pranoni",
+    "refuserBouton": "Refuzoni",
+    "membresTitre": "{count, plural, one {# anëtar} other {# anëtarë}}",
+    "decocherExplication": "<strong>Heqja e shenjës</strong> ndërpret dukshmërinë në të dy kahet: ky person nuk i sheh më daljet tuaja, ju nuk i shihni më të tijat, dhe asgjë nuk e njofton për këtë.",
+    "sourdineExplication": "<strong>🔔 dhe 🔕</strong> prekin vetëm telefonin: heshtimi i dikujt do të thotë të mos njoftoheni më për daljet e tij, ndërkohë që vazhdoni t'i shihni në ekran.",
+    "vousMeme": "Ju",
+    "roleAdministrateur": "administrator",
+    "sourdineAriaActiver": "Të njoftoheni sërish për daljet e {nom}",
+    "sourdineAriaCouper": "Të mos njoftoheni më për daljet e {nom}",
+    "sourdineTitreActiver": "Të njoftoheni sërish",
+    "sourdineTitreCouper": "Të mos njoftoheni më",
+    "lienRetablir": "Rivendoseni",
+    "lienDecocher": "Hiqni shenjën",
+    "administrerSommaire": "Administroni këtë person",
+    "retirerRoleAdmin": "Hiqni rolin e administratorit",
+    "nommerAdmin": "Emëroni administrator",
+    "retirerDuCercle": "Hiqeni nga rrethi",
+    "renommerLabel": "Si e quani",
+    "renommerAide": "Ky emër është i dukshëm vetëm për ju. Lëreni siç është për të ruajtur emrin e rrethit, i cili do të ndryshojë nëse administratori i tij e ndryshon.",
+    "enregistrerBouton": "Ruani",
+    "enfantsTitre": "Cilët fëmijë përfshihen në këtë rreth",
+    "enfantsAide": "Askush tjetër nuk e sheh këtë. Kjo shërben që një dalje pa më të madhin të mos shkojë te klasa e tij. Një rreth lagjeje mund të mos përfshijë asnjë fëmijë.",
+    "defautActifTitre": "Daljet tuaja shkojnë te ky rreth",
+    "defautInactifTitre": "Daljet tuaja nuk shkojnë te ky rreth",
+    "defautAide": "Ky është cilësimi i parazgjedhur në momentin e botimit. Gjithsesi, ju gjithmonë i shihni daljet e të tjerëve.",
+    "defautDesactiverBouton": "Mos botoni më aty si parazgjedhje",
+    "defautActiverBouton": "Botoni aty si parazgjedhje",
+    "invitationsTitre": "{count, plural, one {Një lidhje ftese është aktive} other {# lidhje ftese janë aktive}}",
+    "invitationsAide1": "Për sa kohë një lidhje është aktive, kushdo që e ka marrë mund të kërkojë të hyjë. Shfuqizoni atë që ka qarkulluar tepër larg. Pas datës së saj, rrethi vazhdon të ekzistojë: mbyllet vetëm hyrja.",
+    "invitationsAide2": "Një lidhje nuk shfaqet kurrë sërish. « Rikrijoni lidhjen » krijon një të re për të njëjtin numër familjesh dhe e ndërpret të vjetrën për të gjithë, përfshirë ata të cilëve u ishte dërguar tashmë.",
+    "entreesSur": "{useCount, plural, one {# hyrje} other {# hyrje}} nga {maxUses}",
+    "invitationDates": "krijuar më {creeNombre} {creeMois}, skadon më {expireNombre} {expireMois}",
+    "refaireLienBouton": "Rikrijoni lidhjen 🔗",
+    "revoquerBouton": "Shfuqizoni",
+    "inviterTitre": "Ftoni familje",
+    "inviterAide": "Tregoni sa familje prisni: lidhja pushon së funksionuari sapo arrihet ky numër, edhe nëse është përcjellë më tej.",
+    "combienFamillesLabel": "Sa familje",
+    "valableJoursLabel": "E vlefshme (ditë)",
+    "creerLienBouton": "Krijoni lidhjen 🔗",
+    "quitterBouton": "Dilni nga ky rreth",
+    "retourLien": "Kthehuni te rrethet"
+  },
+  "Partage": {
+    "partager": "Ndani",
+    "copie": "U kopjua ✓",
+    "copierLien": "Kopjoni lidhjen",
+    "copierMessage": "Kopjoni mesazhin"
+  },
+  "Rejoindre": {
+    "erreurs": {
+      "invitation_inconnue": "Kjo lidhje ftese nuk ekziston.",
+      "invitation_revoquee": "Kjo ftesë është anuluar.",
+      "invitation_expiree": "Kjo ftesë ka skaduar. Kërkoni një të re.",
+      "invitation_epuisee": "Kjo ftesë është përdorur tashmë nga numri i parashikuar i personave.",
+      "deja_membre": "Ju tashmë bëni pjesë në këtë rreth."
+    },
+    "erreurGenerique": "Kjo ftesë nuk funksionon.",
+    "expireeTitre": "Kjo ftesë nuk funksionon më",
+    "expireeSous": "Mund të ketë skaduar, ose të jetë përdorur tashmë nga numri i parashikuar i familjeve. Prindi që jua dërgoi mund të krijojë një tjetër.",
+    "expireeRetour": "Prapa",
+    "expireeDecouvrir": "Shihni për çfarë shërben Allezou",
+    "titre": "Bashkohuni me një rreth",
+    "titreSous": "Një prind ju fton në « {nomCercle} ».",
+    "explication": "Ndjekja e kësaj lidhjeje nuk ju fut menjëherë: një administrator i rrethit do ta miratojë kërkesën tuaj. Për sa kohë është në pritje, ju nuk shihni asgjë nga ç'ndahet atje.",
+    "demanderBouton": "Kërkoni të bashkoheni",
+    "pasMaintenant": "Jo tani",
+    "continuerBouton": "Vazhdoni",
+    "sansMotDePasse": "Nuk ka fjalëkalim për të zgjedhur: mjafton adresa juaj e email-it."
+  },
+  "RejoindreMerci": {
+    "titre": "Kërkesa u dërgua",
+    "sousTitre": "Një administrator i rrethit do ta marrë. Do ta shihni rrethin të shfaqet në listën tuaj sapo të pranohet.",
+    "continuerBouton": "Vazhdoni"
+  },
+  "Compte": {
+    "titre": "Llogaria juaj",
+    "erreurs": {
+      "nom": "Duhet të shkruani diçka.",
+      "prenom": "Duhet një emër.",
+      "confirmation": "Shkruani {mot} plotësisht për të konfirmuar.",
+      "invitation_inconnue": "Kjo lidhje për prindin tjetër nuk ekziston.",
+      "invitation_utilisee": "Kjo lidhje është përdorur tashmë.",
+      "invitation_expiree": "Kjo lidhje ka skaduar.",
+      "invitation_revoquee": "Kjo lidhje është anuluar.",
+      "invitation_a_soi": "Kjo lidhje është e juaja: jepjani prindit tjetër."
+    },
+    "erreurGenerique": "Kjo nuk funksionoi.",
+    "coparentTitre": "Lidhje për prindin tjetër 🔗",
+    "coparentTexte": "Jepjani personit që rrit të njëjtët fëmijë. Vlen 14 ditë dhe përdoret vetëm një herë. Ai/ajo do të shohë atëherë të njëjtët emra që shihni edhe ju.",
+    "rejoindreTitre": "Bashkohuni me fëmijët e një prindi",
+    "rejoindreTexte": "Do të shihni të njëjtët emra fëmijësh si personi që jua dërgoi këtë lidhje, dhe do të mund t'i shpallni të pranishëm në daljet tuaja.",
+    "accepter": "Pranoni",
+    "nomLabel": "Emri i shfaqur",
+    "nomAide": "Çfarë shohin anëtarët e rretheve tuaja.",
+    "enregistrer": "Ruani",
+    "langueTitre": "Gjuha juaj",
+    "langueTexte": "Ekranet, email-et dhe njoftimet do t'ju flasin në këtë gjuhë.",
+    "enfantsTitre": "Fëmijët tuaj",
+    "renommer": "Riemërtoni",
+    "retirer": "Hiqni",
+    "ajouterEnfantLabel": "Shtoni një fëmijë",
+    "ajouterEnfantPlaceholder": "Léa",
+    "ajouter": "Shtoni",
+    "autreParentTitre": "Prindi tjetër",
+    "autreParentTexte": "Nëse i rritni këta fëmijë të dy bashkë, prindi tjetër mund të ketë llogarinë e vet dhe të shohë të njëjtët emra. Secili ruan rrethet dhe cilësimet e veta.",
+    "creerLien": "Krijoni një lidhje për prindin tjetër",
+    "recuLienLabel": "Keni marrë një lidhje?",
+    "recuLienAide": "Ngjiteni këtu për t'u bashkuar me fëmijët e prindit tjetër.",
+    "recuLienPlaceholder": "Kodi i lidhjes së marrë",
+    "rejoindreBouton": "Bashkohuni",
+    "passkeyTitre": "Hyni pa email",
+    "passkeyTexte": "Regjistrojeni këtë pajisje dhe më pas do të hyni ashtu si e shkyçni: gjurmë gishti, fytyrë ose kod, sipas telefonit tuaj. Asgjë nga kjo nuk na kalon neve: pajisja ruan një çelës që nuk ia zbulon askujt, dhe ne njohim vetëm gjysmën e tij publike. Lidhja me email mbetet aty nëse ndërroni telefon.",
+    "dernier": "hyrja e fundit më {date}",
+    "jamaisUtilise": "nuk është përdorur kurrë",
+    "oublier": "Harroni",
+    "appareilParDefaut": "Kjo pajisje",
+    "lienNotifications": "🔔 Njoftimet",
+    "lienLieux": "📍 Vendet",
+    "lienRelecture": "🧐 Rishikoni agjendën",
+    "lienMesures": "📊 Disa shifra",
+    "supprimerTitre": "Fshini llogarinë tuaj",
+    "supprimerTexte": "Daljet, cilësimet, adresa dhe emri juaj zhduken. Rrethet që keni krijuar vazhdojnë të ekzistojnë për anëtarët e tyre. Një fëmijë të cilit i jeni prindi i vetëm fshihet; nëse ka një prind të dytë, i mbetet atij. Kjo është e pakthyeshme.",
+    "confirmerLabel": "Shkruani {mot} për të konfirmuar",
+    "supprimerBouton": "Fshini përfundimisht",
+    "donneesLien": "Çfarë regjistron Allezou",
+    "nousEcrire": "Na shkruani",
+    "deconnexion": "Dilni"
+  },
+  "Lieux": {
+    "titre": "Vendet",
+    "sousTitre": "Vendet që u propozoni rretheve tuaja. Një emër i shkruar gabim korrigjohet me {n}.",
+    "erreurs": {
+      "nom_invalide": "Ky emër nuk përshtatet: nga 2 deri në 80 shkronja.",
+      "lieu_inconnu": "Ky vend nuk ekziston më.",
+      "adresse_invalide": "Kjo adresë nuk përshtatet: 160 shkronja më së shumti.",
+      "adresse_deja_connue": "Dikush sapo e ka dhënë. Rifreskoni për ta parë.",
+      "categorie_invalide": "Kjo kategori nuk ekziston.",
+      "categorie_deja_connue": "Dikush sapo e ka klasifikuar. Rifreskoni për ta parë.",
+      "proposition_close": "Ky korrigjim është vendosur tashmë.",
+      "proposition_inconnue": "Ky korrigjim nuk ekziston."
+    },
+    "erreurGenerique": "Kjo nuk funksionoi.",
+    "renomme": "Vendi është riemërtuar për të gjithë.",
+    "adresseTrouvee": "Faleminderit: vendi gjendet tani.",
+    "categoriseTexte": "Faleminderit: vendi është klasifikuar.",
+    "retireTexte": "Vendi është hequr nga katalogu.",
+    "proposeTexte": "Korrigjimi juaj është propozuar. Do të zbatohet kur {n} persona ta kenë miratuar, dhe i juaji numërohet tashmë.",
+    "chercherPlaceholder": "Kërkoni një vend",
+    "chercher": "Kërkoni",
+    "videTitreRecherche": "Asnjë vend me këtë emër",
+    "videTitre": "Asnjë vend",
+    "voirTousLieux": "Shihni të gjitha vendet",
+    "ajouterPremier": "Shtoni të parin",
+    "adressePlaceholder": "Ku është? Një adresë, një pikë referimi",
+    "donner": "Dërgoni",
+    "categorieResume": "Çfarë vendi është ky? Park, pishinë…",
+    "nouveauNom": "emër i ri",
+    "nouvelleAdresse": "adresë e re",
+    "votesSur": "{votes} nga {needed} miratime",
+    "voixCompte": "vota juaj numërohet",
+    "jeValide": "Miratoj",
+    "renommerResume": "Emri është shkruar gabim?",
+    "proposer": "Propozoni",
+    "retirerResume": "Ky vend është i tepërt? (rishikim)",
+    "retirerCatalogue": "Hiqeni nga katalogu",
+    "adresseFausseResume": "Adresa është e gabuar?",
+    "adresseFausseTexte": "Ashtu si për emrin, duhen {n} miratime: është ajo që i çon familjet në vendin e duhur.",
+    "ajouterLieu": "Shtoni një vend"
+  },
+  "Reglages": {
+    "titre": "Njoftimet",
+    "sousTitre": "Çdo njoftim duhet të ketë një arsye të qartë. Përndryshe, çaktivizojeni.",
+    "clesManquantes": "Çelësat e njoftimeve nuk janë konfiguruar në këtë server.",
+    "erreurs": {
+      "mot_trop_court": "Një fjalë prej të paktën tri shkronjash: më pak, do të nxirrte gjysmën e agjendës.",
+      "trop_de_mots": "Dhjetë fjalë mjaftojnë. Hiqni njërën për të shtuar një tjetër."
+    },
+    "erreurGenerique": "Kjo nuk funksionoi.",
+    "agendaTitre": "Agjenda e kantonit",
+    "motsTitre": "Fjalët që mbikëqyrni",
+    "motsTexte": "« pishinë », « përralla », « xhudo ». Njoftoheni kur një aktivitet i publikuar përmban njërën prej tyre, në momentin kur shfaqet.",
+    "retirerMot": "hiqni",
+    "ajouterMotLabel": "Shtoni një fjalë",
+    "ajouterMotPlaceholder": "pishinë",
+    "ajouter": "Shtoni",
+    "motsMax": "Dhjetë fjalë, ky është maksimumi. Hiqni njërën për të shtuar një tjetër.",
+    "inscriptionTitre": "Aktivitetet me regjistrim",
+    "etatActif": "aktivizuar",
+    "etatCoupe": "çaktivizuar",
+    "inscriptionTexte": "Njoftoheni sapo shfaqet një aktivitet me regjistrim, pa pritur. Për këto, të njoftohesh vonë është njësoj sikur të mos njoftohesh fare.",
+    "arreterPrevenir": "Mos më njoftoni më",
+    "prevenir": "Më njoftoni",
+    "cerclesTitre": "Rrethet tuaja",
+    "videTitre": "Asnjë rreth",
+    "videTexte": "Cilësimet do të shfaqen këtu sapo të bëheni pjesë e një rrethi.",
+    "enPauseJusqua": "në pauzë deri në {heure}",
+    "presencesLibelle": "Daljet në vazhdim",
+    "inscriptionsLibelle": "Regjistrimet në aktivitete",
+    "enregistrer": "Ruani",
+    "reprendre": "Rifilloni",
+    "pause4h": "Pauzë 4 orë",
+    "pause24h": "Pauzë 24 orë",
+    "membresTexte": "Për të mos u njoftuar më nga një person i caktuar, hapni <lien>listën e anëtarëve</lien>."
+  },
+  "Connexion": {
+    "accroche": "Që fëmijët tanë të takohen jashtë.",
+    "envoyeTitre": "U nis! 📬",
+    "envoyeTexte": "Kontrolloni kutinë tuaj hyrëse. Lidhja vlen një çerek ore dhe funksionon vetëm një herë.",
+    "erreurInconnue": "Kjo lidhje nuk funksionon.",
+    "erreurs": {
+      "adresse_invalide": "Kjo adresë nuk duket e vlefshme.",
+      "trop_de_demandes": "Një lidhje sapo i është dërguar kësaj adrese. Prisni një minutë përpara se të kërkoni një tjetër.",
+      "lien_inconnu": "Kjo lidhje nuk ekziston. Ndoshta është kopjuar gabim.",
+      "lien_expire": "Kjo lidhje ka skaduar. Lidhjet vlejnë vetëm një çerek ore.",
+      "lien_deja_utilise": "Kjo lidhje është përdorur tashmë. Çdo lidhje funksionon vetëm një herë."
+    },
+    "repriseTitre": "Një ftesë ju pret 🔗",
+    "repriseTexte": "Hyni, dhe do të ktheheni atje vetvetiu.",
+    "ongletExistant": "Kam tashmë një llogari",
+    "ongletNouveau": "Nuk kam ende një llogari",
+    "etapes": {
+      "email": {
+        "titre": "Vendosni adresën tuaj të email-it",
+        "texte": "Pasi të vendosni adresën tuaj të email-it më poshtë, merrni një lidhje hyrjeje. Ajo përdoret vetëm një herë dhe vlen 15 minuta."
+      },
+      "noms": {
+        "titre": "Zgjidhni një emër dhe shtoni emrat e fëmijëve tuaj",
+        "texte": "Këta janë emrat që do të shohin përdoruesit e tjerë dhe me të cilët do t'ju identifikojnë."
+      },
+      "cercle": {
+        "titre": "Bashkoheni me një rreth, ose krijoni tuajin",
+        "texte": "Nëse një prind tjetër ju ka dërguar një lidhje, ajo ju fut në rrethin e tij. Përndryshe, krijoni tuajin dhe ftoni familjet që dëshironi."
+      }
+    },
+    "champEmailLabel": "Adresa juaj e email-it",
+    "champEmailAidePremiere": "Kjo është gjithçka nevojitet. Lidhja që do të merrni do të hapë llogarinë tuaj.",
+    "champEmailAideRetour": "Asnjë fjalëkalim për të mbajtur mend: merrni një lidhje që ju fut brenda.",
+    "champEmailPlaceholder": "sophie@shembull.ch",
+    "boutonCommencer": "Filloni",
+    "boutonRecevoirLien": "Merrni lidhjen time",
+    "lienAPropos": "Për çfarë shërben Allezou?",
+    "lienDonnees": "Çfarë regjistron Allezou, dhe kush mund ta shohë"
+  },
+  "CleAcces": {
+    "erreurs": {
+      "defi_absent": "Kërkesa ka skaduar. Provoni sërish.",
+      "cle_inconnue": "Kjo pajisje nuk është regjistruar në asnjë llogari.",
+      "cle_deja_enregistree": "Kjo pajisje është regjistruar tashmë.",
+      "verification_echouee": "Verifikimi dështoi."
+    },
+    "erreurGenerique": "Kjo nuk funksionoi.",
+    "navigateurIncompatibleAjout": "Ky shfletues nuk di të regjistrojë pajisje. Do të vazhdoni të merrni një lidhje me email.",
+    "enregistrementAnnule": "Regjistrimi u anulua.",
+    "appareilEnregistre": "Kjo pajisje është regjistruar ✅ Herën tjetër, mjafton të hapni aplikacionin.",
+    "boutonAjouter": "Regjistroni këtë pajisje 🔐",
+    "navigateurIncompatibleConnexion": "Ky shfletues nuk di të njohë një pajisje të regjistruar.",
+    "boutonEntrer": "Hyni me këtë pajisje 🔐",
+    "aideEntrer": "Nëse e keni regjistruar tashmë këtë telefon."
+  },
+  "NotificationsClient": {
+    "installerTitre": "Shtoni fillimisht Allezou në ekranin tuaj bazë",
+    "installerTexte": "Në iPhone, njoftimet funksionojnë vetëm nga aplikacioni i instaluar. Prekni butonin e ndarjes poshtë Safari-t, pastaj « Në ekranin bazë ». Pastaj kthehuni këtu nga ikona.",
+    "impossibleTexte": "Ky shfletues nuk i lejon njoftimet. Mund të vazhdoni të hapni aplikacionin për të parë kush është jashtë.",
+    "refuseeTitre": "Njoftimet janë të bllokuara",
+    "refuseeTexte": "I keni refuzuar për këtë faqe. Duhen rilejuar te cilësimet e shfletuesit: ne nuk mund ta bëjmë këtë në vendin tuaj.",
+    "activeTitre": "Njoftimet janë aktivizuar ✅",
+    "boutonDesactiver": "Çaktivizoni njoftimet në këtë pajisje",
+    "reglageAppareil": "Cilësim i veçantë për këtë pajisje.",
+    "boutonActiver": "Aktivizoni njoftimet në këtë pajisje 🔔"
+  },
+  "Maintenant": {
+    "bonjour": "Mirëdita {nom} 👋",
+    "titre": "Kush është jashtë?",
+    "nousSortons": "Ne dalim",
+    "titreAucunCercle": "Asnjë rreth për momentin",
+    "texteAucunCercle": "Aty ndahen daljet.",
+    "rejoindreOuCreer": "Bashkohuni ose krijoni një rreth",
+    "titreCanton": "Daljet e ardhshme të kantonit",
+    "sousTitreCanton": "Aktivitetet e komunave të Gjenevës, të hapura për të gjithë.",
+    "jusquAu": "deri më",
+    "voirAgenda": "Shihni gjithë agjendën",
+    "titrePersonneDehors": "Askush nuk është jashtë",
+    "textePersonneDehors": "Në rrethet tuaja, askush nuk ka shpallur ndonjë dalje në vazhdim.",
+    "titreAVenir": "Së shpejti",
+    "aVenirDate": "{jour} që nga ora {heure}",
+    "enCoursJusqua": "deri në {heure}",
+    "vous": "Ju",
+    "avecEnfants": "me {liste}",
+    "annuler": "Anuloni",
+    "rentres": "Kthyer",
+    "pasEncorePrevenu": "askush nuk është njoftuar ende",
+    "vousYEtes": "Ju jeni atje",
+    "nousAussi": "Ne gjithashtu",
+    "autresFamilles": "{n, plural, one {# familje tjetër} other {# familje të tjera}}"
+  },
+  "Sortie": {
+    "erreurs": {
+      "duree_invalide": "Një dalje nuk mund të kalojë tetë orë. Shpallni një të re.",
+      "note_invalide": "Kjo fjalë është tepër e gjatë: 140 shkronja më së shumti.",
+      "pas_auteur": "Vetëm personi që ka shpallur daljen mund ta ndryshojë."
+    },
+    "erreurAjustement": "Rregullimi nuk u bë dot.",
+    "dateAVenir": "{jour} {nombre} {mois}, nga {debut} deri në {fin}",
+    "dateEnCours": "deri në {fin}",
+    "familles": "{n, plural, one {Një familje} other {# familje}}",
+    "vous": "Ju",
+    "avecEnfants": "me {liste}",
+    "aPropose": "propozoi",
+    "quiEstAvecVous": "Kush është me ju?",
+    "decochez": "Hiqni shenjën tek ai ose ajo që në fund nuk është aty.",
+    "mettreAJour": "Përditësoni",
+    "motLabel": "Një fjalë për të tjerët",
+    "motAide": "« Pellgu i fëmijëve është hapur », « jemi nga ana e rrëshqitëses ». 140 shkronja.",
+    "motPlaceholder": "Jemi nga ana e rrëshqitëses",
+    "enregistrer": "Ruani",
+    "encoreUneHeure": "Edhe një orë ⏱️",
+    "annulerCetteSortie": "Anuloni këtë dalje",
+    "nousRentrons": "Po kthehemi",
+    "finalementNousNeVenonsPas": "Përfundimisht nuk vijmë",
+    "retour": "Prapa"
+  },
+  "Sortir": {
+    "titre": "Ne dalim",
+    "sousTitre": "Zgjidhni vendin, pastaj konfirmoni.",
+    "erreurGenerique": "Dalja nuk u shpall dot.",
+    "erreurs": {
+      "aucun_destinataire": "Shënoni të paktën një rreth: një dalje që askush nuk do ta shihte, nuk ka marrës.",
+      "cercle_interdit": "Ju nuk jeni anëtar i njërit prej rretheve të shënuara.",
+      "lieu_inconnu": "Ky vend nuk ekziston më.",
+      "duree_invalide": "Kjo kohëzgjatje nuk është e mundur.",
+      "debut_invalide": "Kjo orë nuk përshtatet: një dalje njoftohet deri në dy javë përpara, jo në të shkuarën."
+    },
+    "videCercleTitre": "Ju duhet fillimisht një rreth",
+    "videCercleTexte": "Një dalje u drejtohet familjeve të një rrethi. Pa rreth, askush nuk do ta shihte, dhe Allezou refuzon ta botojë në boshllëk.",
+    "creerRejoindreCercle": "Krijoni ose bashkohuni me një rreth",
+    "videLieuTitre": "Asnjë vend në katalog",
+    "ajouterPremierLieu": "Shtoni të parin",
+    "visiblePar": "E dukshme për",
+    "aucunCercle": "Nuk keni ende asnjë rreth.",
+    "resumeAvecEnfants": "Me <strong>{noms}</strong> · <strong>{duree}</strong> · tani",
+    "resumeSansEnfants": "<strong>{duree}</strong> · tani",
+    "changer": "Ndryshoni",
+    "quiVient": "Kush vjen",
+    "combienDeTemps": "Sa kohë",
+    "aPartirDeQuand": "Që nga kur",
+    "laissezVide": "Lëreni bosh nëse jeni tashmë atje.",
+    "annuler": "Anuloni"
+  },
+  "SortirLieu": {
+    "titre": "Shtoni një vend",
+    "sousTitre": "Ai bashkohet me katalogun e përbashkët. Nëse emri i tij është shkruar gabim, kushdo mund të propozojë një korrigjim: ai zbatohet kur e kanë miratuar tre persona.",
+    "erreurGenerique": "Ky emër vendi nuk përshtatet.",
+    "erreurs": {
+      "adresse_invalide": "Kjo adresë është tepër e gjatë: 160 shkronja më së shumti.",
+      "position_invalide": "Kjo pikë nuk i ngjan një vendi në Tokë. Vendoseni sërish në hartë."
+    },
+    "labelNom": "Emri i vendit",
+    "placeholderNom": "Parc du Gué",
+    "typeLegend": "Çfarë është?",
+    "labelCommune": "Komuna",
+    "placeholderCommune": "Petit-Lancy",
+    "labelAdresse": "Ku është?",
+    "aideAdresse": "Një adresë ose një pikë referimi, për familjen që nuk e njeh lagjen. Mund ta lini bosh.",
+    "placeholderAdresse": "Chemin du Gué 12, pas shkollës",
+    "ajouter": "Shtoni",
+    "retour": "Prapa"
+  },
+  "ChoixLieu": {
+    "choisirUnLieu": "Zgjidhni një vend",
+    "changer": "Ndryshoni",
+    "ouvrir": "Hapni",
+    "chercherUnLieu": "Kërkoni një vend",
+    "tous": "Të gjithë",
+    "masques": "🙈 Të fshehur ({n})",
+    "reafficher": "Rishfaqni",
+    "retirerDesFavoris": "Hiqni {nom} nga të preferuarit",
+    "mettreEnFavori": "Shtoni {nom} te të preferuarit",
+    "masquerDeLaListe": "Fshihni {nom} nga lista ime",
+    "aucunLieuMasque": "Asnjë vend më i fshehur.",
+    "aucunLieuDeCeNom": "Asnjë vend me këtë emër.",
+    "lieuPasDansListe": "Vendi nuk është në listë",
+    "corrigerUnLieu": "Korrigjoni një vend",
+    "confirmerLaSortie": "Konfirmoni daljen",
+    "confirmationDetail": "Shkon te rrethet e shënuara; anëtarët njoftohen <strong>brenda një minute</strong> — koha për ta anuluar.",
+    "choisirDabordUnLieu": "Zgjidhni fillimisht një vend."
+  },
+  "Position": {
+    "geolocaliser": "🗺️ Gjeolokalizoni në hartë",
+    "carteNonBranchee": "Harta nuk është ende e lidhur: mungon <code>GOOGLE_MAPS_API_KEY</code> (shihni <code>docs/google-maps.md</code>). Pa një pikë të vendosur, vendi do të gjeokodohet nga emri dhe adresa e tij — më pak i saktë, por asgjë nuk bllokohet.",
+    "pointPose": "Pika e vendosur: {lat}, {lon}",
+    "retirer": "Hiqni",
+    "touchezEndroit": "Prekni vendin e saktë."
+  },
+  "Carte": {
+    "voirSurLaCarte": "🗺️ Shihni në hartë",
+    "carteNonBranchee": "Harta nuk është ende e lidhur: mungon <code>GOOGLE_MAPS_API_KEY</code> — udhëzimet gjenden në <code>docs/google-maps.md</code>. Lidhjet ↗ drejt Google Maps funksionojnë tashmë, ato.",
+    "choisi": "✓ Zgjedhur",
+    "choisirCeLieu": "Zgjidhni këtë vend",
+    "voirLaFiche": "Shihni skedën",
+    "itineraire": "Itinerari ↗",
+    "sansPosition": "{n, plural, one {# vend pa pozicion të njohur.} other {# vende pa pozicion të njohur.}}",
+    "sansPositionSeuls": "{n, plural, one {# vend pa pozicion të njohur — harta do të vijë me gjeokodimin.} other {# vende pa pozicion të njohur — harta do të vijë me gjeokodimin.}}"
+  },
+  "Etiquettes": {
+    "categorie": {
+      "parc": "Park",
+      "aire_de_jeux": "Fushë lojërash",
+      "piscine": "Pishinë",
+      "patinoire": "Pistë patinazhi",
+      "ludotheque": "Ludotekë",
+      "bibliotheque": "Bibliotekë",
+      "musee": "Muze",
+      "maison_quartier": "Shtëpia e lagjes",
+      "autre": "Tjetër"
+    },
+    "fenetre": {
+      "aujourd_hui": "Sot",
+      "demain": "Nesër",
+      "week_end": "Këtë fundjavë",
+      "quinzaine": "15 ditë"
+    },
+    "age": {
+      "2": "0-3 vjeç",
+      "5": "4-6 vjeç",
+      "8": "7-10 vjeç",
+      "12": "11 vjeç e sipër"
+    },
+    "tarif": {
+      "gratuit": "Falas",
+      "payant": "Me pagesë",
+      "inconnu": "Çmimi i papërcaktuar"
+    },
+    "acces": {
+      "libre": "Hyrje e lirë",
+      "inscription": "Me regjistrim",
+      "inconnu": "Regjistrimi i papërcaktuar"
+    }
+  }
+}

@@ -19,17 +19,8 @@ export const ACCES = s.eventAcces.enumValues;
 export type Tarif = (typeof TARIFS)[number];
 export type Acces = (typeof ACCES)[number];
 
-export const LIBELLES_TARIF: Record<Tarif, string> = {
-  gratuit: "Gratuit",
-  payant: "Payant",
-  inconnu: "Prix non défini",
-};
-
-export const LIBELLES_ACCES: Record<Acces, string> = {
-  libre: "Entrée libre",
-  inscription: "Sur inscription",
-  inconnu: "Inscription non définie",
-};
+// Les libellés (« Gratuit », « Sur inscription »…) vivent dans messages/*.json,
+// Etiquettes.tarif et Etiquettes.acces : ils se traduisent avec le reste de l'écran.
 
 /** Minuscules et sans accents, mais la ponctuation reste : « 12.- » n'est un prix qu'avec. */
 function aplati(texte: string): string {

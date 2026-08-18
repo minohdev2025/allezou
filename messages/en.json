@@ -1,0 +1,697 @@
+{
+  "Introuvable": {
+    "titre": "This page doesn't exist",
+    "sousTitre": "The link may be incomplete, or the outing it showed has already expired.",
+    "retour": "Back to the home page"
+  },
+  "ChoixLangue": {
+    "label": "Language"
+  },
+  "Navigation": {
+    "sorties": "Outings",
+    "agenda": "Agenda",
+    "cercles": "Circles",
+    "vous": "You"
+  },
+  "Notifications": {
+    "sortieEnCours": "An outing is happening now",
+    "inscriptionAjoutee": "A sign-up was just added",
+    "demandeAdhesion": "Someone wants to join this circle",
+    "agendaTitre": "Agenda",
+    "motCorrespond": "An activity matches “{mot}”",
+    "inscriptionParue": "A registration-required activity was just posted"
+  },
+  "MailConnexion": {
+    "sujet": "Your Allezou sign-in link",
+    "corps": "Hello,\n\nHere's your sign-in link for Allezou:\n{url}\n\nThis link is valid for 15 minutes and works only once.\nIf you didn't request this, ignore this message: no one has access to your account."
+  },
+  "MessageInvitation": {
+    "texte": "Hi! I use Allezou so our kids can meet up outside: it's how we say when we're\nheading to the park, and see the activities in Geneva's municipalities.\n\nIt's free, hosted in Switzerland, with no ads, and for kids we only enter a\nfirst name.\n\nHere's the link to join our circle “{cercle}”:\n{lien}\nIt works until {date}.\n\nWhat the site stores, and who can see it: {donnees}"
+  },
+  "Metadata": {
+    "promesse": "So our kids can meet up outside. Shared outings and the agenda for Geneva families.",
+    "accroche": "So our kids can meet up outside"
+  },
+  "Donnees": {
+    "titreOnglet": "Your data",
+    "retour": "Back"
+  },
+  "Accueil": {
+    "titre": "Allezou",
+    "accroche": "So our kids can meet up outside.",
+    "presentation": "Hi, I'm Michael. I'm a dad to two little girls at school in Petit-Lancy.",
+    "constat": "A park can be full of people without your child finding anyone they know there. They play for ten minutes, then come ask when you're going home. Their classmates might have been at the next park over, or already come and gone an hour earlier.",
+    "mission": "I created Allezou for exactly this: so our kids can enjoy playing outside again, surrounded by kids they love spending time with.",
+    "titreGestes": "What you can do",
+    "gestes": {
+      "cercles": {
+        "titre": "Create your circles",
+        "texte": "You bring together the families your kids love spending time with: their class, the neighborhood. You invite them with a link, by WhatsApp or text message. Nothing you post ever leaves these circles."
+      },
+      "sortir": {
+        "titre": "Say you're heading out",
+        "texte": "You pick a park from the list and the time you'll head home. Families in your circles see it right away. The outing disappears on its own once that time passes."
+      },
+      "voir": {
+        "titre": "See who's outside",
+        "texte": "You see who's out right now, and join them with one tap if you feel like it."
+      },
+      "agenda": {
+        "titre": "Follow the canton's agenda",
+        "texte": "Activities for families in Geneva and its municipalities. Their websites are checked several times a day, so you don't have to watch anything yourself. You check off the ones you'll go to, and see who else from your circles will be there too."
+      },
+      "notifications": {
+        "titre": "Get notified about what you care about",
+        "texte": "You pick your own words: “pool,” “storytime,” “judo.” As soon as an activity containing one of them appears on the agenda, your phone lets you know. You can also ask to be told about every activity that requires registration, since waiting too long for those often means missing out."
+      }
+    },
+    "installation": {
+      "titre": "Add it to your phone",
+      "intro": "Allezou is a website, not a real app you download from a store. Depending on your browser, it may offer to install itself for you. You can say yes: it's just a shortcut to this page that opens full-screen and saves you from signing in every time.",
+      "sansProposition": {
+        "titre": "If nothing is offered",
+        "texte": "Look for “Install app” in your browser's menu, usually in the top right."
+      },
+      "iphone": {
+        "titre": "On iPhone",
+        "texte": "Tap the Share button at the bottom of the screen, then “Add to Home Screen.” It's also the only way to get notifications there."
+      }
+    },
+    "absencesTitre": "What Allezou doesn't do",
+    "absencesIntro": "An app built around children needs to say where it draws the line.",
+    "absences": {
+      "messagerie": {
+        "titre": "No messaging",
+        "texte": "There's no chat thread, and no private messaging."
+      },
+      "position": {
+        "titre": "No GPS location",
+        "texte": "You pick a place from a list. The app never asks your phone where you are."
+      },
+      "historique": {
+        "titre": "No history",
+        "texte": "An outing disappears 24 hours after it ends. No one can piece together where your family went last month."
+      },
+      "inconnus": {
+        "titre": "No strangers",
+        "texte": "You only see members of your circles. Joining an outing doesn't show you to anyone else."
+      },
+      "publicite": {
+        "titre": "No ads, no trackers",
+        "texte": "Your data doesn't go to anyone, and is never sold to anyone."
+      },
+      "prenom": {
+        "titre": "About your kids: just a first name",
+        "texte": "And nothing more: that's all Allezou knows about them."
+      }
+    },
+    "gratuitTitre": "Free, and hosted in Switzerland",
+    "gratuitTexte": "There's no company behind Allezou, and nothing costs anything. The servers are in Switzerland. The agenda fills itself in automatically from the websites of Geneva's municipalities.",
+    "nePlusAfficher": "Don't show this page again on this device",
+    "entrer": "Enter",
+    "lienDonnees": "What Allezou stores, and who can see it"
+  },
+  "Maquette": {
+    "descriptionEcran": "Example screen: Sophie is at Parc du Gué with Léa and Matéo, until 17:00. Two other families are there too, and an “Us too” button lets you join them.",
+    "heureLimite": "until {heure}",
+    "avecEnfants": "with Léa and Matéo",
+    "nousAussi": "Us too",
+    "autresFamilles": "{n, plural, one {# other family} other {# other families}}"
+  },
+  "Bienvenue": {
+    "titre": "Welcome",
+    "sousTitre": "Two questions, and you're done.",
+    "erreur": "Please enter something.",
+    "label": "What name would you like to appear under?",
+    "aide": "This is what members of your circles will see. “Sophie,” “Léa's mom,” whatever you like.",
+    "placeholder": "Léa's mom",
+    "continuer": "Continue"
+  },
+  "BienvenueEnfants": {
+    "titre": "Your kids",
+    "sousTitre": "Their first name is used to show who's at an outing. Allezou doesn't store anything else about them: no age, no last name.",
+    "erreur": "Please enter a first name.",
+    "label": "First name",
+    "ajouter": "Add",
+    "terminer": "Done",
+    "passer": "Skip this step"
+  },
+  "Agenda": {
+    "titre": "Agenda",
+    "sousTitre": "Activities from across the canton, and who from your circles is going.",
+    "filtresResume": "When, age, municipality, price, who's going",
+    "tousLesAges": "All ages",
+    "partout": "Everywhere",
+    "tousLesPrix": "Any price",
+    "avecOuSansInscription": "With or without registration",
+    "monCercle": "👥 Where someone from my circles is going",
+    "proposerActivite": "📅 Suggest an activity",
+    "enCeMoment": "Right now",
+    "enCeMomentCarte": "right now",
+    "rienNeCorrespond": "Nothing matches",
+    "elargirFiltres": "Try widening your filters, or <lien>see everything</lien>.",
+    "activitesApparaitront": "Geneva activities will show up here.",
+    "nActivites": "{n, plural, one {# activity} other {# activities}}",
+    "etAutresEncore": "And {n, plural, one {# more still going} other {# more still going}}",
+    "jusquAu": "until",
+    "enCours": "ongoing",
+    "touteLaJournee": "all day",
+    "plusAnnoncee": "No longer listed",
+    "surInscription": "Registration required",
+    "vousYAllez": "You're going",
+    "avecVousYAllez": "{noms} and you're going",
+    "yVont": "{noms} {n, plural, one {is going} other {are going}}"
+  },
+  "AgendaActivite": {
+    "jusquAu": "until",
+    "enCours": "ongoing",
+    "touteLaJournee": "All day",
+    "voirDetails": "See all the details ↗",
+    "erreurs": {
+      "aucun_destinataire": "Choose at least one circle, or no one will see that you're going.",
+      "cercle_interdit": "One of these circles isn't yours.",
+      "activite_inconnue": "This activity no longer exists."
+    },
+    "erreurGenerique": "Your sign-up couldn't be saved.",
+    "elleNestPlusAnnoncee": "It's no longer listed",
+    "organisateurRetire": "The organizer has taken it off their site. It was probably canceled or moved. Check their page before heading over.",
+    "familles": "{n, plural, one {One family is going} other {These families are going}}",
+    "vous": "You",
+    "inscritRetireInfo": "You were signed up. Your sign-up is still visible to your circles, so no one shows up expecting to find you there. Remove it if you're not going anymore.",
+    "rejoindreCercle": "Join a circle so you can say you're going.",
+    "vousYAllezTitre": "You're going",
+    "vousYAllezQuestion": "Are you going?",
+    "choisissezQuiLeVoit": "Choose who sees it. The activity itself stays visible to everyone: it's your sign-up that's private.",
+    "visiblePar": "Visible to",
+    "avec": "With",
+    "mettreAJour": "Update",
+    "nousYAllons": "We're going",
+    "finalementNon": "Actually, no",
+    "source": "Source: {nom} · updated {jour} {mois}",
+    "retourAgenda": "Back to the agenda"
+  },
+  "AgendaNouveau": {
+    "titre": "Suggest an activity",
+    "sousTitre": "A workshop, a neighborhood party, a museum trip: whatever the canton's agenda doesn't already know about.",
+    "erreurs": {
+      "titre_invalide": "A title is required, between 3 and 120 characters.",
+      "dates_invalides": "A start date is required, and the end must come after it.",
+      "aucun_destinataire": "Choose at least one circle, or no one will see it.",
+      "cercle_interdit": "One of these circles isn't yours."
+    },
+    "erreurGenerique": "The activity couldn't be created.",
+    "rejoindreCercle": "Join a circle before suggesting an activity: there needs to be someone to show it to.",
+    "labelQuoi": "What?",
+    "placeholderTitre": "Pottery workshop at the Toy Library",
+    "debut": "Start",
+    "fin": "End",
+    "ou": "Where?",
+    "aideLieu": "A place from the catalog, or type it in below if it's not there.",
+    "choisirLieu": "Choose a place",
+    "placeholderLieuLibre": "Or spell out a place",
+    "visiblePar": "Visible to",
+    "vousYAllezAvec": "You're going with",
+    "proposerEtSInscrire": "Suggest it and sign up",
+    "retourAgenda": "Back to the agenda"
+  },
+  "Cercles": {
+    "titre": "Your circles",
+    "sousTitre": "A class, a school, a neighborhood: people you already know.",
+    "erreurs": {
+      "1": "A circle name is required.",
+      "lien_vide": "Paste the link you received, or just the code it contains."
+    },
+    "erreurGenerique": "That didn't work.",
+    "videTitre": "You don't have any circles yet",
+    "videTexte": "A circle is a class, a school, a neighborhood: the families who'll be able to see your outings. Until you have one, no one sees yours, and you don't see anyone else's.",
+    "membresCount": "{count, plural, one {# family} other {# families}}",
+    "etiquetteAdmin": "admin",
+    "invitationLabel": "I received an invitation",
+    "invitationAide": "Paste the link you were sent, or just the code it contains.",
+    "invitationPlaceholder": "https://…/rejoindre/…",
+    "invitationBouton": "Continue",
+    "creationLabel": "Create a circle",
+    "creationAide": "You'll be the admin: you'll be the one approving requests to join.",
+    "creationPlaceholder": "Léa's class",
+    "creationBouton": "Create"
+  },
+  "Cercle": {
+    "erreurs": {
+      "pas_admin": "Only an admin can do that.",
+      "cible_inconnue": "This person is no longer a member of the circle.",
+      "action_sur_soi": "To leave, use “Leave this circle.”",
+      "pas_membre": "You're not part of this circle.",
+      "invitation_inconnue": "This invitation no longer exists."
+    },
+    "erreurGenerique": "That didn't work.",
+    "administrateurPastille": "you're an admin",
+    "statutMembres": "<strong>{count, plural, =1 {It's just you} other {# families}}</strong> in this circle",
+    "demandesAValider": "<strong>{count, plural, one {# request} other {# requests}}</strong> to approve",
+    "placesOuvertesTexte": "{count, plural, one {# open spot} other {# open spots}} across your links",
+    "soloTitre": "You need some company",
+    "soloTexte": "As long as you're the only one here, no one sees your outings. Send an invitation link to the families your kids love playing with.",
+    "invitationCreeTitre": "Invitation link created 🔗",
+    "invitationEnvoyerAdmin": "Send it now to the families you have in mind, or have them scan the square. Everyone who follows it will need your approval.",
+    "invitationEnvoyerAutre": "Send it now to the families you have in mind, or have them scan the square. Everyone who follows it will need an admin's approval.",
+    "invitationUniqueAffichage": "This is the only time it's shown. Copy it or send it right away: further down, you'll only see how long it lasts and how many people have used it.",
+    "messageLabel": "To send as a message, if you'd like",
+    "demandesTitre": "{count, plural, one {One person wants to join} other {# people want to join}}",
+    "accepterBouton": "Accept",
+    "refuserBouton": "Decline",
+    "membresTitre": "{count, plural, one {# member} other {# members}}",
+    "decocherExplication": "<strong>Uncheck</strong> cuts visibility both ways: this person no longer sees your outings, you no longer see theirs, and nothing tells them it happened.",
+    "sourdineExplication": "<strong>🔔 and 🔕</strong> only affect your phone: muting someone means you stop getting notified about their outings, but you still see them on screen.",
+    "vousMeme": "You",
+    "roleAdministrateur": "admin",
+    "sourdineAriaActiver": "Get notified again about {nom}'s outings",
+    "sourdineAriaCouper": "Stop getting notified about {nom}'s outings",
+    "sourdineTitreActiver": "Get notified again",
+    "sourdineTitreCouper": "Stop getting notified",
+    "lienRetablir": "Restore",
+    "lienDecocher": "Uncheck",
+    "administrerSommaire": "Manage this person",
+    "retirerRoleAdmin": "Remove admin role",
+    "nommerAdmin": "Make admin",
+    "retirerDuCercle": "Remove from circle",
+    "renommerLabel": "What you call them",
+    "renommerAide": "This name is only visible to you. Leave it as is to keep the circle's own name, which will update if the admin changes it.",
+    "enregistrerBouton": "Save",
+    "enfantsTitre": "Who this circle involves",
+    "enfantsAide": "No one else sees this. It's how an outing without your oldest doesn't get sent to their class. A neighborhood circle might not involve any of them.",
+    "defautActifTitre": "Your outings go to this circle",
+    "defautInactifTitre": "Your outings don't go to this circle",
+    "defautAide": "This is just the default when you post. You'll always see everyone else's outings either way.",
+    "defautDesactiverBouton": "Stop posting here by default",
+    "defautActiverBouton": "Post here by default",
+    "invitationsTitre": "{count, plural, one {One invitation link is active} other {# invitation links are active}}",
+    "invitationsAide1": "As long as a link is alive, anyone who has it can ask to join. Revoke one that's traveled too far. Once it expires, the circle carries on as normal: only new entries stop.",
+    "invitationsAide2": "A link is never shown again after that. “Make a new link” creates one for the same number of families and cuts off the old one for everyone, including anyone it had already been passed to.",
+    "entreesSur": "{useCount, plural, one {# join} other {# joins}} out of {maxUses}",
+    "invitationDates": "created {creeNombre} {creeMois}, expires {expireNombre} {expireMois}",
+    "refaireLienBouton": "Make a new link 🔗",
+    "revoquerBouton": "Revoke",
+    "inviterTitre": "Invite families",
+    "inviterAide": "Say how many families you're expecting: the link stops working once that number is reached, even if it's been forwarded further.",
+    "combienFamillesLabel": "How many families",
+    "valableJoursLabel": "Valid for (days)",
+    "creerLienBouton": "Create the link 🔗",
+    "quitterBouton": "Leave this circle",
+    "retourLien": "Back to circles"
+  },
+  "Partage": {
+    "partager": "Share",
+    "copie": "Copied ✓",
+    "copierLien": "Copy the link",
+    "copierMessage": "Copy the message"
+  },
+  "Rejoindre": {
+    "erreurs": {
+      "invitation_inconnue": "This invitation link doesn't exist.",
+      "invitation_revoquee": "This invitation has been canceled.",
+      "invitation_expiree": "This invitation has expired. Ask for a new one.",
+      "invitation_epuisee": "This invitation has already been used by as many people as it allows.",
+      "deja_membre": "You're already part of this circle."
+    },
+    "erreurGenerique": "This invitation doesn't work.",
+    "expireeTitre": "This invitation no longer works",
+    "expireeSous": "It may have expired, or already been used by as many families as it allows. The parent who sent it to you can make a new one.",
+    "expireeRetour": "Back",
+    "expireeDecouvrir": "See what Allezou is for",
+    "titre": "Join a circle",
+    "titreSous": "A parent is inviting you to “{nomCercle}.”",
+    "explication": "Following this link doesn't get you in right away: an admin of the circle will need to approve your request. While it's pending, you won't see anything shared there.",
+    "demanderBouton": "Ask to join",
+    "pasMaintenant": "Not now",
+    "continuerBouton": "Continue",
+    "sansMotDePasse": "There's no password to set up: your email address is all you need."
+  },
+  "RejoindreMerci": {
+    "titre": "Request sent",
+    "sousTitre": "An admin of the circle will receive it. You'll see the circle appear in your list once it's accepted.",
+    "continuerBouton": "Continue"
+  },
+  "Compte": {
+    "titre": "Your account",
+    "erreurs": {
+      "nom": "Please enter something.",
+      "prenom": "Please enter a first name.",
+      "confirmation": "Type {mot} in full to confirm.",
+      "invitation_inconnue": "This co-parent link doesn't exist.",
+      "invitation_utilisee": "This link has already been used.",
+      "invitation_expiree": "This link has expired.",
+      "invitation_revoquee": "This link has been canceled.",
+      "invitation_a_soi": "This link is yours: give it to the other parent."
+    },
+    "erreurGenerique": "That didn't work.",
+    "coparentTitre": "Link for the other parent 🔗",
+    "coparentTexte": "Give it to the person raising the same kids. It's valid for 14 days and works only once. They'll then see the same first names you do.",
+    "rejoindreTitre": "Join another parent's kids",
+    "rejoindreTexte": "You'll see the same kids' first names as the person who sent you this link, and can mark them present at your outings.",
+    "accepter": "Accept",
+    "nomLabel": "Display name",
+    "nomAide": "What members of your circles see.",
+    "enregistrer": "Save",
+    "langueTitre": "Your language",
+    "langueTexte": "Screens, emails, and notifications will speak to you in this language.",
+    "enfantsTitre": "Your kids",
+    "renommer": "Rename",
+    "retirer": "Remove",
+    "ajouterEnfantLabel": "Add a child",
+    "ajouterEnfantPlaceholder": "Léa",
+    "ajouter": "Add",
+    "autreParentTitre": "The other parent",
+    "autreParentTexte": "If you're raising these kids together, the other parent can have their own account and see the same first names. Each of you keeps your own circles and settings.",
+    "creerLien": "Create a link for the other parent",
+    "recuLienLabel": "Received a link?",
+    "recuLienAide": "Paste it here to join the other parent's kids.",
+    "recuLienPlaceholder": "The code from the link you received",
+    "rejoindreBouton": "Join",
+    "passkeyTitre": "Sign in without email",
+    "passkeyTexte": "Save a passkey on this device, and next time you'll sign in the same way you unlock your phone: fingerprint, face, or passcode. None of that ever reaches us: your device keeps a private key it shares with no one, and we only ever see the public half. The email link is still there if you switch phones.",
+    "dernier": "last used on {date}",
+    "jamaisUtilise": "never used",
+    "oublier": "Forget",
+    "appareilParDefaut": "This device",
+    "lienNotifications": "🔔 Notifications",
+    "lienLieux": "📍 Places",
+    "lienRelecture": "🧐 Review the agenda",
+    "lienMesures": "📊 A few numbers",
+    "supprimerTitre": "Delete your account",
+    "supprimerTexte": "Your outings, settings, email address, and name disappear. Circles you created keep existing for their members. A child with only you as a parent is erased; if they have a second parent, that parent keeps them. This is permanent.",
+    "confirmerLabel": "Type {mot} to confirm",
+    "supprimerBouton": "Delete permanently",
+    "donneesLien": "What Allezou stores",
+    "nousEcrire": "Contact us",
+    "deconnexion": "Sign out"
+  },
+  "Lieux": {
+    "titre": "Places",
+    "sousTitre": "Places you suggest to your circles. A misspelled name gets fixed once {n} people confirm it.",
+    "erreurs": {
+      "nom_invalide": "This name doesn't work: it must be 2 to 80 characters.",
+      "lieu_inconnu": "This place no longer exists.",
+      "adresse_invalide": "This address doesn't work: 160 characters at most.",
+      "adresse_deja_connue": "Someone just added it. Reload to see it.",
+      "categorie_invalide": "This category doesn't exist.",
+      "categorie_deja_connue": "Someone just categorized it. Reload to see it.",
+      "proposition_close": "This correction has already been decided.",
+      "proposition_inconnue": "This correction doesn't exist."
+    },
+    "erreurGenerique": "That didn't work.",
+    "renomme": "The place has been renamed for everyone.",
+    "adresseTrouvee": "Thanks — the place can now be located.",
+    "categoriseTexte": "Thanks — the place is now categorized.",
+    "retireTexte": "The place has been removed from the catalog.",
+    "proposeTexte": "Your correction has been submitted. It'll apply once {n} people have confirmed it, and yours already counts.",
+    "chercherPlaceholder": "Search for a place",
+    "chercher": "Search",
+    "videTitreRecherche": "No place with that name",
+    "videTitre": "No places",
+    "voirTousLieux": "See all places",
+    "ajouterPremier": "Add the first one",
+    "adressePlaceholder": "Where is it? An address, a landmark",
+    "donner": "Submit",
+    "categorieResume": "What kind of place is this? Park, pool…",
+    "nouveauNom": "new name",
+    "nouvelleAdresse": "new address",
+    "votesSur": "{votes} of {needed} confirmations",
+    "voixCompte": "your vote counts",
+    "jeValide": "I confirm",
+    "renommerResume": "Is the name misspelled?",
+    "proposer": "Submit",
+    "retirerResume": "Shouldn't this place be here? (review)",
+    "retirerCatalogue": "Remove from catalog",
+    "adresseFausseResume": "Is the address wrong?",
+    "adresseFausseTexte": "Just like the name, it takes {n} confirmations: the address is what sends families to the right place.",
+    "ajouterLieu": "Add a place"
+  },
+  "Reglages": {
+    "titre": "Notifications",
+    "sousTitre": "Every notification should have a clear reason. If it doesn't, turn it off.",
+    "clesManquantes": "Notification keys aren't configured on this server.",
+    "erreurs": {
+      "mot_trop_court": "A word of at least three letters: any shorter, and it would match half the agenda.",
+      "trop_de_mots": "Ten words is the limit. Remove one to add another."
+    },
+    "erreurGenerique": "That didn't work.",
+    "agendaTitre": "The canton's agenda",
+    "motsTitre": "Words you're watching for",
+    "motsTexte": "“Pool,” “storytime,” “judo.” You'll be notified when a newly published activity contains one of them, right as it appears.",
+    "retirerMot": "remove",
+    "ajouterMotLabel": "Add a word",
+    "ajouterMotPlaceholder": "pool",
+    "ajouter": "Add",
+    "motsMax": "Ten words is the max. Remove one to add another.",
+    "inscriptionTitre": "Activities that require registration",
+    "etatActif": "on",
+    "etatCoupe": "off",
+    "inscriptionTexte": "Get notified the moment a registration-required activity appears, no waiting. For those, finding out late is as good as not finding out.",
+    "arreterPrevenir": "Stop notifying me",
+    "prevenir": "Notify me",
+    "cerclesTitre": "Your circles",
+    "videTitre": "No circles",
+    "videTexte": "Settings will appear here once you're part of a circle.",
+    "enPauseJusqua": "paused until {heure}",
+    "presencesLibelle": "Ongoing outings",
+    "inscriptionsLibelle": "Activity sign-ups",
+    "enregistrer": "Save",
+    "reprendre": "Resume",
+    "pause4h": "Pause 4h",
+    "pause24h": "Pause 24h",
+    "membresTexte": "To stop getting notified about one particular person, open <lien>the member list</lien>."
+  },
+  "Connexion": {
+    "accroche": "So our kids can meet up outside.",
+    "envoyeTitre": "On its way 📬",
+    "envoyeTexte": "Check your inbox. The link is valid for 15 minutes and works only once.",
+    "erreurInconnue": "This link doesn't work.",
+    "erreurs": {
+      "adresse_invalide": "This address doesn't look valid.",
+      "trop_de_demandes": "A link was just sent to this address. Wait a minute before requesting another.",
+      "lien_inconnu": "This link doesn't exist. It may have been copied incorrectly.",
+      "lien_expire": "This link has expired. Links are only valid for 15 minutes.",
+      "lien_deja_utilise": "This link has already been used. Each link only works once."
+    },
+    "repriseTitre": "An invitation is waiting for you 🔗",
+    "repriseTexte": "Sign in and you'll be taken right back to it.",
+    "ongletExistant": "I already have an account",
+    "ongletNouveau": "I don't have an account yet",
+    "etapes": {
+      "email": {
+        "titre": "You enter your email address",
+        "texte": "After entering your email address below, you'll get a sign-in link. It works only once and is valid for 15 minutes."
+      },
+      "noms": {
+        "titre": "You choose a name and add your kids' names",
+        "texte": "These are the names other users will see and use to recognize you."
+      },
+      "cercle": {
+        "titre": "You join a circle, or create your own",
+        "texte": "If another parent sent you a link, it takes you into their circle. Otherwise, create your own and invite the families you choose."
+      }
+    },
+    "champEmailLabel": "Your email address",
+    "champEmailAidePremiere": "That's all it takes. The link you receive will open your account.",
+    "champEmailAideRetour": "No password to remember: you get a link that signs you in.",
+    "champEmailPlaceholder": "sophie@example.ch",
+    "boutonCommencer": "Get started",
+    "boutonRecevoirLien": "Send me my link",
+    "lienAPropos": "What is Allezou for?",
+    "lienDonnees": "What Allezou stores, and who can see it"
+  },
+  "CleAcces": {
+    "erreurs": {
+      "defi_absent": "The request has expired. Try again.",
+      "cle_inconnue": "This device isn't registered to any account.",
+      "cle_deja_enregistree": "This device is already registered.",
+      "verification_echouee": "Verification failed."
+    },
+    "erreurGenerique": "That didn't work.",
+    "navigateurIncompatibleAjout": "This browser can't save a passkey. You'll keep getting a link by email instead.",
+    "enregistrementAnnule": "Setup canceled.",
+    "appareilEnregistre": "This device is set up ✅ Next time, just opening the app will be enough.",
+    "boutonAjouter": "Set up a passkey 🔐",
+    "navigateurIncompatibleConnexion": "This browser can't recognize a registered passkey.",
+    "boutonEntrer": "Sign in with a passkey 🔐",
+    "aideEntrer": "If you've already set up a passkey on this phone."
+  },
+  "NotificationsClient": {
+    "installerTitre": "First, add Allezou to your home screen",
+    "installerTexte": "On iPhone, notifications only work from the installed app. Tap the share button at the bottom of Safari, then “Add to Home Screen.” Then come back here from the icon.",
+    "impossibleTexte": "This browser doesn't support notifications. You can still open the app to see who's outside.",
+    "refuseeTitre": "Notifications are blocked",
+    "refuseeTexte": "You declined them for this site. You'll need to re-enable them in your browser settings: we can't do that for you.",
+    "activeTitre": "Notifications are on ✅",
+    "boutonDesactiver": "Stop notifications on this device",
+    "reglageAppareil": "This setting is specific to this device.",
+    "boutonActiver": "Turn on notifications for this device 🔔"
+  },
+  "Maintenant": {
+    "bonjour": "Hi {nom} 👋",
+    "titre": "Who's outside?",
+    "nousSortons": "We're heading out",
+    "titreAucunCercle": "No circles yet",
+    "texteAucunCercle": "This is where outings get shared.",
+    "rejoindreOuCreer": "Join or create a circle",
+    "titreCanton": "Upcoming outings around the canton",
+    "sousTitreCanton": "Activities from Geneva's municipalities, open to everyone.",
+    "jusquAu": "until",
+    "voirAgenda": "See the full agenda",
+    "titrePersonneDehors": "No one's outside",
+    "textePersonneDehors": "No one in your circles has an outing going on right now.",
+    "titreAVenir": "Coming up",
+    "aVenirDate": "{jour} from {heure}",
+    "enCoursJusqua": "until {heure}",
+    "vous": "You",
+    "avecEnfants": "with {liste}",
+    "annuler": "Cancel",
+    "rentres": "Back home",
+    "pasEncorePrevenu": "no one's been notified yet",
+    "vousYEtes": "You're there",
+    "nousAussi": "Us too",
+    "autresFamilles": "{n, plural, one {# other family} other {# other families}}"
+  },
+  "Sortie": {
+    "erreurs": {
+      "duree_invalide": "An outing can't last longer than eight hours. Declare a new one.",
+      "note_invalide": "This note is too long: 140 characters maximum.",
+      "pas_auteur": "Only the person who posted the outing can change it."
+    },
+    "erreurAjustement": "The change couldn't be made.",
+    "dateAVenir": "{jour} {nombre} {mois}, from {debut} to {fin}",
+    "dateEnCours": "until {fin}",
+    "familles": "{n, plural, one {One family} other {# families}}",
+    "vous": "You",
+    "avecEnfants": "with {liste}",
+    "aPropose": "posted",
+    "quiEstAvecVous": "Who's with you?",
+    "decochez": "Uncheck anyone who isn't actually there.",
+    "mettreAJour": "Update",
+    "motLabel": "A note for others",
+    "motAide": "“Wading pool's open,” “we're by the slide.” 140 characters.",
+    "motPlaceholder": "We're by the slide",
+    "enregistrer": "Save",
+    "encoreUneHeure": "One more hour ⏱️",
+    "annulerCetteSortie": "Cancel this outing",
+    "nousRentrons": "We're heading home",
+    "finalementNousNeVenonsPas": "Actually, we're not coming",
+    "retour": "Back"
+  },
+  "Sortir": {
+    "titre": "We're heading out",
+    "sousTitre": "Choose the place, then confirm.",
+    "erreurGenerique": "The outing couldn't be posted.",
+    "erreurs": {
+      "aucun_destinataire": "Check at least one circle: an outing no one would see doesn't reach anyone.",
+      "cercle_interdit": "You're not a member of one of the circles you checked.",
+      "lieu_inconnu": "This place no longer exists.",
+      "duree_invalide": "This duration isn't possible.",
+      "debut_invalide": "This time doesn't work: an outing can be posted up to two weeks ahead, not in the past."
+    },
+    "videCercleTitre": "You'll need a circle first",
+    "videCercleTexte": "An outing goes out to the families in a circle. Without one, no one would see it, and Allezou won't post it into thin air.",
+    "creerRejoindreCercle": "Create or join a circle",
+    "videLieuTitre": "No places in the catalog",
+    "ajouterPremierLieu": "Add the first one",
+    "visiblePar": "Visible to",
+    "aucunCercle": "You don't have any circles yet.",
+    "resumeAvecEnfants": "With <strong>{noms}</strong> · <strong>{duree}</strong> · now",
+    "resumeSansEnfants": "<strong>{duree}</strong> · now",
+    "changer": "Change",
+    "quiVient": "Who's coming",
+    "combienDeTemps": "How long",
+    "aPartirDeQuand": "Starting when",
+    "laissezVide": "Leave blank if you're already there.",
+    "annuler": "Cancel"
+  },
+  "SortirLieu": {
+    "titre": "Add a place",
+    "sousTitre": "It joins the shared catalog. If the name is misspelled, anyone can suggest a correction: it takes effect once three people have confirmed it.",
+    "erreurGenerique": "This place name doesn't work.",
+    "erreurs": {
+      "adresse_invalide": "This address is too long: 160 characters at most.",
+      "position_invalide": "This point doesn't look like anywhere on Earth. Place it again on the map."
+    },
+    "labelNom": "Place name",
+    "placeholderNom": "Parc du Gué",
+    "typeLegend": "What is it?",
+    "labelCommune": "Municipality",
+    "placeholderCommune": "Petit-Lancy",
+    "labelAdresse": "Where is it?",
+    "aideAdresse": "An address or landmark, for families who don't know the area. You can leave it blank.",
+    "placeholderAdresse": "Chemin du Gué 12, behind the school",
+    "ajouter": "Add",
+    "retour": "Back"
+  },
+  "ChoixLieu": {
+    "choisirUnLieu": "Choose a place",
+    "changer": "Change",
+    "ouvrir": "Open",
+    "chercherUnLieu": "Search for a place",
+    "tous": "All",
+    "masques": "🙈 Hidden ({n})",
+    "reafficher": "Unhide",
+    "retirerDesFavoris": "Remove {nom} from favorites",
+    "mettreEnFavori": "Add {nom} to favorites",
+    "masquerDeLaListe": "Hide {nom} from my list",
+    "aucunLieuMasque": "No hidden places left.",
+    "aucunLieuDeCeNom": "No place with that name.",
+    "lieuPasDansListe": "The place isn't in the list",
+    "corrigerUnLieu": "Correct a place",
+    "confirmerLaSortie": "Confirm the outing",
+    "confirmationDetail": "Goes out to the circles you checked; members are notified <strong>in one minute</strong> — time enough to cancel.",
+    "choisirDabordUnLieu": "Choose a place first."
+  },
+  "Position": {
+    "geolocaliser": "🗺️ Locate on the map",
+    "carteNonBranchee": "The map isn't hooked up yet: <code>GOOGLE_MAPS_API_KEY</code> is missing (see <code>docs/google-maps.md</code>). Without a pin placed, the place will be geocoded from its name and address — less precise, but nothing is blocked.",
+    "pointPose": "Pin placed: {lat}, {lon}",
+    "retirer": "Remove",
+    "touchezEndroit": "Tap the exact spot."
+  },
+  "Carte": {
+    "voirSurLaCarte": "🗺️ View on the map",
+    "carteNonBranchee": "The map isn't hooked up yet: <code>GOOGLE_MAPS_API_KEY</code> is missing — the steps to fix that are in <code>docs/google-maps.md</code>. The ↗ links to Google Maps already work, though.",
+    "choisi": "✓ Selected",
+    "choisirCeLieu": "Choose this place",
+    "voirLaFiche": "View details",
+    "itineraire": "Directions ↗",
+    "sansPosition": "{n, plural, one {# place with no known location.} other {# places with no known location.}}",
+    "sansPositionSeuls": "{n, plural, one {# place with no known location — the map will follow once it's geocoded.} other {# places with no known location — the map will follow once they're geocoded.}}"
+  },
+  "Etiquettes": {
+    "categorie": {
+      "parc": "Park",
+      "aire_de_jeux": "Playground",
+      "piscine": "Pool",
+      "patinoire": "Ice rink",
+      "ludotheque": "Toy library",
+      "bibliotheque": "Library",
+      "musee": "Museum",
+      "maison_quartier": "Community center",
+      "autre": "Other"
+    },
+    "fenetre": {
+      "aujourd_hui": "Today",
+      "demain": "Tomorrow",
+      "week_end": "This weekend",
+      "quinzaine": "Next 15 days"
+    },
+    "age": {
+      "2": "0–3 years",
+      "5": "4–6 years",
+      "8": "7–10 years",
+      "12": "11+ years"
+    },
+    "tarif": {
+      "gratuit": "Free",
+      "payant": "Paid",
+      "inconnu": "Price not specified"
+    },
+    "acces": {
+      "libre": "No registration",
+      "inscription": "Registration required",
+      "inconnu": "Registration not specified"
+    }
+  }
+}

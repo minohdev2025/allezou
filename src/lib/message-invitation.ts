@@ -13,31 +13,24 @@
  *
  * La date de fin y figure parce qu'elle donne la raison de s'y mettre maintenant : un lien
  * sans échéance se range dans « un de ces jours ».
+ *
+ * Il part dans la langue de qui invite : c'est cette personne qui connaît son groupe
+ * WhatsApp, et le lien de la page données qu'il contient est préfixé pour la même langue.
  */
 
 import type { InvitationLisible } from "./circles";
+import { cheminLocalise, jourLong, traducteur } from "./traduire";
 
-/** « 22 août », à l'heure de Genève et non à celle du serveur. */
-export function jourEnFrancais(date: Date): string {
-  return new Intl.DateTimeFormat("fr-CH", {
-    timeZone: "Europe/Zurich",
-    day: "numeric",
-    month: "long",
-  }).format(date);
-}
-
-export function messageDInvitation(invitation: InvitationLisible, lien: string): string {
-  return [
-    `Bonjour ! J'utilise Allezou pour que nos enfants se retrouvent dehors : on y dit quand`,
-    `on sort au parc, et on y voit les activités des communes genevoises.`,
-    ``,
-    `C'est gratuit, hébergé en Suisse, sans publicité, et sur les enfants on n'y met qu'un`,
-    `prénom.`,
-    ``,
-    `Voici le lien pour rejoindre notre cercle « ${invitation.circleName} » :`,
+export function messageDInvitation(
+  invitation: InvitationLisible,
+  lien: string,
+  locale = "fr",
+): string {
+  const t = traducteur(locale, "MessageInvitation");
+  return t("texte", {
+    cercle: invitation.circleName,
     lien,
-    `Il fonctionne jusqu'au ${jourEnFrancais(invitation.expiresAt)}.`,
-    ``,
-    `Ce que le site enregistre et qui peut le voir : ${new URL(lien).origin}/donnees`,
-  ].join("\n");
+    date: jourLong(invitation.expiresAt, locale),
+    donnees: `${new URL(lien).origin}${cheminLocalise(locale, "/donnees")}`,
+  });
 }

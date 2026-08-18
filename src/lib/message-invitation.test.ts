@@ -8,7 +8,8 @@
 
 import { describe, expect, it } from "vitest";
 
-import { jourEnFrancais, messageDInvitation } from "@/lib/message-invitation";
+import { messageDInvitation } from "@/lib/message-invitation";
+import { jourLong } from "@/lib/traduire";
 
 const LIEN = "https://allezou.ch/rejoindre/jeton-abc";
 
@@ -54,7 +55,19 @@ describe("Le message d'invitation", () => {
   it("écrit la date à l'heure de Genève", () => {
     // Une minute avant minuit à Genève, c'est encore la veille : un serveur en UTC
     // annoncerait le lendemain.
-    expect(jourEnFrancais(new Date("2026-08-22T21:59:00Z"))).toBe("22 août");
-    expect(jourEnFrancais(new Date("2026-08-22T22:01:00Z"))).toBe("23 août");
+    expect(jourLong(new Date("2026-08-22T21:59:00Z"), "fr")).toBe("22 août");
+    expect(jourLong(new Date("2026-08-22T22:01:00Z"), "fr")).toBe("23 août");
+  });
+
+  it("part dans la langue de qui invite, avec la page données préfixée", () => {
+    const message = messageDInvitation(
+      { circleName: "Classe de Jules", expiresAt: new Date("2026-08-22T10:00:00+02:00") },
+      LIEN,
+      "sq",
+    );
+
+    expect(message).toContain(LIEN);
+    expect(message).toContain("Classe de Jules");
+    expect(message).toContain("https://allezou.ch/sq/donnees");
   });
 });

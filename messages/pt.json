@@ -1,0 +1,697 @@
+{
+  "Introuvable": {
+    "titre": "Esta página não existe",
+    "sousTitre": "A ligação pode estar incompleta, ou a saída que mostrava já expirou.",
+    "retour": "Voltar ao início"
+  },
+  "ChoixLangue": {
+    "label": "Idioma"
+  },
+  "Navigation": {
+    "sorties": "Saídas",
+    "agenda": "Agenda",
+    "cercles": "Círculos",
+    "vous": "Eu"
+  },
+  "Notifications": {
+    "sortieEnCours": "Uma saída está em curso",
+    "inscriptionAjoutee": "Uma inscrição acabou de ser adicionada",
+    "demandeAdhesion": "Alguém pede para se juntar a este círculo",
+    "agendaTitre": "Agenda",
+    "motCorrespond": "Uma atividade corresponde a « {mot} »",
+    "inscriptionParue": "Foi publicada uma nova atividade com inscrição"
+  },
+  "MailConnexion": {
+    "sujet": "A sua ligação de acesso ao Allezou",
+    "corps": "Olá,\n\nAqui está a sua ligação de acesso ao Allezou:\n{url}\n\nEsta ligação é válida durante 15 minutos e funciona apenas uma vez.\nSe não fez este pedido, ignore esta mensagem: ninguém tem acesso à sua conta."
+  },
+  "MessageInvitation": {
+    "texte": "Olá! Uso o Allezou para que os nossos filhos se encontrem lá fora: dizemos quando\nvamos ao parque, e vemos as atividades das comunas genebrinas.\n\nÉ gratuito, alojado na Suíça, sem publicidade, e sobre as crianças só regista um\nprimeiro nome.\n\nAqui está a ligação para se juntar ao nosso círculo « {cercle} »:\n{lien}\nFunciona até {date}.\n\nO que o site regista e quem o pode ver: {donnees}"
+  },
+  "Metadata": {
+    "promesse": "Para que os nossos filhos se encontrem lá fora. Saídas partilhadas e agenda das famílias genebrinas.",
+    "accroche": "Para que os nossos filhos se encontrem lá fora"
+  },
+  "Donnees": {
+    "titreOnglet": "Os seus dados",
+    "retour": "Voltar"
+  },
+  "Accueil": {
+    "titre": "Allezou",
+    "accroche": "Para que os nossos filhos se encontrem lá fora.",
+    "presentation": "Olá, chamo-me Michael. Sou pai de duas meninas que andam na escola em Petit-Lancy.",
+    "constat": "Um parque pode estar cheio de gente sem que uma criança encontre lá alguém que conhece. Brinca dez minutos, e depois vem perguntar quando é que se vai para casa. Os colegas da turma talvez estivessem no parque ao lado, ou tivessem passado por lá uma hora antes.",
+    "mission": "Criei o Allezou para isso: para que os nossos filhos redescubram o prazer de brincar lá fora, rodeados de crianças com quem gostam de passar tempo.",
+    "titreGestes": "O que se faz aqui",
+    "gestes": {
+      "cercles": {
+        "titre": "Criar os seus círculos",
+        "texte": "Reúne as famílias com quem os seus filhos gostam de passar tempo: a turma, a vizinhança. Convida-as com uma ligação, por WhatsApp ou por mensagem. Nada do que publica sai destes círculos."
+      },
+      "sortir": {
+        "titre": "Dizer que vai sair",
+        "texte": "Escolhe um parque da lista e a hora a que regressa. As famílias dos seus círculos veem-no de imediato. A saída apaga-se sozinha assim que a hora passa."
+      },
+      "voir": {
+        "titre": "Ver quem está lá fora",
+        "texte": "Vê quem saiu neste momento, e junta-se a eles com um clique, se lhe apetecer."
+      },
+      "agenda": {
+        "titre": "Acompanhar a agenda do cantão",
+        "texte": "As atividades para famílias em Genebra e nas comunas. Os seus sites são consultados várias vezes por dia, não precisa de vigiar nada. Assinala aquelas a que vai, e vê quem dos seus círculos também lá vai estar."
+      },
+      "notifications": {
+        "titre": "Ser avisado do que lhe interessa",
+        "texte": "Escolhe as suas palavras: « piscina », « contos », « judo ». Assim que uma atividade que contenha uma delas aparece na agenda, o telemóvel avisa. Também pode pedir para ser avisado de todas as atividades com inscrição, nas quais chegar tarde muitas vezes equivale a não ir."
+      }
+    },
+    "installation": {
+      "titre": "Adicioná-lo ao seu telemóvel",
+      "intro": "O Allezou é um site, não é bem uma aplicação para descarregar numa loja. Consoante o navegador, ele pode propor instalá-lo sozinho. Pode aceitar: é um atalho para esta página, que a abre em ecrã inteiro e evita ter de iniciar sessão de cada vez.",
+      "sansProposition": {
+        "titre": "Se nada lhe for proposto",
+        "texte": "Procure « Instalar aplicação » no menu do navegador, normalmente no canto superior direito."
+      },
+      "iphone": {
+        "titre": "No iPhone",
+        "texte": "Toque no botão Partilhar, na parte inferior do ecrã, e depois em « Adicionar ao Ecrã Principal ». É também a única forma de receber as notificações."
+      }
+    },
+    "absencesTitre": "O que o Allezou não faz",
+    "absencesIntro": "Uma aplicação que fala de crianças tem de dizer onde para.",
+    "absences": {
+      "messagerie": {
+        "titre": "Sem mensagens",
+        "texte": "Não há fio de conversa nem mensagens privadas."
+      },
+      "position": {
+        "titre": "Sem posição GPS",
+        "texte": "Escolhe um local numa lista. A aplicação nunca pergunta ao seu telemóvel onde está."
+      },
+      "historique": {
+        "titre": "Sem histórico",
+        "texte": "Uma saída desaparece 24 horas depois de terminar. Ninguém consegue reconstituir onde a sua família esteve no mês passado."
+      },
+      "inconnus": {
+        "titre": "Sem desconhecidos",
+        "texte": "Só vê os membros dos seus círculos. Juntar-se a uma saída não o(a) mostra a mais ninguém."
+      },
+      "publicite": {
+        "titre": "Sem publicidade, sem rastreadores",
+        "texte": "Os seus dados não vão para lado nenhum, e não são vendidos a ninguém."
+      },
+      "prenom": {
+        "titre": "Sobre os seus filhos, um primeiro nome",
+        "texte": "E nada mais: é tudo o que o Allezou sabe sobre eles."
+      }
+    },
+    "gratuitTitre": "Gratuito, e alojado na Suíça",
+    "gratuitTexte": "Não há nenhuma empresa por trás do Allezou e nada é pago. Os servidores estão na Suíça. A agenda preenche-se sozinha a partir dos sites das comunas genebrinas.",
+    "nePlusAfficher": "Não voltar a mostrar esta página neste dispositivo",
+    "entrer": "Entrar",
+    "lienDonnees": "O que o Allezou regista, e quem o pode ver"
+  },
+  "Maquette": {
+    "descriptionEcran": "Exemplo de ecrã: a Sophie está no Parque do Gué com a Léa e o Matéo, até às 17:00. Duas outras famílias estão com eles, e um botão « Nós também » permite juntar-se a eles.",
+    "heureLimite": "até às {heure}",
+    "avecEnfants": "com a Léa e o Matéo",
+    "nousAussi": "Nós também",
+    "autresFamilles": "{n, plural, one {# outra família} other {# outras famílias}}"
+  },
+  "Bienvenue": {
+    "titre": "Boas-vindas",
+    "sousTitre": "Duas perguntas, e está feito.",
+    "erreur": "É preciso escrever algo.",
+    "label": "Com que nome quer aparecer?",
+    "aide": "É isso que os membros dos seus círculos vão ver. « Sophie », « Mãe da Léa », o que preferir.",
+    "placeholder": "Mãe da Léa",
+    "continuer": "Continuar"
+  },
+  "BienvenueEnfants": {
+    "titre": "Os seus filhos",
+    "sousTitre": "O primeiro nome deles serve para dizer quem está presente numa saída. O Allezou não regista mais nada sobre eles: nem idade, nem apelido.",
+    "erreur": "É preciso um primeiro nome.",
+    "label": "Primeiro nome",
+    "ajouter": "Adicionar",
+    "terminer": "Pronto",
+    "passer": "Saltar esta etapa"
+  },
+  "Agenda": {
+    "titre": "Agenda",
+    "sousTitre": "As atividades do cantão, e quem dos seus círculos vai.",
+    "filtresResume": "Quando, idade, comuna, preço, quem vai",
+    "tousLesAges": "Todas as idades",
+    "partout": "Qualquer lugar",
+    "tousLesPrix": "Todos os preços",
+    "avecOuSansInscription": "Com ou sem inscrição",
+    "monCercle": "👥 Onde vai alguém dos meus círculos",
+    "proposerActivite": "📅 Propor uma atividade",
+    "enCeMoment": "Neste momento",
+    "enCeMomentCarte": "neste momento",
+    "rienNeCorrespond": "Nada corresponde",
+    "elargirFiltres": "Tente alargar os filtros, ou <lien>ver tudo</lien>.",
+    "activitesApparaitront": "As atividades genebrinas vão aparecer aqui.",
+    "nActivites": "{n, plural, one {# atividade} other {# atividades}}",
+    "etAutresEncore": "E {n, plural, one {# outra que ainda dura} other {# outras que ainda duram}}",
+    "jusquAu": "até",
+    "enCours": "em curso",
+    "touteLaJournee": "todo o dia",
+    "plusAnnoncee": "Não anunciada",
+    "surInscription": "Com inscrição",
+    "vousYAllez": "Vai",
+    "avecVousYAllez": "{noms} e vai também",
+    "yVont": "{noms} {n, plural, one {vai} other {vão}}"
+  },
+  "AgendaActivite": {
+    "jusquAu": "até",
+    "enCours": "em curso",
+    "touteLaJournee": "Todo o dia",
+    "voirDetails": "Ver todos os detalhes ↗",
+    "erreurs": {
+      "aucun_destinataire": "Escolha pelo menos um círculo: sem isso, ninguém saberá que vai.",
+      "cercle_interdit": "Um destes círculos não lhe pertence.",
+      "activite_inconnue": "Esta atividade já não existe."
+    },
+    "erreurGenerique": "Não foi possível fazer a inscrição.",
+    "elleNestPlusAnnoncee": "Já não está anunciada",
+    "organisateurRetire": "O organizador deixou de a publicar no site. Provavelmente foi cancelada ou mudou de data. Verifique na página antes de se deslocar.",
+    "familles": "{n, plural, one {Uma família vai} other {Estas famílias vão}}",
+    "vous": "Eu",
+    "inscritRetireInfo": "Estava inscrito(a). A sua inscrição continua visível para os seus círculos, para que ninguém se desloque à espera de se encontrar consigo. Retire-a se deixou de ir.",
+    "rejoindreCercle": "Junte-se a um círculo para poder dizer que vai.",
+    "vousYAllezTitre": "Vai",
+    "vousYAllezQuestion": "Vai?",
+    "choisissezQuiLeVoit": "Escolha quem vê isto. A atividade continua visível para todos: é a sua inscrição que é privada.",
+    "visiblePar": "Visível para",
+    "avec": "Com",
+    "mettreAJour": "Atualizar",
+    "nousYAllons": "Vamos",
+    "finalementNon": "Afinal não",
+    "source": "Fonte: {nom} · atualizado a {jour} de {mois}",
+    "retourAgenda": "Voltar à agenda"
+  },
+  "AgendaNouveau": {
+    "titre": "Propor uma atividade",
+    "sousTitre": "Uma oficina, uma festa de bairro, uma saída ao museu: o que a agenda do cantão não conhece.",
+    "erreurs": {
+      "titre_invalide": "É preciso um título, de 3 a 120 carateres.",
+      "dates_invalides": "A data de início é obrigatória, e o fim tem de vir depois dela.",
+      "aucun_destinataire": "Escolha pelo menos um círculo, senão ninguém a verá.",
+      "cercle_interdit": "Um destes círculos não lhe pertence."
+    },
+    "erreurGenerique": "Não foi possível criar a atividade.",
+    "rejoindreCercle": "Junte-se a um círculo antes de propor uma atividade: é preciso ter a quem a mostrar.",
+    "labelQuoi": "O quê?",
+    "placeholderTitre": "Oficina de olaria na Ludoteca",
+    "debut": "Início",
+    "fin": "Fim",
+    "ou": "Onde?",
+    "aideLieu": "Um local do catálogo, ou escreva-o abaixo se não estiver lá.",
+    "choisirLieu": "Escolher um local",
+    "placeholderLieuLibre": "Ou escreva o local por extenso",
+    "visiblePar": "Visível para",
+    "vousYAllezAvec": "Vai com",
+    "proposerEtSInscrire": "Propor e inscrever-se",
+    "retourAgenda": "Voltar à agenda"
+  },
+  "Cercles": {
+    "titre": "Os seus círculos",
+    "sousTitre": "Uma turma, uma escola, uma vizinhança: pessoas que já conhece.",
+    "erreurs": {
+      "1": "É preciso um nome de círculo.",
+      "lien_vide": "Cole a ligação que recebeu, ou apenas o código que ela contém."
+    },
+    "erreurGenerique": "Isso não funcionou.",
+    "videTitre": "Ainda não tem nenhum círculo",
+    "videTexte": "Um círculo é uma turma, uma escola, uma vizinhança: as famílias para quem as suas saídas ficam visíveis. Enquanto não tiver nenhum, ninguém vê as suas, e não vê as de mais ninguém.",
+    "membresCount": "{count, plural, one {# família} other {# famílias}}",
+    "etiquetteAdmin": "admin",
+    "invitationLabel": "Recebi um convite",
+    "invitationAide": "Cole a ligação recebida por mensagem, ou apenas o código que ela contém.",
+    "invitationPlaceholder": "https://…/rejoindre/…",
+    "invitationBouton": "Seguir o convite",
+    "creationLabel": "Criar um círculo",
+    "creationAide": "Vai ser o(a) administrador(a) do círculo: é quem vai validar as entradas.",
+    "creationPlaceholder": "Turma do 4.º ano",
+    "creationBouton": "Criar"
+  },
+  "Cercle": {
+    "erreurs": {
+      "pas_admin": "Só um administrador pode fazer isto.",
+      "cible_inconnue": "Esta pessoa já não é membro do círculo.",
+      "action_sur_soi": "Para sair, utilize « Sair deste círculo ».",
+      "pas_membre": "Não faz parte deste círculo.",
+      "invitation_inconnue": "Este convite já não existe."
+    },
+    "erreurGenerique": "Isso não funcionou.",
+    "administrateurPastille": "administra-o",
+    "statutMembres": "<strong>{count, plural, =1 {Está sozinho(a)} other {# famílias}}</strong> neste círculo",
+    "demandesAValider": "<strong>{count, plural, one {# pedido} other {# pedidos}}</strong> por validar",
+    "placesOuvertesTexte": "{count, plural, one {# vaga aberta} other {# vagas abertas}} nas suas ligações",
+    "soloTitre": "Falta gente",
+    "soloTexte": "Enquanto estiver sozinho(a) aqui, as suas saídas não são vistas por ninguém. Envie uma ligação de convite às famílias com quem os seus filhos gostam de brincar.",
+    "invitationCreeTitre": "Ligação de convite criada 🔗",
+    "invitationEnvoyerAdmin": "Envie-a agora às famílias em questão, ou peça-lhes que leiam o código. Cada pessoa que a seguir terá de ser validada por si.",
+    "invitationEnvoyerAutre": "Envie-a agora às famílias em questão, ou peça-lhes que leiam o código. Cada pessoa que a seguir terá de ser validada por um administrador.",
+    "invitationUniqueAffichage": "Esta é a única vez que aparece. Copie-a ou envie-a já: mais abaixo, só verá a validade e o número de entradas.",
+    "messageLabel": "Para enviar por mensagem, se quiser",
+    "demandesTitre": "{count, plural, one {Uma pessoa pede para entrar} other {# pessoas pedem para entrar}}",
+    "accepterBouton": "Aceitar",
+    "refuserBouton": "Recusar",
+    "membresTitre": "{count, plural, one {# membro} other {# membros}}",
+    "decocherExplication": "<strong>Desmarcar</strong> corta a visibilidade nos dois sentidos: deixam de ver as saídas um do outro, sem que nada os avise disso.",
+    "sourdineExplication": "<strong>🔔 e 🔕</strong> só afetam o telemóvel: silenciar alguém significa deixar de receber avisos das saídas dessa pessoa, continuando a vê-las no ecrã.",
+    "vousMeme": "Eu",
+    "roleAdministrateur": "administrador",
+    "sourdineAriaActiver": "Voltar a receber avisos das saídas de {nom}",
+    "sourdineAriaCouper": "Deixar de receber avisos das saídas de {nom}",
+    "sourdineTitreActiver": "Voltar a receber avisos",
+    "sourdineTitreCouper": "Deixar de receber avisos",
+    "lienRetablir": "Restabelecer",
+    "lienDecocher": "Desmarcar",
+    "administrerSommaire": "Administrar esta pessoa",
+    "retirerRoleAdmin": "Remover o cargo de administrador",
+    "nommerAdmin": "Nomear administrador",
+    "retirerDuCercle": "Remover do círculo",
+    "renommerLabel": "Como lhe chama",
+    "renommerAide": "Este nome só é visível para si. Deixe-o como está para manter o nome do círculo, que muda automaticamente se o administrador o alterar.",
+    "enregistrerBouton": "Guardar",
+    "enfantsTitre": "Que filhos este círculo envolve",
+    "enfantsAide": "Mais ninguém vê isto. Serve para que uma saída sem o(a) filho(a) mais velho(a) não vá parar à turma errada. Um círculo de vizinhança pode não estar ligado a nenhum filho.",
+    "defautActifTitre": "As suas saídas são enviadas para este círculo",
+    "defautInactifTitre": "As suas saídas não são enviadas para este círculo",
+    "defautAide": "É a definição por defeito no momento de publicar. De qualquer forma, continua sempre a ver as saídas dos outros.",
+    "defautDesactiverBouton": "Deixar de publicar aqui por defeito",
+    "defautActiverBouton": "Publicar aqui por defeito",
+    "invitationsTitre": "{count, plural, one {Uma ligação de convite está ativa} other {# ligações de convite estão ativas}}",
+    "invitationsAide1": "Enquanto uma ligação estiver ativa, quem a receber pode pedir para entrar. Revogue a que tiver circulado longe demais. Depois da validade, o círculo continua a existir: é só a entrada que se fecha.",
+    "invitationsAide2": "Uma ligação nunca volta a ser mostrada. « Refazer a ligação » cria uma nova para o mesmo número de famílias e corta a antiga para todos, incluindo quem já a tinha recebido.",
+    "entreesSur": "{useCount, plural, one {# entrada} other {# entradas}} de {maxUses}",
+    "invitationDates": "criada a {creeNombre} de {creeMois}, expira a {expireNombre} de {expireMois}",
+    "refaireLienBouton": "Refazer a ligação 🔗",
+    "revoquerBouton": "Revogar",
+    "inviterTitre": "Convidar famílias",
+    "inviterAide": "Indique quantas famílias espera: a ligação deixa de funcionar assim que esse número for atingido, mesmo que tenha sido reencaminhada mais longe.",
+    "combienFamillesLabel": "Quantas famílias",
+    "valableJoursLabel": "Validade (dias)",
+    "creerLienBouton": "Criar a ligação 🔗",
+    "quitterBouton": "Sair deste círculo",
+    "retourLien": "Voltar aos círculos"
+  },
+  "Partage": {
+    "partager": "Partilhar",
+    "copie": "Copiado ✓",
+    "copierLien": "Copiar a ligação",
+    "copierMessage": "Copiar a mensagem"
+  },
+  "Rejoindre": {
+    "erreurs": {
+      "invitation_inconnue": "Esta ligação de convite não existe.",
+      "invitation_revoquee": "Este convite foi cancelado.",
+      "invitation_expiree": "Este convite expirou. Peça um novo.",
+      "invitation_epuisee": "Este convite já foi usado pelo número de pessoas previsto.",
+      "deja_membre": "Já faz parte deste círculo."
+    },
+    "erreurGenerique": "Este convite não funciona.",
+    "expireeTitre": "Este convite já não funciona",
+    "expireeSous": "Pode ter expirado, ou já ter sido usado pelo número de famílias previsto. Quem lhe enviou este convite pode criar um novo.",
+    "expireeRetour": "Voltar",
+    "expireeDecouvrir": "Ver para que serve o Allezou",
+    "titre": "Juntar-se a um círculo",
+    "titreSous": "Recebeu um convite de um progenitor para « {nomCercle} ».",
+    "explication": "Seguir esta ligação não faz com que entre de imediato: um administrador do círculo vai validar o seu pedido. Enquanto estiver pendente, não verá nada do que é partilhado ali.",
+    "demanderBouton": "Pedir para entrar",
+    "pasMaintenant": "Agora não",
+    "continuerBouton": "Continuar",
+    "sansMotDePasse": "Não há palavra-passe para escolher: basta o seu endereço de e-mail."
+  },
+  "RejoindreMerci": {
+    "titre": "Pedido enviado",
+    "sousTitre": "Um administrador do círculo vai recebê-lo. O círculo vai aparecer na sua lista assim que for aceite.",
+    "continuerBouton": "Continuar"
+  },
+  "Compte": {
+    "titre": "A sua conta",
+    "erreurs": {
+      "nom": "É preciso escrever algo.",
+      "prenom": "É preciso um primeiro nome.",
+      "confirmation": "Escreva {mot} por extenso para confirmar.",
+      "invitation_inconnue": "Esta ligação para o outro progenitor não existe.",
+      "invitation_utilisee": "Esta ligação já foi usada.",
+      "invitation_expiree": "Esta ligação expirou.",
+      "invitation_revoquee": "Esta ligação foi cancelada.",
+      "invitation_a_soi": "Esta ligação é sua: dê-a ao outro progenitor."
+    },
+    "erreurGenerique": "Isso não funcionou.",
+    "coparentTitre": "Ligação para o outro progenitor 🔗",
+    "coparentTexte": "Dê-a à pessoa que educa os mesmos filhos. É válida durante 14 dias e serve apenas uma vez. Essa pessoa passará a ver os mesmos primeiros nomes que si.",
+    "rejoindreTitre": "Juntar-se aos filhos de um progenitor",
+    "rejoindreTexte": "Passará a ver os mesmos primeiros nomes de filhos que a pessoa que lhe enviou esta ligação, e poderá declará-los presentes nas suas saídas.",
+    "accepter": "Aceitar",
+    "nomLabel": "Nome apresentado",
+    "nomAide": "O que os membros dos seus círculos veem.",
+    "enregistrer": "Guardar",
+    "langueTitre": "O seu idioma",
+    "langueTexte": "Os ecrãs, os e-mails e as notificações vão falar-lhe neste idioma.",
+    "enfantsTitre": "Os seus filhos",
+    "renommer": "Renomear",
+    "retirer": "Remover",
+    "ajouterEnfantLabel": "Adicionar um filho",
+    "ajouterEnfantPlaceholder": "Léa",
+    "ajouter": "Adicionar",
+    "autreParentTitre": "O outro progenitor",
+    "autreParentTexte": "Se cria estes filhos a dois, o outro progenitor pode ter a sua própria conta e ver os mesmos primeiros nomes. Cada um mantém os seus círculos e as suas definições.",
+    "creerLien": "Criar uma ligação para o outro progenitor",
+    "recuLienLabel": "Recebeu uma ligação?",
+    "recuLienAide": "Cole-a aqui para se juntar aos filhos do outro progenitor.",
+    "recuLienPlaceholder": "O código da ligação recebida",
+    "rejoindreBouton": "Juntar-se",
+    "passkeyTitre": "Entrar sem e-mail",
+    "passkeyTexte": "Registe este dispositivo e depois vai entrar da mesma forma que o desbloqueia: impressão digital, rosto ou código, consoante o telemóvel. Nada disto nos é transmitido: o dispositivo guarda uma chave que não revela a ninguém, e nós só conhecemos a metade pública. A ligação por e-mail continua disponível se mudar de telemóvel.",
+    "dernier": "última entrada a {date}",
+    "jamaisUtilise": "nunca utilizado",
+    "oublier": "Esquecer",
+    "appareilParDefaut": "Este dispositivo",
+    "lienNotifications": "🔔 Notificações",
+    "lienLieux": "📍 Os locais",
+    "lienRelecture": "🧐 Rever a agenda",
+    "lienMesures": "📊 Alguns números",
+    "supprimerTitre": "Eliminar a sua conta",
+    "supprimerTexte": "As suas saídas, as suas definições, o seu e-mail e o seu nome desaparecem. Os círculos que criou continuam a existir para os seus membros. Um filho de que seja o único progenitor é apagado; se tiver um segundo progenitor, este mantém-no. É definitivo.",
+    "confirmerLabel": "Escreva {mot} para confirmar",
+    "supprimerBouton": "Eliminar definitivamente",
+    "donneesLien": "O que o Allezou regista",
+    "nousEcrire": "Escrever-nos",
+    "deconnexion": "Terminar sessão"
+  },
+  "Lieux": {
+    "titre": "Os locais",
+    "sousTitre": "Os locais que propõe aos seus círculos. Um nome mal escrito corrige-se com {n} validações.",
+    "erreurs": {
+      "nom_invalide": "Este nome não é válido: de 2 a 80 carateres.",
+      "lieu_inconnu": "Este local já não existe.",
+      "adresse_invalide": "Esta morada não é válida: no máximo 160 carateres.",
+      "adresse_deja_connue": "Alguém acabou de a indicar. Recarregue a página para a ver.",
+      "categorie_invalide": "Esta categoria não existe.",
+      "categorie_deja_connue": "Alguém acabou de o classificar. Recarregue a página para o ver.",
+      "proposition_close": "Esta correção já foi decidida.",
+      "proposition_inconnue": "Esta correção não existe."
+    },
+    "erreurGenerique": "Isso não funcionou.",
+    "renomme": "O local foi renomeado para todos.",
+    "adresseTrouvee": "Obrigado: o local já pode ser encontrado.",
+    "categoriseTexte": "Obrigado: o local está classificado.",
+    "retireTexte": "O local foi removido do catálogo.",
+    "proposeTexte": "A sua correção foi proposta. Vai aplicar-se quando {n} pessoas a tiverem validado, e a sua já conta.",
+    "chercherPlaceholder": "Procurar um local",
+    "chercher": "Procurar",
+    "videTitreRecherche": "Nenhum local com este nome",
+    "videTitre": "Nenhum local",
+    "voirTousLieux": "Ver todos os locais",
+    "ajouterPremier": "Adicionar o primeiro",
+    "adressePlaceholder": "Onde é? Uma morada, um ponto de referência",
+    "donner": "Indicar",
+    "categorieResume": "O que é este local? Parque, piscina…",
+    "nouveauNom": "novo nome",
+    "nouvelleAdresse": "nova morada",
+    "votesSur": "{votes} de {needed} validações",
+    "voixCompte": "o seu voto conta",
+    "jeValide": "Valido",
+    "renommerResume": "O nome está mal escrito?",
+    "proposer": "Propor",
+    "retirerResume": "Este local está a mais? (revisão)",
+    "retirerCatalogue": "Remover do catálogo",
+    "adresseFausseResume": "A morada está errada?",
+    "adresseFausseTexte": "Tal como para o nome, são precisas {n} validações: é ela que leva as famílias ao sítio certo.",
+    "ajouterLieu": "Adicionar um local"
+  },
+  "Reglages": {
+    "titre": "Notificações",
+    "sousTitre": "Cada notificação deve ter um motivo claro. Caso contrário, desligue-a.",
+    "clesManquantes": "As chaves de notificação não estão configuradas neste servidor.",
+    "erreurs": {
+      "mot_trop_court": "Uma palavra de três letras no mínimo: com menos, traria metade da agenda.",
+      "trop_de_mots": "Dez palavras já bastam. Remova uma para poder adicionar outra."
+    },
+    "erreurGenerique": "Isso não funcionou.",
+    "agendaTitre": "A agenda do cantão",
+    "motsTitre": "As palavras que vigia",
+    "motsTexte": "« piscina », « contos », « judo ». Recebe um aviso assim que for publicada uma atividade que contenha uma destas palavras.",
+    "retirerMot": "remover",
+    "ajouterMotLabel": "Adicionar uma palavra",
+    "ajouterMotPlaceholder": "piscina",
+    "ajouter": "Adicionar",
+    "motsMax": "Dez palavras é o máximo. Remova uma para adicionar outra.",
+    "inscriptionTitre": "As atividades com inscrição",
+    "etatActif": "ativado",
+    "etatCoupe": "desligado",
+    "inscriptionTexte": "Aviso imediato assim que for publicada uma atividade com inscrição, sem esperar. Para essas, avisar tarde equivale a não avisar.",
+    "arreterPrevenir": "Deixar de me avisar",
+    "prevenir": "Avisar-me",
+    "cerclesTitre": "Os seus círculos",
+    "videTitre": "Nenhum círculo",
+    "videTexte": "As definições vão aparecer aqui assim que fizer parte de um círculo.",
+    "enPauseJusqua": "em pausa até às {heure}",
+    "presencesLibelle": "As saídas em curso",
+    "inscriptionsLibelle": "As inscrições em atividades",
+    "enregistrer": "Guardar",
+    "reprendre": "Retomar",
+    "pause4h": "Pausa de 4 h",
+    "pause24h": "Pausa de 24 h",
+    "membresTexte": "Para deixar de receber avisos de uma pessoa em particular, abra <lien>a lista de membros</lien>."
+  },
+  "Connexion": {
+    "accroche": "Para que os nossos filhos se encontrem lá fora.",
+    "envoyeTitre": "Está a caminho 📬",
+    "envoyeTexte": "Veja a sua caixa de entrada. A ligação é válida por um quarto de hora e funciona apenas uma vez.",
+    "erreurInconnue": "Esta ligação não funciona.",
+    "erreurs": {
+      "adresse_invalide": "Este endereço não parece válido.",
+      "trop_de_demandes": "Já foi enviada uma ligação para este endereço. Aguarde um minuto antes de pedir outra.",
+      "lien_inconnu": "Esta ligação não existe. Pode ter sido mal copiada.",
+      "lien_expire": "Esta ligação expirou. As ligações só são válidas durante um quarto de hora.",
+      "lien_deja_utilise": "Esta ligação já foi usada. Cada ligação funciona apenas uma vez."
+    },
+    "repriseTitre": "Um convite está à sua espera 🔗",
+    "repriseTexte": "Inicie sessão e voltará automaticamente a ele.",
+    "ongletExistant": "Já tenho conta",
+    "ongletNouveau": "Ainda não tenho conta",
+    "etapes": {
+      "email": {
+        "titre": "Insere o seu endereço de e-mail",
+        "texte": "Depois de inserir o seu endereço de e-mail abaixo, recebe uma ligação de acesso. Só serve uma vez e é válida durante 15 minutos."
+      },
+      "noms": {
+        "titre": "Escolhe um nome e acrescenta os dos seus filhos",
+        "texte": "São os nomes que os outros utilizadores vão ver, e pelos quais poderão reconhecer a sua família."
+      },
+      "cercle": {
+        "titre": "Junta-se a um círculo, ou cria o seu",
+        "texte": "Se um progenitor lhe enviou uma ligação, esta faz com que entre no círculo desse progenitor. Caso contrário, crie o seu e convide as famílias que preferir."
+      }
+    },
+    "champEmailLabel": "O seu endereço de e-mail",
+    "champEmailAidePremiere": "É tudo o que é preciso. A ligação que vai receber vai abrir a sua conta.",
+    "champEmailAideRetour": "Sem palavra-passe para memorizar: recebe uma ligação que lhe dá acesso.",
+    "champEmailPlaceholder": "sophie@exemplo.ch",
+    "boutonCommencer": "Começar",
+    "boutonRecevoirLien": "Receber a minha ligação",
+    "lienAPropos": "Para que serve o Allezou?",
+    "lienDonnees": "O que o Allezou regista, e quem o pode ver"
+  },
+  "CleAcces": {
+    "erreurs": {
+      "defi_absent": "O pedido expirou. Tente novamente.",
+      "cle_inconnue": "Este dispositivo não está registado em nenhuma conta.",
+      "cle_deja_enregistree": "Este dispositivo já está registado.",
+      "verification_echouee": "A verificação falhou."
+    },
+    "erreurGenerique": "Isso não funcionou.",
+    "navigateurIncompatibleAjout": "Este navegador não sabe registar dispositivos. Vai continuar a receber uma ligação por e-mail.",
+    "enregistrementAnnule": "Registo cancelado.",
+    "appareilEnregistre": "Este dispositivo está registado ✅ Da próxima vez, basta abrir a aplicação.",
+    "boutonAjouter": "Registar este dispositivo 🔐",
+    "navigateurIncompatibleConnexion": "Este navegador não sabe reconhecer um dispositivo registado.",
+    "boutonEntrer": "Entrar com este dispositivo 🔐",
+    "aideEntrer": "Se já registou este telemóvel."
+  },
+  "NotificationsClient": {
+    "installerTitre": "Primeiro, adicione o Allezou ao ecrã principal",
+    "installerTexte": "No iPhone, as notificações só funcionam a partir da aplicação instalada. Toque no botão de partilha, na parte inferior do Safari, e depois em « Adicionar ao Ecrã Principal ». Depois, volte aqui a partir do ícone.",
+    "impossibleTexte": "Este navegador não permite notificações. Pode continuar a abrir a aplicação para ver quem está lá fora.",
+    "refuseeTitre": "As notificações estão bloqueadas",
+    "refuseeTexte": "Foram recusadas para este site. É preciso voltar a autorizá-las nas definições do navegador: não o podemos fazer no seu lugar.",
+    "activeTitre": "As notificações estão ativadas ✅",
+    "boutonDesactiver": "Deixar de receber avisos neste dispositivo",
+    "reglageAppareil": "Definição específica deste dispositivo.",
+    "boutonActiver": "Receber avisos neste dispositivo 🔔"
+  },
+  "Maintenant": {
+    "bonjour": "Olá, {nom} 👋",
+    "titre": "Quem está lá fora?",
+    "nousSortons": "Vamos sair",
+    "titreAucunCercle": "Ainda sem círculos",
+    "texteAucunCercle": "É aqui que as saídas são partilhadas.",
+    "rejoindreOuCreer": "Juntar-se a um círculo ou criar um",
+    "titreCanton": "As próximas saídas do cantão",
+    "sousTitreCanton": "As atividades das comunas genebrinas, abertas a todos.",
+    "jusquAu": "até",
+    "voirAgenda": "Ver toda a agenda",
+    "titrePersonneDehors": "Ninguém está lá fora",
+    "textePersonneDehors": "Nos seus círculos, ninguém tem uma saída em curso.",
+    "titreAVenir": "Brevemente",
+    "aVenirDate": "{jour} a partir das {heure}",
+    "enCoursJusqua": "até às {heure}",
+    "vous": "Eu",
+    "avecEnfants": "com {liste}",
+    "annuler": "Cancelar",
+    "rentres": "De volta",
+    "pasEncorePrevenu": "ainda ninguém foi avisado",
+    "vousYEtes": "Está lá",
+    "nousAussi": "Nós também",
+    "autresFamilles": "{n, plural, one {# outra família} other {# outras famílias}}"
+  },
+  "Sortie": {
+    "erreurs": {
+      "duree_invalide": "Uma saída não pode ultrapassar oito horas. Declare uma nova.",
+      "note_invalide": "Esta nota é demasiado longa: 140 carateres no máximo.",
+      "pas_auteur": "Só quem declarou a saída a pode modificar."
+    },
+    "erreurAjustement": "Não foi possível fazer o ajuste.",
+    "dateAVenir": "{jour}, {nombre} de {mois}, das {debut} às {fin}",
+    "dateEnCours": "até às {fin}",
+    "familles": "{n, plural, one {Uma família} other {# famílias}}",
+    "vous": "Eu",
+    "avecEnfants": "com {liste}",
+    "aPropose": "propôs",
+    "quiEstAvecVous": "Quem está consigo?",
+    "decochez": "Desmarque quem afinal não está presente.",
+    "mettreAJour": "Atualizar",
+    "motLabel": "Uma nota para os outros",
+    "motAide": "« Piscina infantil aberta », « estamos do lado do escorrega ». 140 carateres.",
+    "motPlaceholder": "Estamos do lado do escorrega",
+    "enregistrer": "Guardar",
+    "encoreUneHeure": "Mais uma hora ⏱️",
+    "annulerCetteSortie": "Cancelar esta saída",
+    "nousRentrons": "Vamos para casa",
+    "finalementNousNeVenonsPas": "Afinal não vamos",
+    "retour": "Voltar"
+  },
+  "Sortir": {
+    "titre": "Vamos sair",
+    "sousTitre": "Escolha o local e depois confirme.",
+    "erreurGenerique": "Não foi possível declarar a saída.",
+    "erreurs": {
+      "aucun_destinataire": "Assinale pelo menos um círculo: uma saída que ninguém visse não teria destinatário.",
+      "cercle_interdit": "Não é membro de um dos círculos assinalados.",
+      "lieu_inconnu": "Este local já não existe.",
+      "duree_invalide": "Esta duração não é possível.",
+      "debut_invalide": "Esta hora não é válida: uma saída pode ser anunciada com até duas semanas de antecedência, nunca no passado."
+    },
+    "videCercleTitre": "Primeiro precisa de um círculo",
+    "videCercleTexte": "Uma saída dirige-se às famílias de um círculo. Sem círculo, ninguém a veria, e o Allezou recusa-se a publicá-la no vazio.",
+    "creerRejoindreCercle": "Criar ou juntar-se a um círculo",
+    "videLieuTitre": "Nenhum local no catálogo",
+    "ajouterPremierLieu": "Adicionar o primeiro",
+    "visiblePar": "Visível para",
+    "aucunCercle": "Ainda não tem nenhum círculo.",
+    "resumeAvecEnfants": "Com <strong>{noms}</strong> · <strong>{duree}</strong> · agora",
+    "resumeSansEnfants": "<strong>{duree}</strong> · agora",
+    "changer": "Alterar",
+    "quiVient": "Quem vem",
+    "combienDeTemps": "Quanto tempo",
+    "aPartirDeQuand": "A partir de quando",
+    "laissezVide": "Deixe em branco se já lá está.",
+    "annuler": "Cancelar"
+  },
+  "SortirLieu": {
+    "titre": "Adicionar um local",
+    "sousTitre": "Passa a fazer parte do catálogo comum. Se o nome estiver mal escrito, qualquer pessoa poderá propor uma correção: esta aplica-se quando três pessoas a tiverem validado.",
+    "erreurGenerique": "Este nome de local não é válido.",
+    "erreurs": {
+      "adresse_invalide": "Esta morada é demasiado longa: 160 carateres no máximo.",
+      "position_invalide": "Este ponto não parece ser um local na Terra. Volte a colocá-lo no mapa."
+    },
+    "labelNom": "Nome do local",
+    "placeholderNom": "Parc du Gué",
+    "typeLegend": "O que é?",
+    "labelCommune": "Comuna",
+    "placeholderCommune": "Petit-Lancy",
+    "labelAdresse": "Onde é?",
+    "aideAdresse": "Uma morada ou um ponto de referência, para a família que não conhece o bairro. Pode deixar em branco.",
+    "placeholderAdresse": "Chemin du Gué 12, atrás da escola",
+    "ajouter": "Adicionar",
+    "retour": "Voltar"
+  },
+  "ChoixLieu": {
+    "choisirUnLieu": "Escolha um local",
+    "changer": "Alterar",
+    "ouvrir": "Abrir",
+    "chercherUnLieu": "Procurar um local",
+    "tous": "Todos",
+    "masques": "🙈 Ocultos ({n})",
+    "reafficher": "Voltar a mostrar",
+    "retirerDesFavoris": "Remover {nom} dos favoritos",
+    "mettreEnFavori": "Adicionar {nom} aos favoritos",
+    "masquerDeLaListe": "Ocultar {nom} da minha lista",
+    "aucunLieuMasque": "Já não há locais ocultos.",
+    "aucunLieuDeCeNom": "Nenhum local com este nome.",
+    "lieuPasDansListe": "O local não está na lista",
+    "corrigerUnLieu": "Corrigir um local",
+    "confirmerLaSortie": "Confirmar a saída",
+    "confirmationDetail": "Vai para os círculos assinalados; os membros são avisados <strong>dentro de um minuto</strong> — tempo suficiente para cancelar.",
+    "choisirDabordUnLieu": "Escolha primeiro um local."
+  },
+  "Position": {
+    "geolocaliser": "🗺️ Geolocalizar no mapa",
+    "carteNonBranchee": "O mapa ainda não está ligado: falta <code>GOOGLE_MAPS_API_KEY</code> (ver <code>docs/google-maps.md</code>). Sem um ponto colocado, o local será geocodificado a partir do nome e da morada — menos preciso, mas nada fica bloqueado.",
+    "pointPose": "Ponto colocado: {lat}, {lon}",
+    "retirer": "Remover",
+    "touchezEndroit": "Toque no local exato."
+  },
+  "Carte": {
+    "voirSurLaCarte": "🗺️ Ver no mapa",
+    "carteNonBranchee": "O mapa ainda não está ligado: falta <code>GOOGLE_MAPS_API_KEY</code> — o procedimento está em <code>docs/google-maps.md</code>. As ligações ↗ para o Google Maps já funcionam, essas sim.",
+    "choisi": "✓ Escolhido",
+    "choisirCeLieu": "Escolher este local",
+    "voirLaFiche": "Ver a ficha",
+    "itineraire": "Itinerário ↗",
+    "sansPosition": "{n, plural, one {# local sem posição conhecida.} other {# locais sem posição conhecida.}}",
+    "sansPositionSeuls": "{n, plural, one {# local sem posição conhecida — o mapa virá com a geocodificação.} other {# locais sem posição conhecida — o mapa virá com a geocodificação.}}"
+  },
+  "Etiquettes": {
+    "categorie": {
+      "parc": "Parque",
+      "aire_de_jeux": "Parque infantil",
+      "piscine": "Piscina",
+      "patinoire": "Rinque de patinagem",
+      "ludotheque": "Ludoteca",
+      "bibliotheque": "Biblioteca",
+      "musee": "Museu",
+      "maison_quartier": "Centro comunitário",
+      "autre": "Outro"
+    },
+    "fenetre": {
+      "aujourd_hui": "Hoje",
+      "demain": "Amanhã",
+      "week_end": "Este fim de semana",
+      "quinzaine": "15 dias"
+    },
+    "age": {
+      "2": "0-3 anos",
+      "5": "4-6 anos",
+      "8": "7-10 anos",
+      "12": "11 anos ou mais"
+    },
+    "tarif": {
+      "gratuit": "Gratuito",
+      "payant": "Pago",
+      "inconnu": "Preço não definido"
+    },
+    "acces": {
+      "libre": "Entrada livre",
+      "inscription": "Com inscrição",
+      "inconnu": "Inscrição não definida"
+    }
+  }
+}
