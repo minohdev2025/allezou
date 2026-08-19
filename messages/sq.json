@@ -145,7 +145,7 @@
   "Agenda": {
     "titre": "Agjenda",
     "sousTitre": "Aktivitetet e kantonit, dhe kush nga rrethet tuaja shkon.",
-    "filtresResume": "Kur, mosha, komuna, çmimi, kush shkon",
+    "filtrer": "Filtro",
     "tousLesAges": "Të gjitha moshat",
     "partout": "Kudo",
     "tousLesPrix": "Të gjitha çmimet",

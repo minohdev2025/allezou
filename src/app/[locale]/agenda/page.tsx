@@ -162,9 +162,13 @@ export default async function Agenda({
           la première ligne d'agenda commençait sous la ligne de flottaison. Un filtre sert
           une fois sur dix visites, une activité se lit à chaque fois.
 
-          Repliés derrière un bouton qui les nomme, pas derrière un geste à deviner. Et le
-          bloc s'ouvre de lui-même dès qu'un filtre est actif : on ne cache jamais à quelqu'un
-          ce qui restreint ce qu'il regarde.
+          Repliés derrière un bouton, pas derrière un geste à deviner. Il énumérait ce qu'on
+          peut filtrer, en gris sur le fond crème : ça se lisait comme une légende, pas comme
+          quelque chose à toucher. Il dit maintenant ce qu'il fait, sur la pastille blanche
+          cerclée des réglages de « Sortir ». Ce qu'il y a dedans se voit en l'ouvrant.
+
+          Et le bloc s'ouvre de lui-même dès qu'un filtre est actif : on ne cache jamais à
+          quelqu'un ce qui restreint ce qu'il regarde.
         */}
         <details
           open={
@@ -176,8 +180,8 @@ export default async function Agenda({
             Boolean(acces)
           }
         >
-          <summary className="cursor-pointer py-1 text-sm font-bold text-[color:var(--color-doux)]">
-            {t("filtresResume")}
+          <summary className="cursor-pointer rounded-[var(--radius-pilule)] bg-[color:var(--color-surface)] px-4 py-3 text-sm font-bold text-[color:var(--color-encre)] shadow-[inset_0_0_0_2px_var(--color-trait)]">
+            {t("filtrer")}
           </summary>
 
           <div className="mt-2 space-y-2">

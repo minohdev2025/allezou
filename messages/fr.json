@@ -145,7 +145,7 @@
   "Agenda": {
     "titre": "Agenda",
     "sousTitre": "Les activités du canton, et qui de vos cercles y va.",
-    "filtresResume": "Quand, âge, commune, prix, qui y va",
+    "filtrer": "Filtrer",
     "tousLesAges": "Tous les âges",
     "partout": "Partout",
     "tousLesPrix": "Tous les prix",

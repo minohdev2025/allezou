@@ -145,7 +145,7 @@
   "Agenda": {
     "titre": "Agenda",
     "sousTitre": "As atividades do cantão, e quem dos seus círculos vai.",
-    "filtresResume": "Quando, idade, comuna, preço, quem vai",
+    "filtrer": "Filtrar",
     "tousLesAges": "Todas as idades",
     "partout": "Qualquer lugar",
     "tousLesPrix": "Todos os preços",

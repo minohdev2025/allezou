@@ -145,7 +145,7 @@
   "Agenda": {
     "titre": "Agenda",
     "sousTitre": "Activities from across the canton, and who from your circles is going.",
-    "filtresResume": "When, age, municipality, price, who's going",
+    "filtrer": "Filter",
     "tousLesAges": "All ages",
     "partout": "Everywhere",
     "tousLesPrix": "Any price",
