@@ -1,4 +1,4 @@
-import { Link } from "@/i18n/navigation";
+import { Link, getPathname } from "@/i18n/navigation";
 import { type Locale } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
@@ -9,6 +9,7 @@ import {
   agesDemandes,
   communesDisponibles,
   upcomingCalendar,
+  valeursDemandees,
   type CalendarEntry,
   type Fenetre,
 } from "@/lib/calendar";
@@ -17,7 +18,9 @@ import { type PointCarte } from "@/lib/carte";
 import { requireAccount } from "@/lib/session";
 import { localeSure } from "@/lib/traduire";
 import { CarteDesLieux } from "../carte-client";
+import { FormulaireFiltres } from "./filtres-client";
 import {
+  Bouton,
   Jeton,
   LienBouton,
   Navigation,
@@ -31,50 +34,62 @@ import {
   teinte,
 } from "../ui";
 
+/**
+ * Ce que l'adresse porte. Les listes arrivent en clé répétée — « commune=Lancy&commune=Onex »,
+ * ce qu'un formulaire à cases envoie — ou en une valeur à virgules, ce que les adresses
+ * d'avant écrivaient et que des parents ont pu se partager. `valeursDemandees` lit les deux.
+ */
 type Params = {
   quand?: string;
-  age?: string;
-  commune?: string;
+  age?: string | string[];
+  commune?: string | string[];
   cercle?: string;
-  tarif?: string;
-  acces?: string;
+  tarif?: string | string[];
+  acces?: string | string[];
+  /** Le bloc était ouvert quand on a appliqué : le rouvrir, même si plus rien n'est coché. */
+  panneau?: string;
 };
 
-/** Chaque filtre est un lien : l'agenda reste utilisable sans JavaScript, et se partage. */
-function lien(actuel: Params, changement: Partial<Params>): string {
-  const params = new URLSearchParams();
-  for (const [cle, valeur] of Object.entries({ ...actuel, ...changement })) {
-    if (valeur) params.set(cle, valeur);
-  }
-  const requete = params.toString();
-  return requete ? `/agenda?${requete}` : "/agenda";
-}
-
+/**
+ * Une puce qui se coche : une case native, invisible, et l'étiquette qui la porte.
+ *
+ * Une case plutôt qu'un lien, depuis que plusieurs communes se choisissent ensemble. Le
+ * lien appliquait le choix aussitôt : trois communes coûtaient trois chargements, et la
+ * page remontait en haut à chacun. Cocher ne coûte rien — le navigateur s'en charge, sans
+ * réseau — et c'est le bouton du bas qui applique tout d'un coup.
+ *
+ * `sr-only` et non `hidden` : une case posée en `display: none` sort de l'ordre de
+ * tabulation et disparaît des lecteurs d'écran. Elle reste donc là, invisible mais
+ * atteignable, et c'est `peer-checked` qui teint l'étiquette. La couleur passe par des
+ * classes et non par `style` pour cette seule raison : un style en ligne ne sait rien de
+ * l'état de la case voisine.
+ */
 function Puce({
-  href,
-  actif,
+  nom,
+  valeur,
+  coche,
+  type = "checkbox",
   children,
 }: {
-  href: string;
-  actif: boolean;
+  nom: string;
+  valeur: string;
+  coche: boolean;
+  type?: "checkbox" | "radio";
   children: React.ReactNode;
 }) {
   return (
-    <Link
-      href={href}
-      className="shrink-0 rounded-[var(--radius-pilule)] px-4 py-2 text-sm font-bold"
-      style={
-        actif
-          ? { background: "var(--color-vert)", color: "var(--color-fond)" }
-          : {
-              background: "var(--color-surface)",
-              color: "var(--color-doux)",
-              boxShadow: "inset 0 0 0 2px var(--color-trait)",
-            }
-      }
-    >
-      {children}
-    </Link>
+    <label className="shrink-0 cursor-pointer">
+      <input
+        type={type}
+        name={nom}
+        value={valeur}
+        defaultChecked={coche}
+        className="peer sr-only"
+      />
+      <span className="block rounded-[var(--radius-pilule)] bg-[color:var(--color-surface)] px-4 py-2 text-sm font-bold text-[color:var(--color-doux)] shadow-[inset_0_0_0_2px_var(--color-trait)] peer-checked:bg-[color:var(--color-vert)] peer-checked:text-[color:var(--color-fond)] peer-checked:shadow-none peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[color:var(--color-vert)]">
+        {children}
+      </span>
+    </label>
   );
 }
 
@@ -120,25 +135,61 @@ export default async function Agenda({
   const quand = (FENETRES as readonly string[]).includes(params.quand ?? "")
     ? (params.quand as Fenetre)
     : FENETRE_PAR_DEFAUT;
-  // Plusieurs âges, séparés par des virgules dans l'adresse : une famille en a plusieurs, et
-  // l'écran doit rester partageable et utilisable sans JavaScript. Le découpage vit dans
-  // calendar.ts, où il est testé : celui qui était ici filtrait l'agenda en permanence.
+  /*
+    Chaque liste se lit dans l'adresse, et rien de ce qui n'y est pas ne restreint quoi que
+    ce soit. Le découpage vit dans calendar.ts, où il est testé : celui qui était ici
+    filtrait l'agenda en permanence pour un enfant de zéro an.
+
+    Les valeurs sont recoupées avec celles qu'on connaît. Une adresse est une chose qu'on
+    reçoit, pas une chose qu'on croit : « tarif=vole » ne doit rien filtrer, pas produire
+    une requête sur une valeur qui n'existe pas dans l'énumération.
+  */
   const ages = agesDemandes(params.age);
+  const communesChoisies = valeursDemandees(params.commune);
+  const tarifs = valeursDemandees(params.tarif).filter((v): v is Tarif =>
+    (TARIFS as readonly string[]).includes(v),
+  );
+  const acces = valeursDemandees(params.acces).filter((v): v is Acces =>
+    (ACCES as readonly string[]).includes(v),
+  );
   const avecMonCercle = params.cercle === "1";
-  const tarif = (TARIFS as readonly string[]).includes(params.tarif ?? "")
-    ? (params.tarif as Tarif)
-    : undefined;
-  const acces = (ACCES as readonly string[]).includes(params.acces ?? "")
-    ? (params.acces as Acces)
-    : undefined;
+
+  /*
+    La signature des filtres appliqués, qui sert de `key` aux cases.
+
+    Les cases sont natives et non contrôlées : `defaultChecked` pose leur état au montage et
+    n'y revient jamais. Sans cette clé, « Tout effacer » rouvrait bien l'agenda entier mais
+    laissait Lancy et Onex cochés à l'écran — le panneau disait le contraire de la liste, et
+    le geste suivant ramenait le filtre qu'on venait d'effacer.
+
+    Elle ne change qu'au moment où les filtres sont appliqués. Cocher sans appliquer ne la
+    touche pas : ce qu'on est en train de régler ne se fait pas défaire sous les doigts.
+  */
+  const signatureFiltres = [
+    quand,
+    ages.join(","),
+    communesChoisies.join(","),
+    tarifs.join(","),
+    acces.join(","),
+    avecMonCercle,
+  ].join("|");
+
+  /** Vrai dès que l'agenda affiché est plus étroit que l'agenda entier. */
+  const filtreActif =
+    quand !== FENETRE_PAR_DEFAUT ||
+    ages.length > 0 ||
+    communesChoisies.length > 0 ||
+    avecMonCercle ||
+    tarifs.length > 0 ||
+    acces.length > 0;
 
   const [entrees, communes] = await Promise.all([
     upcomingCalendar(account.id, {
       quand,
       ages,
-      commune: params.commune,
+      communes: communesChoisies,
       avecMonCercle,
-      tarif,
+      tarifs,
       acces,
     }),
     communesDisponibles(),
@@ -204,7 +255,11 @@ export default async function Agenda({
         />
       ) : null}
 
-      <div className="mb-6 space-y-2">
+      <FormulaireFiltres
+        action={`${getPathname({ href: "/agenda", locale })}#filtres`}
+        chemin="/agenda"
+        className="mb-6"
+      >
         {/*
           Tous les filtres sont repliés, « quand » compris, et posés sous la carte.
 
@@ -223,26 +278,33 @@ export default async function Agenda({
           cerclée des réglages de « Sortir ». Ce qu'il y a dedans se voit en l'ouvrant.
 
           Et le bloc s'ouvre de lui-même dès qu'un filtre est actif : on ne cache jamais à
-          quelqu'un ce qui restreint ce qu'il regarde.
+          quelqu'un ce qui restreint ce qu'il regarde. Il se rouvre aussi quand on vient
+          d'appliquer depuis le bloc ouvert, même si l'on vient de tout décocher — sinon il
+          se refermait au milieu d'un réglage, sous les doigts de qui le réglait.
         */}
-        <details
-          open={
-            quand !== FENETRE_PAR_DEFAUT ||
-            ages.length > 0 ||
-            Boolean(params.commune) ||
-            avecMonCercle ||
-            Boolean(tarif) ||
-            Boolean(acces)
-          }
-        >
+        <details open={filtreActif || params.panneau === "1"}>
           <summary className="cursor-pointer rounded-[var(--radius-pilule)] bg-[color:var(--color-surface)] px-4 py-3 text-sm font-bold text-[color:var(--color-encre)] shadow-[inset_0_0_0_2px_var(--color-trait)]">
             {t("filtrer")}
           </summary>
 
-          <div className="mt-2 divide-y divide-[color:var(--color-trait)]">
+          <input type="hidden" name="panneau" value="1" />
+
+          {/*
+            Ne rien cocher ne restreint rien : c'est la règle de toutes les listes d'ici, et
+            elle remplace les puces « Partout », « Tous les prix », « Tous les âges » qui
+            occupaient la première place de chaque rangée. Une case décochée dit déjà ce que
+            ces puces disaient, et le bouton « Tout effacer » dit le reste d'un seul geste.
+          */}
+          <div key={signatureFiltres} className="mt-2 divide-y divide-[color:var(--color-trait)]">
             <Rangee titre={t("categorieQuand")}>
+              {/*
+                La seule rangée à choix unique, et à boutons radio pour le dire. « Quand »
+                est une fenêtre de temps, pas une étiquette : cocher aujourd'hui et la
+                quinzaine ensemble revient à prendre la quinzaine, et l'écran promettrait un
+                choix qui n'en est pas un.
+              */}
               {FENETRES.map((f) => (
-                <Puce key={f} href={lien(params, { quand: f })} actif={quand === f}>
+                <Puce key={f} type="radio" nom="quand" valeur={f} coche={quand === f}>
                   {tE(`fenetre.${f}`)}
                 </Puce>
               ))}
@@ -253,38 +315,22 @@ export default async function Agenda({
                 Les tranches s'ajoutent au lieu de se remplacer : un parent de trois enfants
                 cherche ce qui convient à l'un des trois, pas trois fois de suite.
               */}
-              <Puce href={lien(params, { age: undefined })} actif={ages.length === 0}>
-                {t("tousLesAges")}
-              </Puce>
-              {TRANCHES_AGE.map((tranche) => {
-                const choisi = ages.includes(tranche);
-                const apres = choisi
-                  ? ages.filter((a) => a !== tranche)
-                  : [...ages, tranche].sort((a, b) => a - b);
-
-                return (
-                  <Puce
-                    key={tranche}
-                    href={lien(params, { age: apres.length > 0 ? apres.join(",") : undefined })}
-                    actif={choisi}
-                  >
-                    {tE(`age.${tranche}`)}
-                  </Puce>
-                );
-              })}
+              {TRANCHES_AGE.map((tranche) => (
+                <Puce
+                  key={tranche}
+                  nom="age"
+                  valeur={String(tranche)}
+                  coche={ages.includes(tranche)}
+                >
+                  {tE(`age.${tranche}`)}
+                </Puce>
+              ))}
             </Rangee>
 
             {communes.length > 1 ? (
               <Rangee titre={t("categorieCommune")}>
-                <Puce href={lien(params, { commune: undefined })} actif={!params.commune}>
-                  {t("partout")}
-                </Puce>
                 {communes.map((c) => (
-                  <Puce
-                    key={c}
-                    href={lien(params, { commune: c })}
-                    actif={params.commune === c}
-                  >
+                  <Puce key={c} nom="commune" valeur={c} coche={communesChoisies.includes(c)}>
                     {c}
                   </Puce>
                 ))}
@@ -299,42 +345,52 @@ export default async function Agenda({
               aller y voir plutôt que de les croire gratuites.
             */}
             <Rangee titre={t("categoriePrix")}>
-              <Puce href={lien(params, { tarif: undefined })} actif={!tarif}>
-                {t("tousLesPrix")}
-              </Puce>
               {TARIFS.map((choix) => (
-                <Puce key={choix} href={lien(params, { tarif: choix })} actif={tarif === choix}>
+                <Puce key={choix} nom="tarif" valeur={choix} coche={tarifs.includes(choix)}>
                   {tE(`tarif.${choix}`)}
                 </Puce>
               ))}
             </Rangee>
 
             <Rangee titre={t("categorieInscription")}>
-              <Puce href={lien(params, { acces: undefined })} actif={!acces}>
-                {t("avecOuSansInscription")}
-              </Puce>
               {ACCES.map((a) => (
-                <Puce key={a} href={lien(params, { acces: a })} actif={acces === a}>
+                <Puce key={a} nom="acces" valeur={a} coche={acces.includes(a)}>
                   {tE(`acces.${a}`)}
                 </Puce>
               ))}
             </Rangee>
 
             <Rangee titre={t("categorieQuiYVa")}>
-              <Puce
-                href={lien(params, { cercle: avecMonCercle ? undefined : "1" })}
-                actif={avecMonCercle}
-              >
+              <Puce nom="cercle" valeur="1" coche={avecMonCercle}>
                 {t("monCercle")}
               </Puce>
             </Rangee>
           </div>
+
+          <div className="mt-4">
+            <Bouton type="submit">{t("appliquerFiltres")}</Bouton>
+            {filtreActif ? (
+              <p className="mt-2 text-center">
+                {/*
+                  « panneau=1 » et pas seulement « /agenda » : on efface pour repartir, pas
+                  pour refermer. Sans lui, le bloc se repliait au moment où l'on venait de
+                  se donner de la place pour choisir autre chose.
+                */}
+                <Link
+                  href="/agenda?panneau=1#filtres"
+                  className="text-sm font-bold text-[color:var(--color-doux)] underline underline-offset-4"
+                >
+                  {t("toutEffacer")}
+                </Link>
+              </p>
+            ) : null}
+          </div>
         </details>
-      </div>
+      </FormulaireFiltres>
 
       {entrees.length === 0 ? (
         <Vide emoji="🗓️" titre={t("rienNeCorrespond")}>
-          {avecMonCercle || ages.length > 0 || params.commune || tarif || acces ? (
+          {filtreActif ? (
             <p>
               {t.rich("elargirFiltres", {
                 lien: (chunks) => (

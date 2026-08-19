@@ -9,6 +9,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import {
   agesDemandes,
   communesDisponibles,
+  valeursDemandees,
   purgePastEvents,
   upcomingCalendar,
 } from "@/lib/calendar";
@@ -105,8 +106,32 @@ describe("Filtres", () => {
 
     expect(await communesDisponibles()).toEqual(["Lancy", "Onex"]);
     expect(
-      (await upcomingCalendar(alice.id, { commune: "Lancy" })).map((e) => e.title),
+      (await upcomingCalendar(alice.id, { communes: ["Lancy"] })).map((e) => e.title),
     ).toEqual(["À Lancy"]);
+  });
+
+  /*
+    On habite entre deux communes, on en traverse une pour aller travailler : le filtre a
+    cessé d'être à choix unique le jour où il a fallu regarder Lancy puis Onex l'une après
+    l'autre pour répondre à une seule question.
+  */
+  it("garde plusieurs communes à la fois", async () => {
+    const alice = await createAccount("Alice");
+    await createEvent({ title: "À Lancy", commune: "Lancy" });
+    await createEvent({ title: "À Onex", commune: "Onex" });
+    await createEvent({ title: "À Chancy", commune: "Chancy" });
+
+    const trouvees = await upcomingCalendar(alice.id, { communes: ["Lancy", "Onex"] });
+    expect(trouvees.map((e) => e.title).sort()).toEqual(["À Lancy", "À Onex"]);
+  });
+
+  it("ne restreint rien quand la liste est vide", async () => {
+    const alice = await createAccount("Alice");
+    await createEvent({ title: "À Lancy", commune: "Lancy" });
+    await createEvent({ title: "Sans commune" });
+
+    const trouvees = await upcomingCalendar(alice.id, { communes: [] });
+    expect(trouvees).toHaveLength(2);
   });
 
   it("ne garde que les activités où quelqu'un de mes cercles est inscrit", async () => {
@@ -217,13 +242,13 @@ describe("Filtres prix et inscription", () => {
     await createEvent({ title: "Cirque de Noël", tarif: "payant" });
     await createEvent({ title: "Vide-greniers du village" });
 
-    const gratuites = await upcomingCalendar(alice.id, { tarif: "gratuit" });
+    const gratuites = await upcomingCalendar(alice.id, { tarifs: ["gratuit"] });
     expect(gratuites.map((e) => e.title).sort()).toEqual([
       "Concert de l'Escalade",
       "Vide-greniers du village",
     ]);
 
-    const payantes = await upcomingCalendar(alice.id, { tarif: "payant" });
+    const payantes = await upcomingCalendar(alice.id, { tarifs: ["payant"] });
     expect(payantes.map((e) => e.title).sort()).toEqual([
       "Cirque de Noël",
       "Vide-greniers du village",
@@ -231,7 +256,7 @@ describe("Filtres prix et inscription", () => {
 
     // Demander « non défini » ne rend que celles-là : le filtre reste utilisable pour voir
     // ce dont on ignore le prix.
-    const inconnues = await upcomingCalendar(alice.id, { tarif: "inconnu" });
+    const inconnues = await upcomingCalendar(alice.id, { tarifs: ["inconnu"] });
     expect(inconnues.map((e) => e.title)).toEqual(["Vide-greniers du village"]);
   });
 
@@ -241,7 +266,7 @@ describe("Filtres prix et inscription", () => {
 
     // Elle apparaît dans le filtre « gratuit », et reste « inconnu » : c'est la fiche qui
     // doit être exacte, pas la liste de ce qu'on propose de regarder.
-    const [activite] = await upcomingCalendar(alice.id, { tarif: "gratuit" });
+    const [activite] = await upcomingCalendar(alice.id, { tarifs: ["gratuit"] });
     expect(activite.title).toBe("Atelier sans prix affiché");
     expect(activite.tarif).toBe("inconnu");
   });
@@ -251,10 +276,10 @@ describe("Filtres prix et inscription", () => {
     await createEvent({ title: "Atelier poterie", acces: "inscription" });
     await createEvent({ title: "Marché de Noël", acces: "libre" });
 
-    const surInscription = await upcomingCalendar(alice.id, { acces: "inscription" });
+    const surInscription = await upcomingCalendar(alice.id, { acces: ["inscription"] });
     expect(surInscription.map((e) => e.title)).toEqual(["Atelier poterie"]);
 
-    const libres = await upcomingCalendar(alice.id, { acces: "libre" });
+    const libres = await upcomingCalendar(alice.id, { acces: ["libre"] });
     expect(libres.map((e) => e.title)).toEqual(["Marché de Noël"]);
   });
 
@@ -264,10 +289,20 @@ describe("Filtres prix et inscription", () => {
     await createEvent({ title: "Concert gratuit et libre", tarif: "gratuit", acces: "libre" });
 
     const trouvees = await upcomingCalendar(alice.id, {
-      tarif: "gratuit",
-      acces: "inscription",
+      tarifs: ["gratuit"],
+      acces: ["inscription"],
     });
     expect(trouvees.map((e) => e.title)).toEqual(["Atelier gratuit sur inscription"]);
+  });
+
+  it("garde plusieurs prix à la fois, et toujours l'indéfini avec", async () => {
+    const alice = await createAccount("Alice");
+    await createEvent({ title: "Gratuite", tarif: "gratuit" });
+    await createEvent({ title: "Payante", tarif: "payant" });
+    await createEvent({ title: "Muette" });
+
+    const trouvees = await upcomingCalendar(alice.id, { tarifs: ["gratuit", "payant"] });
+    expect(trouvees.map((e) => e.title).sort()).toEqual(["Gratuite", "Muette", "Payante"]);
   });
 
   it("porte le prix et l'inscription sur chaque entrée", async () => {
@@ -361,5 +396,30 @@ describe("Les âges demandés dans l'adresse", () => {
     expect(agesDemandes(" 3 , 7 ")).toEqual([3, 7]);
     // Hors bornes, ou pas un nombre : rien de tout cela ne devient un filtre.
     expect(agesDemandes("42,abc,-1,3")).toEqual([3]);
+  });
+
+  /*
+    Depuis que les filtres sont un formulaire à cases, le navigateur répète la clé :
+    « age=3&age=7 ». Les adresses d'avant, elles, séparaient par des virgules, et certaines
+    ont été partagées ou mises en favori. Les deux écritures doivent se lire, sans quoi on
+    casse un lien qu'un parent a envoyé à un autre.
+  */
+  it("lit aussi la clé répétée du formulaire", () => {
+    expect(agesDemandes(["3", "7"])).toEqual([3, 7]);
+    expect(agesDemandes([])).toEqual([]);
+  });
+});
+
+describe("Les valeurs demandées dans l'adresse", () => {
+  it("lit la clé répétée comme la valeur à virgules", () => {
+    expect(valeursDemandees(["Lancy", "Onex"])).toEqual(["Lancy", "Onex"]);
+    expect(valeursDemandees("Lancy,Onex")).toEqual(["Lancy", "Onex"]);
+    expect(valeursDemandees(["Lancy,Onex", "Chancy"])).toEqual(["Lancy", "Onex", "Chancy"]);
+  });
+
+  it("ne rend rien pour une adresse qui ne dit rien", () => {
+    expect(valeursDemandees(undefined)).toEqual([]);
+    expect(valeursDemandees("")).toEqual([]);
+    expect(valeursDemandees([" ", ","])).toEqual([]);
   });
 });

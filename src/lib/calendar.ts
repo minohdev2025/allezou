@@ -55,6 +55,22 @@ export type CalendarEntry = {
 };
 
 /**
+ * Les valeurs d'un paramètre d'adresse qui en accepte plusieurs.
+ *
+ * Deux écritures arrivent ici, et les deux doivent marcher. Un formulaire à cases répète la
+ * clé — « commune=Lancy&commune=Onex » — c'est ce que le navigateur envoie tout seul, sans
+ * JavaScript. Les adresses écrites avant lui, et celles qu'on a pu partager ou mettre en
+ * favori, séparent par des virgules : « age=3,7 ». Casser les secondes pour servir les
+ * premières reviendrait à casser un lien qu'un parent a envoyé à un autre.
+ */
+export function valeursDemandees(param: string | string[] | undefined): string[] {
+  return (Array.isArray(param) ? param : [param ?? ""])
+    .flatMap((valeur) => valeur.split(","))
+    .map((valeur) => valeur.trim())
+    .filter(Boolean);
+}
+
+/**
  * Les tranches d'âge demandées dans l'adresse : « 3,7 » devient [3, 7].
  *
  * Écrit ici, et testé, parce que la version qui vivait dans l'écran filtrait l'agenda sans
@@ -64,11 +80,8 @@ export type CalendarEntry = {
  * passait le jour où on l'a vu, mais le nombre n'aurait fait que monter à mesure que les
  * communes annoncent des âges.
  */
-export function agesDemandes(param: string | undefined): number[] {
-  return (param ?? "")
-    .split(",")
-    .map((v) => v.trim())
-    .filter(Boolean)
+export function agesDemandes(param: string | string[] | undefined): number[] {
+  return valeursDemandees(param)
     .map(Number)
     .filter((v) => Number.isInteger(v) && v >= 0 && v <= 18);
 }
@@ -94,7 +107,15 @@ export type FiltreAgenda = {
    * Ces valeurs ne quittent jamais l'écran : aucun âge d'enfant n'est enregistré.
    */
   ages?: number[];
-  commune?: string;
+  /**
+   * Communes choisies. Plusieurs, pour la même raison que les âges : on habite entre deux
+   * communes, on en traverse une pour aller travailler, et l'agenda ne doit pas obliger à
+   * regarder Lancy puis Onex puis Genève l'une après l'autre.
+   *
+   * Vide ou absent : partout. C'est la règle de toutes les listes d'ici — ne rien cocher ne
+   * restreint rien.
+   */
+  communes?: string[];
   /** Ne garder que les activités où une famille de mes cercles est déjà inscrite. */
   avecMonCercle?: boolean;
   /**
@@ -102,8 +123,8 @@ export type FiltreAgenda = {
    * quand on veut voir ce que les communes n'ont pas pris la peine d'annoncer, et non un
    * fourre-tout qu'on cacherait.
    */
-  tarif?: Tarif;
-  acces?: Acces;
+  tarifs?: Tarif[];
+  acces?: Acces[];
   limit?: number;
 };
 
@@ -209,8 +230,8 @@ export async function upcomingCalendar(
     )`);
   }
 
-  if (filtre.commune) {
-    conditions.push(sql`e.commune = ${filtre.commune}`);
+  if (filtre.communes?.length) {
+    conditions.push(sql`e.commune = any(${sql.param(filtre.communes)}::text[])`);
   }
 
   /*
@@ -225,12 +246,16 @@ export async function upcomingCalendar(
     inconnu comme gratuit — puisque rien n'est requalifié : on élargit ce qu'on propose de
     regarder, on ne renomme rien.
   */
-  if (filtre.tarif) {
-    conditions.push(sql`e.tarif in (${filtre.tarif}, 'inconnu')`);
+  if (filtre.tarifs?.length) {
+    conditions.push(
+      sql`e.tarif::text = any(${sql.param([...filtre.tarifs, "inconnu"])}::text[])`,
+    );
   }
 
-  if (filtre.acces) {
-    conditions.push(sql`e.acces in (${filtre.acces}, 'inconnu')`);
+  if (filtre.acces?.length) {
+    conditions.push(
+      sql`e.acces::text = any(${sql.param([...filtre.acces, "inconnu"])}::text[])`,
+    );
   }
 
   if (filtre.avecMonCercle) {
