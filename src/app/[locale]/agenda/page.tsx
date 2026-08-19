@@ -63,6 +63,11 @@ type Params = {
  * atteignable, et c'est `peer-checked` qui teint l'étiquette. La couleur passe par des
  * classes et non par `style` pour cette seule raison : un style en ligne ne sait rien de
  * l'état de la case voisine.
+ *
+ * Une puce libre prend le fond de la page, pas celui de la surface : depuis que le bloc
+ * de filtres est une carte blanche, une puce blanche s'y serait fondue et n'aurait plus
+ * tenu que par son cercle. Crème sur blanc en clair, sombre sur surface en sombre : dans
+ * les deux cas elle redevient un objet posé sur la carte.
  */
 function Puce({
   nom,
@@ -86,7 +91,7 @@ function Puce({
         defaultChecked={coche}
         className="peer sr-only"
       />
-      <span className="block rounded-[var(--radius-pilule)] bg-[color:var(--color-surface)] px-4 py-2 text-sm font-bold text-[color:var(--color-doux)] shadow-[inset_0_0_0_2px_var(--color-trait)] peer-checked:bg-[color:var(--color-vert)] peer-checked:text-[color:var(--color-fond)] peer-checked:shadow-none peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[color:var(--color-vert)]">
+      <span className="block rounded-[var(--radius-pilule)] bg-[color:var(--color-fond)] px-4 py-2 text-sm font-bold text-[color:var(--color-doux)] shadow-[inset_0_0_0_2px_var(--color-trait)] peer-checked:bg-[color:var(--color-vert)] peer-checked:text-[color:var(--color-fond)] peer-checked:shadow-none peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[color:var(--color-vert)]">
         {children}
       </span>
     </label>
@@ -282,108 +287,130 @@ export default async function Agenda({
           d'appliquer depuis le bloc ouvert, même si l'on vient de tout décocher — sinon il
           se refermait au milieu d'un réglage, sous les doigts de qui le réglait.
         */}
-        <details open={filtreActif || params.panneau === "1"}>
-          <summary className="cursor-pointer rounded-[var(--radius-pilule)] bg-[color:var(--color-surface)] px-4 py-3 text-sm font-bold text-[color:var(--color-encre)] shadow-[inset_0_0_0_2px_var(--color-trait)]">
+        {/*
+          Le bloc entier est une carte, et « Filtrer » en est l'en-tête.
+
+          Ouvert, il n'avait pas de contenant : les rangées et le bouton reposaient sur le
+          fond de page, comme la liste d'activités juste en dessous. Rien ne disait où la
+          section commençait ni où elle finissait, et « Voir les activités » flottait entre
+          les deux au lieu d'appartenir aux filtres qu'il applique.
+
+          Fermé, la carte n'est plus que son en-tête : à 44 px de haut, un rayon de 1,5 rem
+          se lit comme la pastille qu'elle remplace. On ne perd donc rien de ce qui rendait
+          le bouton visible sur le fond crème.
+        */}
+        <details
+          open={filtreActif || params.panneau === "1"}
+          className="rounded-[var(--radius-carte)] bg-[color:var(--color-surface)] shadow-[inset_0_0_0_2px_var(--color-trait)]"
+        >
+          <summary className="cursor-pointer px-4 py-3 text-sm font-bold text-[color:var(--color-encre)]">
             {t("filtrer")}
           </summary>
 
           <input type="hidden" name="panneau" value="1" />
 
           {/*
-            Ne rien cocher ne restreint rien : c'est la règle de toutes les listes d'ici, et
-            elle remplace les puces « Partout », « Tous les prix », « Tous les âges » qui
-            occupaient la première place de chaque rangée. Une case décochée dit déjà ce que
-            ces puces disaient, et le bouton « Tout effacer » dit le reste d'un seul geste.
+            Le filet de l'en-tête est porté par ce conteneur, qui n'existe que lorsque la
+            carte est ouverte : pas de variante `group-open` à tenir, et le trait court d'un
+            bord à l'autre parce que la bordure se pose en dehors du `px-4`.
           */}
-          <div key={signatureFiltres} className="mt-2 divide-y divide-[color:var(--color-trait)]">
-            <Rangee titre={t("categorieQuand")}>
-              {/*
-                La seule rangée à choix unique, et à boutons radio pour le dire. « Quand »
-                est une fenêtre de temps, pas une étiquette : cocher aujourd'hui et la
-                quinzaine ensemble revient à prendre la quinzaine, et l'écran promettrait un
-                choix qui n'en est pas un.
-              */}
-              {FENETRES.map((f) => (
-                <Puce key={f} type="radio" nom="quand" valeur={f} coche={quand === f}>
-                  {tE(`fenetre.${f}`)}
-                </Puce>
-              ))}
-            </Rangee>
-
-            <Rangee titre={t("categorieAge")}>
-              {/*
-                Les tranches s'ajoutent au lieu de se remplacer : un parent de trois enfants
-                cherche ce qui convient à l'un des trois, pas trois fois de suite.
-              */}
-              {TRANCHES_AGE.map((tranche) => (
-                <Puce
-                  key={tranche}
-                  nom="age"
-                  valeur={String(tranche)}
-                  coche={ages.includes(tranche)}
-                >
-                  {tE(`age.${tranche}`)}
-                </Puce>
-              ))}
-            </Rangee>
-
-            {communes.length > 1 ? (
-              <Rangee titre={t("categorieCommune")}>
-                {communes.map((c) => (
-                  <Puce key={c} nom="commune" valeur={c} coche={communesChoisies.includes(c)}>
-                    {c}
+          <div className="border-t border-[color:var(--color-trait)] px-4">
+            {/*
+              Ne rien cocher ne restreint rien : c'est la règle de toutes les listes d'ici,
+              et elle remplace les puces « Partout », « Tous les prix », « Tous les âges »
+              qui occupaient la première place de chaque rangée. Une case décochée dit déjà
+              ce que ces puces disaient, et « Tout effacer » dit le reste d'un seul geste.
+            */}
+            <div key={signatureFiltres} className="divide-y divide-[color:var(--color-trait)]">
+              <Rangee titre={t("categorieQuand")}>
+                {/*
+                  La seule rangée à choix unique, et à boutons radio pour le dire. « Quand »
+                  est une fenêtre de temps, pas une étiquette : cocher aujourd'hui et la
+                  quinzaine ensemble revient à prendre la quinzaine, et l'écran promettrait un
+                  choix qui n'en est pas un.
+                */}
+                {FENETRES.map((f) => (
+                  <Puce key={f} type="radio" nom="quand" valeur={f} coche={quand === f}>
+                    {tE(`fenetre.${f}`)}
                   </Puce>
                 ))}
               </Rangee>
-            ) : null}
 
-            {/*
-              Le prix et l'inscription se filtrent séparément : « gratuit » ne dit rien de
-              l'inscription, et une activité gratuite sur inscription se rate aussi bien
-              qu'une payante. « Non défini » est une puce comme les autres, parce que c'est
-              l'état d'une bonne moitié des activités communales et qu'un parent doit pouvoir
-              aller y voir plutôt que de les croire gratuites.
-            */}
-            <Rangee titre={t("categoriePrix")}>
-              {TARIFS.map((choix) => (
-                <Puce key={choix} nom="tarif" valeur={choix} coche={tarifs.includes(choix)}>
-                  {tE(`tarif.${choix}`)}
-                </Puce>
-              ))}
-            </Rangee>
-
-            <Rangee titre={t("categorieInscription")}>
-              {ACCES.map((a) => (
-                <Puce key={a} nom="acces" valeur={a} coche={acces.includes(a)}>
-                  {tE(`acces.${a}`)}
-                </Puce>
-              ))}
-            </Rangee>
-
-            <Rangee titre={t("categorieQuiYVa")}>
-              <Puce nom="cercle" valeur="1" coche={avecMonCercle}>
-                {t("monCercle")}
-              </Puce>
-            </Rangee>
-          </div>
-
-          <div className="mt-4">
-            <Bouton type="submit">{t("appliquerFiltres")}</Bouton>
-            {filtreActif ? (
-              <p className="mt-2 text-center">
+              <Rangee titre={t("categorieAge")}>
                 {/*
-                  « panneau=1 » et pas seulement « /agenda » : on efface pour repartir, pas
-                  pour refermer. Sans lui, le bloc se repliait au moment où l'on venait de
-                  se donner de la place pour choisir autre chose.
+                  Les tranches s'ajoutent au lieu de se remplacer : un parent de trois enfants
+                  cherche ce qui convient à l'un des trois, pas trois fois de suite.
                 */}
-                <Link
-                  href="/agenda?panneau=1#filtres"
-                  className="text-sm font-bold text-[color:var(--color-doux)] underline underline-offset-4"
-                >
-                  {t("toutEffacer")}
-                </Link>
-              </p>
-            ) : null}
+                {TRANCHES_AGE.map((tranche) => (
+                  <Puce
+                    key={tranche}
+                    nom="age"
+                    valeur={String(tranche)}
+                    coche={ages.includes(tranche)}
+                  >
+                    {tE(`age.${tranche}`)}
+                  </Puce>
+                ))}
+              </Rangee>
+
+              {communes.length > 1 ? (
+                <Rangee titre={t("categorieCommune")}>
+                  {communes.map((c) => (
+                    <Puce key={c} nom="commune" valeur={c} coche={communesChoisies.includes(c)}>
+                      {c}
+                    </Puce>
+                  ))}
+                </Rangee>
+              ) : null}
+
+              {/*
+                Le prix et l'inscription se filtrent séparément : « gratuit » ne dit rien de
+                l'inscription, et une activité gratuite sur inscription se rate aussi bien
+                qu'une payante. « Non défini » est une puce comme les autres, parce que c'est
+                l'état d'une bonne moitié des activités communales et qu'un parent doit pouvoir
+                aller y voir plutôt que de les croire gratuites.
+              */}
+              <Rangee titre={t("categoriePrix")}>
+                {TARIFS.map((choix) => (
+                  <Puce key={choix} nom="tarif" valeur={choix} coche={tarifs.includes(choix)}>
+                    {tE(`tarif.${choix}`)}
+                  </Puce>
+                ))}
+              </Rangee>
+
+              <Rangee titre={t("categorieInscription")}>
+                {ACCES.map((a) => (
+                  <Puce key={a} nom="acces" valeur={a} coche={acces.includes(a)}>
+                    {tE(`acces.${a}`)}
+                  </Puce>
+                ))}
+              </Rangee>
+
+              <Rangee titre={t("categorieQuiYVa")}>
+                <Puce nom="cercle" valeur="1" coche={avecMonCercle}>
+                  {t("monCercle")}
+                </Puce>
+              </Rangee>
+            </div>
+
+            <div className="pb-4">
+              <Bouton type="submit">{t("appliquerFiltres")}</Bouton>
+              {filtreActif ? (
+                <p className="mt-2 text-center">
+                  {/*
+                    « panneau=1 » et pas seulement « /agenda » : on efface pour repartir, pas
+                    pour refermer. Sans lui, le bloc se repliait au moment où l'on venait de
+                    se donner de la place pour choisir autre chose.
+                  */}
+                  <Link
+                    href="/agenda?panneau=1#filtres"
+                    className="text-sm font-bold text-[color:var(--color-doux)] underline underline-offset-4"
+                  >
+                    {t("toutEffacer")}
+                  </Link>
+                </p>
+              ) : null}
+            </div>
           </div>
         </details>
       </FormulaireFiltres>
