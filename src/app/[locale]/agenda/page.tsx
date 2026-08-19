@@ -79,14 +79,28 @@ function Puce({
 }
 
 /**
- * Les puces passent à la ligne au lieu de défiler horizontalement.
+ * Une catégorie de filtre : son nom, puis ses puces.
  *
- * Un défilement latéral sans barre visible cache des filtres sans que rien ne l'indique :
- * on ne cherche pas un geste dont on ignore l'existence. Deux lignes de puces coûtent
- * quelques pixels ; un filtre invisible coûte le filtre.
+ * Les puces passent à la ligne au lieu de défiler horizontalement. Un défilement latéral
+ * sans barre visible cache des filtres sans que rien ne l'indique : on ne cherche pas un
+ * geste dont on ignore l'existence. Deux lignes de puces coûtent quelques pixels ; un
+ * filtre invisible coûte le filtre.
+ *
+ * Mais ce même retour à la ligne rendait les catégories illisibles : à l'ouverture, tout
+ * formait une nappe où « 11 ans et + » et « Partout » se ressemblaient autant que
+ * « Genève » et « Onex », et une catégorie qui débordait sur deux lignes se lisait comme
+ * deux catégories. D'où le nom au-dessus et le filet qui la précède : le nom dit ce que la
+ * rangée règle, le filet dit où elle s'arrête. L'espacement seul n'y suffisait pas — il
+ * aurait fallu qu'il dépasse celui de deux lignes d'une même catégorie, et le bloc
+ * ouvert aurait doublé de hauteur.
  */
-function Rangee({ children }: { children: React.ReactNode }) {
-  return <div className="flex flex-wrap gap-2">{children}</div>;
+function Rangee({ titre, children }: { titre: string; children: React.ReactNode }) {
+  return (
+    <div className="py-3">
+      <p className="mb-1.5 text-xs font-bold text-[color:var(--color-doux)]">{titre}</p>
+      <div className="flex flex-wrap gap-2">{children}</div>
+    </div>
+  );
 }
 
 export default async function Agenda({
@@ -225,57 +239,57 @@ export default async function Agenda({
             {t("filtrer")}
           </summary>
 
-          <div className="mt-2 space-y-2">
-        <Rangee>
-          {FENETRES.map((f) => (
-            <Puce key={f} href={lien(params, { quand: f })} actif={quand === f}>
-              {tE(`fenetre.${f}`)}
-            </Puce>
-          ))}
-        </Rangee>
+          <div className="mt-2 divide-y divide-[color:var(--color-trait)]">
+            <Rangee titre={t("categorieQuand")}>
+              {FENETRES.map((f) => (
+                <Puce key={f} href={lien(params, { quand: f })} actif={quand === f}>
+                  {tE(`fenetre.${f}`)}
+                </Puce>
+              ))}
+            </Rangee>
 
-        <Rangee>
-          {/*
-            Les tranches s'ajoutent au lieu de se remplacer : un parent de trois enfants
-            cherche ce qui convient à l'un des trois, pas trois fois de suite.
-          */}
-          <Puce href={lien(params, { age: undefined })} actif={ages.length === 0}>
-            {t("tousLesAges")}
-          </Puce>
-          {TRANCHES_AGE.map((tranche) => {
-            const choisi = ages.includes(tranche);
-            const apres = choisi
-              ? ages.filter((a) => a !== tranche)
-              : [...ages, tranche].sort((a, b) => a - b);
-
-            return (
-              <Puce
-                key={tranche}
-                href={lien(params, { age: apres.length > 0 ? apres.join(",") : undefined })}
-                actif={choisi}
-              >
-                {tE(`age.${tranche}`)}
+            <Rangee titre={t("categorieAge")}>
+              {/*
+                Les tranches s'ajoutent au lieu de se remplacer : un parent de trois enfants
+                cherche ce qui convient à l'un des trois, pas trois fois de suite.
+              */}
+              <Puce href={lien(params, { age: undefined })} actif={ages.length === 0}>
+                {t("tousLesAges")}
               </Puce>
-            );
-          })}
-        </Rangee>
+              {TRANCHES_AGE.map((tranche) => {
+                const choisi = ages.includes(tranche);
+                const apres = choisi
+                  ? ages.filter((a) => a !== tranche)
+                  : [...ages, tranche].sort((a, b) => a - b);
 
-        {communes.length > 1 ? (
-          <Rangee>
-            <Puce href={lien(params, { commune: undefined })} actif={!params.commune}>
-              {t("partout")}
-            </Puce>
-            {communes.map((c) => (
-              <Puce
-                key={c}
-                href={lien(params, { commune: c })}
-                actif={params.commune === c}
-              >
-                {c}
-              </Puce>
-            ))}
-          </Rangee>
-        ) : null}
+                return (
+                  <Puce
+                    key={tranche}
+                    href={lien(params, { age: apres.length > 0 ? apres.join(",") : undefined })}
+                    actif={choisi}
+                  >
+                    {tE(`age.${tranche}`)}
+                  </Puce>
+                );
+              })}
+            </Rangee>
+
+            {communes.length > 1 ? (
+              <Rangee titre={t("categorieCommune")}>
+                <Puce href={lien(params, { commune: undefined })} actif={!params.commune}>
+                  {t("partout")}
+                </Puce>
+                {communes.map((c) => (
+                  <Puce
+                    key={c}
+                    href={lien(params, { commune: c })}
+                    actif={params.commune === c}
+                  >
+                    {c}
+                  </Puce>
+                ))}
+              </Rangee>
+            ) : null}
 
             {/*
               Le prix et l'inscription se filtrent séparément : « gratuit » ne dit rien de
@@ -284,7 +298,7 @@ export default async function Agenda({
               l'état d'une bonne moitié des activités communales et qu'un parent doit pouvoir
               aller y voir plutôt que de les croire gratuites.
             */}
-            <Rangee>
+            <Rangee titre={t("categoriePrix")}>
               <Puce href={lien(params, { tarif: undefined })} actif={!tarif}>
                 {t("tousLesPrix")}
               </Puce>
@@ -295,7 +309,7 @@ export default async function Agenda({
               ))}
             </Rangee>
 
-            <Rangee>
+            <Rangee titre={t("categorieInscription")}>
               <Puce href={lien(params, { acces: undefined })} actif={!acces}>
                 {t("avecOuSansInscription")}
               </Puce>
@@ -306,7 +320,7 @@ export default async function Agenda({
               ))}
             </Rangee>
 
-            <Rangee>
+            <Rangee titre={t("categorieQuiYVa")}>
               <Puce
                 href={lien(params, { cercle: avecMonCercle ? undefined : "1" })}
                 actif={avecMonCercle}
