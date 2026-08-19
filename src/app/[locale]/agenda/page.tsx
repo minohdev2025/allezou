@@ -154,13 +154,54 @@ export default async function Agenda({
         {t("titre")}
       </Titre>
 
+      <div className="mb-6">
+        <LienBouton href="/agenda/nouveau">{t("proposerActivite")}</LienBouton>
+      </div>
+
+      {/*
+        La même liste, posée sur la carte — celle des activités que les filtres retiennent,
+        pas une autre. « Quelque part près de chez moi mercredi » est une question de carte,
+        pas de liste, et c'est la carte des filtres actifs qui y répond.
+      */}
+      {entrees.length > 0 ? (
+        <CarteDesLieux
+          points={entrees.flatMap((entree): PointCarte[] =>
+            entree.lat != null && entree.lon != null
+              ? [
+                  {
+                    id: entree.id,
+                    nom: entree.title,
+                    sousTitre: [
+                      entree.enCours ? t("enCeMomentCarte") : libelleJour(entree.startsAt, locale),
+                      entree.place ?? entree.commune,
+                    ]
+                      .filter(Boolean)
+                      .join(" · "),
+                    lat: entree.lat,
+                    lon: entree.lon,
+                    href: `/agenda/${entree.id}`,
+                  },
+                ]
+              : [],
+          )}
+          sansPosition={entrees.filter((e) => e.lat == null || e.lon == null).length}
+          cleApi={process.env.GOOGLE_MAPS_API_KEY ?? null}
+          mapId={process.env.GOOGLE_MAPS_MAP_ID ?? null}
+        />
+      ) : null}
+
       <div className="mb-6 space-y-2">
         {/*
-          Tous les filtres sont repliés, « quand » compris.
+          Tous les filtres sont repliés, « quand » compris, et posés sous la carte.
 
           Ils occupaient le haut de l'écran alors qu'on vient ici pour lire des activités :
           la première ligne d'agenda commençait sous la ligne de flottaison. Un filtre sert
           une fois sur dix visites, une activité se lit à chaque fois.
+
+          Repliés, ils tenaient déjà peu de place ; sous la carte, ils touchent en plus ce
+          qu'ils commandent. La carte et la liste montrent la même sélection : le réglage
+          se lit maintenant entre les deux, au lieu d'être annoncé avant qu'on ait vu de
+          quoi il s'agissait.
 
           Repliés derrière un bouton, pas derrière un geste à deviner. Il énumérait ce qu'on
           peut filtrer, en gris sur le fond crème : ça se lisait comme une légende, pas comme
@@ -276,42 +317,6 @@ export default async function Agenda({
           </div>
         </details>
       </div>
-
-      <div className="mb-6">
-        <LienBouton href="/agenda/nouveau">{t("proposerActivite")}</LienBouton>
-      </div>
-
-      {/*
-        La même liste, posée sur la carte — celle des activités que les filtres retiennent,
-        pas une autre. « Quelque part près de chez moi mercredi » est une question de carte,
-        pas de liste, et c'est la carte des filtres actifs qui y répond.
-      */}
-      {entrees.length > 0 ? (
-        <CarteDesLieux
-          points={entrees.flatMap((entree): PointCarte[] =>
-            entree.lat != null && entree.lon != null
-              ? [
-                  {
-                    id: entree.id,
-                    nom: entree.title,
-                    sousTitre: [
-                      entree.enCours ? t("enCeMomentCarte") : libelleJour(entree.startsAt, locale),
-                      entree.place ?? entree.commune,
-                    ]
-                      .filter(Boolean)
-                      .join(" · "),
-                    lat: entree.lat,
-                    lon: entree.lon,
-                    href: `/agenda/${entree.id}`,
-                  },
-                ]
-              : [],
-          )}
-          sansPosition={entrees.filter((e) => e.lat == null || e.lon == null).length}
-          cleApi={process.env.GOOGLE_MAPS_API_KEY ?? null}
-          mapId={process.env.GOOGLE_MAPS_MAP_ID ?? null}
-        />
-      ) : null}
 
       {entrees.length === 0 ? (
         <Vide emoji="🗓️" titre={t("rienNeCorrespond")}>
