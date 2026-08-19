@@ -17,6 +17,7 @@
 
 import { z } from "zod";
 
+import { contient, normaliser } from "../texte";
 import type { Echec } from "./controles";
 import { appelMiniMax, parseModelJson } from "./minimax";
 import type { RawEvent } from "./types";
@@ -151,10 +152,72 @@ const SYSTEME_TRIAGE = [
   "- « non » : sans place pour un enfant — séance administrative ou politique, activité",
   "  réservée aux aînés ou aux adultes, conférence spécialisée, soirée dansante, cours de",
   "  sport pour adultes, vernissage, concert de soirée sans mention des familles.",
+  "- Le public s'annonce aussi par qui organise et par où ça se passe : « avec Cité",
+  "  Séniors », « club des aînés », un EMS, une maison de retraite. Une activité douce",
+  "  — taiji, gym, marche, chant, jeux de société — portée par un tel nom est faite pour",
+  "  les aînés, et c'est un « non », même quand elle est ouverte à tous.",
   "- « doute » : rare. Réserve-le aux entrées dont le titre et la description ne disent",
   "  vraiment rien du public. Une activité pensée pour les adultes est un « non » franc,",
   "  même si un enfant pourrait techniquement s'y asseoir.",
 ].join("\n");
+
+/*
+  La garde des aînés, posée après le modèle et sans lui demander son avis.
+
+  « Taiji avec Cité Séniors » est passé en « oui » un matin d'août, et un parent qui
+  surveillait le mot « taiji » a reçu la notification. Le nom de l'organisateur était dans
+  le titre : ce n'est pas une lecture difficile, c'est une lecture que le modèle rate
+  parfois, et une fois suffit pour que l'agenda cesse de ressembler à sa promesse.
+
+  Un mot d'aînés dans le titre, la description ou le lieu vaut donc « non », quoi qu'ait
+  répondu le modèle — sauf si le même texte appelle explicitement les familles, parce que
+  les activités intergénérationnelles existent et qu'elles, on les veut.
+*/
+const MARQUEURS_AINES = [
+  "seniors",
+  "senior",
+  "aines",
+  "aine",
+  "3e age",
+  "3eme age",
+  "troisieme age",
+  "ems",
+  "maison de retraite",
+];
+
+/** Ce qui rouvre la porte : le texte dit lui-même que les enfants sont attendus. */
+const MARQUEURS_FAMILLE = [
+  "intergenerationnel",
+  "intergenerationnelle",
+  "famille",
+  "familles",
+  "familial",
+  "familiale",
+  "enfant",
+  "enfants",
+  "petits enfants",
+  "parents",
+  "jeune public",
+  "bebe",
+  "bebes",
+  "ados",
+  "adolescents",
+  "grands parents",
+];
+
+/**
+ * Vrai quand le texte destine l'activité aux aînés sans appeler les familles.
+ *
+ * Pure, et c'est le point : les tests la verrouillent sans payer un appel au modèle, et
+ * elle ne tousse jamais — contrairement à la lecture qu'elle double.
+ */
+export function reserveeAuxAines(event: RawEvent): boolean {
+  const texte = normaliser(
+    [event.title, event.description, event.placeLabel].filter(Boolean).join(" "),
+  );
+  if (!MARQUEURS_AINES.some((mot) => contient(texte, mot))) return false;
+  return !MARQUEURS_FAMILLE.some((mot) => contient(texte, mot));
+}
 
 const verdictsTriageSchema = z.object({
   verdicts: z.array(
@@ -213,9 +276,16 @@ export async function trierPourFamilles(events: RawEvent[]): Promise<VerdictFami
 
   for (let debut = 0; debut < events.length; debut += TRIAGE_PAR_LOT) {
     const lot = events.slice(debut, debut + TRIAGE_PAR_LOT);
+    /*
+      Le lieu part avec le titre : c'est souvent lui qui dit le public.
+
+      « Gym douce » ne dit rien, « Gym douce — Cité Séniors » dit tout. Le flux structuré
+      porte le lieu depuis toujours ; il ne coûte rien de le montrer au trieur.
+    */
     const lignes = lot.map((event, rang) => {
       const description = event.description ? ` — ${event.description}` : "";
-      return `${rang}. ${event.title}${description}`;
+      const lieu = event.placeLabel ? ` (lieu : ${event.placeLabel})` : "";
+      return `${rang}. ${event.title}${lieu}${description}`;
     });
 
     const contenu = await appelMiniMax(SYSTEME_TRIAGE, lignes.join("\n"));

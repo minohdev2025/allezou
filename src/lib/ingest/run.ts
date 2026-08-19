@@ -22,6 +22,7 @@ import { icalAdapter } from "./ical";
 import { jsonLdAdapter } from "./jsonld";
 import { minimaxAdapter } from "./minimax";
 import {
+  reserveeAuxAines,
   trierPourFamilles,
   verifierExtraction,
   type TrieurFamilles,
@@ -117,7 +118,18 @@ export async function runSource(
     */
     const verdictsFamille = triageDemande(source.config) ? await trieur(events) : null;
 
+    /*
+      La garde des aînés passe avant le modèle, et sur toutes les sources.
+
+      Le tri famille ne tourne que sur les sources qui le demandent ; les communes lues par
+      le modèle s'en remettent, elles, à une consigne d'extraction. Deux gardes de modèle,
+      donc, et le même défaut : « Taiji avec Cité Séniors » a été rendu « oui » un matin
+      d'août, s'est publié, et un parent qui surveillait le mot « taiji » en a reçu la
+      notification. Un mot d'aînés dans le titre, la description ou le lieu se lit sans
+      modèle — autant le lire ici, une fois, pour tout le monde.
+    */
     for (const [rang, event] of events.entries()) {
+      if (reserveeAuxAines(event)) continue;
       if (verdictsFamille?.[rang] === "non") continue;
 
       const [existing] = await db

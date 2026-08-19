@@ -11,6 +11,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   alignerVerdicts,
+  reserveeAuxAines,
   echecsDuVerdict,
   presenterLActivite,
   SEUIL_CERTITUDE,
@@ -151,5 +152,58 @@ describe("Présentation de l'activité au vérificateur", () => {
       "Âge : 5 à 10 ans",
     );
     expect(presenterLActivite(activite({ minAge: 5 }))).toContain("Âge : 5 à ? ans");
+  });
+});
+
+describe("La garde des aînés", () => {
+  /*
+    Le cas qui l'a fait naître, recopié de la base de production : le modèle avait répondu
+    « oui », l'activité s'était publiée, et un parent qui surveillait le mot « taiji » a
+    reçu la notification. « quel que soit son âge » est ce qui l'a trompé.
+  */
+  const taiji = activite({
+    title: "Taiji avec Cité Séniors",
+    placeLabel: "Musée d'ethnographie de Genève (MEG)",
+    description:
+      "Le Taiji offre à chacun, quel que soit son âge, la possibilité de se mettre à " +
+      "l'écoute de soi-même. Il favorise une meilleure qualité de vie. Cet été, Cité " +
+      "Séniors et le MEG vous proposent de",
+  });
+
+  it("retient le taiji de Cité Séniors, que le modèle avait laissé passer", () => {
+    expect(reserveeAuxAines(taiji)).toBe(true);
+  });
+
+  it("ne se laisse pas prendre par l'accent ni par le singulier", () => {
+    expect(reserveeAuxAines(activite({ title: "Gym douce senior" }))).toBe(true);
+    expect(reserveeAuxAines(activite({ title: "Rencontre des aînés" }))).toBe(true);
+    expect(reserveeAuxAines(activite({ title: "Loto du 3e âge" }))).toBe(true);
+  });
+
+  it("lit aussi le lieu, quand le titre ne dit rien", () => {
+    expect(
+      reserveeAuxAines(activite({ title: "Après-midi jeux", placeLabel: "Cité Seniors" })),
+    ).toBe(true);
+  });
+
+  it("laisse passer ce qui appelle les familles, aînés ou pas", () => {
+    expect(
+      reserveeAuxAines(
+        activite({ title: "Goûter intergénérationnel", placeLabel: "Cité Séniors" }),
+      ),
+    ).toBe(false);
+    expect(
+      reserveeAuxAines(
+        activite({
+          title: "Contes à Cité Séniors",
+          description: "Les enfants dès 4 ans sont attendus avec leurs grands-parents.",
+        }),
+      ),
+    ).toBe(false);
+  });
+
+  it("ne dit rien d'une activité qui ne parle pas d'âge", () => {
+    expect(reserveeAuxAines(activite({ title: "Atelier chocolat" }))).toBe(false);
+    expect(reserveeAuxAines(activite({ title: "Swiss Juniors Cup" }))).toBe(false);
   });
 });

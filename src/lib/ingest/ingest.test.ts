@@ -1202,6 +1202,53 @@ describe("Le tri famille des sources structurées", () => {
     expect(appels.total).toBe(0);
     expect(rapport.published).toBe(1);
   });
+
+  /*
+    La garde des aines vaut sur toutes les sources, tri famille ou pas : elle ne demande
+    rien au modèle, elle lit le titre, la description et le lieu.
+  */
+  it("retient le taiji de Cité Séniors, même quand le tri a répondu « oui »", async () => {
+    const source = await createSource({
+      kind: "jsonld",
+      autoPublish: true,
+      config: { filtreFamille: true },
+    });
+
+    const rapport = await runSource(
+      source.id,
+      adaptateur([
+        unEvenement(),
+        unEvenement({
+          externalId: "https://example.test/agenda/taiji",
+          title: "Taiji avec Cité Séniors",
+          description: "Le Taiji offre à chacun, quel que soit son âge, une meilleure vie.",
+          placeLabel: "Musée d'ethnographie de Genève (MEG)",
+        }),
+      ]),
+      muet,
+      async () => ["oui", "oui"],
+    );
+
+    expect(rapport.found).toBe(2);
+    expect(rapport.published).toBe(1);
+
+    const rows = await db.execute<{ title: string }>(sql`select title from event`);
+    expect(rows.map((r) => r.title)).toEqual(["Atelier chocolat"]);
+  });
+
+  it("garde les aînés dehors aussi sur une source sans tri famille", async () => {
+    const source = await createSource({ kind: "html_ai", autoPublish: true });
+
+    const rapport = await runSource(
+      source.id,
+      adaptateur([unEvenement({ title: "Loto du club des aînés" })]),
+      muet,
+      async () => ["oui"],
+    );
+
+    expect(rapport.found).toBe(1);
+    expect(rapport.created).toBe(0);
+  });
 });
 
 describe("Lecture de fiche", () => {
