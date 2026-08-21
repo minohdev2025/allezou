@@ -49,6 +49,24 @@ export const LANGUES: Record<Locale, string> = {
 };
 
 /**
+ * Les langues que les sélecteurs proposent.
+ *
+ * L'albanais n'y est pas tant qu'il n'a pas été relu : proposer une langue, c'est promettre
+ * qu'elle est écrite par quelqu'un qui la parle. Elle reste servie — `/sq` répond, un compte
+ * qui l'a choisie la garde, et le sélecteur la montre alors pour qu'on puisse en sortir —
+ * mais rien n'y envoie plus personne.
+ */
+export const LANGUES_PROPOSEES: readonly Locale[] = ["fr", "en", "es", "pt"];
+
+/** Les langues à montrer à quelqu'un, la sienne comprise même si on ne la propose plus. */
+export function languesVisibles(actuelle: string): Locale[] {
+  const proposees = [...LANGUES_PROPOSEES];
+  return routing.locales.filter(
+    (langue) => proposees.includes(langue) || langue === actuelle,
+  );
+}
+
+/**
  * L'étiquette BCP 47 de chaque langue pour `Intl` : noms de jours, de mois, relatifs.
  *
  * `pt-PT` et non `pt` tout court : la communauté lusophone de Genève est portugaise,

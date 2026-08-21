@@ -1,7 +1,7 @@
 import { getLocale, getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
-import { LANGUES, routing } from "@/i18n/routing";
+import { LANGUES, languesVisibles } from "@/i18n/routing";
 
 import {
   DUREE_INVITATION_COPARENT_JOURS,
@@ -138,7 +138,7 @@ export default async function Compte({
           {t("langueTexte")}
         </p>
         <form action={changerLangue} className="flex flex-wrap gap-2">
-          {routing.locales.map((langue) =>
+          {languesVisibles(account.locale).map((langue) =>
             langue === account.locale ? (
               <span
                 key={langue}

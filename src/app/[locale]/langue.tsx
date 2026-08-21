@@ -1,7 +1,7 @@
 import { getLocale, getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
-import { LANGUES, routing } from "@/i18n/routing";
+import { LANGUES, languesVisibles } from "@/i18n/routing";
 
 /**
  * La rangée de langues des pages publiques : accueil, connexion, invitation.
@@ -18,7 +18,7 @@ export async function ChoixLangue({ href }: { href: string }) {
       aria-label={t("label")}
       className="mb-6 flex flex-wrap justify-center gap-x-3 gap-y-1 text-sm"
     >
-      {routing.locales.map((langue) =>
+      {languesVisibles(actuelle).map((langue) =>
         langue === actuelle ? (
           <span key={langue} className="font-bold" aria-current="true">
             {LANGUES[langue]}
