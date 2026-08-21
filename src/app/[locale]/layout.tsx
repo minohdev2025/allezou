@@ -124,8 +124,19 @@ export default async function RootLayout({
   return (
     <html lang={locale} className={`${titre.variable} ${texte.variable}`}>
       <body className="min-h-dvh">
-        {/* pb-2 : le menu collant réserve sa place lui-même, sans marge qui le décollerait. */}
-        <div className="mx-auto w-full max-w-lg px-5 pb-2 pt-8">
+        {/*
+          Le conteneur remplit la hauteur de l'écran, et l'écran de la page avec lui.
+
+          Un élément collant reste où le flux le met tant qu'il n'a rien à quitter : sur
+          une page plus courte que l'écran — « Personne n'est dehors », une invitation, la
+          connexion — le menu se posait sous le contenu, au milieu de l'écran, avec du vide
+          en dessous. En colonne d'au moins une hauteur d'écran, il retrouve un bas où
+          descendre, et garde son comportement collant sur les pages longues.
+
+          Pas de `pb` ici : le menu porte sa propre marge de sécurité et doit toucher le
+          bord bas.
+        */}
+        <div className="mx-auto flex min-h-dvh w-full max-w-lg flex-col px-5 pt-8 [&>main]:flex [&>main]:flex-1 [&>main]:flex-col">
           <NextIntlClientProvider messages={messagesClient}>{children}</NextIntlClientProvider>
         </div>
       </body>

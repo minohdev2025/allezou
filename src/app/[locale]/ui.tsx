@@ -410,11 +410,17 @@ export function Navigation({
         qu'il coure d'un bord à l'autre.
       */}
       {/*
+        Le vide qui pousse le menu en bas. `flex-1` ne prend que la place restante : nul
+        sur une page longue, où le `mt-8` du menu suffit à le détacher du contenu, et tout
+        l'écran sur une page courte, où le menu descendait jusqu'ici au milieu de rien.
+      */}
+      <div className="mt-8 flex-1" aria-hidden />
+      {/*
         Un plancher sous le menu : certains téléphones dessinent la page sous leurs
         boutons système sans annoncer de marge (env() rend 0), et les libellés se
         faisaient rogner. Au moins 0.75rem, davantage quand l'appareil dit sa vraie marge.
       */}
-      <nav className="sticky bottom-0 z-20 -mx-5 mt-8 border-t-2 border-[color:var(--color-trait)] bg-[color:var(--color-surface)] pb-[max(env(safe-area-inset-bottom),0.75rem)]">
+      <nav className="sticky bottom-0 z-20 -mx-5 border-t-2 border-[color:var(--color-trait)] bg-[color:var(--color-surface)] pb-[max(env(safe-area-inset-bottom),0.75rem)]">
         <ul className="mx-auto flex max-w-lg">
         {onglets.map(({ cle, href, texte, Icone }) => {
           const estActif = actif === cle;
