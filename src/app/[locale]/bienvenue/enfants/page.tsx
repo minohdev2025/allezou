@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 
 import { myChildren } from "@/lib/children";
-import { requireAccount } from "@/lib/session";
+import { lireSuite, requireAccount } from "@/lib/session";
 import { ajouterEnfant, terminerBienvenue } from "../../actions";
 import { Alerte, Bouton, Carte, Champ, IconePlus, Pastille, Titre, teinte } from "../../ui";
 
@@ -12,8 +12,15 @@ export default async function Enfants({
 }) {
   const account = await requireAccount();
   const { erreur } = await searchParams;
-  const enfants = await myChildren(account.id);
-  const t = await getTranslations("BienvenueEnfants");
+  const [enfants, suite, t] = await Promise.all([
+    myChildren(account.id),
+    lireSuite(),
+    getTranslations("BienvenueEnfants"),
+  ]);
+
+  // Qui arrive par le lien d'un autre parent va recevoir ses enfants à l'étape suivante.
+  // Le lui taire, c'est le laisser taper « Léa » ici et découvrir deux Léa juste après.
+  const parLienDeCoparent = suite?.startsWith("/parent/") ?? false;
 
   return (
     <main className="apparait">
@@ -22,6 +29,8 @@ export default async function Enfants({
       </Titre>
 
       {erreur ? <Alerte ton="erreur">{t("erreur")}</Alerte> : null}
+
+      {parLienDeCoparent ? <Alerte>{t("viaCoparent")}</Alerte> : null}
 
       {enfants.length > 0 ? (
         <div className="mb-5 flex flex-wrap gap-2">

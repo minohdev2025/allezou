@@ -3,9 +3,10 @@ import { getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
 
+import { coparentCircles } from "@/lib/circles";
 import { requireAccount } from "@/lib/session";
 import { readerCircles } from "@/lib/visibility";
-import { creerCercle, rejoindreParLien } from "../actions";
+import { creerCercle, rejoindreCercleDuCoparent, rejoindreParLien } from "../actions";
 import {
   Alerte,
   Bouton,
@@ -73,11 +74,14 @@ function CarteCreation() {
 export default async function Cercles({
   searchParams,
 }: {
-  searchParams: Promise<{ erreur?: string }>;
+  searchParams: Promise<{ demande?: string; erreur?: string }>;
 }) {
   const account = await requireAccount();
-  const { erreur } = await searchParams;
-  const cercles = await readerCircles(account.id);
+  const { demande, erreur } = await searchParams;
+  const [cercles, cerclesDeLAutreParent] = await Promise.all([
+    readerCircles(account.id),
+    coparentCircles(account.id),
+  ]);
   const t = await getTranslations("Cercles");
 
   return (
@@ -91,6 +95,8 @@ export default async function Cercles({
           {t.has(`erreurs.${erreur}`) ? t(`erreurs.${erreur}`) : t("erreurGenerique")}
         </Alerte>
       ) : null}
+
+      {demande ? <Alerte ton="succes">{t("demandeEnvoyee")}</Alerte> : null}
 
       {cercles.length === 0 ? (
         /*
@@ -148,6 +154,55 @@ export default async function Cercles({
             );
           })}
         </ul>
+      ) : null}
+
+      {/*
+        Deux parents des mêmes enfants veulent presque toujours la classe en commun. Sans
+        cet encart, il fallait redemander le lien d'invitation à quelqu'un qui l'avait envoyé
+        trois semaines plus tôt. Le bouton ne fait pas entrer : il dépose une demande, et
+        l'administrateur valide, comme pour n'importe quel lien.
+      */}
+      {cerclesDeLAutreParent.length > 0 ? (
+        <Carte className="mb-7" accent="violet">
+          <h2 className="titre mb-2 text-lg font-bold">{t("coparentTitre")}</h2>
+          <p className="mb-4 text-sm leading-snug text-[color:var(--color-doux)]">
+            {t("coparentTexte")}
+          </p>
+
+          <ul className="space-y-2">
+            {cerclesDeLAutreParent.map((cercle) => (
+              <li
+                key={cercle.circleId}
+                className="flex items-center gap-3 rounded-2xl bg-[color:var(--color-fond)] px-4 py-2.5"
+              >
+                <span className="min-w-0 flex-1 text-sm">
+                  <span className="block font-bold">{cercle.circleName}</span>
+                  <span className="text-[color:var(--color-doux)]">
+                    {t("coparentMembre", { nom: cercle.coparentName })}
+                  </span>
+                </span>
+                {cercle.demandee ? (
+                  <span className="shrink-0 text-sm text-[color:var(--color-doux)]">
+                    {t("coparentDemandee")}
+                  </span>
+                ) : (
+                  <form action={rejoindreCercleDuCoparent}>
+                    <input type="hidden" name="cercle" value={cercle.circleId} />
+                    <button
+                      className="shrink-0 rounded-[var(--radius-pilule)] px-3 py-2 text-sm font-bold"
+                      style={{
+                        background: "var(--color-violet-doux)",
+                        color: "var(--color-violet)",
+                      }}
+                    >
+                      {t("coparentDemander")}
+                    </button>
+                  </form>
+                )}
+              </li>
+            ))}
+          </ul>
+        </Carte>
       ) : null}
 
       <div className={`space-y-4 ${cercles.length === 0 ? "mt-5" : ""}`}>

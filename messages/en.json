@@ -140,7 +140,8 @@
     "label": "First name",
     "ajouter": "Add",
     "terminer": "Done",
-    "passer": "Skip this step"
+    "passer": "Skip this step",
+    "viaCoparent": "You're following another parent's link: their children reach you at the next step. Only add here the ones they wouldn't have."
   },
   "Agenda": {
     "titre": "Agenda",
@@ -229,7 +230,9 @@
     "sousTitre": "A class, a school, a neighborhood: people you already know.",
     "erreurs": {
       "1": "A circle name is required.",
-      "lien_vide": "Paste the link you received, or just the code it contains."
+      "lien_vide": "Paste the link you received, or just the code it contains.",
+      "cercle_inconnu": "That circle isn't open to you.",
+      "deja_membre": "You're already part of this circle."
     },
     "erreurGenerique": "That didn't work.",
     "videTitre": "You don't have any circles yet",
@@ -243,7 +246,13 @@
     "creationLabel": "Create a circle",
     "creationAide": "You'll be the admin: you'll be the one approving requests to join.",
     "creationPlaceholder": "Léa's class",
-    "creationBouton": "Create"
+    "creationBouton": "Create",
+    "demandeEnvoyee": "Your request is on its way. An admin of the circle will approve it; until then, you won't see anything shared there.",
+    "coparentTitre": "The other parent's circles",
+    "coparentTexte": "You're not in them. Asking to join files a request for the circle's admin to approve.",
+    "coparentMembre": "{nom} is a member",
+    "coparentDemander": "Request",
+    "coparentDemandee": "request sent"
   },
   "Cercle": {
     "erreurs": {
@@ -341,6 +350,24 @@
     "sousTitre": "An admin of the circle will receive it. You'll see the circle appear in your list once it's accepted.",
     "continuerBouton": "Continue"
   },
+  "Parent": {
+    "erreurs": {
+      "invitation_a_soi": "This link is yours: give it to the other parent."
+    },
+    "erreurGenerique": "This link doesn't work.",
+    "expireeTitre": "This link no longer works",
+    "expireeSous": "It may have expired, or already been used: a co-parent link works only once. The parent who sent it to you can make a new one.",
+    "expireeRetour": "Back",
+    "expireeDecouvrir": "See what Allezou is for",
+    "titre": "Your children in common",
+    "titreSous": "{nom} is raising the same children as you.",
+    "explication": "{nom} will see your children's first names, and you'll see theirs. Any child either of you adds later is shared without doing this again.",
+    "comptesSepares": "Your accounts stay separate: each of you keeps your own circles, settings and email address, and an outing carries the name of whoever posted it. You can undo this link from your account.",
+    "accepter": "Accept",
+    "pasMaintenant": "Not now",
+    "continuerBouton": "Continue",
+    "sansMotDePasse": "There's no password to set up: your email address is all you need."
+  },
   "Compte": {
     "titre": "Your account",
     "erreurs": {
@@ -351,11 +378,13 @@
       "invitation_utilisee": "This link has already been used.",
       "invitation_expiree": "This link has expired.",
       "invitation_revoquee": "This link has been canceled.",
-      "invitation_a_soi": "This link is yours: give it to the other parent."
+      "invitation_a_soi": "This link is yours: give it to the other parent.",
+      "pas_parent": "That child isn't yours.",
+      "enfant_inconnu": "That entry no longer exists."
     },
     "erreurGenerique": "That didn't work.",
     "coparentTitre": "Link for the other parent 🔗",
-    "coparentTexte": "Give it to the person raising the same kids. It's valid for 14 days and works only once. They'll then see the same first names you do.",
+    "coparentTexte": "Give it to the person raising the same kids. It's valid for {jours} days and works only once.",
     "rejoindreTitre": "Join another parent's kids",
     "rejoindreTexte": "You'll see the same kids' first names as the person who sent you this link, and can mark them present at your outings.",
     "accepter": "Accept",
@@ -371,11 +400,11 @@
     "ajouterEnfantPlaceholder": "Léa",
     "ajouter": "Add",
     "autreParentTitre": "The other parent",
-    "autreParentTexte": "If you're raising these kids together, the other parent can have their own account and see the same first names. Each of you keeps your own circles and settings.",
+    "autreParentTexte": "If you're raising these kids together, the other parent can have their own account and see the same first names. A child added by one of you becomes the other's too. Each of you keeps your own circles and settings, and an outing carries the name of whoever posted it.",
     "creerLien": "Create a link for the other parent",
     "recuLienLabel": "Received a link?",
     "recuLienAide": "Paste it here to join the other parent's kids.",
-    "recuLienPlaceholder": "The code from the link you received",
+    "recuLienPlaceholder": "https://…/parent/…",
     "rejoindreBouton": "Join",
     "passkeyTitre": "Sign in without email",
     "passkeyTexte": "Save a passkey on this device, and next time you'll sign in the same way you unlock your phone: fingerprint, face, or passcode. None of that ever reaches us: your device keeps a private key it shares with no one, and we only ever see the public half. The email link is still there if you switch phones.",
@@ -394,7 +423,14 @@
     "donneesLien": "What Allezou stores",
     "nousEcrire": "Contact us",
     "deconnexion": "Sign out",
-    "lienQuestions": "Frequently asked questions"
+    "lienQuestions": "Frequently asked questions",
+    "separer": "Unlink",
+    "separerAide": "Unlinking stops future sharing. The children you already share stay shared, and each of you can remove your own one by one.",
+    "coparentAnnuler": "Cancel the pending link",
+    "doublonsTitre": "The same first name twice",
+    "doublonsTexte": "This happens when two parents each added the same children before linking their accounts. If it really is the same child, merge the entries: their circles and past outings follow. If your children genuinely share a first name, leave it as it is.",
+    "doublonsFiches": "{count, plural, one {# entry} other {# entries}}",
+    "doublonsBouton": "It's the same child"
   },
   "Lieux": {
     "titre": "Places",

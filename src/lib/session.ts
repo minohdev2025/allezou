@@ -59,7 +59,7 @@ const UN_QUART_D_HEURE = 15 * 60;
  */
 export function destinationSure(valeur: string | undefined | null): string | undefined {
   if (!valeur) return undefined;
-  return /^\/rejoindre\/[A-Za-z0-9_-]{8,200}$/.test(valeur) ? valeur : undefined;
+  return /^\/(rejoindre|parent)\/[A-Za-z0-9_-]{8,200}$/.test(valeur) ? valeur : undefined;
 }
 
 export async function poserSuite(destination: string): Promise<void> {

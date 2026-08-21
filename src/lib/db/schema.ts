@@ -129,6 +129,31 @@ export const coparentInvite = pgTable(
   (t) => [uniqueIndex("coparent_invite_token_key").on(t.tokenHash)],
 );
 
+/**
+ * Deux comptes qui élèvent les mêmes enfants. Symétrique par construction, comme le lien
+ * coupé : une seule ligne, `accountA` < `accountB` imposé par contrainte.
+ *
+ * Ce lien ne dit pas quels enfants sont communs — c'est `child_parent` qui le dit, et lui
+ * seul. Il dit que les prochains le seront : un enfant ajouté par l'un est ajouté à
+ * l'autre. Le défaire arrête ce qui vient, sans rien retirer de ce qui a été partagé.
+ */
+export const coparent = pgTable(
+  "coparent",
+  {
+    accountA: uuid()
+      .notNull()
+      .references(() => account.id, { onDelete: "cascade" }),
+    accountB: uuid()
+      .notNull()
+      .references(() => account.id, { onDelete: "cascade" }),
+    createdAt: timestamp({ withTimezone: true }).notNull().default(now),
+  },
+  (t) => [
+    primaryKey({ columns: [t.accountA, t.accountB] }),
+    check("coparent_canonical_order", sql`${t.accountA} < ${t.accountB}`),
+  ],
+);
+
 /* ------------------------------------------------------------------ cercles */
 
 export const circleRole = pgEnum("circle_role", ["admin", "member"]);

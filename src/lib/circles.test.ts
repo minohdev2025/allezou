@@ -20,12 +20,15 @@ import {
   listPendingRequests,
   rejectJoin,
   removeMember,
+  coparentCircles,
   requestJoin,
+  requestJoinAsCoparent,
   restoreLink,
   revokeInvite,
   setRole,
   setCircleAlias,
 } from "@/lib/circles";
+import { acceptCoparent, inviteCoparent } from "@/lib/children";
 import { db } from "@/lib/db";
 import { prefsParCercle } from "@/lib/notifications";
 import {
@@ -614,5 +617,71 @@ describe("Le nom d'un cercle, chez chacun", () => {
     // Le titre d'une notification est un nom de cercle : celui de qui la reçoit.
     const prefs = await prefsParCercle(bob.id);
     expect(prefs[0].circleName).toBe("Classe de Jules");
+  });
+});
+
+describe("Les cercles de l'autre parent", () => {
+  async function deuxParentsLies() {
+    const alice = await createAccount("Alice");
+    const bob = await createAccount("Bob");
+    const { token } = await inviteCoparent(alice.id);
+    await acceptCoparent(bob.id, token);
+    return { alice, bob };
+  }
+
+  it("propose les cercles où l'autre parent est, et pas moi", async () => {
+    const { alice, bob } = await deuxParentsLies();
+    const classe = await unCercle(alice, "Classe 4P");
+    const voisinage = await unCercle(bob, "Voisinage");
+
+    expect(await coparentCircles(bob.id)).toEqual([
+      { circleId: classe, circleName: "Classe 4P", coparentName: "Alice", demandee: false },
+    ]);
+    expect(await coparentCircles(alice.id)).toEqual([
+      { circleId: voisinage, circleName: "Voisinage", coparentName: "Bob", demandee: false },
+    ]);
+  });
+
+  it("ne propose rien à qui n'a pas de co-parent", async () => {
+    const alice = await createAccount("Alice");
+    const bob = await createAccount("Bob");
+    await unCercle(alice, "Classe 4P");
+
+    expect(await coparentCircles(bob.id)).toEqual([]);
+  });
+
+  it("demander dépose une demande, et ne fait entrer personne", async () => {
+    const { alice, bob } = await deuxParentsLies();
+    const classe = await unCercle(alice, "Classe 4P");
+
+    const result = await requestJoinAsCoparent(bob.id, classe);
+
+    expect(result.ok).toBe(true);
+    expect(await isActiveMember(bob.id, classe)).toBe(false);
+    const attente = await listPendingRequests(alice.id, classe);
+    expect(attente.ok && attente.value.map((d) => d.displayName)).toEqual(["Bob"]);
+    expect((await coparentCircles(bob.id))[0].demandee).toBe(true);
+  });
+
+  it("demander deux fois ne dépose qu'une demande", async () => {
+    const { alice, bob } = await deuxParentsLies();
+    const classe = await unCercle(alice, "Classe 4P");
+
+    await requestJoinAsCoparent(bob.id, classe);
+    await requestJoinAsCoparent(bob.id, classe);
+
+    const attente = await listPendingRequests(alice.id, classe);
+    expect(attente.ok && attente.value).toHaveLength(1);
+  });
+
+  it("sans lien de co-parent, le cercle reste inconnu", async () => {
+    const alice = await createAccount("Alice");
+    const carla = await createAccount("Carla");
+    const classe = await unCercle(alice, "Classe 4P");
+
+    expect(await requestJoinAsCoparent(carla.id, classe)).toEqual({
+      ok: false,
+      reason: "cercle_inconnu",
+    });
   });
 });

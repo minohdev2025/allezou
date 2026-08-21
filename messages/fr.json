@@ -140,7 +140,8 @@
     "label": "Prénom",
     "ajouter": "Ajouter",
     "terminer": "C'est bon",
-    "passer": "Passer cette étape"
+    "passer": "Passer cette étape",
+    "viaCoparent": "Vous suivez le lien d'un autre parent : ses enfants vous arrivent à l'étape suivante. N'ajoutez ici que ceux qu'il n'aurait pas."
   },
   "Agenda": {
     "titre": "Agenda",
@@ -229,7 +230,9 @@
     "sousTitre": "Une classe, une école, un voisinage : des gens que vous connaissez déjà.",
     "erreurs": {
       "1": "Il faut un nom de cercle.",
-      "lien_vide": "Collez le lien que vous avez reçu, ou seulement le code qu'il contient."
+      "lien_vide": "Collez le lien que vous avez reçu, ou seulement le code qu'il contient.",
+      "cercle_inconnu": "Ce cercle ne vous est pas ouvert.",
+      "deja_membre": "Vous faites déjà partie de ce cercle."
     },
     "erreurGenerique": "Cela n'a pas marché.",
     "videTitre": "Vous n'avez encore aucun cercle",
@@ -243,7 +246,13 @@
     "creationLabel": "Créer un cercle",
     "creationAide": "Vous en serez l'administrateur : c'est vous qui validerez les entrées.",
     "creationPlaceholder": "Classe de 4P",
-    "creationBouton": "Créer"
+    "creationBouton": "Créer",
+    "demandeEnvoyee": "Votre demande est partie. Un administrateur du cercle la validera ; d'ici là, vous ne voyez rien de ce qui s'y partage.",
+    "coparentTitre": "Les cercles de l'autre parent",
+    "coparentTexte": "Vous n'en faites pas partie. Demander à rejoindre dépose une demande que l'administrateur du cercle validera.",
+    "coparentMembre": "{nom} en fait partie",
+    "coparentDemander": "Demander",
+    "coparentDemandee": "demande envoyée"
   },
   "Cercle": {
     "erreurs": {
@@ -341,6 +350,24 @@
     "sousTitre": "Un administrateur du cercle va la recevoir. Vous verrez le cercle apparaître dans votre liste une fois qu'elle sera acceptée.",
     "continuerBouton": "Continuer"
   },
+  "Parent": {
+    "erreurs": {
+      "invitation_a_soi": "Ce lien est le vôtre : donnez-le à l'autre parent."
+    },
+    "erreurGenerique": "Ce lien ne fonctionne pas.",
+    "expireeTitre": "Ce lien ne fonctionne plus",
+    "expireeSous": "Il a peut-être expiré, ou déjà servi : un lien de co-parent ne vaut qu'une fois. Le parent qui vous l'a envoyé peut en refaire un.",
+    "expireeRetour": "Retour",
+    "expireeDecouvrir": "Voir à quoi sert Allezou",
+    "titre": "Vos enfants en commun",
+    "titreSous": "{nom} élève les mêmes enfants que vous.",
+    "explication": "{nom} verra les prénoms de vos enfants, et vous verrez les siens. Ceux que l'un de vous ajoutera ensuite seront communs sans rien avoir à refaire.",
+    "comptesSepares": "Vos comptes restent séparés : chacun garde ses cercles, ses réglages et son adresse, et une sortie porte le nom de celui qui l'a publiée. Vous pourrez défaire ce lien depuis votre compte.",
+    "accepter": "Accepter",
+    "pasMaintenant": "Pas maintenant",
+    "continuerBouton": "Continuer",
+    "sansMotDePasse": "Il n'y a pas de mot de passe à choisir : votre adresse électronique suffit."
+  },
   "Compte": {
     "titre": "Votre compte",
     "erreurs": {
@@ -351,11 +378,13 @@
       "invitation_utilisee": "Ce lien a déjà servi.",
       "invitation_expiree": "Ce lien a expiré.",
       "invitation_revoquee": "Ce lien a été annulé.",
-      "invitation_a_soi": "Ce lien est le vôtre : donnez-le à l'autre parent."
+      "invitation_a_soi": "Ce lien est le vôtre : donnez-le à l'autre parent.",
+      "pas_parent": "Cet enfant n'est pas le vôtre.",
+      "enfant_inconnu": "Cette fiche n'existe plus."
     },
     "erreurGenerique": "Cela n'a pas marché.",
     "coparentTitre": "Lien pour l'autre parent 🔗",
-    "coparentTexte": "Donnez-le à la personne qui élève les mêmes enfants. Il vaut 14 jours et ne sert qu'une fois. Elle verra alors les mêmes prénoms que vous.",
+    "coparentTexte": "Donnez-le à la personne qui élève les mêmes enfants. Il vaut {jours} jours et ne sert qu'une fois.",
     "rejoindreTitre": "Rejoindre les enfants d'un parent",
     "rejoindreTexte": "Vous verrez les mêmes prénoms d'enfants que la personne qui vous a envoyé ce lien, et pourrez les déclarer présents à vos sorties.",
     "accepter": "Accepter",
@@ -371,11 +400,11 @@
     "ajouterEnfantPlaceholder": "Léa",
     "ajouter": "Ajouter",
     "autreParentTitre": "L'autre parent",
-    "autreParentTexte": "Si vous élevez ces enfants à deux, l'autre parent peut avoir son propre compte et voir les mêmes prénoms. Chacun garde ses cercles et ses réglages.",
+    "autreParentTexte": "Si vous élevez ces enfants à deux, l'autre parent peut avoir son propre compte et voir les mêmes prénoms. Un enfant ajouté par l'un devient l'enfant de l'autre. Chacun garde ses cercles et ses réglages, et une sortie porte le nom de celui qui l'a publiée.",
     "creerLien": "Créer un lien pour l'autre parent",
     "recuLienLabel": "Vous avez reçu un lien ?",
     "recuLienAide": "Collez-le ici pour rejoindre les enfants de l'autre parent.",
-    "recuLienPlaceholder": "Le code du lien reçu",
+    "recuLienPlaceholder": "https://…/parent/…",
     "rejoindreBouton": "Rejoindre",
     "passkeyTitre": "Revenir sans courriel",
     "passkeyTexte": "Enregistrez cet appareil et vous entrerez ensuite comme vous le déverrouillez : empreinte, visage ou code, selon votre téléphone. Rien de tout cela ne nous est transmis : l'appareil garde une clé qu'il ne révèle à personne, et nous n'en connaissons que la moitié publique. Le lien par courriel reste là si vous changez de téléphone.",
@@ -394,7 +423,14 @@
     "donneesLien": "Ce qu'Allezou enregistre",
     "nousEcrire": "Nous écrire",
     "deconnexion": "Se déconnecter",
-    "lienQuestions": "Questions fréquentes"
+    "lienQuestions": "Questions fréquentes",
+    "separer": "Séparer",
+    "separerAide": "Séparer arrête le partage à venir. Les enfants que vous avez en commun le restent, et chacun peut retirer les siens un par un.",
+    "coparentAnnuler": "Annuler le lien en cours",
+    "doublonsTitre": "Deux fois le même prénom",
+    "doublonsTexte": "Cela arrive quand deux parents ont ajouté les mêmes enfants chacun de leur côté avant de lier leurs comptes. Si c'est bien le même enfant, réunissez les fiches : ses cercles et ses sorties passées suivent. Si vos enfants portent vraiment le même prénom, laissez comme cela.",
+    "doublonsFiches": "{count, plural, one {# fiche} other {# fiches}}",
+    "doublonsBouton": "C'est le même enfant"
   },
   "Lieux": {
     "titre": "Les lieux",

@@ -284,6 +284,117 @@ export async function requestJoin(
   });
 }
 
+/* -------------------------------------------- les cercles de l'autre parent */
+
+export type CoparentCircle = {
+  circleId: string;
+  circleName: string;
+  coparentName: string;
+  demandee: boolean;
+};
+
+/**
+ * Les cercles où l'autre parent est déjà, et pas moi.
+ *
+ * Deux parents des mêmes enfants veulent presque toujours la classe en commun, et rien ne
+ * les y aidait : il fallait redemander un lien d'invitation à quelqu'un qui l'avait envoyé
+ * trois semaines plus tôt. Le raccourci s'arrête là où commence la règle du produit — il
+ * dépose une demande, un administrateur valide, comme pour n'importe quel lien.
+ *
+ * Ce que cela révèle tient en un nom de cercle, à quelqu'un qui partage déjà ses enfants
+ * avec le membre en question. Les membres du cercle, eux, n'apprennent rien tant que la
+ * demande n'est pas déposée.
+ */
+export async function coparentCircles(actorId: string): Promise<CoparentCircle[]> {
+  const rows = await db.execute<{
+    circle_id: string;
+    circle_name: string;
+    coparent_name: string;
+    demandee: boolean;
+  }>(sql`
+    select c.id as circle_id, c.name as circle_name, a.display_name as coparent_name,
+           exists (
+             select 1 from circle_join_request r
+             where r.circle_id = c.id and r.account_id = ${actorId} and r.status = 'pending'
+           ) as demandee
+    from coparent p
+    join account a
+      on a.id = case when p.account_a = ${actorId} then p.account_b else p.account_a end
+     and a.deleted_at is null
+    join circle_membership m on m.account_id = a.id and m.left_at is null
+    join circle c on c.id = m.circle_id and c.archived_at is null
+    where (p.account_a = ${actorId} or p.account_b = ${actorId})
+      and not exists (
+        select 1 from circle_membership mien
+        where mien.circle_id = c.id and mien.account_id = ${actorId} and mien.left_at is null
+      )
+    order by c.name asc
+  `);
+
+  return rows.map((r) => ({
+    circleId: r.circle_id,
+    circleName: r.circle_name,
+    coparentName: r.coparent_name,
+    demandee: r.demandee,
+  }));
+}
+
+/**
+ * Demander à rejoindre un cercle sans lien, parce que l'autre parent y est.
+ *
+ * La garde est la même que celle du lien : on ne peut demander que là où l'on a une raison
+ * d'être. Ici, la raison est le lien co-parent — sans lui, la demande est refusée sans dire
+ * si le cercle existe.
+ */
+export async function requestJoinAsCoparent(
+  actorId: string,
+  circleId: string,
+): Promise<Result<JoinRequest>> {
+  return db.transaction(async (tx) => {
+    const autorise = await tx.execute<{ un: number }>(sql`
+      select 1 as un
+      from coparent p
+      join circle_membership m
+        on m.account_id = case when p.account_a = ${actorId} then p.account_b else p.account_a end
+       and m.circle_id = ${circleId} and m.left_at is null
+      join circle c on c.id = m.circle_id and c.archived_at is null
+      where (p.account_a = ${actorId} or p.account_b = ${actorId})
+      limit 1
+    `);
+
+    if (autorise.length === 0) return ko<JoinRequest>("cercle_inconnu");
+    if (await isActiveMember(actorId, circleId, tx)) return ko<JoinRequest>("deja_membre");
+
+    const [pending] = await tx
+      .select()
+      .from(s.circleJoinRequest)
+      .where(
+        and(
+          eq(s.circleJoinRequest.circleId, circleId),
+          eq(s.circleJoinRequest.accountId, actorId),
+          eq(s.circleJoinRequest.status, "pending"),
+        ),
+      )
+      .limit(1);
+
+    if (pending) return ok(pending);
+
+    const [request] = await tx
+      .insert(s.circleJoinRequest)
+      .values({ circleId, accountId: actorId })
+      .returning();
+
+    await recordAudit(tx, {
+      action: "cercle.demande.deposee",
+      actorId,
+      circleId,
+      targetAccountId: actorId,
+    });
+
+    return ok(request);
+  });
+}
+
 export type PendingRequest = {
   id: string;
   accountId: string;

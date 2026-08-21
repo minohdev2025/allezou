@@ -28,9 +28,12 @@ import {
   acceptCoparent,
   addChild,
   inviteCoparent,
+  mergeChildren,
   removeChild,
   renameChild,
+  revokeCoparentInvite,
   setChildInCircle,
+  unlinkCoparent,
 } from "@/lib/children";
 import {
   approveJoin,
@@ -41,6 +44,7 @@ import {
   rejectJoin,
   removeMember,
   requestJoin,
+  requestJoinAsCoparent,
   restoreLink,
   revokeInvite,
   setCircleAlias,
@@ -241,6 +245,52 @@ export async function inviterAutreParent() {
 }
 
 /**
+ * Annuler le lien en cours. Un lien qui donne accès aux prénoms de ses enfants et qui part
+ * au mauvais numéro doit pouvoir se refermer sans attendre ses quatorze jours.
+ */
+export async function annulerLienCoparent() {
+  const account = await requireAccount();
+  await revokeCoparentInvite(account.id);
+  redirect("/compte");
+}
+
+/** Défaire le lien : ce qui est partagé le reste, la suite ne l'est plus. */
+export async function separerDuCoparent(formData: FormData) {
+  const account = await requireAccount();
+  await unlinkCoparent(account.id, String(formData.get("parent") ?? ""));
+  redirect("/compte");
+}
+
+/**
+ * « Ce sont les mêmes enfants » : deux fiches au même prénom n'en font plus qu'une.
+ *
+ * Le groupe entier passe dans la plus ancienne. C'est le parent qui l'affirme, jamais
+ * l'application : deux enfants peuvent porter le même prénom, et le déduire serait décider à
+ * sa place de qui est qui.
+ */
+export async function reunirEnfants(formData: FormData) {
+  const account = await requireAccount();
+  const garder = String(formData.get("garder") ?? "");
+
+  for (const absorber of formData.getAll("absorber")) {
+    const result = await mergeChildren(account.id, garder, String(absorber));
+    if (!result.ok) redirect(`/compte?erreur=${result.reason}`);
+  }
+
+  redirect("/compte");
+}
+
+/** Demander à rejoindre un cercle où l'autre parent est déjà. L'administrateur valide. */
+export async function rejoindreCercleDuCoparent(formData: FormData) {
+  const account = await requireAccount();
+  const result = await requestJoinAsCoparent(
+    account.id,
+    String(formData.get("cercle") ?? ""),
+  );
+  redirect(result.ok ? "/cercles?demande=1" : `/cercles?erreur=${result.reason}`);
+}
+
+/**
  * Le code d'un lien, qu'on ait collé le lien entier ou seulement le code.
  *
  * Ce qu'on reçoit par message, c'est « https://allezou.ch/rejoindre/ab12… », souvent avec une
@@ -248,7 +298,15 @@ export async function inviterAutreParent() {
  * plus naturel — coller ce qu'on a reçu — et l'erreur n'en dirait pas la raison.
  */
 function codeDuLien(saisie: string): string {
-  const sansSuite = saisie.trim().split(/[?#]/)[0];
+  const brut = saisie.trim();
+
+  // Les liens de co-parent envoyés avant l'écran `/parent/<jeton>` portent le code dans la
+  // requête. Couper à `?` ne laissait alors que « compte » à chercher en base, et coller le
+  // lien reçu — le geste le plus naturel — échouait toujours.
+  const enParametre = brut.match(/[?&]rejoindre=([A-Za-z0-9_-]+)/);
+  if (enParametre) return enParametre[1];
+
+  const sansSuite = brut.split(/[?#]/)[0];
   const segments = sansSuite.split("/").filter(Boolean);
   return (segments.pop() ?? "").replace(/[.,;:)\]}>]+$/, "");
 }

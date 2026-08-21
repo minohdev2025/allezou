@@ -25,6 +25,7 @@ que cette page existe.
 | Votre adresse électronique | C'est votre seule façon de vous connecter : Allezou n'a pas de mot de passe | Tant que votre compte existe | Vous seul·e. Elle n'est jamais montrée aux autres membres |
 | Le nom que vous choisissez d'afficher | Pour que les autres vous reconnaissent. Vous l'écrivez librement : « Sophie », « Maman de Léa », ce que vous voulez | Tant que votre compte existe | Les membres de vos cercles |
 | Le **prénom** de vos enfants, et rien d'autre | Pour dire qui est présent à une sortie : « nous sommes au parc avec Matéo » | Tant que vous le gardez déclaré | Les membres de vos cercles, quand vous déclarez l'enfant présent |
+| Le lien avec l'autre parent de vos enfants | Pour que vous voyiez les mêmes enfants, y compris ceux que l'un de vous ajoutera plus tard | Tant que l'un de vous ne le défait pas | Vous et l'autre parent. Personne d'autre n'apprend que vos comptes sont liés |
 | Vos cercles et qui en fait partie | C'est le cœur du produit | Tant que le cercle existe | Les membres du cercle concerné |
 | Le nom sous lequel vous voyez un cercle, s'il diffère de celui d'origine | Pour que « Classe 4P » puisse se lire « Classe de Jules » chez vous | Tant que vous le gardez | Vous seul·e. Les autres membres voient le nom d'origine |
 | Quel enfant est concerné par quel cercle | Pour qu'une sortie sans l'aîné ne parte pas vers sa classe | Tant que vous le gardez | Vous, et l'autre parent de l'enfant s'il en a un. Les autres membres du cercle ne le voient pas |

@@ -140,7 +140,8 @@
     "label": "Nombre",
     "ajouter": "Añadir",
     "terminer": "Listo",
-    "passer": "Saltar este paso"
+    "passer": "Saltar este paso",
+    "viaCoparent": "Estás siguiendo el enlace de otro padre o madre: sus hijos te llegan en el paso siguiente. Añade aquí solo los que esa persona no tenga."
   },
   "Agenda": {
     "titre": "Agenda",
@@ -229,7 +230,9 @@
     "sousTitre": "Una clase, una escuela, un vecindario: gente que ya conoces.",
     "erreurs": {
       "1": "Hace falta un nombre para el círculo.",
-      "lien_vide": "Pega el enlace que has recibido, o solo el código que contiene."
+      "lien_vide": "Pega el enlace que has recibido, o solo el código que contiene.",
+      "cercle_inconnu": "Ese círculo no está abierto para ti.",
+      "deja_membre": "Ya formas parte de este círculo."
     },
     "erreurGenerique": "Esto no ha funcionado.",
     "videTitre": "Todavía no tienes ningún círculo",
@@ -243,7 +246,13 @@
     "creationLabel": "Crear un círculo",
     "creationAide": "Serás quien lo administre: tú decidirás quién entra.",
     "creationPlaceholder": "Clase de 4P",
-    "creationBouton": "Crear"
+    "creationBouton": "Crear",
+    "demandeEnvoyee": "Tu solicitud ya está enviada. Quien administre el círculo la validará; hasta entonces, no verás nada de lo que se comparte ahí.",
+    "coparentTitre": "Los círculos del otro padre o madre",
+    "coparentTexte": "No formas parte de ellos. Pedir unirte deja una solicitud que validará quien administre el círculo.",
+    "coparentMembre": "{nom} forma parte de él",
+    "coparentDemander": "Pedir",
+    "coparentDemandee": "solicitud enviada"
   },
   "Cercle": {
     "erreurs": {
@@ -341,6 +350,24 @@
     "sousTitre": "La recibirá quien administre el círculo. Verás el círculo aparecer en tu lista en cuanto se acepte.",
     "continuerBouton": "Continuar"
   },
+  "Parent": {
+    "erreurs": {
+      "invitation_a_soi": "Este enlace es tuyo: dáselo al otro padre o madre."
+    },
+    "erreurGenerique": "Este enlace no funciona.",
+    "expireeTitre": "Este enlace ya no funciona",
+    "expireeSous": "Puede que haya caducado, o que ya se haya usado: un enlace de co-padre solo sirve una vez. La persona que te lo envió puede hacer otro.",
+    "expireeRetour": "Volver",
+    "expireeDecouvrir": "Ver para qué sirve Allezou",
+    "titre": "Vuestros hijos en común",
+    "titreSous": "{nom} cría a los mismos hijos que tú.",
+    "explication": "{nom} verá los nombres de tus hijos, y tú verás los suyos. Los que cualquiera de los dos añada después serán comunes sin tener que repetir nada.",
+    "comptesSepares": "Vuestras cuentas siguen separadas: cada uno conserva sus círculos, sus ajustes y su correo, y cada salida lleva el nombre de quien la publicó. Podrás deshacer este vínculo desde tu cuenta.",
+    "accepter": "Aceptar",
+    "pasMaintenant": "Ahora no",
+    "continuerBouton": "Continuar",
+    "sansMotDePasse": "No hay que elegir contraseña: basta con tu correo electrónico."
+  },
   "Compte": {
     "titre": "Tu cuenta",
     "erreurs": {
@@ -351,11 +378,13 @@
       "invitation_utilisee": "Este enlace ya se ha usado.",
       "invitation_expiree": "Este enlace ha caducado.",
       "invitation_revoquee": "Este enlace ha sido cancelado.",
-      "invitation_a_soi": "Este enlace es tuyo: dáselo al otro padre o madre."
+      "invitation_a_soi": "Este enlace es tuyo: dáselo al otro padre o madre.",
+      "pas_parent": "Ese hijo no es tuyo.",
+      "enfant_inconnu": "Esa ficha ya no existe."
     },
     "erreurGenerique": "Esto no ha funcionado.",
     "coparentTitre": "Enlace para el otro padre o madre 🔗",
-    "coparentTexte": "Dáselo a la persona que cría a los mismos hijos. Es válido 14 días y solo sirve una vez. Esa persona verá entonces los mismos nombres que tú.",
+    "coparentTexte": "Dáselo a la persona que cría a los mismos hijos. Es válido {jours} días y solo sirve una vez.",
     "rejoindreTitre": "Unirse a los hijos de un padre o madre",
     "rejoindreTexte": "Verás los mismos nombres de hijos que la persona que te envió este enlace, y podrás declararlos presentes en tus salidas.",
     "accepter": "Aceptar",
@@ -371,11 +400,11 @@
     "ajouterEnfantPlaceholder": "Léa",
     "ajouter": "Añadir",
     "autreParentTitre": "El otro padre o madre",
-    "autreParentTexte": "Si estos hijos los criáis entre dos, el otro padre o madre puede tener su propia cuenta y ver los mismos nombres. Cada uno conserva sus círculos y sus ajustes.",
+    "autreParentTexte": "Si estos hijos los criáis entre dos, el otro padre o madre puede tener su propia cuenta y ver los mismos nombres. Un hijo añadido por uno pasa a ser también del otro. Cada uno conserva sus círculos y sus ajustes, y cada salida lleva el nombre de quien la publicó.",
     "creerLien": "Crear un enlace para el otro padre o madre",
     "recuLienLabel": "¿Has recibido un enlace?",
     "recuLienAide": "Pégalo aquí para unirte a los hijos del otro padre o madre.",
-    "recuLienPlaceholder": "El código del enlace recibido",
+    "recuLienPlaceholder": "https://…/parent/…",
     "rejoindreBouton": "Unirse",
     "passkeyTitre": "Volver sin correo electrónico",
     "passkeyTexte": "Registra este dispositivo y luego entrarás igual que lo desbloqueas: huella, cara o código, según tu teléfono. Nada de eso nos llega a nosotros: el dispositivo guarda una llave de acceso que no revela a nadie, y nosotros solo conocemos la mitad pública. El enlace por correo electrónico sigue ahí si cambias de teléfono.",
@@ -394,7 +423,14 @@
     "donneesLien": "Lo que Allezou guarda",
     "nousEcrire": "Escríbenos",
     "deconnexion": "Cerrar sesión",
-    "lienQuestions": "Preguntas frecuentes"
+    "lienQuestions": "Preguntas frecuentes",
+    "separer": "Separar",
+    "separerAide": "Separar detiene lo que se compartiría en adelante. Los hijos que ya tenéis en común siguen siéndolo, y cada uno puede quitar los suyos uno a uno.",
+    "coparentAnnuler": "Anular el enlace en curso",
+    "doublonsTitre": "Dos veces el mismo nombre",
+    "doublonsTexte": "Pasa cuando dos padres han añadido a los mismos hijos cada uno por su lado antes de vincular sus cuentas. Si de verdad es el mismo hijo, une las fichas: sus círculos y sus salidas pasadas le siguen. Si tus hijos llevan realmente el mismo nombre, déjalo así.",
+    "doublonsFiches": "{count, plural, one {# ficha} other {# fichas}}",
+    "doublonsBouton": "Es el mismo hijo"
   },
   "Lieux": {
     "titre": "Los lugares",

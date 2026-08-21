@@ -19,6 +19,10 @@ describe("La destination de reprise", () => {
     expect(destinationSure(`/rejoindre/${JETON}`)).toBe(`/rejoindre/${JETON}`);
   });
 
+  it("accepte l'invitation de l'autre parent", () => {
+    expect(destinationSure(`/parent/${JETON}`)).toBe(`/parent/${JETON}`);
+  });
+
   it("refuse une adresse extérieure", () => {
     expect(destinationSure("https://exemple.test/rejoindre/abcdefghij")).toBeUndefined();
   });
@@ -38,6 +42,7 @@ describe("La destination de reprise", () => {
   it("refuse ce qui n'a pas la forme d'un jeton", () => {
     expect(destinationSure("/rejoindre/court")).toBeUndefined();
     expect(destinationSure("/rejoindre/")).toBeUndefined();
+    expect(destinationSure("/parent/court")).toBeUndefined();
     expect(destinationSure(`/rejoindre/${JETON}?redirect=ailleurs`)).toBeUndefined();
     expect(destinationSure(`/rejoindre/${JETON}/../compte`)).toBeUndefined();
   });

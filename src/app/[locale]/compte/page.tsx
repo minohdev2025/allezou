@@ -3,13 +3,20 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { LANGUES, routing } from "@/i18n/routing";
 
-import { myChildren } from "@/lib/children";
+import {
+  DUREE_INVITATION_COPARENT_JOURS,
+  coparents,
+  duplicateChildren,
+  hasPendingCoparentInvite,
+  myChildren,
+} from "@/lib/children";
 import { mesCles } from "@/lib/passkeys";
 import { estRelecteur, requireAccount } from "@/lib/session";
 import { localeSure } from "@/lib/traduire";
 import {
   accepterCoparent,
   ajouterEnfantCompte,
+  annulerLienCoparent,
   changerLangue,
   changerNom,
   enregistrerCleAcces,
@@ -18,9 +25,12 @@ import {
   preparerCleAcces,
   renommerEnfant,
   retirerEnfant,
+  reunirEnfants,
   seDeconnecter,
+  separerDuCoparent,
   supprimerCompte,
 } from "../actions";
+import { PartageInvitation } from "../partage-client";
 import { AjouterCleAcces } from "../passkey-client";
 import { CodeQR } from "../qr";
 import {
@@ -44,9 +54,15 @@ export default async function Compte({
   const locale = localeSure(await getLocale());
   const account = await requireAccount();
   const { erreur, coparent, rejoindre } = await searchParams;
-  const [enfants, cles] = await Promise.all([myChildren(account.id), mesCles(account.id)]);
+  const [enfants, cles, autresParents, lienEnCours] = await Promise.all([
+    myChildren(account.id),
+    mesCles(account.id),
+    coparents(account.id),
+    hasPendingCoparentInvite(account.id),
+  ]);
   const appUrl = process.env.APP_URL ?? "http://localhost:3000";
   const relecteur = estRelecteur(account);
+  const doublons = duplicateChildren(enfants);
 
   return (
     <main className="apparait">
@@ -67,16 +83,28 @@ export default async function Compte({
       {coparent ? (
         <Alerte ton="succes">
           <strong className="mb-1 block">{t("coparentTitre")}</strong>
-          <p className="mb-2 text-sm leading-snug">{t("coparentTexte")}</p>
+          <p className="mb-2 text-sm leading-snug">
+            {t("coparentTexte", { jours: DUREE_INVITATION_COPARENT_JOURS })}
+          </p>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
-            <CodeQR valeur={`${appUrl}/compte?rejoindre=${coparent}`} />
+            <CodeQR valeur={`${appUrl}/parent/${coparent}`} />
             <code className="min-w-0 flex-1 break-all rounded-xl bg-[color:var(--color-surface)] p-3 text-sm">
-              {appUrl}/compte?rejoindre={coparent}
+              {appUrl}/parent/{coparent}
             </code>
           </div>
+          {/*
+            Le lien ne se réaffiche pas : la base n'en garde que l'empreinte. Sans bouton
+            pour le copier, il fallait le sélectionner à la main dans un pavé de texte, sur
+            un téléphone, du premier caractère au dernier.
+          */}
+          <PartageInvitation lien={`${appUrl}/parent/${coparent}`} />
         </Alerte>
       ) : null}
 
+      {/*
+        Les liens envoyés avant l'écran `/parent/<jeton>` mènent ici. Ils valent quatorze
+        jours : ce bloc les honore le temps que les derniers expirent.
+      */}
       {rejoindre ? (
         <Carte className="mb-5" accent="ambre">
           <h2 className="titre mb-2 text-lg font-bold">{t("rejoindreTitre")}</h2>
@@ -189,15 +217,103 @@ export default async function Compte({
         </form>
       </Carte>
 
+      {/*
+        Le cas ordinaire de deux comptes créés séparément : chacun avait déjà tapé Léa et
+        Matéo, et la mise en commun donne quatre fiches pour deux enfants. L'application ne
+        décide pas toute seule que deux prénoms identiques désignent le même enfant — deux
+        enfants peuvent porter le même prénom, et le déduire serait décider à la place du
+        parent. Elle pose la question, il répond d'un geste.
+      */}
+      {doublons.length > 0 ? (
+        <Carte className="mb-5" accent="rose">
+          <h2 className="titre mb-2 text-lg font-bold">{t("doublonsTitre")}</h2>
+          <p className="mb-4 text-sm leading-snug text-[color:var(--color-doux)]">
+            {t("doublonsTexte")}
+          </p>
+
+          <ul className="space-y-2">
+            {doublons.map((groupe) => (
+              <li key={groupe[0].id}>
+                <form
+                  action={reunirEnfants}
+                  className="flex items-center gap-3 rounded-2xl bg-[color:var(--color-fond)] px-4 py-2.5"
+                >
+                  <input type="hidden" name="garder" value={groupe[0].id} />
+                  {groupe.slice(1).map((enfant) => (
+                    <input key={enfant.id} type="hidden" name="absorber" value={enfant.id} />
+                  ))}
+                  <span className="min-w-0 flex-1 text-sm">
+                    <span className="block font-bold">{groupe[0].firstName}</span>
+                    <span className="text-[color:var(--color-doux)]">
+                      {t("doublonsFiches", { count: groupe.length })}
+                    </span>
+                  </span>
+                  <button
+                    className="shrink-0 rounded-[var(--radius-pilule)] px-3 py-2 text-sm font-bold"
+                    style={{
+                      background: "var(--color-rose-doux)",
+                      color: "var(--color-rose)",
+                    }}
+                  >
+                    {t("doublonsBouton")}
+                  </button>
+                </form>
+              </li>
+            ))}
+          </ul>
+        </Carte>
+      ) : null}
+
       <Carte className="mb-5" accent="ambre">
         <h2 className="titre mb-2 text-lg font-bold">{t("autreParentTitre")}</h2>
         <p className="mb-4 text-sm leading-snug text-[color:var(--color-doux)]">
           {t("autreParentTexte")}
         </p>
 
+        {autresParents.length > 0 ? (
+          <>
+            <ul className="mb-3 space-y-2">
+              {autresParents.map((parent) => (
+                <li
+                  key={parent.id}
+                  className="flex items-center gap-3 rounded-2xl bg-[color:var(--color-fond)] px-4 py-2.5"
+                >
+                  <span className="min-w-0 flex-1 text-sm font-bold">{parent.displayName}</span>
+                  <form action={separerDuCoparent}>
+                    <input type="hidden" name="parent" value={parent.id} />
+                    <button
+                      className="shrink-0 rounded-[var(--radius-pilule)] px-3 py-2 text-sm font-bold"
+                      style={{
+                        background: "var(--color-corail-doux)",
+                        color: "var(--color-corail)",
+                      }}
+                    >
+                      {t("separer")}
+                    </button>
+                  </form>
+                </li>
+              ))}
+            </ul>
+            <p className="mb-4 text-sm leading-snug text-[color:var(--color-doux)]">
+              {t("separerAide")}
+            </p>
+          </>
+        ) : null}
+
         <form action={inviterAutreParent} className="mb-4">
           <Bouton variante="second">{t("creerLien")}</Bouton>
         </form>
+
+        {/*
+          Un lien qui donne les prénoms de ses enfants et qui part au mauvais numéro devait
+          jusqu'ici attendre ses quatorze jours : la fonction existait, aucun écran ne
+          l'appelait.
+        */}
+        {lienEnCours ? (
+          <form action={annulerLienCoparent} className="mb-4">
+            <Bouton variante="discret">{t("coparentAnnuler")}</Bouton>
+          </form>
+        ) : null}
 
         <form action={accepterCoparent} className="space-y-3">
           <Champ

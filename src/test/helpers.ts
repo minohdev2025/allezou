@@ -16,7 +16,7 @@ let counter = 0;
 export async function resetDatabase(): Promise<void> {
   await db.execute(sql`
     truncate table
-      account, child, child_parent, coparent_invite,
+      account, child, child_parent, coparent, coparent_invite,
       circle, circle_membership, circle_link_cut, circle_invite, circle_join_request,
       place, place_rename_proposal, place_rename_vote,
       source, event,

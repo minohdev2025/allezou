@@ -22,7 +22,10 @@ messagerie, ce n'est pas un réseau de rencontre.
 
 **Compte** — personnel. Un parent, un compte. Les enfants y sont rattachés : **un prénom, rien
 d'autre**. Deux parents peuvent être liés aux mêmes enfants, par invitation d'un compte à
-l'autre.
+l'autre. Le lien vaut pour la suite : un enfant ajouté par l'un devient l'enfant de l'autre.
+Il ne fusionne rien — chacun garde ses cercles, ses réglages et son nom, et une sortie porte
+celui de qui l'a publiée — et chacun peut le défaire sans retirer à l'autre les enfants déjà
+partagés.
 
 **Cercle** — une liste de membres, créée par quelqu'un qui en devient administrateur.
 Typiquement une classe, une école, un voisinage — l'app ne présuppose rien de cette structure.

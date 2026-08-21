@@ -11,13 +11,17 @@ import { useState, useSyncExternalStore } from "react";
  * faire (l'API Web Share, c'est-à-dire les téléphones) : un bouton qui échoue
  * n'apprend rien à personne. La capacité se lit comme un état externe — le serveur
  * répond « non », l'appareil répond pour lui-même, et rien ne s'y réabonne jamais.
+ *
+ * Deux invitations s'en servent : celle d'un cercle, qui porte un message tout prêt, et
+ * celle de l'autre parent, qui n'a qu'un lien à donner. Sans message, le bouton qui le
+ * copie n'a pas lieu d'être et le partage envoie le lien seul.
  */
 
 const REVENIR_MS = 1_500;
 
 const jamais = () => () => {};
 
-export function PartageInvitation({ lien, message }: { lien: string; message: string }) {
+export function PartageInvitation({ lien, message }: { lien: string; message?: string }) {
   const t = useTranslations("Partage");
   const peutPartager = useSyncExternalStore(
     jamais,
@@ -28,7 +32,7 @@ export function PartageInvitation({ lien, message }: { lien: string; message: st
 
   const copier = async (quoi: "lien" | "message") => {
     try {
-      await navigator.clipboard.writeText(quoi === "lien" ? lien : message);
+      await navigator.clipboard.writeText(quoi === "message" && message ? message : lien);
       setCopie(quoi);
       setTimeout(() => setCopie(null), REVENIR_MS);
     } catch {
@@ -38,7 +42,7 @@ export function PartageInvitation({ lien, message }: { lien: string; message: st
 
   const partager = async () => {
     try {
-      await navigator.share({ text: message });
+      await navigator.share({ text: message ?? lien });
     } catch {
       // Partage annulé ou refusé : rien à dire, rien de perdu.
     }
@@ -67,9 +71,11 @@ export function PartageInvitation({ lien, message }: { lien: string; message: st
       <button type="button" onClick={() => copier("lien")} className={pilule}>
         {copie === "lien" ? t("copie") : t("copierLien")}
       </button>
-      <button type="button" onClick={() => copier("message")} className={pilule}>
-        {copie === "message" ? t("copie") : t("copierMessage")}
-      </button>
+      {message ? (
+        <button type="button" onClick={() => copier("message")} className={pilule}>
+          {copie === "message" ? t("copie") : t("copierMessage")}
+        </button>
+      ) : null}
     </div>
   );
 }

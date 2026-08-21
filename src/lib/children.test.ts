@@ -1,6 +1,7 @@
 /**
  * Ce que ces tests garantissent : un enfant n'est qu'un prénom, on ne devient co-parent que
- * par invitation, et retirer un enfant ne le retire pas à l'autre parent.
+ * par invitation, le lien vaut pour les enfants qui viendront, et retirer un enfant ne le
+ * retire pas à l'autre parent.
  */
 
 import { sql } from "drizzle-orm";
@@ -9,12 +10,16 @@ import { beforeEach, describe, expect, it } from "vitest";
 import {
   acceptCoparent,
   addChild,
+  coparents,
+  duplicateChildren,
   inviteCoparent,
   isParentOf,
+  mergeChildren,
   myChildren,
   removeChild,
   renameChild,
   revokeCoparentInvite,
+  unlinkCoparent,
   childrenInCircle,
   circlesByChild,
   setChildInCircle,
@@ -102,6 +107,57 @@ describe("Co-parents", () => {
     expect((await myChildren(alice.id)).map((c) => c.firstName)).toEqual(["Léa", "Matéo"]);
   });
 
+  it("la mise en commun va dans les deux sens", async () => {
+    const { alice, bob, token } = await alicePuisInvitation();
+    await addChild(bob.id, { firstName: "Jules" });
+
+    await acceptCoparent(bob.id, token);
+
+    expect((await myChildren(alice.id)).map((c) => c.firstName)).toEqual([
+      "Jules",
+      "Léa",
+      "Matéo",
+    ]);
+    expect((await myChildren(bob.id)).map((c) => c.firstName)).toEqual([
+      "Jules",
+      "Léa",
+      "Matéo",
+    ]);
+  });
+
+  it("un enfant ajouté ensuite arrive chez l'autre parent", async () => {
+    const { alice, bob, token } = await alicePuisInvitation();
+    await acceptCoparent(bob.id, token);
+
+    await addChild(bob.id, { firstName: "Jules" });
+
+    expect((await myChildren(alice.id)).map((c) => c.firstName)).toContain("Jules");
+  });
+
+  it("se lit dans les deux sens", async () => {
+    const { alice, bob, token } = await alicePuisInvitation();
+    await acceptCoparent(bob.id, token);
+
+    expect(await coparents(alice.id)).toEqual([{ id: bob.id, displayName: "Bob" }]);
+    expect(await coparents(bob.id)).toEqual([{ id: alice.id, displayName: "Alice" }]);
+  });
+
+  it("se sépare : la suite s'arrête, l'acquis reste", async () => {
+    const { alice, bob, token } = await alicePuisInvitation();
+    await acceptCoparent(bob.id, token);
+
+    await unlinkCoparent(bob.id, alice.id);
+    await addChild(alice.id, { firstName: "Jules" });
+
+    expect(await coparents(alice.id)).toEqual([]);
+    expect((await myChildren(bob.id)).map((c) => c.firstName)).toEqual(["Léa", "Matéo"]);
+    expect((await myChildren(alice.id)).map((c) => c.firstName)).toEqual([
+      "Jules",
+      "Léa",
+      "Matéo",
+    ]);
+  });
+
   it("l'invitation ne sert qu'une fois", async () => {
     const { bob, token } = await alicePuisInvitation();
     const carla = await createAccount("Carla");
@@ -181,6 +237,58 @@ describe("Retirer un enfant", () => {
     );
     expect(rows[0].deleted_at).not.toBeNull();
     expect(await isParentOf(alice.id, enfant.value.id)).toBe(false);
+  });
+});
+
+describe("Réunir deux fiches", () => {
+  it("repère les prénoms en double, sans se laisser prendre par un accent", async () => {
+    const alice = await createAccount("Alice");
+    await addChild(alice.id, { firstName: "Léa" });
+    await addChild(alice.id, { firstName: "Lea" });
+    await addChild(alice.id, { firstName: "Matéo" });
+
+    const groupes = duplicateChildren(await myChildren(alice.id));
+
+    expect(groupes).toHaveLength(1);
+    expect(groupes[0]).toHaveLength(2);
+  });
+
+  it("la fiche absorbée cède ses parents et ses cercles, puis s'efface", async () => {
+    const alice = await createAccount("Alice");
+    const bob = await createAccount("Bob");
+    const classe = await createCircle(bob);
+    const sienne = await addChild(alice.id, { firstName: "Léa" });
+    const sien = await addChild(bob.id, { firstName: "Léa" });
+    if (!sienne.ok || !sien.ok) throw new Error("les enfants devaient être créés");
+    await setChildInCircle(bob.id, sien.value.id, classe.id, true);
+
+    const { token } = await inviteCoparent(alice.id);
+    await acceptCoparent(bob.id, token);
+    expect(await myChildren(alice.id)).toHaveLength(2);
+
+    expect(await mergeChildren(alice.id, sienne.value.id, sien.value.id)).toEqual({
+      ok: true,
+      value: undefined,
+    });
+
+    expect((await myChildren(alice.id)).map((c) => c.id)).toEqual([sienne.value.id]);
+    expect((await myChildren(bob.id)).map((c) => c.id)).toEqual([sienne.value.id]);
+    expect(await childrenInCircle(bob.id, classe.id)).toEqual([
+      { id: sienne.value.id, firstName: "Léa", lie: true },
+    ]);
+  });
+
+  it("ne réunit pas les enfants des autres", async () => {
+    const alice = await createAccount("Alice");
+    const bob = await createAccount("Bob");
+    const sienne = await addChild(alice.id, { firstName: "Léa" });
+    const sien = await addChild(bob.id, { firstName: "Léa" });
+    if (!sienne.ok || !sien.ok) throw new Error("les enfants devaient être créés");
+
+    expect(await mergeChildren(alice.id, sienne.value.id, sien.value.id)).toEqual({
+      ok: false,
+      reason: "pas_parent",
+    });
   });
 });
 

@@ -140,7 +140,8 @@
     "label": "Primeiro nome",
     "ajouter": "Adicionar",
     "terminer": "Pronto",
-    "passer": "Saltar esta etapa"
+    "passer": "Saltar esta etapa",
+    "viaCoparent": "Está a seguir a ligação de outro progenitor: os filhos dele chegam-lhe no passo seguinte. Acrescente aqui apenas os que essa pessoa não tenha."
   },
   "Agenda": {
     "titre": "Agenda",
@@ -229,7 +230,9 @@
     "sousTitre": "Uma turma, uma escola, uma vizinhança: pessoas que já conhece.",
     "erreurs": {
       "1": "É preciso um nome de círculo.",
-      "lien_vide": "Cole a ligação que recebeu, ou apenas o código que ela contém."
+      "lien_vide": "Cole a ligação que recebeu, ou apenas o código que ela contém.",
+      "cercle_inconnu": "Esse círculo não lhe está aberto.",
+      "deja_membre": "Já faz parte deste círculo."
     },
     "erreurGenerique": "Isso não funcionou.",
     "videTitre": "Ainda não tem nenhum círculo",
@@ -243,7 +246,13 @@
     "creationLabel": "Criar um círculo",
     "creationAide": "Vai ser o(a) administrador(a) do círculo: é quem vai validar as entradas.",
     "creationPlaceholder": "Turma do 4.º ano",
-    "creationBouton": "Criar"
+    "creationBouton": "Criar",
+    "demandeEnvoyee": "O seu pedido seguiu. Um administrador do círculo vai validá-lo; até lá, não verá nada do que é partilhado ali.",
+    "coparentTitre": "Os círculos do outro progenitor",
+    "coparentTexte": "Não faz parte deles. Pedir para entrar deixa um pedido que o administrador do círculo vai validar.",
+    "coparentMembre": "{nom} faz parte dele",
+    "coparentDemander": "Pedir",
+    "coparentDemandee": "pedido enviado"
   },
   "Cercle": {
     "erreurs": {
@@ -341,6 +350,24 @@
     "sousTitre": "Um administrador do círculo vai recebê-lo. O círculo vai aparecer na sua lista assim que for aceite.",
     "continuerBouton": "Continuar"
   },
+  "Parent": {
+    "erreurs": {
+      "invitation_a_soi": "Esta ligação é sua: dê-a ao outro progenitor."
+    },
+    "erreurGenerique": "Esta ligação não funciona.",
+    "expireeTitre": "Esta ligação já não funciona",
+    "expireeSous": "Pode ter expirado, ou já ter sido usada: uma ligação de co-progenitor serve apenas uma vez. Quem lha enviou pode criar outra.",
+    "expireeRetour": "Voltar",
+    "expireeDecouvrir": "Ver para que serve o Allezou",
+    "titre": "Os vossos filhos em comum",
+    "titreSous": "{nom} educa os mesmos filhos que si.",
+    "explication": "{nom} verá os primeiros nomes dos seus filhos, e si verá os dele. Os que qualquer um de vós acrescentar depois passam a ser comuns sem repetir nada.",
+    "comptesSepares": "As vossas contas continuam separadas: cada um mantém os seus círculos, as suas definições e o seu e-mail, e cada saída leva o nome de quem a publicou. Poderá desfazer esta ligação a partir da sua conta.",
+    "accepter": "Aceitar",
+    "pasMaintenant": "Agora não",
+    "continuerBouton": "Continuar",
+    "sansMotDePasse": "Não há palavra-passe para escolher: basta o seu endereço de e-mail."
+  },
   "Compte": {
     "titre": "A sua conta",
     "erreurs": {
@@ -351,11 +378,13 @@
       "invitation_utilisee": "Esta ligação já foi usada.",
       "invitation_expiree": "Esta ligação expirou.",
       "invitation_revoquee": "Esta ligação foi cancelada.",
-      "invitation_a_soi": "Esta ligação é sua: dê-a ao outro progenitor."
+      "invitation_a_soi": "Esta ligação é sua: dê-a ao outro progenitor.",
+      "pas_parent": "Essa criança não é sua.",
+      "enfant_inconnu": "Essa ficha já não existe."
     },
     "erreurGenerique": "Isso não funcionou.",
     "coparentTitre": "Ligação para o outro progenitor 🔗",
-    "coparentTexte": "Dê-a à pessoa que educa os mesmos filhos. É válida durante 14 dias e serve apenas uma vez. Essa pessoa passará a ver os mesmos primeiros nomes que si.",
+    "coparentTexte": "Dê-a à pessoa que educa os mesmos filhos. É válida durante {jours} dias e serve apenas uma vez.",
     "rejoindreTitre": "Juntar-se aos filhos de um progenitor",
     "rejoindreTexte": "Passará a ver os mesmos primeiros nomes de filhos que a pessoa que lhe enviou esta ligação, e poderá declará-los presentes nas suas saídas.",
     "accepter": "Aceitar",
@@ -371,11 +400,11 @@
     "ajouterEnfantPlaceholder": "Léa",
     "ajouter": "Adicionar",
     "autreParentTitre": "O outro progenitor",
-    "autreParentTexte": "Se cria estes filhos a dois, o outro progenitor pode ter a sua própria conta e ver os mesmos primeiros nomes. Cada um mantém os seus círculos e as suas definições.",
+    "autreParentTexte": "Se cria estes filhos a dois, o outro progenitor pode ter a sua própria conta e ver os mesmos primeiros nomes. Um filho adicionado por um passa a ser também do outro. Cada um mantém os seus círculos e as suas definições, e cada saída leva o nome de quem a publicou.",
     "creerLien": "Criar uma ligação para o outro progenitor",
     "recuLienLabel": "Recebeu uma ligação?",
     "recuLienAide": "Cole-a aqui para se juntar aos filhos do outro progenitor.",
-    "recuLienPlaceholder": "O código da ligação recebida",
+    "recuLienPlaceholder": "https://…/parent/…",
     "rejoindreBouton": "Juntar-se",
     "passkeyTitre": "Entrar sem e-mail",
     "passkeyTexte": "Registe este dispositivo e depois vai entrar da mesma forma que o desbloqueia: impressão digital, rosto ou código, consoante o telemóvel. Nada disto nos é transmitido: o dispositivo guarda uma chave que não revela a ninguém, e nós só conhecemos a metade pública. A ligação por e-mail continua disponível se mudar de telemóvel.",
@@ -394,7 +423,14 @@
     "donneesLien": "O que o Allezou regista",
     "nousEcrire": "Escrever-nos",
     "deconnexion": "Terminar sessão",
-    "lienQuestions": "Perguntas frequentes"
+    "lienQuestions": "Perguntas frequentes",
+    "separer": "Separar",
+    "separerAide": "Separar interrompe a partilha futura. Os filhos que já têm em comum continuam a sê-lo, e cada um pode remover os seus um a um.",
+    "coparentAnnuler": "Anular a ligação em curso",
+    "doublonsTitre": "Duas vezes o mesmo primeiro nome",
+    "doublonsTexte": "Acontece quando dois progenitores adicionaram os mesmos filhos cada um por seu lado antes de ligarem as contas. Se for mesmo a mesma criança, junte as fichas: os seus círculos e as saídas passadas acompanham-na. Se os seus filhos têm realmente o mesmo primeiro nome, deixe assim.",
+    "doublonsFiches": "{count, plural, one {# ficha} other {# fichas}}",
+    "doublonsBouton": "É a mesma criança"
   },
   "Lieux": {
     "titre": "Os locais",

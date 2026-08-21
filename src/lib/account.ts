@@ -62,6 +62,11 @@ export async function deleteAccount(actorId: string): Promise<DeleteReport> {
       where deleted_at is null
         and not exists (select 1 from child_parent cp where cp.child_id = child.id)
     `);
+    // Le lien avec l'autre parent part avec le compte : sans cela, les enfants qu'il
+    // ajouterait demain seraient rattachés à un compte qui n'existe plus.
+    await tx.execute(sql`
+      delete from coparent where account_a = ${actorId} or account_b = ${actorId}
+    `);
 
     // 5. Réglages, accès, appareils.
     await tx.execute(sql`delete from notification_pref where account_id = ${actorId}`);

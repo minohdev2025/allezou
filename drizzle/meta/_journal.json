@@ -183,6 +183,13 @@
       "when": 1787088898307,
       "tag": "0025_broad_fat_cobra",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1787341489577,
+      "tag": "0026_slimy_old_lace",
+      "breakpoints": true
     }
   ]
 }

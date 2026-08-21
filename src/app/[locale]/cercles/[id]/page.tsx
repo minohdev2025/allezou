@@ -34,8 +34,8 @@ import {
   remplacerInvitation,
   revoquerInvitation,
 } from "../../actions";
+import { PartageInvitation } from "../../partage-client";
 import { CodeQR } from "../../qr";
-import { PartageInvitation } from "./partage-client";
 import { Alerte, Bouton, Carte, Jeton, Pastille, jourCourt, teinte } from "../../ui";
 
 export default async function Cercle({

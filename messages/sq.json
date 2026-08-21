@@ -140,7 +140,8 @@
     "label": "Emri",
     "ajouter": "Shtoni",
     "terminer": "Gati",
-    "passer": "Kaloni këtë hap"
+    "passer": "Kaloni këtë hap",
+    "viaCoparent": "Vous suivez le lien d'un autre parent : ses enfants vous arrivent à l'étape suivante. N'ajoutez ici que ceux qu'il n'aurait pas."
   },
   "Agenda": {
     "titre": "Agjenda",
@@ -229,7 +230,9 @@
     "sousTitre": "Një klasë, një shkollë, një lagje: njerëz që i njihni tashmë.",
     "erreurs": {
       "1": "Duhet një emër rrethi.",
-      "lien_vide": "Ngjisni lidhjen që keni marrë, ose vetëm kodin që përmban."
+      "lien_vide": "Ngjisni lidhjen që keni marrë, ose vetëm kodin që përmban.",
+      "cercle_inconnu": "Ce cercle ne vous est pas ouvert.",
+      "deja_membre": "Ju tashmë bëni pjesë në këtë rreth."
     },
     "erreurGenerique": "Kjo nuk funksionoi.",
     "videTitre": "Nuk keni ende asnjë rreth",
@@ -243,7 +246,13 @@
     "creationLabel": "Krijoni një rreth",
     "creationAide": "Do të jeni administratori i tij: ju do t'i miratoni hyrjet.",
     "creationPlaceholder": "Klasa e 4P",
-    "creationBouton": "Krijoni"
+    "creationBouton": "Krijoni",
+    "demandeEnvoyee": "Votre demande est partie. Un administrateur du cercle la validera ; d'ici là, vous ne voyez rien de ce qui s'y partage.",
+    "coparentTitre": "Les cercles de l'autre parent",
+    "coparentTexte": "Vous n'en faites pas partie. Demander à rejoindre dépose une demande que l'administrateur du cercle validera.",
+    "coparentMembre": "{nom} en fait partie",
+    "coparentDemander": "Demander",
+    "coparentDemandee": "demande envoyée"
   },
   "Cercle": {
     "erreurs": {
@@ -341,6 +350,24 @@
     "sousTitre": "Një administrator i rrethit do ta marrë. Do ta shihni rrethin të shfaqet në listën tuaj sapo të pranohet.",
     "continuerBouton": "Vazhdoni"
   },
+  "Parent": {
+    "erreurs": {
+      "invitation_a_soi": "Kjo lidhje është e juaja: jepjani prindit tjetër."
+    },
+    "erreurGenerique": "Ce lien ne fonctionne pas.",
+    "expireeTitre": "Ce lien ne fonctionne plus",
+    "expireeSous": "Il a peut-être expiré, ou déjà servi : un lien de co-parent ne vaut qu'une fois. Le parent qui vous l'a envoyé peut en refaire un.",
+    "expireeRetour": "Prapa",
+    "expireeDecouvrir": "Shihni për çfarë shërben Allezou",
+    "titre": "Vos enfants en commun",
+    "titreSous": "{nom} élève les mêmes enfants que vous.",
+    "explication": "{nom} verra les prénoms de vos enfants, et vous verrez les siens. Ceux que l'un de vous ajoutera ensuite seront communs sans rien avoir à refaire.",
+    "comptesSepares": "Vos comptes restent séparés : chacun garde ses cercles, ses réglages et son adresse, et une sortie porte le nom de celui qui l'a publiée. Vous pourrez défaire ce lien depuis votre compte.",
+    "accepter": "Pranoni",
+    "pasMaintenant": "Jo tani",
+    "continuerBouton": "Vazhdoni",
+    "sansMotDePasse": "Nuk ka fjalëkalim për të zgjedhur: mjafton adresa juaj e email-it."
+  },
   "Compte": {
     "titre": "Llogaria juaj",
     "erreurs": {
@@ -351,11 +378,13 @@
       "invitation_utilisee": "Kjo lidhje është përdorur tashmë.",
       "invitation_expiree": "Kjo lidhje ka skaduar.",
       "invitation_revoquee": "Kjo lidhje është anuluar.",
-      "invitation_a_soi": "Kjo lidhje është e juaja: jepjani prindit tjetër."
+      "invitation_a_soi": "Kjo lidhje është e juaja: jepjani prindit tjetër.",
+      "pas_parent": "Cet enfant n'est pas le vôtre.",
+      "enfant_inconnu": "Cette fiche n'existe plus."
     },
     "erreurGenerique": "Kjo nuk funksionoi.",
     "coparentTitre": "Lidhje për prindin tjetër 🔗",
-    "coparentTexte": "Jepjani personit që rrit të njëjtët fëmijë. Vlen 14 ditë dhe përdoret vetëm një herë. Ai/ajo do të shohë atëherë të njëjtët emra që shihni edhe ju.",
+    "coparentTexte": "Jepjani personit që rrit të njëjtët fëmijë. Vlen {jours} ditë dhe përdoret vetëm një herë.",
     "rejoindreTitre": "Bashkohuni me fëmijët e një prindi",
     "rejoindreTexte": "Do të shihni të njëjtët emra fëmijësh si personi që jua dërgoi këtë lidhje, dhe do të mund t'i shpallni të pranishëm në daljet tuaja.",
     "accepter": "Pranoni",
@@ -371,11 +400,11 @@
     "ajouterEnfantPlaceholder": "Léa",
     "ajouter": "Shtoni",
     "autreParentTitre": "Prindi tjetër",
-    "autreParentTexte": "Nëse i rritni këta fëmijë të dy bashkë, prindi tjetër mund të ketë llogarinë e vet dhe të shohë të njëjtët emra. Secili ruan rrethet dhe cilësimet e veta.",
+    "autreParentTexte": "Si vous élevez ces enfants à deux, l'autre parent peut avoir son propre compte et voir les mêmes prénoms. Un enfant ajouté par l'un devient l'enfant de l'autre. Chacun garde ses cercles et ses réglages, et une sortie porte le nom de celui qui l'a publiée.",
     "creerLien": "Krijoni një lidhje për prindin tjetër",
     "recuLienLabel": "Keni marrë një lidhje?",
     "recuLienAide": "Ngjiteni këtu për t'u bashkuar me fëmijët e prindit tjetër.",
-    "recuLienPlaceholder": "Kodi i lidhjes së marrë",
+    "recuLienPlaceholder": "https://…/parent/…",
     "rejoindreBouton": "Bashkohuni",
     "passkeyTitre": "Hyni pa email",
     "passkeyTexte": "Regjistrojeni këtë pajisje dhe më pas do të hyni ashtu si e shkyçni: gjurmë gishti, fytyrë ose kod, sipas telefonit tuaj. Asgjë nga kjo nuk na kalon neve: pajisja ruan një çelës që nuk ia zbulon askujt, dhe ne njohim vetëm gjysmën e tij publike. Lidhja me email mbetet aty nëse ndërroni telefon.",
@@ -394,7 +423,14 @@
     "donneesLien": "Çfarë regjistron Allezou",
     "nousEcrire": "Na shkruani",
     "deconnexion": "Dilni",
-    "lienQuestions": "Pyetje të shpeshta"
+    "lienQuestions": "Pyetje të shpeshta",
+    "separer": "Séparer",
+    "separerAide": "Séparer arrête le partage à venir. Les enfants que vous avez en commun le restent, et chacun peut retirer les siens un par un.",
+    "coparentAnnuler": "Annuler le lien en cours",
+    "doublonsTitre": "Deux fois le même prénom",
+    "doublonsTexte": "Cela arrive quand deux parents ont ajouté les mêmes enfants chacun de leur côté avant de lier leurs comptes. Si c'est bien le même enfant, réunissez les fiches : ses cercles et ses sorties passées suivent. Si vos enfants portent vraiment le même prénom, laissez comme cela.",
+    "doublonsFiches": "{count, plural, one {# fiche} other {# fiches}}",
+    "doublonsBouton": "C'est le même enfant"
   },
   "Lieux": {
     "titre": "Vendet",
