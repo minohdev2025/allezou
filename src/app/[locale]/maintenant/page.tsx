@@ -35,16 +35,22 @@ export default async function Maintenant() {
   ]);
 
   /*
-    L'agenda du canton, pour qui n'a pas encore de cercle.
+    L'agenda du canton, dès que l'écran n'a rien d'autre à montrer.
 
-    Cet écran est le premier qu'on voit, et sans cercle il ne montrait rien. Or l'agenda a
-    plus de cent activités qui ne dépendent de personne : c'est la seule chose qui vaille
-    quelque chose le premier jour, quand tout le reste attend que d'autres familles arrivent.
+    Cet écran est le premier qu'on voit, et l'agenda a plus de cent activités qui ne
+    dépendent de personne : c'est la seule chose qui vaille quelque chose le premier jour,
+    quand tout le reste attend que d'autres familles arrivent.
 
-    L'appel à créer un cercle reste en tête. On n'a pas caché ce qu'il faut faire, on a
-    ajouté ce qu'il y a à voir en attendant.
+    Il était réservé à qui n'avait aucun cercle. Mais un parent qui en a trois voit le même
+    écran vide dès que personne n'est sorti, et c'est là, précisément, que ces activités
+    valent quelque chose. La condition n'est donc plus « pas de cercle », c'est « rien à
+    voir » — dont le premier jour n'est qu'un cas particulier.
+
+    L'appel à sortir reste en tête, et les sorties des autres passent avant : on n'a rien
+    caché de ce qu'il faut faire, on a ajouté ce qu'il y a à voir en attendant.
   */
-  const enAttendant = cercles.length === 0 ? await upcomingCalendar(account.id, { limit: 3 }) : [];
+  const rienAVoir = cercles.length === 0 || (sorties.length === 0 && aVenir.length === 0);
+  const enAttendant = rienAVoir ? await upcomingCalendar(account.id, { limit: 3 }) : [];
 
   return (
     <main className="apparait">
@@ -69,76 +75,15 @@ export default async function Maintenant() {
       </div>
 
       {cercles.length === 0 ? (
-        <>
-          <Vide emoji="🫱" titre={t("titreAucunCercle")}>
-            <p className="mb-4">{t("texteAucunCercle")}</p>
-            {/*
-              « Rejoindre ou créer » et pas « créer » : on arrive presque toujours ici parce
-              qu'on a été invité. Envoyer d'emblée vers la création ferait fabriquer un cercle
-              vide à quelqu'un qui a déjà le lien du bon dans ses messages.
-            */}
-            <LienBouton href="/cercles">{t("rejoindreOuCreer")}</LienBouton>
-          </Vide>
-
-          {enAttendant.length > 0 ? (
-            <section className="mt-8">
-              <h2 className="titre mb-1 text-lg font-bold">{t("titreCanton")}</h2>
-              <p className="mb-3 text-sm leading-snug text-[color:var(--color-doux)]">
-                {t("sousTitreCanton")}
-              </p>
-
-              <ul className="mb-4 space-y-2">
-                {enAttendant.map((activite) => {
-                  /*
-                    Une activité déjà commencée portait sa date de début : une exposition
-                    ouverte du 22 juillet au 15 août affichait « 22 juillet » alors qu'on
-                    était le 12 août. C'est la date de fin qui informe, puisqu'elle dit
-                    combien de temps il reste pour y aller.
-                  */
-                  const jour = jourCourt(
-                    activite.enCours && activite.endsAt ? activite.endsAt : activite.startsAt,
-                    locale,
-                  );
-                  return (
-                    <li key={activite.id}>
-                      <Link
-                        href={`/agenda/${activite.id}`}
-                        className="flex gap-3 rounded-2xl bg-[color:var(--color-surface)] px-4 py-3"
-                        style={{
-                          boxShadow: `inset 0 0 0 2px var(--color-${teinte(activite.id)}-doux)`,
-                        }}
-                      >
-                        <span
-                          className="w-14 shrink-0 text-sm font-bold leading-tight"
-                          style={{ color: `var(--color-${teinte(activite.id)})` }}
-                        >
-                          {activite.enCours && activite.endsAt ? (
-                            <span className="block text-[0.7rem] opacity-75">
-                              {t("jusquAu")}
-                            </span>
-                          ) : null}
-                          {jour.nombre} {jour.mois}
-                        </span>
-                        <span className="min-w-0 flex-1">
-                          <span className="titre line-clamp-2 font-bold leading-tight">
-                            {activite.title}
-                          </span>
-                          {activite.commune ? (
-                            <span className="mt-0.5 block text-sm text-[color:var(--color-doux)]">
-                              {activite.commune}
-                            </span>
-                          ) : null}
-                        </span>
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-
-              <LienBouton href="/agenda">{t("voirAgenda")}</LienBouton>
-            </section>
-          ) : null}
-        </>
+        <Vide emoji="🫱" titre={t("titreAucunCercle")}>
+          <p className="mb-4">{t("texteAucunCercle")}</p>
+          {/*
+            « Rejoindre ou créer » et pas « créer » : on arrive presque toujours ici parce
+            qu'on a été invité. Envoyer d'emblée vers la création ferait fabriquer un cercle
+            vide à quelqu'un qui a déjà le lien du bon dans ses messages.
+          */}
+          <LienBouton href="/cercles">{t("rejoindreOuCreer")}</LienBouton>
+        </Vide>
       ) : (
         <>
           {sorties.length === 0 ? (
@@ -178,6 +123,65 @@ export default async function Maintenant() {
           ) : null}
         </>
       )}
+
+      {enAttendant.length > 0 ? (
+        <section className="mt-8">
+          <h2 className="titre mb-1 text-lg font-bold">{t("titreCanton")}</h2>
+          <p className="mb-3 text-sm leading-snug text-[color:var(--color-doux)]">
+            {t("sousTitreCanton")}
+          </p>
+
+          <ul className="mb-4 space-y-2">
+            {enAttendant.map((activite) => {
+              /*
+                Une activité déjà commencée portait sa date de début : une exposition
+                ouverte du 22 juillet au 15 août affichait « 22 juillet » alors qu'on
+                était le 12 août. C'est la date de fin qui informe, puisqu'elle dit
+                combien de temps il reste pour y aller.
+              */
+              const jour = jourCourt(
+                activite.enCours && activite.endsAt ? activite.endsAt : activite.startsAt,
+                locale,
+              );
+              return (
+                <li key={activite.id}>
+                  <Link
+                    href={`/agenda/${activite.id}`}
+                    className="flex gap-3 rounded-2xl bg-[color:var(--color-surface)] px-4 py-3"
+                    style={{
+                      boxShadow: `inset 0 0 0 2px var(--color-${teinte(activite.id)}-doux)`,
+                    }}
+                  >
+                    <span
+                      className="w-14 shrink-0 text-sm font-bold leading-tight"
+                      style={{ color: `var(--color-${teinte(activite.id)})` }}
+                    >
+                      {activite.enCours && activite.endsAt ? (
+                        <span className="block text-[0.7rem] opacity-75">
+                          {t("jusquAu")}
+                        </span>
+                      ) : null}
+                      {jour.nombre} {jour.mois}
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="titre line-clamp-2 font-bold leading-tight">
+                        {activite.title}
+                      </span>
+                      {activite.commune ? (
+                        <span className="mt-0.5 block text-sm text-[color:var(--color-doux)]">
+                          {activite.commune}
+                        </span>
+                      ) : null}
+                    </span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+
+          <LienBouton href="/agenda">{t("voirAgenda")}</LienBouton>
+        </section>
+      ) : null}
 
       <Navigation actif="maintenant" />
     </main>
