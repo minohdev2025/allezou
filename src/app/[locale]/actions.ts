@@ -51,6 +51,9 @@ import {
   setRole,
 } from "@/lib/circles";
 import { heureDeGeneve } from "@/lib/heure";
+import { geocoderUnLieu } from "@/lib/geo";
+import { db } from "@/lib/db";
+import { sql } from "drizzle-orm";
 import { ACCES, TARIFS } from "@/lib/ingest/tarif";
 import { clearWarnings, correctAndPublish, rejectEvent, withdrawEvent } from "@/lib/ingest/run";
 import {
@@ -890,14 +893,48 @@ export async function ajouterLieu(formData: FormData) {
     coord = { lat, lon };
   }
 
+  const nom = String(formData.get("nom") ?? "");
+  const commune = String(formData.get("commune") ?? "") || undefined;
+  const adresse = String(formData.get("adresse") ?? "") || undefined;
+
   const result = await createPlace(account.id, {
-    name: String(formData.get("nom") ?? ""),
-    commune: String(formData.get("commune") ?? "") || undefined,
-    address: String(formData.get("adresse") ?? "") || undefined,
+    name: nom,
+    commune,
+    address: adresse,
     coord,
     categorie: String(formData.get("categorie") ?? "") || undefined,
   });
   if (!result.ok) redirect(`/sortir/lieu?erreur=${result.reason}`);
+
+  /*
+    Géocodage immédiat quand le parent n'a pas posé de repère à la main.
+
+    Sans lui, un lieu attend le passage horaire du scheduler, qui retente Nominatim deux
+    fois et peut prendre une heure. C'est le tarif pour respecter la politique d'usage du
+    service (une requête par seconde) sur des dizaines de lieux en file. Mais l'ajout d'un
+    lieu est un acte volontaire et rare : il mérite la passe immédiate, avec la même pause
+    d'1,1 s pour ne jamais former une rafale. Si Nominatim ne répond pas ou ne trouve rien,
+    `geocodedAt` est posé quand même (à null) — la file du scheduler le reprendra dans
+    l'heure, comme avant.
+
+    On ne retente rien si le lieu existait déjà (doublon détecté par `createPlace`) : un
+    appel Nominatim gaspillé sur un lieu déjà tenté n'aide personne.
+  */
+  if (!coord && result.value.geocodedAt === null) {
+    const trouve = await geocoderUnLieu(result.value.name, adresse, commune);
+    if (trouve) {
+      await db.execute(sql`
+        update place
+        set lat = ${trouve.lat}, lon = ${trouve.lon}, geocoded_at = now()
+        where id = ${result.value.id}
+      `);
+    } else {
+      await db.execute(sql`
+        update place set geocoded_at = now() where id = ${result.value.id}
+      `);
+    }
+  }
+
   redirect("/sortir");
 }
 
