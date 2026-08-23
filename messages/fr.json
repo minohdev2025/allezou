@@ -694,14 +694,22 @@
     "corrigerUnLieu": "Corriger un lieu",
     "confirmerLaSortie": "Confirmer la sortie",
     "confirmationDetail": "Part vers les cercles cochés ; membres prévenus <strong>dans une minute</strong> — le temps d'annuler.",
-    "choisirDabordUnLieu": "Choisissez d'abord un lieu."
+    "choisirDabordUnLieu": "Choisissez d'abord un lieu.",
+    "situer": "Situer sur la carte",
+    "situerAria": "Situer {nom} sur la carte",
+    "deplacerRepere": "Déplacer le repère",
+    "fermer": "Fermer"
   },
   "Position": {
     "geolocaliser": "🗺️ Géolocaliser sur la carte",
     "carteNonBranchee": "La carte n'est pas encore branchée : il manque <code>GOOGLE_MAPS_API_KEY</code> (voir <code>docs/google-maps.md</code>). Sans point posé, le lieu sera géocodé depuis son nom et son adresse — moins précis, mais rien n'est bloqué.",
     "pointPose": "Point posé : {lat}, {lon}",
     "retirer": "Retirer",
-    "touchezEndroit": "Touchez l'endroit exact."
+    "touchezEndroit": "Touchez l'endroit exact.",
+    "pointPropose": "Repère proposé : {lat}, {lon}",
+    "deplacer": "Déplacer",
+    "enregistrer": "Enregistrer",
+    "annuler": "Annuler"
   },
   "Carte": {
     "voirSurLaCarte": "🗺️ Voir sur la carte",

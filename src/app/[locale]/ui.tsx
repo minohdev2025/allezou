@@ -129,6 +129,42 @@ export function IconeOeilBarre({ className = "" }: IconeProps) {
   );
 }
 
+/*
+ * Cible (un cercle autour d'un point, plus une croix qui dépasse) : un point sur la carte.
+ * Deux états : `rempli` (le repère est posé, on l'affiche en couleur du lieu) ou vide
+ * (le repère manque, on l'affiche en doux). Le SVG laisse `currentColor` choisir.
+ */
+export function IconeCible({
+  className = "",
+  rempli = false,
+}: IconeProps & { rempli?: boolean }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      className={`${base} ${className}`}
+      aria-hidden
+    >
+      <path
+        d="M12 2v4M12 18v4M2 12h4M18 12h4"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+      <circle
+        cx="12"
+        cy="12"
+        r="6"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        fill={rempli ? "currentColor" : "none"}
+        fillOpacity={rempli ? 0.18 : 0}
+      />
+      <circle cx="12" cy="12" r="2" fill="currentColor" />
+    </svg>
+  );
+}
+
 export function IconeHorloge({ className = "" }: IconeProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={`${base} ${className}`} aria-hidden>

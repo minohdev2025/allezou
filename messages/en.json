@@ -694,14 +694,22 @@
     "corrigerUnLieu": "Correct a place",
     "confirmerLaSortie": "Confirm the outing",
     "confirmationDetail": "Goes out to the circles you checked; members are notified <strong>in one minute</strong> — time enough to cancel.",
-    "choisirDabordUnLieu": "Choose a place first."
+    "choisirDabordUnLieu": "Choose a place first.",
+    "situer": "Locate on the map",
+    "situerAria": "Locate {nom} on the map",
+    "deplacerRepere": "Move the pin",
+    "fermer": "Close"
   },
   "Position": {
     "geolocaliser": "🗺️ Locate on the map",
     "carteNonBranchee": "The map isn't hooked up yet: <code>GOOGLE_MAPS_API_KEY</code> is missing (see <code>docs/google-maps.md</code>). Without a pin placed, the place will be geocoded from its name and address — less precise, but nothing is blocked.",
     "pointPose": "Pin placed: {lat}, {lon}",
     "retirer": "Remove",
-    "touchezEndroit": "Tap the exact spot."
+    "touchezEndroit": "Tap the exact spot.",
+    "pointPropose": "Proposed location: {lat}, {lon}",
+    "deplacer": "Move",
+    "enregistrer": "Save",
+    "annuler": "Cancel"
   },
   "Carte": {
     "voirSurLaCarte": "🗺️ View on the map",
