@@ -74,7 +74,6 @@ export function PositionInline({
                   gestureHandling="cooperative"
                   defaultCenter={{ lat: point.lat, lng: point.lon }}
                   defaultZoom={15}
-                  onClick={() => setEdite(true)}
                 >
                   <AdvancedMarker position={{ lat: point.lat, lng: point.lon }}>
                     <Pin background="#17784f" borderColor="#0f5236" glyphColor="#ffffff" />
@@ -83,13 +82,20 @@ export function PositionInline({
               </APIProvider>
             </div>
           )}
-          <p className="mt-2 flex flex-wrap items-center gap-2 text-sm leading-snug text-[color:var(--color-doux)]">
-            <span>
-              {t("pointPose", {
-                lat: point.lat.toFixed(5),
-                lon: point.lon.toFixed(5),
-              })}
-            </span>
+          {/*
+            Trois actions en mode lecture : les coordonnées du pin, le bouton
+            Déplacer (passe en édition) et le bouton Itinéraire (ouvre Google
+            Maps avec le point comme destination). L'itinéraire est un simple
+            lien externe vers maps/dir, qui ouvre l'app Google Maps native
+            sur mobile si elle est installée.
+          */}
+          <p className="mt-2 text-sm leading-snug text-[color:var(--color-doux)]">
+            {t("pointPose", {
+              lat: point.lat.toFixed(5),
+              lon: point.lon.toFixed(5),
+            })}
+          </p>
+          <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm leading-snug">
             <button
               type="button"
               onClick={() => setEdite(true)}
@@ -97,7 +103,15 @@ export function PositionInline({
             >
               {t("deplacer")}
             </button>
-          </p>
+            <a
+              href={`https://www.google.com/maps/dir/?api=1&destination=${point.lat},${point.lon}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-bold underline underline-offset-4"
+            >
+              {t("itineraire")}
+            </a>
+          </div>
         </div>
       ) : null}
 

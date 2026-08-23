@@ -709,7 +709,8 @@
     "pointPropose": "Repère proposé : {lat}, {lon}",
     "deplacer": "Déplacer",
     "enregistrer": "Enregistrer",
-    "annuler": "Annuler"
+    "annuler": "Annuler",
+    "itineraire": "Itinéraire"
   },
   "Carte": {
     "voirSurLaCarte": "🗺️ Voir sur la carte",

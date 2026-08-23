@@ -709,7 +709,8 @@
     "pointPropose": "Vendndodhja e propozuar: {lat}, {lon}",
     "deplacer": "Zhvendosni",
     "enregistrer": "Ruaj",
-    "annuler": "Anulo"
+    "annuler": "Anulo",
+    "itineraire": "Rrugë"
   },
   "Carte": {
     "voirSurLaCarte": "🗺️ Shihni në hartë",

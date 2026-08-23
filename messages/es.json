@@ -709,7 +709,8 @@
     "pointPropose": "Ubicación propuesta: {lat}, {lon}",
     "deplacer": "Mover",
     "enregistrer": "Guardar",
-    "annuler": "Cancelar"
+    "annuler": "Cancelar",
+    "itineraire": "Indicaciones"
   },
   "Carte": {
     "voirSurLaCarte": "🗺️ Ver en el mapa",

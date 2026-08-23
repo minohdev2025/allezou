@@ -709,7 +709,8 @@
     "pointPropose": "Local proposta: {lat}, {lon}",
     "deplacer": "Mover",
     "enregistrer": "Guardar",
-    "annuler": "Cancelar"
+    "annuler": "Cancelar",
+    "itineraire": "Rota"
   },
   "Carte": {
     "voirSurLaCarte": "🗺️ Ver no mapa",
