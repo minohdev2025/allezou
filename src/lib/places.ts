@@ -229,6 +229,42 @@ export async function archiverLieu(placeId: string): Promise<Result<void>> {
 }
 
 /**
+ * Poser ou déplacer le repère d'un lieu sur la carte.
+ *
+ * N'importe qui peut le faire : un lieu est commun, sa position exacte est un détail
+ * public qui sert à tout le monde. La validation s'assure que les coordonnées sont
+ * plausibles avant d'écrire, et `geocoded_at` est posé pour signaler que le scheduler
+ * n'a plus à retenter Nominatim sur ce lieu.
+ *
+ * C'est l'inverse de l'adresse : une adresse est votée (un vote à 3 pour changer
+ * l'existant), un repère est posé seul (c'est un point sur la carte, pas une
+ * affirmation sur le lieu). Le geste est aussi rare que la pose d'un pin à la création,
+ * et tout aussi réversible — un parent qui déplace le repère d'un lieu du catalogue
+ * change ce que tout le monde voit, exactement comme s'il l'avait créé.
+ */
+export async function definirPosition(
+  placeId: string,
+  lat: number,
+  lon: number,
+): Promise<Result<void>> {
+  const parsed = coordonneesSchema.safeParse({ lat, lon });
+  if (!parsed.success) return ko("position_invalide");
+
+  const maj = await db
+    .update(s.place)
+    .set({
+      lat: parsed.data.lat,
+      lon: parsed.data.lon,
+      geocodedAt: sql`now()`,
+    })
+    .where(and(eq(s.place.id, placeId), isNull(s.place.archivedAt)))
+    .returning({ id: s.place.id });
+
+  if (maj.length === 0) return ko("lieu_inconnu");
+  return ok(undefined as void);
+}
+
+/**
  * Classer un lieu qui ne l'est pas encore.
  *
  * Même règle que pour l'adresse : remplir un vide se fait seul, sans rien défaire du

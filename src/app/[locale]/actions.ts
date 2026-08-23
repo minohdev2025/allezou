@@ -87,6 +87,7 @@ import {
   completerAdresse,
   completerCategorie,
   createPlace,
+  definirPosition,
   proposeAddress,
   proposeRename,
   voteRename,
@@ -954,6 +955,25 @@ export async function basculerFavoriLieu(placeId: string): Promise<void> {
 export async function basculerMasqueLieu(placeId: string): Promise<void> {
   const account = await requireAccount();
   await basculerMasque(account.id, placeId);
+}
+
+/**
+ * Poser ou déplacer le repère d'un lieu depuis la liste de sélection.
+ *
+ * Pas de formulaire : c'est un appel programmatique depuis le panneau d'édition
+ * (carte cliquable). On revalide le chemin `/sortir` au retour pour que la
+ * carte globale se mette à jour.
+ */
+export async function definirPositionLieu(
+  placeId: string,
+  lat: number,
+  lon: number,
+): Promise<{ ok: boolean; reason?: string }> {
+  await requireAccount();
+  const result = await definirPosition(placeId, lat, lon);
+  if (!result.ok) return { ok: false, reason: result.reason };
+  revalidatePath("/sortir");
+  return { ok: true };
 }
 
 /** Retirer un lieu en trop du catalogue — réservé au relecteur, archivage réversible. */
