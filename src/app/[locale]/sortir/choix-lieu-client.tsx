@@ -279,12 +279,15 @@ export function ChoixDuLieu({
                     : "flex flex-wrap items-stretch gap-2"
                 }
               >
-                <div className="flex items-center justify-between gap-2">
+                <div className="flex w-full items-center justify-between gap-2">
                 {/*
-                  Le label prend sa largeur plafonnee (max-w-md) selon le nom du
-                  lieu, sans depasser 28rem. Le bloc des 3 boutons est pousse
-                  au bord droit par justify-between, sans ml-auto ni gap qui
-                  ferait flotter les boutons au milieu de l'ecran.
+                  Le conteneur prend toute la largeur du <li> parent (w-full),
+                  sinon justify-between distribue un espace nul entre carte et
+                  boutons - le <div> prendrait juste sa largeur naturelle et
+                  les boutons flotteraient au milieu de la carte, pas au bord
+                  droit de l'ecran. Le label plafonne a max-w-md (28rem), le
+                  bloc 3 boutons garde w-28 + shrink-0, donc l'espace libre va
+                  entre les deux.
                 */}
                 <label className="min-w-0 max-w-md">
                   <input
