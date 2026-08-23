@@ -322,6 +322,19 @@ export default async function Agenda({
               ce que ces puces disaient, et « Tout effacer » dit le reste d'un seul geste.
             */}
             <div key={signatureFiltres} className="divide-y divide-[color:var(--color-trait)]">
+              {/*
+                « Qui y va » est la question que le site promet en premier : une activité
+                intéresse avant tout parce que quelqu'un de mes cercles s'y est inscrit, et
+                c'est cette ligne qui mérite le haut du bloc. Les autres — quand, âge, commune,
+                prix, inscription — resserrent un résultat, mais c'est elle qui le rend
+                personnel.
+              */}
+              <Rangee titre={t("categorieQuiYVa")}>
+                <Puce nom="cercle" valeur="1" coche={avecMonCercle}>
+                  {t("monCercle")}
+                </Puce>
+              </Rangee>
+
               <Rangee titre={t("categorieQuand")}>
                 {/*
                   La seule rangée à choix unique, et à boutons radio pour le dire. « Quand »
@@ -384,12 +397,6 @@ export default async function Agenda({
                     {tE(`acces.${a}`)}
                   </Puce>
                 ))}
-              </Rangee>
-
-              <Rangee titre={t("categorieQuiYVa")}>
-                <Puce nom="cercle" valeur="1" coche={avecMonCercle}>
-                  {t("monCercle")}
-                </Puce>
               </Rangee>
             </div>
 
