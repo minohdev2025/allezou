@@ -27,13 +27,16 @@ echo "→ transfert vers $SERVEUR"
 # qu'une limite ou une variable ajoutée dans le dépôt n'arrive jamais à destination. Le `.env`
 # du serveur, lui, n'est pas touché : c'est là que vivent les secrets.
 scp -q docker-compose.prod.yml "$SERVEUR:$RACINE/docker-compose.prod.yml"
-docker save "$IMAGE" | gzip | ssh "$SERVEUR" 'gunzip | docker load'
 
-# L'image qui tournait jusqu'ici devient `totir:previous` avant d'être écrasée par
-# la nouvelle sous `totir:latest`. Un déploiement raté se défait en relançant le
-# compose sur `totir:previous`. `2>/dev/null || true` : au premier déploiement,
-# rien n'existe encore, et il ne faut pas que la commande échoue.
+# L'image qui tournait jusqu'ici devient `totir:previous` avant que `latest`
+# ne soit écrasée par la nouvelle. L'ordre est important : si on tagge après
+# `docker load`, `latest` pointe déjà sur la nouvelle, et `previous` aussi —
+# un rollback remettrait ce qui tourne déjà. `2>/dev/null || true` : au
+# premier déploiement, rien n'existe encore, et il ne faut pas que la commande
+# échoue.
 ssh "$SERVEUR" 'docker tag totir:latest totir:previous 2>/dev/null || true'
+
+docker save "$IMAGE" | gzip | ssh "$SERVEUR" 'gunzip | docker load'
 
 echo "→ démarrage et migrations"
 ssh "$SERVEUR" "cd '$RACINE' && $COMPOSE up -d && $COMPOSE exec -T app node scripts/migrer.mjs"
