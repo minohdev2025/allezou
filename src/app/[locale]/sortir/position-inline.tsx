@@ -44,7 +44,7 @@ export function PositionInline({
   onSave: (lat: number, lon: number) => void;
   onCancel: () => void;
 }) {
-  const t = useTranslations("PositionInline");
+  const t = useTranslations("Position");
   const [edite, setEdite] = useState(initialLat == null || initialLon == null);
   const [point, setPoint] = useState<Point | null>(
     initialLat != null && initialLon != null
