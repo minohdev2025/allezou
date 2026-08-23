@@ -281,15 +281,15 @@ export function ChoixDuLieu({
               >
                 <div className="flex w-full items-center justify-between gap-2">
                 {/*
-                  Le conteneur prend toute la largeur du <li> parent (w-full),
-                  sinon justify-between distribue un espace nul entre carte et
-                  boutons - le <div> prendrait juste sa largeur naturelle et
-                  les boutons flotteraient au milieu de la carte, pas au bord
-                  droit de l'ecran. Le label plafonne a max-w-md (28rem), le
-                  bloc 3 boutons garde w-28 + shrink-0, donc l'espace libre va
-                  entre les deux.
+                  La carte prend tout l'espace disponible entre le bord gauche
+                  et les boutons (flex-1), plafonnee a max-w-md (28rem) sur les
+                  ecrans larges. Un nom court comme "Moll" donne une carte
+                  pleine largeur, le texte reste aligne a gauche. Un nom long
+                  donne une carte plafonnee a 28rem avec retour a la ligne
+                  (line-clamp-2 sur le titre). Le bloc 3 boutons est toujours
+                  colle au bord droit via justify-between.
                 */}
-                <label className="min-w-0 max-w-md">
+                <label className="min-w-0 flex-1 max-w-md">
                   <input
                     type="radio"
                     name="lieu"
