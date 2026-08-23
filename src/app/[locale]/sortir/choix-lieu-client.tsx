@@ -279,14 +279,12 @@ export function ChoixDuLieu({
                     : "flex flex-wrap items-stretch gap-2"
                 }
               >
-                <div className="flex items-stretch gap-2">
+                <div className="flex items-center justify-between gap-2">
                 {/*
-                  Le label garde sa largeur naturelle plafonnee (max-w-md) : un
-                  nom court donne une carte etroite, un nom long donne une
-                  carte large, sans depasser 28rem. Le bloc des 3 boutons est
-                  pousse a droite par ml-auto, ce qui les colle au bord droit
-                  et cree un ecart visuel entre le texte du lieu et les boutons
-                  sur les ecrans larges.
+                  Le label prend sa largeur plafonnee (max-w-md) selon le nom du
+                  lieu, sans depasser 28rem. Le bloc des 3 boutons est pousse
+                  au bord droit par justify-between, sans ml-auto ni gap qui
+                  ferait flotter les boutons au milieu de l'ecran.
                 */}
                 <label className="min-w-0 max-w-md">
                   <input
@@ -344,7 +342,7 @@ export function ChoixDuLieu({
                     {t("reafficher")}
                   </button>
                 ) : (
-                  <span className="flex w-28 shrink-0 flex-col gap-1 ml-auto">
+                  <span className="flex w-28 shrink-0 flex-col gap-1">
                     {/*
                       Trois gestes, deux lignes : étoile (favori) et cible (situer)
                       se partagent la première ligne, l'œil barré (masquer) tient
