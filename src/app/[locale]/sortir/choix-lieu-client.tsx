@@ -343,13 +343,15 @@ export function ChoixDuLieu({
                     {t("reafficher")}
                   </button>
                 ) : (
-                  <span className="flex shrink-0 flex-col gap-1">
+                  <span className="flex w-28 shrink-0 flex-col gap-1">
                     {/*
                       Trois gestes, deux lignes : étoile (favori) et cible (situer)
                       se partagent la première ligne, l'œil barré (masquer) tient
                       la seconde. La cible suit le même rythme que l'étoile : les
                       deux sont des rappels (mémoriser pour plus tard, repérer pour
-                      voir où), l'œil est un rangement (sortir du chemin).
+                      voir où), l'œil est un rangement (sortir du chemin). Le bloc
+                      entier est figé à `w-28` (7rem) pour que sa largeur ne varie
+                      jamais : ce qui reste va à la carte du lieu.
                     */}
                     <span className="flex gap-1">
                       <button
