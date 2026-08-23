@@ -120,17 +120,22 @@ quelques classes, c'est un risque de laboratoire ; il cesse d'en être un si l'u
 
 ## 3. Sécurité — ce qui manque, par ordre de gravité
 
-### a. `SCHEDULER=1` — sinon la page données devient un mensonge
+### a. Le planificateur — silencieux quand il ne tourne pas
 
-C'est le point le plus grave de cette liste, et le moins visible. [DONNEES.md](DONNEES.md)
-promet qu'une sortie est **effacée 24 heures après son heure de fin**. Cet effacement n'a lieu
-que si le planificateur tourne ([maintenance.ts](src/lib/maintenance.ts) appelé par
-[scheduler.ts](src/lib/scheduler.ts)). Aujourd'hui la variable est vide.
+[PRODUIT.md](PRODUIT.md) promet qu'une présence est **effacée 24 heures après son heure de fin**.
+Cet effacement a lieu dans [maintenance.ts](src/lib/maintenance.ts), appelé par
+[scheduler.ts](src/lib/scheduler.ts), qui ne tourne que si la variable `SCHEDULER` le permet.
 
-Une application qui tourne avec `SCHEDULER=0` accumule indéfiniment les présences, les sessions
-expirées et le journal d'audit, tout en affichant aux parents qu'elle les efface. **Le dernier
-passage de chaque tâche s'affiche sur l'écran de relecture** — c'est là qu'il faut regarder le
-premier jour, puis une fois par mois.
+**Aujourd'hui, le piège est refermé** :
+- `docker-compose.prod.yml` pose `SCHEDULER: ${SCHEDULER:-1}` — la valeur par défaut est `1`.
+- `schedulerActive()` dans `src/lib/scheduler.ts` traite `SCHEDULER=1` et `SCHEDULER=0`
+  explicitement, et bascule sur `true` quand `NODE_ENV=production` (posé par le Dockerfile).
+
+**La garde qui reste** : une application qui tournerait avec `SCHEDULER=0` accumule indéfiniment
+les présences, les sessions expirées et le journal d'audit, tout en affichant aux parents qu'elle
+les efface. **Le dernier passage de chaque tâche s'affiche sur l'écran de relecture** — c'est là
+qu'il faut regarder le premier jour, puis une fois par mois. Si un jour cette page se vide
+silencieusement, c'est ici que ça se passe.
 
 ### b. Le courriel — SPF, DKIM, DMARC
 

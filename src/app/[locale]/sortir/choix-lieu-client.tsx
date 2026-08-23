@@ -12,9 +12,10 @@ import {
   estCategorieLieu,
   type CategorieLieu,
 } from "@/lib/categories-lieu";
-import { basculerFavoriLieu, basculerMasqueLieu } from "../actions";
+import { basculerFavoriLieu, basculerMasqueLieu, definirPositionLieu } from "../actions";
 import { CarteDesLieux } from "../carte-client";
-import { Bouton, IconeOeilBarre, IconePlus, teinte } from "../ui";
+import { PositionInline } from "./position-inline";
+import { Bouton, IconeCible, IconeOeilBarre, IconePlus, teinte } from "../ui";
 
 /**
  * Choisir le lieu, puis confirmer — en deux gestes qui se voient.
@@ -72,6 +73,12 @@ export function ChoixDuLieu({
   const [vueMasques, setVueMasques] = useState(false);
   const [favoris, setFavoris] = useState<Set<string>>(new Set(favorisInitiaux ?? []));
   const [masques, setMasques] = useState<Set<string>>(new Set(masquesInitiaux ?? []));
+  /*
+    Un seul panneau d'édition à la fois : poser le repère d'un lieu n'est pas un
+    geste qu'on enchaîne, c'est un aller-retour. Ouvrir un panneau ferme l'autre,
+    ce qui évite l'empilement des `<PositionInline>` qui chacun charge Google Maps.
+   */
+  const [panneauPositionPour, setPanneauPositionPour] = useState<string | null>(null);
   const [, lancer] = useTransition();
 
   const lieuChoisi = lieux.find((l) => l.id === choisi) ?? null;
@@ -106,8 +113,14 @@ export function ChoixDuLieu({
         return apres;
       });
       if (choisi === id) setChoisi(null);
+      // Ranger un lieu ferme son panneau d'édition : ce n'est plus un geste actif.
+      setPanneauPositionPour((actuel) => (actuel === id ? null : actuel));
     }
     lancer(() => basculerMasqueLieu(id));
+  };
+
+  const basculerPanneauPosition = (id: string) => {
+    setPanneauPositionPour((actuel) => (actuel === id ? null : id));
   };
 
   /*
@@ -234,9 +247,39 @@ export function ChoixDuLieu({
             </div>
           ) : null}
 
+          {/*
+            La carte vit entre les filtres et la liste, pour deux raisons. La première,
+            elle pèse lourd une fois déployée (chargement Google, quota, attention visuelle) :
+            rester tout en bas laissait croire qu'on pouvait l'ignorer. En la rapprochant
+            des puces, on dit « choisir un lieu, c'est aussi regarder où il est ». La
+            seconde, elle répond aux mêmes filtres — catégorie, recherche — que la liste
+            en dessous : la mettre au-dessus les lui transmet déjà, la mettre en dessous
+            l'aurait forcée à refaire le tri. or, c'est la même liste qui parle, et la carte
+            qui montre, et le parent qui hésite entre les deux.
+          */}
+          <CarteDesLieux
+            points={points}
+            sansPosition={ordonnes.length - points.length}
+            cleApi={cleApi}
+            mapId={mapId}
+            choisiId={choisi}
+            onChoisir={(point) => {
+              setChoisi(point.id);
+              setOuvert(false);
+            }}
+          />
+
           <ul className="space-y-3">
             {ordonnes.map((lieu) => (
-              <li key={lieu.id} className="flex items-stretch gap-2">
+              <li
+                key={lieu.id}
+                className={
+                  panneauPositionPour === lieu.id
+                    ? "space-y-2"
+                    : "flex items-stretch gap-2"
+                }
+              >
+                <div className="flex items-stretch gap-2">
                 <label className="min-w-0 flex-1">
                   <input
                     type="radio"
@@ -292,18 +335,46 @@ export function ChoixDuLieu({
                   </button>
                 ) : (
                   <span className="flex shrink-0 flex-col gap-1">
-                    <button
-                      type="button"
-                      onClick={() => basculerFavoriIci(lieu.id)}
-                      aria-label={
-                        favoris.has(lieu.id)
-                          ? t("retirerDesFavoris", { nom: lieu.name })
-                          : t("mettreEnFavori", { nom: lieu.name })
-                      }
-                      className="flex-1 rounded-[var(--radius-carte)] px-3 text-lg shadow-[inset_0_0_0_2px_var(--color-trait)]"
-                    >
-                      {favoris.has(lieu.id) ? "⭐" : "☆"}
-                    </button>
+                    {/*
+                      Trois gestes, deux lignes : étoile (favori) et cible (situer)
+                      se partagent la première ligne, l'œil barré (masquer) tient
+                      la seconde. La cible suit le même rythme que l'étoile : les
+                      deux sont des rappels (mémoriser pour plus tard, repérer pour
+                      voir où), l'œil est un rangement (sortir du chemin).
+                    */}
+                    <span className="flex gap-1">
+                      <button
+                        type="button"
+                        onClick={() => basculerFavoriIci(lieu.id)}
+                        aria-label={
+                          favoris.has(lieu.id)
+                            ? t("retirerDesFavoris", { nom: lieu.name })
+                            : t("mettreEnFavori", { nom: lieu.name })
+                        }
+                        className="flex-1 rounded-[var(--radius-carte)] px-3 text-lg shadow-[inset_0_0_0_2px_var(--color-trait)]"
+                      >
+                        {favoris.has(lieu.id) ? "⭐" : "☆"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => basculerPanneauPosition(lieu.id)}
+                        aria-label={t("situerAria", { nom: lieu.name })}
+                        title={t("situer")}
+                        className="flex-1 rounded-[var(--radius-carte)] px-3 text-lg shadow-[inset_0_0_0_2px_var(--color-trait)]"
+                        style={
+                          lieu.lat != null && lieu.lon != null
+                            ? undefined
+                            : { color: "var(--color-doux)" }
+                        }
+                      >
+                        {/* La cible prend la couleur du lieu quand il est situé,
+                            discrète tant qu'il ne l'est pas. */}
+                        <IconeCible
+                          className="mx-auto h-5 w-5"
+                          rempli={lieu.lat != null && lieu.lon != null}
+                        />
+                      </button>
+                    </span>
                     <button
                       type="button"
                       onClick={() => basculerMasqueIci(lieu.id)}
@@ -314,6 +385,29 @@ export function ChoixDuLieu({
                     </button>
                   </span>
                 )}
+                </div>
+                {/*
+                  Le panneau d'édition vit sous la ligne du lieu, pas à côté : à
+                  côté il pousserait les autres lieux hors de l'écran, et le clic
+                  latéral dans une liste dense est une erreur classique. Ici, il
+                  apparaît quand on a explicitement cliqué sur la cible, et
+                  disparaît dès qu'on enregistre, annule, ou qu'on rouvre la liste.
+                */}
+                {panneauPositionPour === lieu.id ? (
+                  <PositionInline
+                    initialLat={lieu.lat}
+                    initialLon={lieu.lon}
+                    cleApi={cleApi}
+                    mapId={mapId}
+                    onSave={(lat, lon) => {
+                      lancer(async () => {
+                        await definirPositionLieu(lieu.id, lat, lon);
+                        setPanneauPositionPour(null);
+                      });
+                    }}
+                    onCancel={() => setPanneauPositionPour(null)}
+                  />
+                ) : null}
               </li>
             ))}
           </ul>
@@ -346,23 +440,12 @@ export function ChoixDuLieu({
             </Link>
           </p>
 
-          <CarteDesLieux
-            points={points}
-            sansPosition={ordonnes.length - points.length}
-            cleApi={cleApi}
-            mapId={mapId}
-            choisiId={choisi}
-            onChoisir={(point) => {
-              setChoisi(point.id);
-              setOuvert(false);
-            }}
-          />
-        </div>
-      </details>
+          </div>
+        </details>
 
-      <div>
-        <Bouton>{t("confirmerLaSortie")}</Bouton>
-        <p className="mt-2 text-center text-sm leading-snug text-[color:var(--color-doux)]">
+        <div>
+          <Bouton>{t("confirmerLaSortie")}</Bouton>
+          <p className="mt-2 text-center text-sm leading-snug text-[color:var(--color-doux)]">
           {lieuChoisi
             ? t.rich("confirmationDetail", {
                 strong: (chunks) => <strong>{chunks}</strong>,

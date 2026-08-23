@@ -15,6 +15,7 @@ import {
   basculerMasque,
   completerCategorie,
   createPlace,
+  definirPosition,
   lieuxFavoris,
   lieuxMasques,
   pendingRenames,
@@ -450,6 +451,60 @@ describe("Renommer un lieu", () => {
     expect(await voteRename(alice.id, inexistant)).toEqual({
       ok: false,
       reason: "proposition_inconnue",
+    });
+  });
+});
+
+/*
+ * Poser ou déplacer le repère d'un lieu sur la carte.
+ *
+ * Trois invariants à tenir : la validation des coordonnées avant d'écrire
+ * (Zod, déjà couverte par `coordonneesSchema` dans places.ts), la pose de
+ * `geocoded_at` pour que le scheduler ne retente pas Nominatim, et le refus
+ * d'agir sur un lieu archivé.
+ */
+describe("Repère d'un lieu", () => {
+  it("pose un repère et le marque géocodé", async () => {
+    const alice = await createAccount("Alice");
+    const cree = await createPlace(alice.id, { name: "Parc du Gué" });
+    expect(cree.ok).toBe(true);
+    if (!cree.ok) return;
+
+    const result = await definirPosition(cree.value.id, 46.1858, 6.1207);
+    expect(result).toEqual({ ok: true, value: undefined });
+
+    const [ligne] = await db.execute<{ lat: number; lon: number; geocoded_at: Date | null }>(
+      sql`select lat, lon, geocoded_at from place where id = ${cree.value.id}`,
+    );
+    expect(Number(ligne.lat)).toBeCloseTo(46.1858, 4);
+    expect(Number(ligne.lon)).toBeCloseTo(6.1207, 4);
+    expect(ligne.geocoded_at).not.toBeNull();
+  });
+
+  it("refuse des coordonnées hors du monde", async () => {
+    const alice = await createAccount("Alice");
+    const cree = await createPlace(alice.id, { name: "Parc" });
+    if (!cree.ok) return;
+
+    expect(await definirPosition(cree.value.id, 200, 0)).toEqual({
+      ok: false,
+      reason: "position_invalide",
+    });
+    expect(await definirPosition(cree.value.id, 0, 200)).toEqual({
+      ok: false,
+      reason: "position_invalide",
+    });
+  });
+
+  it("refuse d'agir sur un lieu archivé", async () => {
+    const alice = await createAccount("Alice");
+    const cree = await createPlace(alice.id, { name: "Parc" });
+    if (!cree.ok) return;
+    await archiverLieu(cree.value.id);
+
+    expect(await definirPosition(cree.value.id, 46.1858, 6.1207)).toEqual({
+      ok: false,
+      reason: "lieu_inconnu",
     });
   });
 });

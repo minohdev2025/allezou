@@ -175,7 +175,7 @@ export async function geocoderCeQuiManque(
  * passe au suivant. La date de tentative empêchera de revenir dessus, ce qui est le prix à
  * payer pour ne pas marteler un service bénévole en boucle.
  */
-async function tenter(
+export async function tenter(
   chercher: (requete: string) => Promise<Coordonnees | null>,
   requete: string,
 ): Promise<Coordonnees | null> {
@@ -189,4 +189,29 @@ async function tenter(
   }
 
   return null;
+}
+
+/**
+ * Géocode un nom de lieu et son adresse — utile au moment de la création, pour qu'un
+ * parent qui tape « Chemin du Gué 12, Petit-Lancy » voie le repère quelques secondes plus
+ * tard plutôt que dans l'heure.
+ *
+ * L'appel direct à Nominatim respecte la politique d'usage : au plus une requête par
+ * seconde, avec un User-Agent identifiable, et le délai (`pause`, par défaut 1,1 s) est
+ * appliqué **avant** la requête, pas après, pour qu'un ajout de lieu n'arrive jamais à
+ * une rafale. Un `chercher` injectable permet aux tests de ne pas sortir sur le réseau.
+ */
+export async function geocoderUnLieu(
+  nom: string,
+  adresse: string | null | undefined,
+  commune: string | null | undefined,
+  options: {
+    chercher?: (requete: string) => Promise<Coordonnees | null>;
+    pause?: number;
+  } = {},
+): Promise<Coordonnees | null> {
+  const chercher = options.chercher ?? geocoder;
+  const pause = options.pause ?? PAUSE_MS;
+  await attendre(pause);
+  return tenter(chercher, requeteDeLieu(nom, adresse, commune));
 }

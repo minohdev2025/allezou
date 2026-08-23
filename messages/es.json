@@ -694,14 +694,22 @@
     "corrigerUnLieu": "Corregir un lugar",
     "confirmerLaSortie": "Confirmar la salida",
     "confirmationDetail": "Se envía a los círculos marcados; los miembros reciben el aviso <strong>dentro de un minuto</strong>, el tiempo de poder cancelarlo.",
-    "choisirDabordUnLieu": "Elige primero un lugar."
+    "choisirDabordUnLieu": "Elige primero un lugar.",
+    "situer": "Ubicar en el mapa",
+    "situerAria": "Ubicar {nom} en el mapa",
+    "deplacerRepere": "Mover el pin",
+    "fermer": "Cerrar"
   },
   "Position": {
     "geolocaliser": "🗺️ Geolocalizar en el mapa",
     "carteNonBranchee": "El mapa todavía no está conectado: falta <code>GOOGLE_MAPS_API_KEY</code> (ver <code>docs/google-maps.md</code>). Sin un punto marcado, el lugar se geocodificará a partir de su nombre y su dirección — menos preciso, pero nada se bloquea.",
     "pointPose": "Punto marcado: {lat}, {lon}",
     "retirer": "Quitar",
-    "touchezEndroit": "Toca el lugar exacto."
+    "touchezEndroit": "Toca el lugar exacto.",
+    "pointPropose": "Ubicación propuesta: {lat}, {lon}",
+    "deplacer": "Mover",
+    "enregistrer": "Guardar",
+    "annuler": "Cancelar"
   },
   "Carte": {
     "voirSurLaCarte": "🗺️ Ver en el mapa",

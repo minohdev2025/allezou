@@ -13,6 +13,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { db } from "@/lib/db";
 import {
   geocoderCeQuiManque,
+  geocoderUnLieu,
   requeteDeLieu,
   variantesDeRequete,
   type Coordonnees,
@@ -181,5 +182,45 @@ describe("Donner des coordonnées à ce qui n'en a pas", () => {
 
     const second = geocodeur();
     expect(await passer(second.chercher, 2)).toEqual({ demandes: 1, trouves: 1 });
+    });
   });
-});
+
+  /*
+   * L'appel direct à Nominatim, depuis l'ajout d'un lieu.
+   *
+   * Différent de `geocoderCeQuiManque` : un seul lieu à géocoder, pas une file, et le délai
+   * est appliqué **avant** la requête (et non après) pour qu'un ajout ne rejoigne jamais une
+   * rafale. Le contrat testé ici est le comportement observable : on assemble la requête, on
+   * applique la pause, on retourne ce que Nominatim a trouvé, et `null` quand Nominatim n'a
+   * rien ou qu'il a échoué.
+   */
+  describe("Géocodage d'un seul lieu", () => {
+    it("assemble, attend, et retourne les coordonnées", async () => {
+      const { chercher, demandes } = geocodeur();
+      const debut = Date.now();
+      const trouve = await geocoderUnLieu(
+        "Parc du Gué",
+        "Chemin du Gué 12",
+        "Petit-Lancy",
+        { chercher, pause: 50 },
+      );
+      const duree = Date.now() - debut;
+
+      expect(trouve).toEqual(GUE);
+      expect(demandes).toEqual(["Parc du Gué, Chemin du Gué 12, Petit-Lancy"]);
+      // La pause est appliquée **avant** la requête : la durée ne peut pas être inférieure.
+      expect(duree).toBeGreaterThanOrEqual(50);
+    });
+
+    it("renvoie null quand Nominatim n'a rien", async () => {
+      const { chercher } = geocodeur(null);
+      const trouve = await geocoderUnLieu("Inconnu", null, null, { chercher, pause: 0 });
+      expect(trouve).toBeNull();
+    });
+
+    it("renvoie null quand Nominatim échoue", async () => {
+      const { chercher } = geocodeur(new Error("HTTP 500"));
+      const trouve = await geocoderUnLieu("Parc", null, null, { chercher, pause: 0 });
+      expect(trouve).toBeNull();
+    });
+  });
