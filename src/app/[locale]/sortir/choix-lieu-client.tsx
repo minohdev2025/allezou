@@ -280,7 +280,14 @@ export function ChoixDuLieu({
                 }
               >
                 <div className="flex flex-wrap items-stretch gap-2">
-                <label className="w-44 shrink-0">
+                {/*
+                  La carte du lieu prend toute la largeur disponible (flex-1) jusqu'à
+                  un plafond (max-w-md), avec un minimum (min-w-[16rem]) pour ne pas
+                  s'écraser sous les boutons. Sur mobile, le flex-wrap du conteneur
+                  fait passer les boutons en dessous si la carte a besoin de plus de
+                  place pour son nom (qui wrap sur 2 lignes).
+                */}
+                <label className="min-w-[16rem] flex-1 max-w-md">
                   <input
                     type="radio"
                     name="lieu"
