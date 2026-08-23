@@ -281,13 +281,14 @@ export function ChoixDuLieu({
               >
                 <div className="flex items-stretch gap-2">
                 {/*
-                  Tout reste sur la meme ligne : la carte (w-full flex-1) absorbe
-                  l'espace restant entre le bord gauche et les 3 boutons, qui
-                  gardent leur largeur fixe (shrink-0). En mobile, la carte peut
-                  quand meme wrap son nom sur 2 lignes (line-clamp-2), mais la
-                  ligne entiere tient sur une rangee.
+                  Le label garde sa largeur naturelle plafonnee (max-w-md) : un
+                  nom court donne une carte etroite, un nom long donne une
+                  carte large, sans depasser 28rem. Le bloc des 3 boutons est
+                  pousse a droite par ml-auto, ce qui les colle au bord droit
+                  et cree un ecart visuel entre le texte du lieu et les boutons
+                  sur les ecrans larges.
                 */}
-                <label className="min-w-0 flex-1">
+                <label className="min-w-0 max-w-md">
                   <input
                     type="radio"
                     name="lieu"
@@ -343,7 +344,7 @@ export function ChoixDuLieu({
                     {t("reafficher")}
                   </button>
                 ) : (
-                  <span className="flex w-28 shrink-0 flex-col gap-1">
+                  <span className="flex w-28 shrink-0 flex-col gap-1 ml-auto">
                     {/*
                       Trois gestes, deux lignes : étoile (favori) et cible (situer)
                       se partagent la première ligne, l'œil barré (masquer) tient
@@ -351,7 +352,8 @@ export function ChoixDuLieu({
                       deux sont des rappels (mémoriser pour plus tard, repérer pour
                       voir où), l'œil est un rangement (sortir du chemin). Le bloc
                       entier est figé à `w-28` (7rem) pour que sa largeur ne varie
-                      jamais : ce qui reste va à la carte du lieu.
+                      jamais, et `ml-auto` le colle au bord droit du conteneur,
+                      l'écartant du texte sur les écrans larges.
                     */}
                     <span className="flex gap-1">
                       <button
