@@ -276,11 +276,11 @@ export function ChoixDuLieu({
                 className={
                   panneauPositionPour === lieu.id
                     ? "space-y-2"
-                    : "flex items-stretch gap-2"
+                    : "flex flex-wrap items-stretch gap-2"
                 }
               >
-                <div className="flex items-stretch gap-2">
-                <label className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-stretch gap-2">
+                <label className="w-44 shrink-0">
                   <input
                     type="radio"
                     name="lieu"
@@ -316,9 +316,11 @@ export function ChoixDuLieu({
                           : "📍"}
                     </span>
                     <span className="min-w-0">
-                      <span className="titre block font-bold leading-tight">{lieu.name}</span>
+                      <span className="titre block font-bold leading-tight line-clamp-2 break-words">
+                        {lieu.name}
+                      </span>
                       {lieu.commune ? (
-                        <span className="block text-sm text-[color:var(--color-doux)]">
+                        <span className="block truncate text-sm text-[color:var(--color-doux)]">
                           {lieu.commune}
                         </span>
                       ) : null}
