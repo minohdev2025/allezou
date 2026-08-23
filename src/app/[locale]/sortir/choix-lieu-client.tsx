@@ -234,6 +234,28 @@ export function ChoixDuLieu({
             </div>
           ) : null}
 
+          {/*
+            La carte vit entre les filtres et la liste, pour deux raisons. La première,
+            elle pèse lourd une fois déployée (chargement Google, quota, attention visuelle) :
+            rester tout en bas laissait croire qu'on pouvait l'ignorer. En la rapprochant
+            des puces, on dit « choisir un lieu, c'est aussi regarder où il est ». La
+            seconde, elle répond aux mêmes filtres — catégorie, recherche — que la liste
+            en dessous : la mettre au-dessus les lui transmet déjà, la mettre en dessous
+            l'aurait forcée à refaire le tri. or, c'est la même liste qui parle, et la carte
+            qui montre, et le parent qui hésite entre les deux.
+          */}
+          <CarteDesLieux
+            points={points}
+            sansPosition={ordonnes.length - points.length}
+            cleApi={cleApi}
+            mapId={mapId}
+            choisiId={choisi}
+            onChoisir={(point) => {
+              setChoisi(point.id);
+              setOuvert(false);
+            }}
+          />
+
           <ul className="space-y-3">
             {ordonnes.map((lieu) => (
               <li key={lieu.id} className="flex items-stretch gap-2">
@@ -346,23 +368,12 @@ export function ChoixDuLieu({
             </Link>
           </p>
 
-          <CarteDesLieux
-            points={points}
-            sansPosition={ordonnes.length - points.length}
-            cleApi={cleApi}
-            mapId={mapId}
-            choisiId={choisi}
-            onChoisir={(point) => {
-              setChoisi(point.id);
-              setOuvert(false);
-            }}
-          />
-        </div>
-      </details>
+          </div>
+        </details>
 
-      <div>
-        <Bouton>{t("confirmerLaSortie")}</Bouton>
-        <p className="mt-2 text-center text-sm leading-snug text-[color:var(--color-doux)]">
+        <div>
+          <Bouton>{t("confirmerLaSortie")}</Bouton>
+          <p className="mt-2 text-center text-sm leading-snug text-[color:var(--color-doux)]">
           {lieuChoisi
             ? t.rich("confirmationDetail", {
                 strong: (chunks) => <strong>{chunks}</strong>,
