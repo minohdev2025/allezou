@@ -760,5 +760,11 @@
   "Questions": {
     "titreOnglet": "Preguntas frecuentes",
     "retour": "Volver"
+  },
+  "DemandeNotifications": {
+    "titre": "¿Recibir avisos de otros padres?",
+    "texte": "Cuando un padre de sus círculos publica una salida, su teléfono puede avisarle — incluso si la aplicación no está abierta. Después elige quién puede avisarle, círculo por círculo.",
+    "activer": "Activar avisos",
+    "plusTard": "Más tarde"
   }
 }

@@ -760,5 +760,11 @@
   "Questions": {
     "titreOnglet": "Frequently asked questions",
     "retour": "Back"
+  },
+  "DemandeNotifications": {
+    "titre": "Get notified when other parents go out?",
+    "texte": "When a parent in your circles publishes an outing, your phone can let you know — even when the app isn't open. You decide who can notify you, circle by circle.",
+    "activer": "Turn on alerts",
+    "plusTard": "Later"
   }
 }

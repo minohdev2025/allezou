@@ -760,5 +760,11 @@
   "Questions": {
     "titreOnglet": "Perguntas frequentes",
     "retour": "Voltar"
+  },
+  "DemandeNotifications": {
+    "titre": "Receber alertas de outros pais?",
+    "activer": "Ativar alertas",
+    "plusTard": "Mais tarde",
+    "texte": "Quando um pai dos seus círculos publica uma saída, o telefone pode avisá-lo — mesmo com a aplicação fechada. Você decide depois quem pode notificá-lo, círculo a círculo."
   }
 }

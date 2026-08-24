@@ -10,6 +10,7 @@ import { requireAccount } from "@/lib/session";
 import { listeFr } from "@/lib/texte";
 import { readerCircles, visibleParticipants, type VisiblePublication } from "@/lib/visibility";
 import { rejoindreSortie, retirerSortie } from "../actions";
+import { DemandeNotifications } from "./demande-notifications";
 import {
   Carte,
   IconeArbre,
@@ -73,6 +74,17 @@ export default async function Maintenant() {
           {t("annoncerSortie")}
         </LienBouton>
       </div>
+
+      {/*
+        Bannière de demande d'autorisation pour les notifications push. Visible
+        uniquement quand l'utilisateur a déjà rejoint un cercle — c'est le
+        moment où les notifications deviennent utiles : on commence à recevoir
+        des informations des autres membres. Le composant client décide lui-même
+        s'il s'affiche réellement (vérifie la permission `Notification` et la
+        mémoire localStorage), donc ici on le rend dès qu'au moins un cercle
+        existe.
+      */}
+      {cercles.length > 0 ? <DemandeNotifications /> : null}
 
       {cercles.length === 0 ? (
         <Vide emoji="🫱" titre={t("titreAucunCercle")}>

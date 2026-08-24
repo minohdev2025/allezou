@@ -760,5 +760,11 @@
   "Questions": {
     "titreOnglet": "Pyetje të shpeshta",
     "retour": "Prapa"
+  },
+  "DemandeNotifications": {
+    "titre": "Të merrni sinjalizime nga prindërit e tjerë?",
+    "texte": "Kur një prind i rrathëve tuaja boton një dalje, telefoni juaj mund t'ju njoftojë — edhe nëse aplikacioni nuk është i hapur. Pastaj vendosni se kush mund t'ju njoftojë, rreth pas rrethi.",
+    "activer": "Aktivizo sinjalizimet",
+    "plusTard": "Më vonë"
   }
 }

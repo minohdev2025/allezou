@@ -760,5 +760,11 @@
   "Questions": {
     "titreOnglet": "Questions fréquentes",
     "retour": "Retour"
+  },
+  "DemandeNotifications": {
+    "titre": "Recevoir les alertes des autres parents ?",
+    "texte": "Quand un parent de vos cercles publie une sortie, votre téléphone peut vous prévenir — même si l'application n'est pas ouverte. Vous choisissez ensuite qui peut vous notifier, cercle par cercle.",
+    "activer": "Activer les alertes",
+    "plusTard": "Plus tard"
   }
 }
