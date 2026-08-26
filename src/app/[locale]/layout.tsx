@@ -116,7 +116,16 @@ export default async function RootLayout({
   */
   const messages = await getMessages();
   const messagesClient = Object.fromEntries(
-    ["CleAcces", "NotificationsClient", "ChoixLieu", "Position", "Carte", "Partage", "Etiquettes"]
+    [
+      "CleAcces",
+      "NotificationsClient",
+      "DemandeNotifications",
+      "ChoixLieu",
+      "Position",
+      "Carte",
+      "Partage",
+      "Etiquettes",
+    ]
       .filter((ns) => ns in messages)
       .map((ns) => [ns, messages[ns as keyof typeof messages]]),
   );
