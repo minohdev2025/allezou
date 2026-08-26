@@ -87,16 +87,36 @@ export async function requestMagicLink(
     return { ok: false, reason: "service_sature" };
   }
 
-  const token = generateToken();
-  await db.insert(s.magicLink).values({
-    email,
-    tokenHash: hashToken(token),
-    locale,
-    expiresAt: sql`now() + interval '${sql.raw(MAGIC_LINK_TTL)}'`,
-  });
+  /*
+    Une nouvelle demande rend les anciens liens obsolètes. Sans cela, un parent qui
+    retape son adresse après avoir laissé le mail tomber dans les spams reste avec
+    deux liens valides en circulation : si le premier est cliqué par un scanner
+    (antispam d'entreprise, pré-clic de webmail) avant qu'il ne clique le second,
+    il voit « Ce lien a déjà servi » sur le lien qu'il a effectivement suivi.
+    Invalider l'ancien revient à dire : le mail le plus récent est le seul qui
+    compte, peu importe ce qu'un tiers a fait de l'avant-dernier.
 
-  const appUrl = process.env.APP_URL ?? "http://localhost:3000";
-  await sendLoginLink(email, `${appUrl}/connexion/${token}`, locale);
+    On ne touche pas aux liens déjà utilisés : un lien consommé l'a été par
+    quelqu'un qui a ouvert une session, le marquer de nouveau ferait double emploi.
+  */
+  await db.transaction(async (tx) => {
+    await tx.execute(sql`
+      update magic_link
+      set used_at = coalesce(used_at, now())
+      where email = ${email} and used_at is null
+    `);
+
+    const token = generateToken();
+    await tx.insert(s.magicLink).values({
+      email,
+      tokenHash: hashToken(token),
+      locale,
+      expiresAt: sql`now() + interval '${sql.raw(MAGIC_LINK_TTL)}'`,
+    });
+
+    const appUrl = process.env.APP_URL ?? "http://localhost:3000";
+    await sendLoginLink(email, `${appUrl}/connexion/${token}`, locale);
+  });
 
   return { ok: true };
 }

@@ -127,6 +127,73 @@ describe("Suivi du lien", () => {
   });
 });
 
+describe("Une nouvelle demande rend les anciens liens obsolètes", () => {
+  /*
+    Le parent qui retape son adresse après avoir laissé le premier mail tomber dans les
+    spams ne doit pas se retrouver avec deux liens valides en circulation : un scanner
+    qui pré-clique le premier (antispam d'entreprise, pré-clic de webmail) consomme la
+    session avant que l'humain ne clique le second, et il voit « Ce lien a déjà servi ».
+    La deuxième demande doit invalider le premier.
+
+    Le rate-limit de 60 secondes entre deux demandes rend impossible deux appels
+    rapprochés ; on recule `created_at` du premier lien pour franchir le seuil.
+  */
+  it("l'ancien lien est marqué utilisé lors d'une nouvelle demande", async () => {
+    const premier = await demanderUnLien("sophie@example.test");
+    // On remonte le premier lien hors de la fenêtre du throttle, sans le supprimer :
+    // l'invalidation s'applique aux liens *présents* en base au moment de la demande.
+    await db.execute(sql`update magic_link set created_at = created_at - interval '2 minutes'`);
+    await demanderUnLien("sophie@example.test");
+
+    const rows = await db.execute<{ used_at: Date | null }>(
+      sql`select used_at from magic_link order by created_at`,
+    );
+    // La première ligne (l'ancien lien) doit maintenant porter used_at.
+    expect(rows[0].used_at).not.toBeNull();
+    // Et le second reste valide (used_at null).
+    expect(rows.at(-1)?.used_at).toBeNull();
+    // L'ancien jeton, consommé à nouveau, doit être refusé.
+    expect(await consumeMagicLink(premier)).toEqual({
+      ok: false,
+      reason: "lien_deja_utilise",
+    });
+  });
+
+  it("l'ancien lien, déjà consommé avant la nouvelle demande, garde son used_at d'origine", async () => {
+    // Première demande, premier lien consommé : used_at posé par consumeMagicLink.
+    const premier = await demanderUnLien("sophie@example.test");
+    const firstUsed = await consumeMagicLink(premier);
+    expect(firstUsed.ok).toBe(true);
+    if (!firstUsed.ok) return;
+
+    // Nouvelle demande plus tard : l'invalidation ne doit pas écraser le used_at du
+    // premier lien, qui appartient déjà à une session existante.
+    await db.execute(sql`update magic_link set created_at = created_at - interval '2 minutes'`);
+    await demanderUnLien("sophie@example.test");
+
+    const rows = await db.execute<{ used_at: Date | null }>(
+      sql`select used_at from magic_link order by created_at`,
+    );
+    // Le lien consommé au début de ce test : son used_at n'a pas été touché.
+    expect(rows[0].used_at).not.toBeNull();
+    expect(rows.at(-1)?.used_at).toBeNull();
+  });
+
+  it("n'invalide rien pour une autre adresse", async () => {
+    // Paul fait une demande, qu'on recule dans le passé pour franchir le throttle.
+    await demanderUnLien("paul@example.test");
+    await db.execute(sql`update magic_link set created_at = created_at - interval '2 minutes'`);
+    // Sophie fait ensuite une demande : seul son éventuel ancien lien est invalidé.
+    await demanderUnLien("sophie@example.test");
+
+    const paulRows = await db.execute<{ used_at: Date | null }>(
+      sql`select used_at from magic_link where email = 'paul@example.test'`,
+    );
+    expect(paulRows).toHaveLength(1);
+    expect(paulRows[0].used_at).toBeNull();
+  });
+});
+
 describe("Le lien affiché en développement", () => {
   it("apparaît quand aucun SMTP n'est configuré", async () => {
     await demanderUnLien("sophie@example.test");
