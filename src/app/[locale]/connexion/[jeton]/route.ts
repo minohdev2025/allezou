@@ -1,19 +1,25 @@
 /**
- * Consommation du lien de connexion.
+ * Vérification du lien de connexion.
  *
  * C'est un Route Handler et non une page : le lien est ouvert par un clic, donc en GET, et
  * un cookie ne peut être posé que depuis un Route Handler ou une Server Action — jamais
  * pendant le rendu d'une page.
+ *
+ * Le lien n'est PAS consommé ici : on vérifie qu'il existe et on pose un témoin
+ * `COOKIE_CONFIRMATION=<token>` qui ouvre une page de confirmation. C'est le clic
+ * explicite sur cette page (la server action `confirmerConnexion`) qui consomme
+ * le lien et ouvre la session. Détail dans auth.ts > verifierLien.
  */
 
 import { NextResponse } from "next/server";
 
 import { getPathname } from "@/i18n/navigation";
-import { LOCALE_COOKIE, routing, type Locale } from "@/i18n/routing";
-import { consumeMagicLink } from "@/lib/auth";
-import { COOKIE_SESSION, COOKIE_SUITE, destinationSure } from "@/lib/session";
+import { routing, type Locale } from "@/i18n/routing";
+import { verifierLien } from "@/lib/auth";
+import { COOKIE_CONFIRMATION, COOKIE_SUITE, destinationSure } from "@/lib/session";
 
-const SIX_MOIS_EN_SECONDES = 180 * 24 * 60 * 60;
+/** Quinze minutes : la durée de vie d'un lien de connexion. */
+const QUINZE_MINUTES_EN_SECONDES = 15 * 60;
 
 /**
  * L'adresse publique du site, pour construire les redirections.
@@ -37,45 +43,46 @@ export async function GET(
   { params }: { params: Promise<{ jeton: string }> },
 ) {
   const { jeton } = await params;
-  const result = await consumeMagicLink(jeton);
+  const result = await verifierLien(jeton);
   const base = adressePublique(request);
 
   if (!result.ok) {
     return NextResponse.redirect(new URL(`/connexion?erreur=${result.reason}`, base));
   }
 
-  // Où l'on allait avant d'être renvoyé au formulaire. Un compte tout neuf passe d'abord
-  // par l'accueil : le témoin lui survit et sera consommé à la dernière marche.
-  const suite = destinationSure(request.headers.get("cookie")?.match(
-    new RegExp(`${COOKIE_SUITE}=([^;]+)`),
-  )?.[1]);
-
-  // La langue du compte prime sur celle du navigateur : c'est un réglage, pas une
-  // déduction. Le chemin est préfixé pour elle, et le cookie posé pour les pages suivantes.
-  const locale: Locale = (routing.locales as readonly string[]).includes(result.account.locale)
-    ? (result.account.locale as Locale)
+  // Le témoin ne porte que le jeton. La vérification reste faite ici, et la
+  // server action reverifie au moment de consommer — sans quoi un témoin copié
+  // d'un autre onglet suffirait à passer.
+  const locale: Locale = (routing.locales as readonly string[]).includes(result.locale)
+    ? (result.locale as Locale)
     : routing.defaultLocale;
 
-  const destination = result.isNew ? "/bienvenue" : (suite ?? "/maintenant");
-  const response = NextResponse.redirect(
-    new URL(getPathname({ href: destination, locale }), base),
-  );
+  const confirmer = getPathname({ href: "/connexion/confirmer", locale });
+  const response = NextResponse.redirect(new URL(`${confirmer}?jeton=${jeton}`, base));
 
-  response.cookies.set(LOCALE_COOKIE.name, locale, {
-    maxAge: LOCALE_COOKIE.maxAge,
-    sameSite: LOCALE_COOKIE.sameSite,
-    path: LOCALE_COOKIE.path,
-  });
-
-  if (suite && !result.isNew) response.cookies.delete(COOKIE_SUITE);
-
-  response.cookies.set(COOKIE_SESSION, result.sessionToken, {
+  response.cookies.set(COOKIE_CONFIRMATION, jeton, {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
     path: "/",
-    maxAge: SIX_MOIS_EN_SECONDES,
+    maxAge: QUINZE_MINUTES_EN_SECONDES,
   });
+
+  // Et on garde la destination d'origine si elle existe : un clic humain qui
+  // passe par la confirmation veut toujours y revenir (un cercle, une sortie).
+  const suite = destinationSure(request.headers.get("cookie")?.match(
+    new RegExp(`${COOKIE_SUITE}=([^;]+)`),
+  )?.[1]);
+  if (suite) {
+    response.cookies.set(COOKIE_SUITE, suite, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: QUINZE_MINUTES_EN_SECONDES,
+    });
+  }
 
   return response;
 }
+

@@ -120,6 +120,7 @@ export default async function RootLayout({
       "CleAcces",
       "NotificationsClient",
       "DemandeNotifications",
+      "Confirmation",
       "ChoixLieu",
       "Position",
       "Carte",

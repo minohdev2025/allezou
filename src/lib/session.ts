@@ -48,7 +48,20 @@ export const COOKIE_ACCUEIL = "totir_accueil";
  */
 export const COOKIE_SUITE = "totir_suite";
 
-const UN_QUART_D_HEURE = 15 * 60;
+/**
+ * Le jeton de connexion entre sa vérification et la confirmation humaine.
+ *
+ * Le clic sur le lien reçu par courriel ne consomme plus le lien — il ouvre une
+ * page de confirmation pour décourager les scanners qui pré-cliquent. Ce témoin
+ * porte le jeton en attendant le clic explicite. Quinze minutes, comme la durée
+ * de vie du lien lui-même.
+ */
+export const COOKIE_CONFIRMATION = "totir_confirmation";
+
+/** Les durées exportées, pour les server actions qui posent les témoins de session. */
+export const UN_QUART_D_HEURE = 15 * 60;
+export const SIX_MOIS_EN_SECONDES = 180 * 24 * 60 * 60;
+export const UN_AN_EN_SECONDES = 365 * 24 * 60 * 60;
 
 /**
  * Une destination interne, et rien d'autre.
@@ -86,9 +99,6 @@ export async function releverSuite(): Promise<string | undefined> {
   store.delete(COOKIE_SUITE);
   return destination;
 }
-
-const SIX_MOIS_EN_SECONDES = 180 * 24 * 60 * 60;
-const UN_AN_EN_SECONDES = 365 * 24 * 60 * 60;
 
 export async function masquerAccueil(): Promise<void> {
   const store = await cookies();

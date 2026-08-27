@@ -125,6 +125,58 @@ export type LoginResult =
   | { ok: true; account: Account; sessionToken: string; isNew: boolean }
   | { ok: false; reason: "lien_inconnu" | "lien_expire" | "lien_deja_utilise" };
 
+export type VerifiedLink =
+  | { ok: true; email: string; locale: string; isNew: boolean }
+  | { ok: false; reason: "lien_inconnu" | "lien_expire" | "lien_deja_utilise" };
+
+/**
+ * Vérifie un lien sans le consommer.
+ *
+ * La parade contre les scanners qui pré-cliquent les liens magiques : le clic qui suit
+ * le mail ne consomme plus le lien, il ouvre une page de confirmation. C'est le clic
+ * explicite sur cette page — au moins quelques secondes plus tard, après qu'un scanner
+ * naïf a déjà quitté — qui consomme et connecte.
+ *
+ * Le `for update` garde la course possible : un scanner et un humain qui cliquent
+ * à quelques millisecondes d'écart ne peuvent pas tous les deux passer — le second
+ * voit le `used_at` posé par le premier.
+ */
+export async function verifierLien(token: string): Promise<VerifiedLink> {
+  const tokenHash = hashToken(token);
+
+  return db.transaction(async (tx) => {
+    const rows = await tx.execute<{
+      email: string;
+      locale: string;
+      used_at: Date | null;
+      expired: boolean;
+    }>(sql`
+      select email, locale, used_at, (expires_at <= now()) as expired
+      from magic_link
+      where token_hash = ${tokenHash}
+      for update
+    `);
+
+    const link = rows[0];
+    if (!link) return { ok: false as const, reason: "lien_inconnu" as const };
+    if (link.used_at) return { ok: false as const, reason: "lien_deja_utilise" as const };
+    if (link.expired) return { ok: false as const, reason: "lien_expire" as const };
+
+    const existing = await tx
+      .select({ id: s.account.id })
+      .from(s.account)
+      .where(and(eq(s.account.email, link.email), isNull(s.account.deletedAt)))
+      .limit(1);
+
+    return {
+      ok: true as const,
+      email: link.email,
+      locale: link.locale,
+      isNew: existing.length === 0,
+    };
+  });
+}
+
 /**
  * Suit un lien de connexion : le consomme, crée le compte s'il n'existe pas encore,
  * et ouvre une session.

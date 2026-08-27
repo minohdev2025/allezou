@@ -20,9 +20,9 @@ import { redirect } from "next/navigation";
 import { after } from "next/server";
 import { z } from "zod";
 
-import { redirect as redirectVers } from "@/i18n/navigation";
-import { LOCALE_COOKIE, routing } from "@/i18n/routing";
-import { destroySession, requestMagicLink, setAccountLocale, setDisplayName } from "@/lib/auth";
+import { redirect as redirectVers, getPathname } from "@/i18n/navigation";
+import { LOCALE_COOKIE, routing, type Locale } from "@/i18n/routing";
+import { destroySession, requestMagicLink, setAccountLocale, setDisplayName, consumeMagicLink } from "@/lib/auth";
 import { deleteAccount } from "@/lib/account";
 import {
   acceptCoparent,
@@ -107,8 +107,12 @@ import {
   withdraw,
 } from "@/lib/publications";
 import {
+  COOKIE_CONFIRMATION,
   COOKIE_DEFI,
   COOKIE_INVITATION,
+  COOKIE_SESSION,
+  COOKIE_SUITE,
+  SIX_MOIS_EN_SECONDES,
   clearSessionCookie,
   destinationSure,
   masquerAccueil,
@@ -1083,6 +1087,66 @@ export async function enregistrerMot(formData: FormData) {
   const sortie = String(formData.get("sortie") ?? "");
   const result = await setNote(account.id, sortie, String(formData.get("mot") ?? ""));
   redirect(result.ok ? `/sortie/${sortie}` : `/sortie/${sortie}?erreur=${result.reason}`);
+}
+
+/*
+  Confirmer la connexion par un clic explicite.
+
+  Le route handler `/connexion/[jeton]` se contente de vérifier le lien et de poser
+  un témoin COOKIE_CONFIRMATION. C'est ici, sur un clic de l'utilisateur, que le
+  lien est réellement consommé et la session ouverte. Un scanner qui pré-clique
+  le lien du courriel atterrit sur la page de confirmation, mais ne clique pas
+  sur le bouton « Me connecter » : il a déjà extrait ce qu'il voulait du HTML.
+
+  Le témoin seul ne suffit pas à passer : `consumeMagicLink` revérifie le jeton,
+  son expiration et le fait qu'il n'a pas déjà été consommé.
+*/
+export async function confirmerConnexion(formData: FormData) {
+  const jeton = String(formData.get("jeton") ?? "");
+  if (!jeton) {
+    redirect("/connexion?erreur=lien_inconnu");
+  }
+
+  const result = await consumeMagicLink(jeton);
+  if (!result.ok) {
+    redirect(`/connexion?erreur=${result.reason}`);
+  }
+
+  // La langue du compte prime sur celle du navigateur, comme avant.
+  const locale: Locale = (routing.locales as readonly string[]).includes(result.account.locale)
+    ? (result.account.locale as Locale)
+    : routing.defaultLocale;
+
+  // Une éventuelle destination conservée à travers la page de confirmation.
+  const suite = destinationSure((await cookies()).get(COOKIE_SUITE)?.value);
+  const destination = result.isNew ? "/bienvenue" : (suite ?? "/maintenant");
+  const target = getPathname({ href: destination, locale });
+
+  // On doit vider le témoin de confirmation avant la redirection : un parent qui
+  // recliquerait un autre lien dans la foulée ne doit pas le voir rejouer.
+  const store = await cookies();
+  store.delete(COOKIE_CONFIRMATION);
+
+  // Cookies de session et de langue — posés ici, la redirection qui suit ne
+  // touche plus au response. Un appel à `redirect()` lèverait, mais on veut
+  // garder la main sur les en-têtes Set-Cookie.
+  store.set(LOCALE_COOKIE.name, locale, {
+    maxAge: LOCALE_COOKIE.maxAge,
+    sameSite: LOCALE_COOKIE.sameSite,
+    path: LOCALE_COOKIE.path,
+  });
+  store.set(COOKIE_SESSION, result.sessionToken, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: SIX_MOIS_EN_SECONDES,
+  });
+  if (suite && !result.isNew) {
+    store.delete(COOKIE_SUITE);
+  }
+
+  redirect(target);
 }
 
 /*
