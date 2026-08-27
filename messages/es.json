@@ -13,6 +13,17 @@
     "cercles": "Círculos",
     "vous": "Tú"
   },
+  "Confirmation": {
+    "titre": "Entrar en Allezou",
+    "sousTitreConnecte": "Eres {email}.",
+    "sousTitreNouveau": "Esta dirección será tu identificador: {email}.",
+    "intro": "Este enlace solo se usa cuando haces clic, no cuando un robot lo abre antes que tú.",
+    "verifieEnCours": "Comprobando…",
+    "verifieFait": "Todo en orden.",
+    "boutonConnecter": "Entrar",
+    "noteNotifications": "Podrás activar las notificaciones y registrar este dispositivo una vez dentro.",
+    "boutonAnnuler": "Cancelar"
+  },
   "Notifications": {
     "sortieEnCours": "Hay una salida en curso",
     "inscriptionAjoutee": "Se ha añadido una inscripción",
@@ -40,30 +51,34 @@
   "Accueil": {
     "titre": "Allezou",
     "accroche": "Para que nuestros hijos se encuentren al aire libre.",
-    "presentation": "Hola, me llamo Michael. Soy papá de dos niñas que van a la escuela en Petit-Lancy.",
-    "constat": "Un parque puede estar lleno de gente sin que un niño encuentre ahí a alguien conocido. Juega diez minutos y enseguida viene a preguntar cuándo nos vamos. Puede que los compañeros de su clase estuvieran en el parque de al lado, o hubieran pasado por ahí una hora antes.",
-    "mission": "Creé Allezou para eso: que nuestros hijos vuelvan a disfrutar de jugar al aire libre, rodeados de niños con quienes les guste pasar el tiempo.",
+    "presentation": "Hola y bienvenido a Allezou.ch",
+    "presentationCorps": "Creé este sitio para que mis dos hijas vuelvan a encontrar el placer de jugar al aire libre, rodeadas de niños con quienes les gusta pasar tiempo (y sobre todo para poder sentarme tranquilamente mientras se ocupan con los hijos de los demás).\n\nEste sitio está a disposición de todos, gratis, con el deseo de que tengáis buenos momentos de juego con vuestros hijos.",
+    "presentationGestes": "Qué hacemos aquí:",
     "titreGestes": "Qué hacemos ahí",
     "gestes": {
       "cercles": {
-        "titre": "Crear tus círculos",
-        "texte": "Reúnes a las familias con quienes a tus hijos les gusta pasar el tiempo: la clase, el vecindario. Las invitas con un enlace, por WhatsApp o por mensaje — incluso reenviado, no hace entrar a nadie: abre una solicitud, que aceptas o rechazas, nombre por nombre. Nada de lo que publiques sale de esos círculos."
+        "titre": "Cread vuestros círculos",
+        "texte": "Creáis grupos con las familias con las que vuestros hijos e hijas disfrutan pasar tiempo (la clase, el vecindario…). Les invitáis a vuestro círculo privado, se apuntan igual que vosotros con sus nombres y los de sus hijos, vosotros validáis a los miembros del círculo y podéis empezar a invitaros mutuamente a salidas."
       },
       "sortir": {
-        "titre": "Avisar que sales",
-        "texte": "Eliges un parque de la lista y la hora a la que te vas. Las familias de tus círculos lo ven al instante. La salida desaparece sola en cuanto pasa esa hora."
+        "titre": "Anunciar una salida",
+        "texte": "Cualquier miembro de un círculo puede anunciar una salida, con la hora y el lugar. Los miembros del círculo reciben una notificación (si está activada) y pueden unirse. La salida desaparece sola y no se conserva ningún historial."
       },
       "voir": {
         "titre": "Ver quién está fuera",
-        "texte": "Ves quién ha salido en este momento, y te unes a ellos con un clic si te apetece."
+        "texte": "Veis quién ha salido ahora mismo y os unís con un clic si os apetece."
       },
       "agenda": {
-        "titre": "Seguir la agenda del cantón",
-        "texte": "Las actividades para las familias de Ginebra y sus municipios. Sus páginas web se consultan varias veces al día: no tienes nada que vigilar. Marcas aquellas a las que irás, y ves quién más de tus círculos también estará."
+        "titre": "Seguir las actividades del cantón",
+        "texte": "Allezou recorre las webs de los municipios ginebrinos para listar las actividades propuestas para familias y niños. Podéis anunciar que participaréis en una actividad y los miembros de vuestros círculos lo verán. También podéis filtrar las actividades para ver solo aquellas en las que miembros de vuestros círculos planean ir."
       },
       "notifications": {
-        "titre": "Recibir avisos de lo que te interesa",
-        "texte": "Eliges tus palabras: «piscina», «cuentacuentos», «judo». En cuanto se publica en la agenda una actividad que contenga alguna, tu teléfono te avisa. También puedes pedir que te avisemos de todas las actividades con inscripción, porque en esas llegar tarde suele significar quedarte sin plaza."
+        "titre": "Recibid avisos sobre lo que os interesa",
+        "texte": "Podéis configurar avisos para que se os notifique cuando un cierto tipo de actividad se publique en la web de un municipio, ya sea por palabra clave (judo, naturaleza…) o por inscripción, y se os avisa en cuanto se publica una actividad o cuando la inscripción es obligatoria."
+      },
+      "selectives": {
+        "titre": "Notificaciones selectivas",
+        "texte": "En un círculo, puedes desmarcar a alguien: esa persona ya no ve tus salidas, y tú ya no ves las suyas."
       }
     },
     "installation": {
@@ -79,7 +94,6 @@
       }
     },
     "absencesTitre": "Lo que Allezou no hace",
-    "absencesIntro": "Una aplicación que habla de niños tiene que decir dónde pone el límite.",
     "absences": {
       "messagerie": {
         "titre": "Sin mensajería",
@@ -102,15 +116,11 @@
         "texte": "Ningún rastreador, ninguna publicidad. Tus datos no se venden ni se ceden."
       },
       "prenom": {
-        "titre": "De tus hijos, un nombre de pila",
-        "texte": "Y nada más: eso es todo lo que Allezou sabe de ellos."
-      },
-      "invisible": {
-        "titre": "Invisible a petición",
-        "texte": "En un círculo, puedes desmarcar a alguien: esa persona deja de ver tus salidas, tú dejas de ver las suyas, y nada se lo indica."
+        "titre": "Sobre tus hijos, solo un nombre",
+        "texte": "Y nada más: es todo lo que Allezou sabe de ellos."
       }
     },
-    "gratuitTitre": "Gratis, y alojada en Suiza",
+    "gratuitTitre": "Es gratis",
     "gratuitTexte": "No hay ninguna empresa detrás de Allezou y nada es de pago. Los servidores están en Suiza. La agenda se rellena sola a partir de las webs de los municipios de Ginebra.",
     "nePlusAfficher": "No volver a mostrar esta página en este dispositivo",
     "entrer": "Entrar",

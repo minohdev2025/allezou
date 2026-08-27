@@ -13,6 +13,17 @@
     "cercles": "Círculos",
     "vous": "Eu"
   },
+  "Confirmation": {
+    "titre": "Entrar no Allezou",
+    "sousTitreConnecte": "És {email}.",
+    "sousTitreNouveau": "Este endereço será o teu identificador: {email}.",
+    "intro": "Esta ligação só é usada quando clicas, não quando um robô a abre antes de ti.",
+    "verifieEnCours": "A verificar…",
+    "verifieFait": "Tudo em ordem.",
+    "boutonConnecter": "Entrar",
+    "noteNotifications": "Poderás ativar as notificações e registar este aparelho depois de entrar.",
+    "boutonAnnuler": "Cancelar"
+  },
   "Notifications": {
     "sortieEnCours": "Uma saída está em curso",
     "inscriptionAjoutee": "Uma inscrição acabou de ser adicionada",
@@ -40,30 +51,34 @@
   "Accueil": {
     "titre": "Allezou",
     "accroche": "Para que os nossos filhos se encontrem lá fora.",
-    "presentation": "Olá, chamo-me Michael. Sou pai de duas meninas que andam na escola em Petit-Lancy.",
-    "constat": "Um parque pode estar cheio de gente sem que uma criança encontre lá alguém que conhece. Brinca dez minutos, e depois vem perguntar quando é que se vai para casa. Os colegas da turma talvez estivessem no parque ao lado, ou tivessem passado por lá uma hora antes.",
-    "mission": "Criei o Allezou para isso: para que os nossos filhos redescubram o prazer de brincar lá fora, rodeados de crianças com quem gostam de passar tempo.",
+    "presentation": "Olá e bem-vindo ao Allezou.ch",
+    "presentationCorps": "Criei este site para que as minhas duas filhas pudessem voltar a sentir o prazer de brincar lá fora, rodeadas de crianças com quem gostam de passar tempo (e sobretudo para eu me poder sentar tranquilamente enquanto elas andam entretidas com os filhos dos outros).\n\nEste site é posto à disposição de todos, gratuitamente, com votos de bons momentos de brincadeira com os vossos filhos.",
+    "presentationGestes": "O que se faz aqui:",
     "titreGestes": "O que se faz aqui",
     "gestes": {
       "cercles": {
-        "titre": "Criar os seus círculos",
-        "texte": "Reúne as famílias com quem os seus filhos gostam de passar tempo: a turma, a vizinhança. Convida-as com uma ligação, por WhatsApp ou por mensagem — mesmo reencaminhada, não deixa entrar ninguém: abre um pedido, que aceita ou recusa, nome a nome. Nada do que publica sai destes círculos."
+        "titre": "Crie os seus círculos",
+        "texte": "Cria grupos com as famílias com quem os seus filhos gostam de passar tempo (a turma, a vizinhança…). Convida-as para o seu círculo privado, elas inscrevem-se da mesma forma que você, com os seus nomes e os dos filhos, valida os membros do círculo e podem começar a convidar-se mutuamente para saídas."
       },
       "sortir": {
-        "titre": "Dizer que vai sair",
-        "texte": "Escolhe um parque da lista e a hora a que regressa. As famílias dos seus círculos veem-no de imediato. A saída apaga-se sozinha assim que a hora passa."
+        "titre": "Anunciar uma saída",
+        "texte": "Qualquer membro de um círculo pode anunciar uma saída, com a hora e o local. Os membros do círculo recebem uma notificação (se ativada) e podem juntar-se. A saída desaparece sozinha e não é guardado nenhum histórico."
       },
       "voir": {
-        "titre": "Ver quem está lá fora",
-        "texte": "Vê quem saiu neste momento, e junta-se a eles com um clique, se lhe apetecer."
+        "titre": "Ver quem está fora",
+        "texte": "Vê quem saiu agora mesmo e junta-se com um clique se lhe apetecer."
       },
       "agenda": {
-        "titre": "Acompanhar a agenda do cantão",
-        "texte": "As atividades para famílias em Genebra e nas comunas. Os seus sites são consultados várias vezes por dia, não precisa de vigiar nada. Assinala aquelas a que vai, e vê quem dos seus círculos também lá vai estar."
+        "titre": "Seguir as atividades do cantão",
+        "texte": "O Allezou percorre os sites das comunas genebrinas para listar as atividades propostas para famílias e crianças. Pode anunciar que vai participar numa atividade e os membros dos seus círculos verão. Também pode filtrar as atividades para ver apenas aquelas em que membros dos seus círculos planeiam ir."
       },
       "notifications": {
-        "titre": "Ser avisado do que lhe interessa",
-        "texte": "Escolhe as suas palavras: « piscina », « contos », « judo ». Assim que uma atividade que contenha uma delas aparece na agenda, o telemóvel avisa. Também pode pedir para ser avisado de todas as atividades com inscrição, nas quais chegar tarde muitas vezes equivale a não ir."
+        "titre": "Receber avisos sobre o que lhe interessa",
+        "texte": "Pode configurar avisos para ser notificado quando um certo tipo de atividade é publicado no site de uma comuna, seja por palavra-chave (judo, natureza…), seja por inscrição, e ser avisado assim que uma atividade é publicada ou quando a inscrição é obrigatória."
+      },
+      "selectives": {
+        "titre": "Notificações seletivas",
+        "texte": "Num círculo, pode desmarcar alguém: essa pessoa deixa de ver as suas saídas e você deixa de ver as dela."
       }
     },
     "installation": {
@@ -79,7 +94,6 @@
       }
     },
     "absencesTitre": "O que o Allezou não faz",
-    "absencesIntro": "Uma aplicação que fala de crianças tem de dizer onde para.",
     "absences": {
       "messagerie": {
         "titre": "Sem mensagens",
@@ -104,13 +118,9 @@
       "prenom": {
         "titre": "Sobre os seus filhos, um primeiro nome",
         "texte": "E nada mais: é tudo o que o Allezou sabe sobre eles."
-      },
-      "invisible": {
-        "titre": "Invisível a pedido",
-        "texte": "Num círculo, pode desmarcar alguém: deixam de ver as saídas um do outro, sem que a outra pessoa seja avisada disso."
       }
     },
-    "gratuitTitre": "Gratuito, e alojado na Suíça",
+    "gratuitTitre": "É grátis",
     "gratuitTexte": "Não há nenhuma empresa por trás do Allezou e nada é pago. Os servidores estão na Suíça. A agenda preenche-se sozinha a partir dos sites das comunas genebrinas.",
     "nePlusAfficher": "Não voltar a mostrar esta página neste dispositivo",
     "entrer": "Entrar",

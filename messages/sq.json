@@ -13,6 +13,17 @@
     "cercles": "Rrethet",
     "vous": "Ju"
   },
+  "Confirmation": {
+    "titre": "Hyr në Allezou",
+    "sousTitreConnecte": "Ju jeni {email}.",
+    "sousTitreNouveau": "Kjo adresë do të jetë identifikuesi juaj: {email}.",
+    "intro": "Ky lidhje përdoret vetëm kur ju klikoni — jo kur një robot e hap para jush.",
+    "verifieEnCours": "Duke verifikuar…",
+    "verifieFait": "Gjithçka në rregull.",
+    "boutonConnecter": "Më lidh",
+    "noteNotifications": "Pasi të jeni brenda, mund të aktivizoni njoftimet dhe të regjistroni këtë pajisje.",
+    "boutonAnnuler": "Anulo"
+  },
   "Notifications": {
     "sortieEnCours": "Një dalje është në vazhdim",
     "inscriptionAjoutee": "Sapo u shtua një regjistrim",
@@ -40,30 +51,34 @@
   "Accueil": {
     "titre": "Allezou",
     "accroche": "Që fëmijët tanë të takohen jashtë.",
-    "presentation": "Mirëdita, quhem Michael. Jam babai i dy vajzave të vogla që shkojnë në shkollë në Petit-Lancy.",
-    "constat": "Një park mund të jetë plot njerëz, pa e gjetur fëmija dikë që njeh. Luan dhjetë minuta, pastaj vjen e pyet kur po kthehemi. Shokët e klasës së tij ndoshta ishin te parku fqinj, ose kishin kaluar aty një orë më parë.",
-    "mission": "E krijova Allezou pikërisht për këtë: që fëmijët tanë ta rigjejnë kënaqësinë e lojës jashtë, të rrethuar nga fëmijë me të cilët duan të kalojnë kohë.",
+    "presentation": "Përshëndetje dhe mirë se vini në Allezou.ch",
+    "presentationCorps": "E krijova këtë sajt që dy vajzat e mia të mund të rigjenë kënaqësinë e të luajturit jashtë, të rrethuara nga fëmijë me të cilët duan të kalojnë kohë (dhe sidomos që unë të mund të ulem i qetë ndërsa ato merren me fëmijët e të tjerëve).\n\nKjo sajt i vihet në dispozicion të gjithëve, falas, me urimin e momenteve të mira loje me fëmijët tuaj.",
+    "presentationGestes": "Çfarë bëjmë atje:",
     "titreGestes": "Çfarë bëjmë atje",
     "gestes": {
       "cercles": {
         "titre": "Krijoni rrethet tuaja",
-        "texte": "Mblidhni familjet me të cilat fëmijëve tuaj u pëlqen të kalojnë kohë: klasën, lagjen. I ftoni me një lidhje, në WhatsApp ose me mesazh — edhe nëse është përcjellë, ajo nuk fut askënd: hap një kërkesë, që ju e pranoni ose refuzoni, emër për emër. Asgjë nga ç'botoni nuk del jashtë këtyre rretheve."
+        "texte": "Krijoni grupe me familjet me të cilat fëmijët tuaj duan të kalojnë kohë (klasa, lagjja…). I ftoni në rrethin tuaj privat, ata regjistrohen njësoj si ju me emrat e tyre dhe të fëmijëve të tyre, ju i vlerësoni anëtarët e rrethit dhe mund të filloni të ftoni njëri-tjetrin për dalje."
       },
       "sortir": {
-        "titre": "Thoni kur dilni",
-        "texte": "Zgjidhni një park nga lista dhe orën kur do të ktheheni. Familjet e rretheve tuaja e shohin menjëherë. Dalja fshihet vetvetiu sapo kalon ora."
+        "titre": "Lajmëroni një dalje",
+        "texte": "Çdo anëtar i rrethit mund të lajmërojë një dalje, me orën dhe vendin. Anëtarët e rrethit marrin një njoftim (nëse është aktivizuar) dhe mund t'ju bashkohen. Dalja zhduket vetvetiu dhe nuk mbahet asnjë histori."
       },
       "voir": {
         "titre": "Shihni kush është jashtë",
-        "texte": "Shihni kush ka dalë tani, dhe bashkoheni me ta me një klik, nëse doni."
+        "texte": "Shihni kush ka dalë tani, dhe i bashkoheni me një klikim nëse ju teket."
       },
       "agenda": {
-        "titre": "Ndiqni agjendën e kantonit",
-        "texte": "Aktivitetet për familjet në Gjenevë dhe në komuna. Faqet e tyre kontrollohen disa herë në ditë, ju nuk keni asgjë për të mbikëqyrur. Shënoni ato ku do të shkoni, dhe shihni kush nga rrethet tuaja do të jetë aty."
+        "titre": "Ndiqni aktivitetet e kantonit",
+        "texte": "Allezou shfleton faqet e komunave të Gjenevës për të renditur aktivitetet e ofruara për familjet dhe fëmijët. Mund të lajmëroni se do të merrni pjesë në një aktivitet dhe anëtarët e rretheve tuaja do ta shohin. Gjithashtu mund të filtroni aktivitetet për të parë vetëm ato ku anëtarë të rretheve tuaja planifikojnë të shkojnë."
       },
       "notifications": {
-        "titre": "Merrni njoftime për atë që ju intereson",
-        "texte": "Zgjidhni fjalët tuaja: « pishinë », « përralla », « xhudo ». Sapo shfaqet në agjendë një aktivitet që përmban njërën prej tyre, telefoni juaj ju lajmëron. Mund të kërkoni edhe të njoftoheni për të gjitha aktivitetet me regjistrim, ku të veprosh vonë shpesh do të thotë të mos shkosh fare."
+        "titre": "Njoftohuni për atë që ju intereson",
+        "texte": "Mund të aktivizoni njoftime për t'u paralajmëruar kur një lloj i caktuar aktiviteti botohet në faqen e një komune, qoftë me fjalë kyçe (xhudo, natyrë…), qoftë me regjistrim, dhe njoftoheni sapo botohet një aktivitet ose kur regjistrimi është i detyrueshëm."
+      },
+      "selectives": {
+        "titre": "Njoftime selektive",
+        "texte": "Në një rreth, mund t'i hiqni shenjën dikujt: ky person nuk i sheh më daljet tuaja, dhe ju nuk i shihni më të tijat."
       }
     },
     "installation": {
@@ -79,7 +94,6 @@
       }
     },
     "absencesTitre": "Çfarë nuk bën Allezou",
-    "absencesIntro": "Një aplikacion që flet për fëmijë duhet të thotë ku ndalet.",
     "absences": {
       "messagerie": {
         "titre": "Pa mesazhe",
@@ -104,13 +118,9 @@
       "prenom": {
         "titre": "Për fëmijët tuaj, vetëm një emër",
         "texte": "Dhe asgjë më shumë: kjo është gjithçka që di Allezou për ta."
-      },
-      "invisible": {
-        "titre": "I padukshëm me kërkesë",
-        "texte": "Në një rreth, mund t'i hiqni shenjën dikujt: ky person nuk i sheh më daljet tuaja, ju nuk i shihni më të tijat, dhe asgjë nuk e njofton për këtë."
       }
     },
-    "gratuitTitre": "Falas, dhe i strehuar në Zvicër",
+    "gratuitTitre": "Është falas",
     "gratuitTexte": "Nuk ka asnjë kompani pas Allezou dhe asgjë nuk paguhet. Serverat janë në Zvicër. Agjenda mbushet vetvetiu nga faqet e komunave të Gjenevës.",
     "nePlusAfficher": "Të mos shfaqet më kjo faqe në këtë pajisje",
     "entrer": "Hyni",

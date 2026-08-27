@@ -13,6 +13,17 @@
     "cercles": "Circles",
     "vous": "You"
   },
+  "Confirmation": {
+    "titre": "Sign in to Allezou",
+    "sousTitreConnecte": "You are {email}.",
+    "sousTitreNouveau": "This address will become your identifier: {email}.",
+    "intro": "This link is only used when you click — not when a scanner opens it before you.",
+    "verifieEnCours": "Checking…",
+    "verifieFait": "All clear.",
+    "boutonConnecter": "Sign me in",
+    "noteNotifications": "You'll be able to turn on notifications and register this device once signed in.",
+    "boutonAnnuler": "Cancel"
+  },
   "Notifications": {
     "sortieEnCours": "An outing is happening now",
     "inscriptionAjoutee": "A sign-up was just added",
@@ -40,30 +51,34 @@
   "Accueil": {
     "titre": "Allezou",
     "accroche": "So our kids can meet up outside.",
-    "presentation": "Hi, I'm Michael. I'm a dad to two little girls at school in Petit-Lancy.",
-    "constat": "A park can be full of people without your child finding anyone they know there. They play for ten minutes, then come ask when you're going home. Their classmates might have been at the next park over, or already come and gone an hour earlier.",
-    "mission": "I created Allezou for exactly this: so our kids can enjoy playing outside again, surrounded by kids they love spending time with.",
+    "presentation": "Hello and welcome to Allezou.ch",
+    "presentationCorps": "I built this site so my two daughters could rediscover the joy of playing outside, surrounded by children they like spending time with (and so that I could sit down for a moment while they were off playing with the other kids' children).\n\nThis site is offered to everyone, free of charge. I hope it brings you many good moments of play with your children.",
+    "presentationGestes": "What you can do:",
     "titreGestes": "What you can do",
     "gestes": {
       "cercles": {
         "titre": "Create your circles",
-        "texte": "You bring together the families your kids love spending time with: their class, the neighborhood. You invite them with a link, by WhatsApp or text message — even if it's forwarded, it doesn't let anyone in: it opens a request, which you accept or decline, name by name. Nothing you post ever leaves these circles."
+        "texte": "You create groups with the families your children like spending time with (the class, the neighbourhood…). You invite them into your private circle; they sign up the same way you did, with their names and their children's, you approve circle members, and you can start inviting each other to outings."
       },
       "sortir": {
-        "titre": "Say you're heading out",
-        "texte": "You pick a park from the list and the time you'll head home. Families in your circles see it right away. The outing disappears on its own once that time passes."
+        "titre": "Announce an outing",
+        "texte": "Any circle member can announce an outing, with the time and place. Circle members get a notification (if enabled) and can join you. The outing disappears on its own and no history is kept."
       },
       "voir": {
-        "titre": "See who's outside",
-        "texte": "You see who's out right now, and join them with one tap if you feel like it."
+        "titre": "See who is outside",
+        "texte": "You see who is out right now, and you can join them in one click if you feel like it."
       },
       "agenda": {
-        "titre": "Follow the canton's agenda",
-        "texte": "Activities for families in Geneva and its municipalities. Their websites are checked several times a day, so you don't have to watch anything yourself. You check off the ones you'll go to, and see who else from your circles will be there too."
+        "titre": "Follow the canton's activities",
+        "texte": "Allezou scans the websites of Geneva's municipalities to list the activities offered for families and children. You can say you'll join an activity and your circle members will see it. You can also filter activities to see only those where members of your circles plan to go."
       },
       "notifications": {
-        "titre": "Get notified about what you care about",
-        "texte": "You pick your own words: “pool,” “storytime,” “judo.” As soon as an activity containing one of them appears on the agenda, your phone lets you know. You can also ask to be told about every activity that requires registration, since waiting too long for those often means missing out."
+        "titre": "Be notified about what matters to you",
+        "texte": "You can set up notifications to be told when a given type of activity is published on a municipality website — either by keyword (judo, nature…) or by sign-up — and you'll be notified as soon as an activity is published, or when sign-up is required."
+      },
+      "selectives": {
+        "titre": "Selective notifications",
+        "texte": "In a circle, you can uncheck someone: that person no longer sees your outings, and you no longer see theirs."
       }
     },
     "installation": {
@@ -78,8 +93,7 @@
         "texte": "Tap the Share button at the bottom of the screen, then “Add to Home Screen.” It's also the only way to get notifications there."
       }
     },
-    "absencesTitre": "What Allezou doesn't do",
-    "absencesIntro": "An app built around children needs to say where it draws the line.",
+    "absencesTitre": "What Allezou does not do",
     "absences": {
       "messagerie": {
         "titre": "No messaging",
@@ -102,15 +116,11 @@
         "texte": "No trackers, no ads. Your data is never sold or shared."
       },
       "prenom": {
-        "titre": "About your kids: just a first name",
-        "texte": "And nothing more: that's all Allezou knows about them."
-      },
-      "invisible": {
-        "titre": "Invisible on request",
-        "texte": "In a circle, you can uncheck someone: this person no longer sees your outings, you no longer see theirs, and nothing tells them it happened."
+        "titre": "About your children, only a first name",
+        "texte": "And nothing else: that's all Allezou knows about them."
       }
     },
-    "gratuitTitre": "Free, and hosted in Switzerland",
+    "gratuitTitre": "It's free",
     "gratuitTexte": "There's no company behind Allezou, and nothing costs anything. The servers are in Switzerland. The agenda fills itself in automatically from the websites of Geneva's municipalities.",
     "nePlusAfficher": "Don't show this page again on this device",
     "entrer": "Enter",

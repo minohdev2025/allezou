@@ -13,6 +13,17 @@
     "cercles": "Cercles",
     "vous": "Vous"
   },
+  "Confirmation": {
+    "titre": "Se connecter à Allezou",
+    "sousTitreConnecte": "Vous êtes {email}.",
+    "sousTitreNouveau": "Cette adresse devient votre identifiant : {email}.",
+    "intro": "Ce lien ne se consomme qu'à votre clic, pas à celui d'un robot qui l'aurait ouvert avant vous.",
+    "verifieEnCours": "Vérification en cours…",
+    "verifieFait": "Tout est en ordre.",
+    "boutonConnecter": "Me connecter",
+    "noteNotifications": "Vous pourrez activer les notifications et enregistrer cet appareil une fois connecté·e.",
+    "boutonAnnuler": "Annuler"
+  },
   "Notifications": {
     "sortieEnCours": "Une sortie est en cours",
     "inscriptionAjoutee": "Une inscription vient d'être ajoutée",
@@ -40,30 +51,34 @@
   "Accueil": {
     "titre": "Allezou",
     "accroche": "Pour que nos enfants se retrouvent dehors.",
-    "presentation": "Bonjour, je m'appelle Michael. Je suis papa de deux petites filles scolarisées au Petit-Lancy.",
-    "constat": "Un parc peut être plein de monde sans qu'un enfant y trouve quelqu'un qu'il connaît. Il joue dix minutes, puis vient demander quand on rentre. Les copains de sa classe étaient peut-être au parc d'à côté, ou passés une heure plus tôt.",
-    "mission": "J'ai créé Allezou pour ça : que nos enfants retrouvent le plaisir de jouer dehors, entourés d'enfants avec qui ils aiment passer du temps.",
+    "presentation": "Bonjour et bienvenue sur Allezou.ch",
+    "presentationCorps": "J'ai créé ce site pour permettre à mes deux filles de retrouver le plaisir de jouer dehors, entourées d'enfants avec qui elles aiment passer du temps (et surtout que je puisse me poser tranquillement pendant qu'elles s'occupent avec les enfants des autres).\n\nCe site est mis à disposition de tous, gratuitement, en vous souhaitant de bons moments de jeux avec vos enfants.",
+    "presentationGestes": "Ce qu'on y fait :",
     "titreGestes": "Ce qu'on y fait",
     "gestes": {
       "cercles": {
-        "titre": "Créer vos cercles",
-        "texte": "Vous réunissez les familles avec qui vos enfants aiment passer du temps : la classe, le voisinage. Vous les invitez par un lien, WhatsApp ou message — même transféré, il ne fait entrer personne : il ouvre une demande, que vous acceptez ou refusez nom par nom. Rien de ce que vous publiez ne sort de ces cercles."
+        "titre": "Créez vos cercles",
+        "texte": "Vous créez des groupes avec les familles avec qui vos enfants aiment passer du temps (la classe, le voisinage…). Vous les invitez dans votre cercle privé, ils s'inscrivent de la même façon que vous avec leurs noms et ceux de leurs enfants, vous validez les membres du cercle et vous pouvez commencer à vous inviter à des sorties."
       },
       "sortir": {
-        "titre": "Dire que vous sortez",
-        "texte": "Vous choisissez un parc dans la liste et l'heure à laquelle vous repartez. Les familles de vos cercles le voient aussitôt. La sortie s'efface toute seule une fois l'heure passée."
+        "titre": "Annoncer une sortie",
+        "texte": "Tous les membres d'un cercle peuvent annoncer une sortie, avec l'heure et le lieu de la sortie. Les membres du cercle reçoivent une notification (si activée) et peuvent vous rejoindre. La sortie s'efface toute seule de l'application et aucun historique n'est conservé."
       },
       "voir": {
-        "titre": "Voir qui est dehors",
+        "titre": "Voir qui va dehors",
         "texte": "Vous voyez qui est sorti en ce moment, et vous les rejoignez en un clic si vous en avez envie."
       },
       "agenda": {
-        "titre": "Suivre l'agenda du canton",
-        "texte": "Les activités pour les familles à Genève et dans les communes. Leurs sites sont relevés plusieurs fois par jour, vous n'avez rien à surveiller. Vous cochez celles où vous irez, et vous voyez qui de vos cercles y sera aussi."
+        "titre": "Suivre les activités du canton",
+        "texte": "Allezou parcours les différents sites des communes genevoises pour recenser les différentes activités proposées pour les familles et les enfants. Vous pouvez annoncer que vous participer à une activité et les membres de vos cercles le verront. Vous pouvez également filtrer les activités pour voir uniquement celles où des membres de vos cercles comptent se rendre."
       },
       "notifications": {
         "titre": "Être prévenu de ce qui vous intéresse",
-        "texte": "Vous choisissez vos mots : « piscine », « contes », « judo ». Dès qu'une activité qui en contient un paraît à l'agenda, votre téléphone vous le dit. Vous pouvez aussi demander à être averti de toutes les activités sur inscription, où s'y prendre tard revient souvent à ne pas y aller."
+        "texte": "Vous avez la possibilité de vous mettre des notifications pour être averti si un certain type d'activité est publié sur le site d'une commune, soit par mot clé (judo, nature…) soit par inscription et ainsi être averti dès qu'une activité ou l'inscription est obligatoire est publiée."
+      },
+      "selectives": {
+        "titre": "Notifications sélectives",
+        "texte": "Dans un cercle, vous pouvez décocher quelqu'un : cette personne ne voit plus vos sorties, vous ne voyez plus les siennes."
       }
     },
     "installation": {
@@ -79,7 +94,6 @@
       }
     },
     "absencesTitre": "Ce qu'Allezou ne fait pas",
-    "absencesIntro": "Une application qui parle d'enfants doit dire où elle s'arrête.",
     "absences": {
       "messagerie": {
         "titre": "Pas de messagerie",
@@ -104,13 +118,9 @@
       "prenom": {
         "titre": "Sur vos enfants, un prénom",
         "texte": "Et rien de plus : c'est tout ce qu'Allezou sait d'eux."
-      },
-      "invisible": {
-        "titre": "Invisible à la demande",
-        "texte": "Dans un cercle, vous pouvez décocher quelqu'un : cette personne ne voit plus vos sorties, vous ne voyez plus les siennes, et rien ne le lui signale."
       }
     },
-    "gratuitTitre": "Gratuit, et hébergé en Suisse",
+    "gratuitTitre": "C'est gratuit",
     "gratuitTexte": "Il n'y a pas d'entreprise derrière Allezou et rien n'est payant. Les serveurs sont en Suisse. L'agenda se remplit tout seul depuis les sites des communes genevoises.",
     "nePlusAfficher": "Ne plus afficher cette page sur cet appareil",
     "entrer": "Entrer",

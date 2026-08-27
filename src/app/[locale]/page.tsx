@@ -51,20 +51,18 @@ export default async function Accueil({
       <ChoixLangue href="/" />
 
       <Carte accent="ambre" className="mb-9">
-        <p className="leading-relaxed">{t("presentation")}</p>
-        <p className="mt-3 leading-relaxed">{t("constat")}</p>
-        <p className="mt-3 font-bold leading-relaxed">{t("mission")}</p>
+        <p className="text-lg font-bold leading-relaxed">{t("presentation")}</p>
+        <p className="mt-3 whitespace-pre-line leading-relaxed text-[color:var(--color-doux)]">
+          {t("presentationCorps")}
+        </p>
       </Carte>
 
-      <h2 className="titre mb-4 text-xl font-bold">{t("titreGestes")}</h2>
+      <h2 className="titre mb-4 text-xl font-bold">{t("presentationGestes")}</h2>
       <ul className="mb-10 space-y-4">
         {GESTES.map((geste) => (
           <li key={geste.cle}>
             <Carte accent={geste.accent}>
-              <p className="mb-1 flex items-center gap-2 text-lg font-bold">
-                <span aria-hidden className="text-2xl leading-none">
-                  {geste.emoji}
-                </span>
+              <p className="mb-1 text-lg font-bold">
                 {t(`gestes.${geste.cle}.titre`)}
               </p>
               <p className="leading-relaxed text-[color:var(--color-doux)]">
@@ -103,7 +101,6 @@ export default async function Accueil({
       </Carte>
 
       <h2 className="titre mb-2 text-xl font-bold">{t("absencesTitre")}</h2>
-      <p className="mb-4 leading-relaxed text-[color:var(--color-doux)]">{t("absencesIntro")}</p>
       <Carte className="mb-10">
         <ul className="space-y-4">
           {ABSENCES.map((absence) => (
@@ -162,18 +159,18 @@ export default async function Accueil({
  * vide ne sert à rien, et c'est la première chose à faire en arrivant.
  */
 const GESTES: {
-  emoji: string;
   accent: Teinte;
   /** Sous-clé dans les messages `Accueil.gestes` : le titre et le texte en dépendent. */
   cle: string;
   /** Montre la carte de sortie dessinée sous le texte. Un seul geste la porte. */
   avecMaquette?: boolean;
 }[] = [
-  { emoji: "👥", accent: "corail", cle: "cercles" },
-  { emoji: "🌳", accent: "vert", cle: "sortir" },
-  { emoji: "🛝", accent: "bleu", cle: "voir", avecMaquette: true },
-  { emoji: "📅", accent: "violet", cle: "agenda" },
-  { emoji: "🔔", accent: "rose", cle: "notifications" },
+  { accent: "corail", cle: "cercles" },
+  { accent: "vert", cle: "sortir" },
+  { accent: "bleu", cle: "voir", avecMaquette: true },
+  { accent: "violet", cle: "agenda" },
+  { accent: "corail", cle: "notifications" },
+  { accent: "rose", cle: "selectives" },
 ];
 
 /** Sous-clé dans les messages `Accueil.absences` : le titre et le texte en dépendent. */
@@ -181,7 +178,6 @@ const ABSENCES: { cle: string }[] = [
   { cle: "messagerie" },
   { cle: "position" },
   { cle: "historique" },
-  { cle: "invisible" },
   { cle: "inconnus" },
   { cle: "publicite" },
   { cle: "prenom" },
