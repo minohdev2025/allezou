@@ -149,9 +149,22 @@
     "erreur": "Duhet një emër.",
     "label": "Emri",
     "ajouter": "Shtoni",
-    "terminer": "Gati",
-    "passer": "Kaloni këtë hap",
-    "viaCoparent": "Vous suivez le lien d'un autre parent : ses enfants vous arrivent à l'étape suivante. N'ajoutez ici que ceux qu'il n'aurait pas."
+    "terminer": "Është gati",
+    "passer": "Anashkalo këtë hap",
+    "viaCoparent": "Ndiqni lidhjen e një prindi tjetër: fëmijët e tij do t'ju vijnë në hapin tjetër. Shtoni këtu vetëm ata që ai nuk do t'i kishte."
+  },
+  "BienvenueOptions": {
+    "titre": "Një ose dy gjëra për t'u aktivizuar",
+    "sousTitre": "Nuk është e detyrueshme, por e bën kthimin më të thjeshtë.",
+    "notificationsTitre": "Lejoni njoftimet për t'u paralajmëruar kur dikush del",
+    "notificationsTexte": "Kur një prind i rretheve tuaja boton një dalje, telefoni juaj mund t'ju njoftojë edhe kur aplikacioni nuk është i hapur.",
+    "installationTitre": "Shtoni Allezou në ekranin bazë",
+    "installationTexte": "Allezou hapet atëherë si një aplikacion e vërtetë.",
+    "installationSansProposition": "Nëse nuk ju ofrohet asgjë, kërkoni «Instalo aplikacionin» në menunë e shfletuesit (zakonisht lart djathtas).",
+    "installationIphone": "Në iPhone, prekni butonin Ndaj poshtë në Safari, pastaj «Në ekranin bazë».",
+    "plusTard": "Më vonë",
+    "rouvrir": "Hape",
+    "continuer": "Vazhdo te Allezou"
   },
   "Agenda": {
     "titre": "Agjenda",

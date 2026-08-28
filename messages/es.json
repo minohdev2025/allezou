@@ -151,7 +151,20 @@
     "ajouter": "Añadir",
     "terminer": "Listo",
     "passer": "Saltar este paso",
-    "viaCoparent": "Estás siguiendo el enlace de otro padre o madre: sus hijos te llegan en el paso siguiente. Añade aquí solo los que esa persona no tenga."
+    "viaCoparent": "Estás siguiendo el enlace de otro progenitor: sus hijos te llegan en la siguiente etapa. Añade aquí solo los que no tendría."
+  },
+  "BienvenueOptions": {
+    "titre": "Una o dos cosas que activar",
+    "sousTitre": "No es obligatorio, pero facilita volver después.",
+    "notificationsTitre": "Autoriza las notificaciones para saber cuándo alguien sale",
+    "notificationsTexte": "Cuando un progenitor de tus círculos publica una salida, tu teléfono puede avisarte aunque la aplicación no esté abierta.",
+    "installationTitre": "Añadir Allezou a la pantalla de inicio",
+    "installationTexte": "Allezou se abre entonces como una aplicación de verdad.",
+    "installationSansProposition": "Si no te aparece nada, busca «Instalar aplicación» en el menú de tu navegador (suele estar arriba a la derecha).",
+    "installationIphone": "En iPhone, toca el botón Compartir abajo en Safari y luego «Añadir a pantalla de inicio».",
+    "plusTard": "Más tarde",
+    "rouvrir": "Volver a abrir",
+    "continuer": "Seguir en Allezou"
   },
   "Agenda": {
     "titre": "Agenda",

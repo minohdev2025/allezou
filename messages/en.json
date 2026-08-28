@@ -149,9 +149,22 @@
     "erreur": "Please enter a first name.",
     "label": "First name",
     "ajouter": "Add",
-    "terminer": "Done",
+    "terminer": "Good",
     "passer": "Skip this step",
-    "viaCoparent": "You're following another parent's link: their children reach you at the next step. Only add here the ones they wouldn't have."
+    "viaCoparent": "You're following another parent's link: their children will be added for you in the next step. Only add here the ones they wouldn't have."
+  },
+  "BienvenueOptions": {
+    "titre": "A couple of things to turn on",
+    "sousTitre": "It's not required, but it makes coming back simpler.",
+    "notificationsTitre": "Allow notifications to know when someone heads out",
+    "notificationsTexte": "When a parent in your circles publishes an outing, your phone can let you know even when the app isn't open.",
+    "installationTitre": "Add Allezou to your home screen",
+    "installationTexte": "Allezou then opens like a real app, with no browser bar.",
+    "installationSansProposition": "If nothing is offered, look for “Install app” in your browser menu (usually top-right).",
+    "installationIphone": "On iPhone, tap the Share button at the bottom of Safari, then “Add to Home Screen.”",
+    "plusTard": "Later",
+    "rouvrir": "Open",
+    "continuer": "Continue to Allezou"
   },
   "Agenda": {
     "titre": "Agenda",

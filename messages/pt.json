@@ -149,9 +149,22 @@
     "erreur": "É preciso um primeiro nome.",
     "label": "Primeiro nome",
     "ajouter": "Adicionar",
-    "terminer": "Pronto",
-    "passer": "Saltar esta etapa",
-    "viaCoparent": "Está a seguir a ligação de outro progenitor: os filhos dele chegam-lhe no passo seguinte. Acrescente aqui apenas os que essa pessoa não tenha."
+    "terminer": "Está bom",
+    "passer": "Saltar este passo",
+    "viaCoparent": "Está a seguir a ligação de outro progenitor: os filhos dele chegam-lhe na etapa seguinte. Acrescente aqui só os que ele não teria."
+  },
+  "BienvenueOptions": {
+    "titre": "Uma ou duas coisas para ativar",
+    "sousTitre": "Não é obrigatório, mas facilita o regresso.",
+    "notificationsTitre": "Autorizar as notificações para saber quando alguém sai",
+    "notificationsTexte": "Quando um progenitor dos seus círculos publica uma saída, o telemóvel pode avisá-lo mesmo com a aplicação fechada.",
+    "installationTitre": "Adicionar Allezou ao ecrã principal",
+    "installationTexte": "O Allezou abre-se então como uma aplicação a sério.",
+    "installationSansProposition": "Se não lhe for proposto nada, procure «Instalar aplicação» no menu do navegador (geralmente em cima à direita).",
+    "installationIphone": "No iPhone, toque no botão Partilhar em baixo no Safari e depois «Adicionar ao Ecrã Principal».",
+    "plusTard": "Mais tarde",
+    "rouvrir": "Reabrir",
+    "continuer": "Continuar no Allezou"
   },
   "Agenda": {
     "titre": "Agenda",

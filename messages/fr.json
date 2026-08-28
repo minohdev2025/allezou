@@ -153,6 +153,19 @@
     "passer": "Passer cette étape",
     "viaCoparent": "Vous suivez le lien d'un autre parent : ses enfants vous arrivent à l'étape suivante. N'ajoutez ici que ceux qu'il n'aurait pas."
   },
+  "BienvenueOptions": {
+    "titre": "Une ou deux choses à activer",
+    "sousTitre": "Ce n'est pas obligatoire, mais ça rend le retour plus simple.",
+    "notificationsTitre": "Authoriser les notifications pour être prévenu quand quelqu'un sort",
+    "notificationsTexte": "Quand un parent de vos cercles publie une sortie, votre téléphone peut vous prévenir même si l'application n'est pas ouverte.",
+    "installationTitre": "Ajouter Allezou à votre écran d'accueil",
+    "installationTexte": "Allezou s'ouvre alors comme une vraie application.",
+    "installationSansProposition": "Si rien ne vous est proposé, cherchez « Installer l'application » dans le menu de votre navigateur (souvent en haut à droite).",
+    "installationIphone": "Sur iPhone, touchez le bouton Partager en bas de Safari, puis « Sur l'écran d'accueil ».",
+    "plusTard": "Plus tard",
+    "rouvrir": "Rouvrir",
+    "continuer": "Continuer sur Allezou"
+  },
   "Agenda": {
     "titre": "Agenda",
     "sousTitre": "Les activités du canton, et qui de vos cercles y va.",
