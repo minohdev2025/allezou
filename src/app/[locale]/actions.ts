@@ -189,6 +189,16 @@ export async function terminerBienvenue() {
   redirect((await releverSuite()) ?? "/cercles");
 }
 
+export async function allerAuxOptions() {
+  await requireAccount();
+  redirect("/bienvenue/options");
+}
+
+export async function terminerOptionsBienvenu() {
+  await requireAccount();
+  redirect((await releverSuite()) ?? "/cercles");
+}
+
 export async function seDeconnecter() {
   const token = await readSessionToken();
   if (token) await destroySession(token);

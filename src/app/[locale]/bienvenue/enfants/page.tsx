@@ -2,7 +2,7 @@ import { getTranslations } from "next-intl/server";
 
 import { myChildren } from "@/lib/children";
 import { lireSuite, requireAccount } from "@/lib/session";
-import { ajouterEnfant, terminerBienvenue } from "../../actions";
+import { ajouterEnfant, allerAuxOptions } from "../../actions";
 import { Alerte, Bouton, Carte, Champ, IconePlus, Pastille, Titre, teinte } from "../../ui";
 
 export default async function Enfants({
@@ -57,7 +57,7 @@ export default async function Enfants({
         témoin ne s'efface que depuis une action. Quelqu'un venu suivre une invitation la
         retrouve donc à la dernière marche, au lieu d'atterrir sur une liste de cercles vide.
       */}
-      <form action={terminerBienvenue}>
+      <form action={allerAuxOptions}>
         <Bouton type="submit">{enfants.length > 0 ? t("terminer") : t("passer")}</Bouton>
       </form>
     </main>
