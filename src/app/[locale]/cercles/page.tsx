@@ -12,7 +12,6 @@ import {
   Bouton,
   Carte,
   Champ,
-  IconeCercles,
   IconePlus,
   Navigation,
   Pastille,
@@ -125,14 +124,12 @@ export default async function Cercles({
                 >
                   <span
                     aria-hidden
-                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full"
+                    className="h-12 w-12 shrink-0 rounded-full"
                     style={{
                       background: `var(--color-${couleur}-doux)`,
-                      color: `var(--color-${couleur})`,
+                      border: `2px solid var(--color-${couleur})`,
                     }}
-                  >
-                    <IconeCercles className="h-6 w-6" />
-                  </span>
+                  />
                   <span className="min-w-0 flex-1">
                     <span className="titre block text-lg font-bold leading-tight">
                       {cercle.name}

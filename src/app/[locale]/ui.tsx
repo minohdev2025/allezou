@@ -86,15 +86,6 @@ export function IconeCalendrier({ className = "" }: IconeProps) {
   );
 }
 
-export function IconeCercles({ className = "" }: IconeProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className={`${base} ${className}`} aria-hidden>
-      <circle cx="9" cy="9" r="5" stroke="currentColor" strokeWidth="1.8" />
-      <circle cx="15.5" cy="15" r="5" stroke="currentColor" strokeWidth="1.8" />
-    </svg>
-  );
-}
-
 export function IconePlus({ className = "" }: IconeProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={`${base} ${className}`} aria-hidden>
@@ -104,6 +95,21 @@ export function IconePlus({ className = "" }: IconeProps) {
         strokeWidth="2.2"
         strokeLinecap="round"
       />
+    </svg>
+  );
+}
+
+/**
+ * Un anneau : la place dans le nav du bas pour l'onglet Cercles.
+ *
+ * Avant c'était deux silhouettes qui se chevauchaient, lu comme « plusieurs personnes » ; c'est
+ * trop connoté « rencontre » pour un onglet qui ne mène qu'à une liste. Un simple cercle vide
+ * n'évoque rien de précis, ce qui est l'effet voulu.
+ */
+export function IconeCercle({ className = "" }: IconeProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={`${base} ${className}`} aria-hidden>
+      <circle cx="12" cy="12" r="7" stroke="currentColor" strokeWidth="1.8" />
     </svg>
   );
 }
@@ -460,7 +466,7 @@ export function Navigation({
   const onglets = [
     { cle: "maintenant", href: "/maintenant", texte: t("sorties"), Icone: IconeArbre },
     { cle: "agenda", href: "/agenda", texte: t("agenda"), Icone: IconeCalendrier },
-    { cle: "cercles", href: "/cercles", texte: t("cercles"), Icone: IconeCercles },
+    { cle: "cercles", href: "/cercles", texte: t("cercles"), Icone: IconeCercle },
     { cle: "reglages", href: "/reglages", texte: t("reglages"), Icone: IconeEngrenage },
   ] as const;
 
