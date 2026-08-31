@@ -220,9 +220,9 @@ export default async function Agenda({
 
   return (
     <main className="apparait">
-      <Titre emoji="📅" sous={t("sousTitre")}>
-        {t("titre")}
-      </Titre>
+      <Titre sous={t("sousTitre")}>
+              {t("titre")}
+            </Titre>
 
       <div className="mb-6">
         <LienBouton href="/agenda/nouveau">{t("proposerActivite")}</LienBouton>

@@ -86,9 +86,9 @@ export default async function Cercles({
 
   return (
     <main className="apparait">
-      <Titre emoji="👥" sous={t("sousTitre")}>
-        {t("titre")}
-      </Titre>
+      <Titre sous={t("sousTitre")}>
+              {t("titre")}
+            </Titre>
 
       {erreur ? (
         <Alerte ton="erreur">

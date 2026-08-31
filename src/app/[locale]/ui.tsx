@@ -207,6 +207,36 @@ export function IconeMaison({ className = "" }: IconeProps) {
   );
 }
 
+/*
+ * Une roue crantée. Pour l'onglet Réglages, qui mène au compte et à tous les
+ * paramètres qu'on peut y changer (notifications, enfants, suppression).
+ * Huit dents régulières, trou central : reconnaissable d'un coup d'œil, et
+ * distinct des autres icônes du menu (arbre, calendrier, personnes).
+ *
+ * La denture est dessinée à la main plutôt que calculée : un polygone à 24
+ * sommets suffit, et reste lisible aux tailles d'un onglet (24 px).
+ */
+export function IconeEngrenage({ className = "" }: IconeProps) {
+  /*
+    Huit dents régulières, formé à partir d'un path propre (les douze dents de
+    l'ancien rendu brisaient la silhouette en haut à gauche aux petites tailles).
+    Le contour extérieur est arrondi autour du trou central ; les dents pointent
+    droit vers l'extérieur, sans biseau final. Repère mental : un huit ou une
+    fleur à 8 pétales, selon le rendu.
+  */
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={`${base} ${className}`} aria-hidden>
+      <path
+        d="M10.5 2.25h3l.45 2.45a8.4 8.4 0 0 1 2.2.92l2.18-1.32 2.12 2.12-1.32 2.18a8.4 8.4 0 0 1 .92 2.2l2.45.45v3l-2.45.45a8.4 8.4 0 0 1-.92 2.2l1.32 2.18-2.12 2.12-2.18-1.32a8.4 8.4 0 0 1-2.2.92l-.45 2.45h-3l-.45-2.45a8.4 8.4 0 0 1-2.2-.92L5.55 21.8 3.43 19.68l1.32-2.18a8.4 8.4 0 0 1-.92-2.2l-2.45-.45v-3l2.45-.45a8.4 8.4 0 0 1 .92-2.2L3.43 7.02 5.55 4.9l2.18 1.32a8.4 8.4 0 0 1 2.2-.92l.45-2.45Z"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinejoin="round"
+      />
+      <circle cx="12" cy="11.7" r="3.4" stroke="currentColor" strokeWidth="1.8" />
+    </svg>
+  );
+}
+
 /* ------------------------------------------------------------------ éléments */
 
 export function Titre({
@@ -423,7 +453,7 @@ export function Vide({
 export function Navigation({
   actif,
 }: {
-  actif: "maintenant" | "agenda" | "cercles" | "vous";
+  actif: "maintenant" | "agenda" | "cercles" | "reglages";
 }) {
   // `useTranslations` marche aussi dans un composant serveur, et celui-ci n'a rien d'async.
   const t = useTranslations("Navigation");
@@ -431,7 +461,7 @@ export function Navigation({
     { cle: "maintenant", href: "/maintenant", texte: t("sorties"), Icone: IconeArbre },
     { cle: "agenda", href: "/agenda", texte: t("agenda"), Icone: IconeCalendrier },
     { cle: "cercles", href: "/cercles", texte: t("cercles"), Icone: IconeCercles },
-    { cle: "vous", href: "/compte", texte: t("vous"), Icone: IconePersonne },
+    { cle: "reglages", href: "/reglages", texte: t("reglages"), Icone: IconeEngrenage },
   ] as const;
 
   return (

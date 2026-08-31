@@ -46,9 +46,9 @@ export default async function NouvelleActivite({
 
   return (
     <main className="apparait">
-      <Titre emoji="📅" sous={t("sousTitre")}>
-        {t("titre")}
-      </Titre>
+      <Titre sous={t("sousTitre")}>
+              {t("titre")}
+            </Titre>
 
       {erreur ? (
         <Alerte ton="erreur">{MESSAGES[erreur] ?? t("erreurGenerique")}</Alerte>

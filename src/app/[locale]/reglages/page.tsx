@@ -3,312 +3,242 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 
 import {
-  MOTS_CLES_MAX,
-  alerteInscriptionActive,
-  mesMotsCles,
-  prefsParCercle,
-  rappelPresenceHeures,
-} from "@/lib/notifications";
-import { requireAccount } from "@/lib/session";
-import {
-  ajouterMotCleAgenda,
-  basculerAlerteInscription,
-  enregistrerAbonnement,
-  mettreEnPause,
-  oublierAbonnement,
-  reglerCercle,
-  reglerRappel,
-  retirerMotCleAgenda,
-} from "../actions";
-import { ActiverNotifications } from "../notifications-client";
-import {
-  Alerte,
-  Bouton,
-  Carte,
-  Champ,
-  Navigation,
-  Pastille,
-  Titre,
-  Vide,
-  heureCourte,
-  teinte,
-} from "../ui";
+  coparents,
+  duplicateChildren,
+  hasPendingCoparentInvite,
+  myChildren,
+} from "@/lib/children";
+import { estRelecteur, requireAccount } from "@/lib/session";
+import { alerteInscriptionActive, mesMotsCles, prefsParCercle } from "@/lib/notifications";
+import { mesCles } from "@/lib/passkeys";
+import { seDeconnecter } from "../actions";
+import { Navigation, Titre } from "../ui";
 
-export default async function Reglages({
-  searchParams,
-}: {
-  searchParams: Promise<{ erreur?: string }>;
-}) {
+/**
+ * Page d'accueil des réglages. Tout doit être lisible sans scroller : trois
+ * grandes tuiles en haut pour les paramètres courants, puis en bas les actions
+ * secondaires (lieux, données, aide, contact, déconnexion) et — visible
+ * uniquement pour le contact qui relit — les outils d'administration.
+ *
+ * On avait essayé un code couleur par tuile, puis plusieurs étages de
+ * catégories typographiques ; rien n'aidait à se retrouver. Le gris neutre
+ * avec un filet entre les éléments fait le travail : la hiérarchie est dans
+ * la position sur la page (paramètres, admin, actions), pas dans la couleur.
+ */
+export default async function Reglages() {
   const t = await getTranslations("Reglages");
   const account = await requireAccount();
-  const [cercles, motsCles, surInscription, rappelHeures, { erreur }] = await Promise.all([
+  const [
+    enfants,
+    cles,
+    autresParents,
+    lienEnCours,
+    cercles,
+    motsCles,
+    surInscription,
+  ] = await Promise.all([
+    myChildren(account.id),
+    mesCles(account.id),
+    coparents(account.id),
+    hasPendingCoparentInvite(account.id),
     prefsParCercle(account.id),
     mesMotsCles(account.id),
     alerteInscriptionActive(account.id),
-    rappelPresenceHeures(account.id),
-    searchParams,
   ]);
-  const clePublique = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? "";
+  const relecteur = estRelecteur(account);
+  const doublons = duplicateChildren(enfants);
 
   return (
     <main className="apparait">
-      <Titre emoji="🔔" sous={t("sousTitre")}>
-        {t("titre")}
-      </Titre>
+      <Titre sous={account.email}>{t("titre")}</Titre>
 
-      <Carte className="mb-7" accent="vert">
-        {clePublique ? (
-          <ActiverNotifications
-            clePublique={clePublique}
-            enregistrer={enregistrerAbonnement}
-            oublier={oublierAbonnement}
+      {/* Hauts — paramètres qu'on ajuste le plus souvent.
+          Grille 2 colonnes : assez large pour qu'un titre tienne, assez
+          étroite pour que les libellés génériques ne débordent pas. */}
+      <section aria-labelledby="reglages-parametres">
+        <h2 id="reglages-parametres" className="sr-only">
+          {t("sectionParametres")}
+        </h2>
+        <ul className="divide-y divide-[color:var(--color-trait)]">
+          <Tuile
+            href="/reglages/profil"
+            titre={t("tuileProfilTitre")}
+            sous={
+              <>
+                <span>{t("profilGenerique")}</span>
+                {autresParents.length > 0 ? (
+                  <span className="ml-2 inline-block rounded-[var(--radius-pilule)] bg-[color:var(--color-ambre-doux)] px-2 py-0.5 text-xs font-bold text-[color:var(--color-ambre)]">
+                    {autresParents.length} {t("tuileFamilleCoparents")}
+                  </span>
+                ) : null}
+                {doublons.length > 0 ? (
+                  <span className="ml-2 inline-block rounded-[var(--radius-pilule)] bg-[color:var(--color-corail-doux)] px-2 py-0.5 text-xs font-bold text-[color:var(--color-corail)]">
+                    {doublons.length} {t("tuileFamilleDoublons")}
+                  </span>
+                ) : null}
+                {lienEnCours ? (
+                  <span className="ml-2 inline-block rounded-[var(--radius-pilule)] bg-[color:var(--color-ambre-doux)] px-2 py-0.5 text-xs font-bold text-[color:var(--color-ambre)]">
+                    {t("attributLienEnCoursCourt")}
+                  </span>
+                ) : null}
+              </>
+            }
           />
-        ) : (
-          <p className="text-[color:var(--color-doux)]">{t("clesManquantes")}</p>
-        )}
-      </Carte>
 
-      {erreur ? (
-        <Alerte ton="erreur">
-          {t.has(`erreurs.${erreur}`) ? t(`erreurs.${erreur}`) : t("erreurGenerique")}
-        </Alerte>
-      ) : null}
+          <Tuile
+            href="/reglages/notifications"
+            titre={t("tuileNotificationsTitre")}
+            sous={
+              <>
+                <span>
+                  {cles.length > 0 ? t("tuilePushActif") : t("tuilePushInactif")}
+                </span>
+                <span className="ml-2 text-[color:var(--color-doux)]">
+                  · {motsCles.length} {t("tuileMots")}
+                </span>
+                <span className="ml-2 text-[color:var(--color-doux)]">
+                  · {surInscription ? t("etatActif") : t("etatCoupe")}
+                </span>
+              </>
+            }
+          />
 
-      {/*
-        L'agenda avant les cercles : ces deux réglages ne dépendent d'aucun cercle, et sont
-        les seuls que quelqu'un puisse activer le jour de son arrivée.
-      */}
-      <section className="mb-7">
-        <h2 className="titre mb-3 text-lg font-bold">{t("agendaTitre")}</h2>
-
-        <Carte className="mb-4" accent="violet">
-          <p className="mb-1 font-bold">{t("motsTitre")}</p>
-          <p className="mb-4 text-sm leading-snug text-[color:var(--color-doux)]">
-            {t("motsTexte")}
-          </p>
-
-          {motsCles.length > 0 ? (
-            <ul className="mb-4 flex flex-wrap gap-2">
-              {motsCles.map((mot) => (
-                <li key={mot.word}>
-                  <form action={retirerMotCleAgenda}>
-                    <input type="hidden" name="mot" value={mot.word} />
-                    <button
-                      className="flex items-center gap-1.5 rounded-[var(--radius-pilule)] px-3 py-1.5 text-sm font-bold"
-                      style={{
-                        background: "var(--color-violet-doux)",
-                        color: "var(--color-violet)",
-                      }}
-                    >
-                      {mot.label}
-                      <span aria-hidden>✕</span>
-                      <span className="sr-only">{t("retirerMot")}</span>
-                    </button>
-                  </form>
-                </li>
-              ))}
-            </ul>
-          ) : null}
-
-          {motsCles.length < MOTS_CLES_MAX ? (
-            <form action={ajouterMotCleAgenda} className="space-y-3">
-              <Champ
-                label={t("ajouterMotLabel")}
-                name="mot"
-                maxLength={40}
-                required
-                placeholder={t("ajouterMotPlaceholder")}
-              />
-              <Bouton variante="second" className="!py-2.5 !text-base">
-                {t("ajouter")}
-              </Bouton>
-            </form>
-          ) : (
-            <p className="text-sm text-[color:var(--color-doux)]">{t("motsMax")}</p>
-          )}
-        </Carte>
-
-        <Carte accent="corail">
-          <form action={basculerAlerteInscription}>
-            <input type="hidden" name="actif" value={surInscription ? "0" : "1"} />
-            <div className="mb-3 flex items-center justify-between gap-3">
-              <span className="font-bold">{t("inscriptionTitre")}</span>
-              <Pastille couleur={surInscription ? "vert" : "ambre"}>
-                {surInscription ? t("etatActif") : t("etatCoupe")}
-              </Pastille>
-            </div>
-            <p className="mb-4 text-sm leading-snug text-[color:var(--color-doux)]">
-              {t("inscriptionTexte")}
-            </p>
-            <Bouton variante="second" className="!py-2.5 !text-base">
-              {surInscription ? t("arreterPrevenir") : t("prevenir")}
-            </Bouton>
-          </form>
-        </Carte>
-
-        <Carte className="mt-4" accent="bleu">
-          <div className="mb-3 flex items-center justify-between gap-3">
-            <span className="font-bold">{t("rappelTitre")}</span>
-            <Pastille couleur={rappelHeures ? "vert" : "ambre"}>
-              {rappelHeures
-                ? rappelHeures >= 24
-                  ? t("rappelVeille")
-                  : t("rappel2h")
-                : t("etatCoupe")}
-            </Pastille>
-          </div>
-          <p className="mb-4 text-sm leading-snug text-[color:var(--color-doux)]">
-            {t("rappelTexte")}
-          </p>
-          <form action={reglerRappel} className="flex gap-2">
-            {[
-              { heures: 0, libelle: t("etatCoupe") },
-              { heures: 2, libelle: t("rappel2h") },
-              { heures: 24, libelle: t("rappelVeille") },
-            ].map((choix) => {
-              const actif = (rappelHeures ?? 0) === choix.heures;
-              return (
-                <button
-                  key={choix.heures}
-                  name="heures"
-                  value={choix.heures}
-                  className="flex-1 rounded-[var(--radius-pilule)] px-3 py-2 text-sm font-bold"
-                  style={
-                    actif
-                      ? { background: "var(--color-vert-doux)", color: "var(--color-vert)" }
-                      : {
-                          color: "var(--color-doux)",
-                          boxShadow: "inset 0 0 0 2px var(--color-trait)",
-                        }
-                  }
-                >
-                  {choix.libelle}
-                </button>
-              );
-            })}
-          </form>
-        </Carte>
+          <Tuile
+            href="/reglages/cercles"
+            titre={t("tuileCerclesTitre")}
+            sous={
+              <>
+                <span>{t("tuileCerclesGenerique")}</span>
+                <span className="ml-2 text-[color:var(--color-doux)]">
+                  · {cercles.length}{" "}
+                  {cercles.length === 1
+                    ? t("tuileCerclesUnSingulier")
+                    : t("tuileCerclesUnPluriel")}
+                </span>
+              </>
+            }
+          />
+        </ul>
       </section>
 
-      <h2 className="titre mb-3 text-lg font-bold">{t("cerclesTitre")}</h2>
+      {/* Outils d'administration — réservés au contact qui relit l'agenda. */}
+      {relecteur ? (
+        <section aria-labelledby="reglages-admin" className="mt-8">
+          <h2
+            id="reglages-admin"
+            className="mb-2 text-xs font-bold uppercase tracking-wide text-[color:var(--color-doux)]"
+          >
+            {t("sectionAdmin")}
+          </h2>
+          <ul className="divide-y divide-[color:var(--color-trait)]">
+            <Tuile
+              href="/relecture"
+              titre={t("tuileRelectureTitre")}
+              sous={<span>{t("tuileRelectureGenerique")}</span>}
+            />
+            <Tuile
+              href="/mesures"
+              titre={t("tuileMesuresTitre")}
+              sous={<span>{t("tuileMesuresGenerique")}</span>}
+            />
+          </ul>
+        </section>
+      ) : null}
 
-      {cercles.length === 0 ? (
-        <Vide emoji="👥" titre={t("videTitre")}>
-          {t("videTexte")}
-        </Vide>
-      ) : (
-        <ul className="space-y-4">
-          {cercles.map((cercle) => {
-            const couleur = teinte(cercle.circleId);
-            const enPause = cercle.pausedUntil && cercle.pausedUntil > new Date();
+      {/* Actions — opérations qu'on fait rarement et qu'on ne règle pas. */}
+      <section aria-labelledby="reglages-actions" className="mt-8">
+        <h2
+          id="reglages-actions"
+          className="mb-2 text-xs font-bold uppercase tracking-wide text-[color:var(--color-doux)]"
+        >
+          {t("sectionActions")}
+        </h2>
 
-            return (
-              <li key={cercle.circleId}>
-                <Carte accent={couleur}>
-                  <div className="mb-4 flex items-center justify-between gap-3">
-                    <h2 className="titre text-lg font-bold">{cercle.circleName}</h2>
-                    {enPause ? (
-                      <Pastille couleur="ambre">
-                        {t("enPauseJusqua", { heure: heureCourte(cercle.pausedUntil!) })}
-                      </Pastille>
-                    ) : null}
-                  </div>
+        <Tuile
+          href="/lieux"
+          titre={t("tuileLieuxTitre")}
+          sous={<span>{t("tuileLieuxGenerique")}</span>}
+        />
 
-                  <form action={reglerCercle} className="mb-4">
-                    <input type="hidden" name="cercle" value={cercle.circleId} />
-                    <div className="mb-3 space-y-2">
-                      <Interrupteur
-                        nom="presences"
-                        libelle={t("presencesLibelle")}
-                        actif={cercle.onPresence}
-                      />
-                      <Interrupteur
-                        nom="inscriptions"
-                        libelle={t("inscriptionsLibelle")}
-                        actif={cercle.onAttendance}
-                      />
-                    </div>
-                    <Bouton variante="second" className="!py-2.5 !text-base">
-                      {t("enregistrer")}
-                    </Bouton>
-                  </form>
+        <Tuile
+          href="/donnees"
+          titre={t("tuileDonneesTitre")}
+          sous={<span>{t("tuileDonneesGenerique")}</span>}
+        />
 
-                  <form action={mettreEnPause} className="flex gap-2">
-                    <input type="hidden" name="cercle" value={cercle.circleId} />
-                    {enPause ? (
-                      <button
-                        name="heures"
-                        value="0"
-                        className="flex-1 rounded-[var(--radius-pilule)] px-3 py-2 text-sm font-bold"
-                        style={{ background: "var(--color-vert-doux)", color: "var(--color-vert)" }}
-                      >
-                        {t("reprendre")}
-                      </button>
-                    ) : (
-                      <>
-                        <button
-                          name="heures"
-                          value="4"
-                          className="flex-1 rounded-[var(--radius-pilule)] px-3 py-2 text-sm font-bold text-[color:var(--color-doux)] shadow-[inset_0_0_0_2px_var(--color-trait)]"
-                        >
-                          {t("pause4h")}
-                        </button>
-                        <button
-                          name="heures"
-                          value="24"
-                          className="flex-1 rounded-[var(--radius-pilule)] px-3 py-2 text-sm font-bold text-[color:var(--color-doux)] shadow-[inset_0_0_0_2px_var(--color-trait)]"
-                        >
-                          {t("pause24h")}
-                        </button>
-                      </>
-                    )}
-                  </form>
+        <Tuile
+          href="/questions"
+          titre={t("tuileQuestionsTitre")}
+          sous={<span>{t("tuileQuestionsGenerique")}</span>}
+        />
 
-                  <p className="mt-3 text-sm text-[color:var(--color-doux)]">
-                    {t.rich("membresTexte", {
-                      lien: (chunks) => (
-                        <Link
-                          href={`/cercles/${cercle.circleId}`}
-                          className="font-bold underline underline-offset-4"
-                        >
-                          {chunks}
-                        </Link>
-                      ),
-                    })}
-                  </p>
-                </Carte>
-              </li>
-            );
-          })}
-        </ul>
-      )}
+        <a href="mailto:contact@allezou.ch" className="block active:translate-y-[1px]">
+          <TuileBrute
+            titre={t("tuileContactTitre")}
+            sous={<span>contact@allezou.ch</span>}
+          />
+        </a>
 
-      <Navigation actif="vous" />
+        <Tuile
+          href="/reglages/supprimer"
+          titre={t("tuileSupprimerTitre")}
+          sous={<span>{t("tuileSupprimerGenerique")}</span>}
+        />
+
+        <form action={seDeconnecter} className="px-1 pb-2 pt-3 text-center">
+          <button className="text-sm text-[color:var(--color-doux)] underline underline-offset-4 active:opacity-70">
+            {t("deconnexion")}
+          </button>
+        </form>
+      </section>
+
+      {/* Sur une page plus longue que l'écran, ce div ne fait rien ; sur une page courte, il
+          pousse le menu vers le bas plutôt que de le laisser flotter au milieu de rien. */}
+      <div className="mt-8 flex-1" aria-hidden />
+      <Navigation actif="reglages" />
     </main>
   );
 }
 
-/** Une case à cocher qui a l'air d'un interrupteur, sans JavaScript. */
-function Interrupteur({
-  nom,
-  libelle,
-  actif,
+/**
+ * Carte cliquable à fond gris uniforme, avec une ligne fine entre les éléments
+ * (le filet vient du `divide-y` du parent, on n'en met pas ici). Le titre gras
+ * annonce ce qu'on fait en cliquant, le sous-titre rappelle la catégorie du
+ * réglage sans afficher sa valeur courante — la valeur vit dans la sous-page.
+ */
+function Tuile({
+  href,
+  titre,
+  sous,
 }: {
-  nom: string;
-  libelle: string;
-  actif: boolean;
+  href: string;
+  titre: string;
+  sous: React.ReactNode;
 }) {
   return (
-    <label className="flex cursor-pointer items-center justify-between gap-3">
-      <span className="font-semibold">{libelle}</span>
-      <input type="checkbox" name={nom} value="1" defaultChecked={actif} className="peer sr-only" />
-      {/*
-        Le bouton doit se déplacer alors qu'il est *dans* le frère du champ coché : une
-        variante `peer-checked:` seule ne l'atteindrait pas, elle ne vise que les frères.
-      */}
-      <span className="relative h-7 w-12 shrink-0 rounded-full bg-[color:var(--color-trait)] transition-colors peer-checked:bg-[color:var(--color-vert)] peer-checked:[&>span]:translate-x-5">
-        <span className="absolute left-1 top-1 h-5 w-5 rounded-full bg-[color:var(--color-surface)] transition-transform" />
-      </span>
-    </label>
+    <li>
+      <Link href={href} className="block active:translate-y-[1px]">
+        <TuileBrute titre={titre} sous={sous} />
+      </Link>
+    </li>
+  );
+}
+
+/** Variante sans le wrapper Link (pour les liens externes comme mailto). */
+function TuileBrute({ titre, sous }: { titre: string; sous: React.ReactNode }) {
+  return (
+    <div className="bg-[color:var(--color-fond)] px-4 py-3">
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <span className="block font-bold leading-tight">{titre}</span>
+          <span className="mt-1 block text-sm leading-snug text-[color:var(--color-doux)]">
+            {sous}
+          </span>
+        </div>
+        <span aria-hidden className="shrink-0 text-xl leading-none text-[color:var(--color-doux)]">
+          ›
+        </span>
+      </div>
+    </div>
   );
 }

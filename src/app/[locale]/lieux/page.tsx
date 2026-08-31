@@ -289,7 +289,7 @@ export default async function Lieux({
         </Link>
       </p>
 
-      <Navigation actif="vous" />
+      <Navigation actif="reglages" />
     </main>
   );
 }

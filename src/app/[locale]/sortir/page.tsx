@@ -68,9 +68,9 @@ export default async function Sortir({
 
   return (
     <main className="apparait">
-      <Titre emoji="🌳" sous={t("sousTitre")}>
-        {t("titre")}
-      </Titre>
+      <Titre sous={t("sousTitre")}>
+              {t("titre")}
+            </Titre>
 
       {erreur ? (
         <Alerte ton="erreur">{MESSAGES[erreur] ?? t("erreurGenerique")}</Alerte>
