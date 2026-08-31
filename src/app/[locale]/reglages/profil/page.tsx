@@ -4,13 +4,18 @@ import { LANGUES, type Locale } from "@/i18n/routing";
 
 import { requireAccount } from "@/lib/session";
 import { changerLangue, changerNom, seDeconnecter } from "../../actions";
-import { Bouton, Carte, Champ, Navigation } from "../../ui";
+import { Bouton, Carte, Champ, LienBouton, Navigation } from "../../ui";
 import { EnteteReglages } from "../_entete";
 
 /**
  * Profil identité : le nom que les autres voient sur vos sorties et vos
  * messages, et la langue dans laquelle l'app vous parle. Pas de péage caché :
  * tout est modifiable sans confirmation, le prénom se voit partout.
+ *
+ * La carte « Famille » renvoie vers `/reglages/enfants` où se gèrent les
+ * enfants du compte et l'invitation de l'autre parent — c'est volontairement
+ * sur une autre page, parce que la co-parentalité mérite son propre écran
+ * (formulaire long, listes d'enfants à renommer ou fusionner).
  */
 export default async function ReglagesProfil() {
   const t = await getTranslations("Reglages");
@@ -64,6 +69,14 @@ export default async function ReglagesProfil() {
             </button>
           ))}
         </form>
+      </Carte>
+
+      <Carte accent="ambre" className="mb-5">
+        <h2 className="titre mb-2 text-lg font-bold">{t("familleTitre")}</h2>
+        <p className="mb-4 text-sm leading-snug text-[color:var(--color-doux)]">
+          {t("familleTexte")}
+        </p>
+        <LienBouton href="/reglages/enfants">{t("familleBouton")}</LienBouton>
       </Carte>
 
       <form action={seDeconnecter} className="mt-8 text-center">

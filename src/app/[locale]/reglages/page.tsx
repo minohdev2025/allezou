@@ -68,12 +68,18 @@ export default async function Reglages() {
                 <span>{t("profilGenerique")}</span>
                 {autresParents.length > 0 ? (
                   <span className="ml-2 inline-block rounded-[var(--radius-pilule)] bg-[color:var(--color-ambre-doux)] px-2 py-0.5 text-xs font-bold text-[color:var(--color-ambre)]">
-                    {autresParents.length} {t("tuileFamilleCoparents")}
+                    {autresParents.length}{" "}
+                    {autresParents.length === 1
+                      ? t("tuileFamilleCoparentsUn")
+                      : t("tuileFamilleCoparentsPluriel")}
                   </span>
                 ) : null}
                 {doublons.length > 0 ? (
                   <span className="ml-2 inline-block rounded-[var(--radius-pilule)] bg-[color:var(--color-corail-doux)] px-2 py-0.5 text-xs font-bold text-[color:var(--color-corail)]">
-                    {doublons.length} {t("tuileFamilleDoublons")}
+                    {doublons.length}{" "}
+                    {doublons.length === 1
+                      ? t("tuileFamilleDoublonsUn")
+                      : t("tuileFamilleDoublonsPluriel")}
                   </span>
                 ) : null}
                 {lienEnCours ? (
