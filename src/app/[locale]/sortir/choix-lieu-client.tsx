@@ -164,20 +164,19 @@ export function ChoixDuLieu({
       <details
         open={ouvert}
         onToggle={(e) => setOuvert((e.target as HTMLDetailsElement).open)}
-        className="mb-4"
+        className="mb-4 rounded-[var(--radius-carte)] bg-[color:var(--color-surface)] shadow-[inset_0_0_0_2px_var(--color-trait)]"
       >
-        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-[var(--radius-pilule)] bg-[color:var(--color-surface)] px-4 py-3 shadow-[inset_0_0_0_2px_var(--color-trait)]">
-          <span className="min-w-0 truncate text-sm">
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-bold text-[color:var(--color-encre)]">
+          <span className="min-w-0 truncate">
             {lieuChoisi ? (
               <>
-                ✅{" "}
-                <strong className="text-[color:var(--color-encre)]">{lieuChoisi.name}</strong>
+                ✅ <strong>{lieuChoisi.name}</strong>
                 {lieuChoisi.commune ? (
                   <span className="text-[color:var(--color-doux)]"> · {lieuChoisi.commune}</span>
                 ) : null}
               </>
             ) : (
-              <strong>{t("choisirUnLieu")}</strong>
+              t("choisirUnLieu")
             )}
           </span>
           <span className="shrink-0 text-sm font-bold text-[color:var(--color-vert)]">
@@ -185,7 +184,10 @@ export function ChoixDuLieu({
           </span>
         </summary>
 
-        <div className="mt-3 space-y-3">
+        {/* Le filet de l'en-tête suit le meme pattern que dans l'agenda :
+            il n'existe que lorsque la carte est ouverte, et il court d'un
+            bord a l'autre parce qu'il vit en dehors du padding. */}
+        <div className="border-t border-[color:var(--color-trait)] px-4 pt-3 space-y-3">
           {/*
             Sans attribut `name`, le champ ne part pas avec le formulaire ; et Entrée y
             déclencherait l'envoi implicite — c'est-à-dire la sortie elle-même. On la
