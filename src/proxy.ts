@@ -77,7 +77,11 @@ export function proxy(request: NextRequest) {
  * rien. Le coût d'un nonce par prefetch est le prix d'un routage juste.
  *
  * Les chemins à point (favicon.ico, sw.js, robots.txt, manifest…) restent hors langue.
+ * `/icon` et `/apple-icon` n'ont pas de point dans leur URL — ce sont des routes de
+ * métadonnées générées (src/app/icon.tsx) — et le routeur de langues les réécrivait en
+ * /fr/icon, où le catch-all répond 404 : l'icône d'onglet et celle d'iOS étaient
+ * silencieusement mortes, y compris en production. Elles sont exclues du matcher.
  */
 export const config = {
-  matcher: ["/((?!_next|_vercel|.*\\..*).*)"],
+  matcher: ["/((?!_next|_vercel|icon$|apple-icon$|.*\\..*).*)"],
 };

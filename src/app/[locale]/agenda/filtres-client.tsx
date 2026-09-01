@@ -44,6 +44,9 @@ export function FormulaireFiltres({
 
         const params = new URLSearchParams();
         for (const [cle, valeur] of new FormData(evenement.currentTarget).entries()) {
+          // « communesToutes » n'est pas un filtre : une case en plus, qui dit « aucune
+          // commune choisie ». Elle n'a rien à faire dans une adresse qu'on partage.
+          if (cle === "communesToutes") continue;
           params.append(cle, String(valeur));
         }
 

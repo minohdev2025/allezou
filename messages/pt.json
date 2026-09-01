@@ -179,18 +179,20 @@
   },
   "Agenda": {
     "titre": "Agenda",
-    "sousTitre": "As atividades do cantão, e quem dos seus círculos vai.",
+    "sousTitre": "Selecione uma atividade e diga aos membros dos seus círculos que tenciona ir.",
     "filtrer": "Filtrar",
     "categorieQuand": "Quando",
     "categorieAge": "Idade",
-    "categorieCommune": "Comuna",
+    "categorieCommunes": "Comunas",
+    "toutesCommunes": "Todas",
+    "nCommunesChoisies": "{n} selecionada(s)",
     "categoriePrix": "Preço",
     "categorieInscription": "Inscrição",
     "categorieQuiYVa": "Quem vai",
     "appliquerFiltres": "Ver as atividades",
     "toutEffacer": "Limpar tudo",
     "monCercle": "Onde vai alguém dos meus círculos",
-    "proposerActivite": "📅 Propor uma atividade",
+    "proposerActivite": "Propor uma atividade",
     "enCeMoment": "Neste momento",
     "enCeMomentCarte": "neste momento",
     "rienNeCorrespond": "Nada corresponde",
@@ -467,8 +469,8 @@
     "doublonsBouton": "É a mesma criança"
   },
   "Lieux": {
-    "titre": "Os locais",
-    "sousTitre": "Os locais que propõe aos seus círculos. Um nome mal escrito corrige-se com {n} validações.",
+    "titre": "Parques infantis",
+    "sousTitre": "Uma correção só tem efeito quando {n} membros ou o webmaster a validam.",
     "erreurs": {
       "nom_invalide": "Este nome não é válido: de 2 a 80 carateres.",
       "lieu_inconnu": "Este local já não existe.",
@@ -576,7 +578,7 @@
     "tuileFamilleDoublonsPluriel": "duplicados a fundir",
     "tuileFamilleGenerique": "Filhos e co-parentes",
     "tuileCerclesTitre": "Círculos",
-    "tuileLieuxTitre": "Os seus lugares",
+    "tuileLieuxTitre": "Parques infantis",
     "tuileLieuxSous": "Lugares que adicionou e suas posições.",
     "tuileDonneesTitre": "Os seus dados registados",
     "tuileDonneesSous": "O que Allezou guarda sobre si, em texto simples.",
@@ -602,7 +604,7 @@
     "profilGenerique": "Identidade e idioma",
     "tuileNotificationsGenerique": "Push, palavras-chave, alertas",
     "tuileCerclesGenerique": "Notificações por círculo",
-    "tuileLieuxGenerique": "Lugares que adicionou",
+    "tuileLieuxGenerique": "Corrigir um local",
     "tuileDonneesGenerique": "O que Allezou regista sobre si",
     "tuileQuestionsGenerique": "Respostas a perguntas correntes",
     "tuileRelectureGenerique": "Verificar as fichas antes de publicar",
@@ -816,7 +818,7 @@
     "itineraire": "Rota"
   },
   "Carte": {
-    "voirSurLaCarte": "🗺️ Ver no mapa",
+    "voirSurLaCarte": "Ver no mapa",
     "carteNonBranchee": "O mapa ainda não está ligado: falta <code>GOOGLE_MAPS_API_KEY</code> — o procedimento está em <code>docs/google-maps.md</code>. As ligações ↗ para o Google Maps já funcionam, essas sim.",
     "choisi": "✓ Escolhido",
     "choisirCeLieu": "Escolher este local",
@@ -868,6 +870,6 @@
     "titre": "Receber alertas de outros pais?",
     "activer": "Ativar alertas",
     "plusTard": "Mais tarde",
-    "texte": "Quando um pai dos seus círculos publica uma saída, o telefone pode avisá-lo — mesmo com a aplicação fechada. Você decide depois quem pode notificá-lo, círculo a círculo."
+    "texte": "Você precisa permitir as notificações nas configurações do aplicativo Allezou no seu telefone para ser avisado das saídas dos membros dos seus círculos. Dependendo do modelo do seu telefone, você também precisa permitir as notificações para o navegador a partir do qual instala o Allezou."
   }
 }

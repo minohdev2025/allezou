@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { ImageResponse } from "next/og";
 
 import { localeSure } from "@/lib/traduire";
+import { Marque } from "../marque";
 
 /**
  * L'image qui apparaît quand on colle le lien dans WhatsApp.
@@ -38,10 +39,7 @@ export default async function Image({ params }: { params: Promise<{ locale: stri
           padding: "0 90px",
         }}
       >
-        <svg width="150" height="150" viewBox="0 0 512 512" fill="#fffcf5">
-          <path d="M256 90 140 262h60L110 396h292L312 262h60L256 90Z" />
-          <rect x="228" y="396" width="56" height="60" />
-        </svg>
+        <Marque taille={150} />
         <div style={{ fontSize: 104, fontWeight: 700, marginTop: 24 }}>Allezou</div>
         <div style={{ marginTop: 18, opacity: 0.92 }}>{t("accroche")}</div>
       </div>

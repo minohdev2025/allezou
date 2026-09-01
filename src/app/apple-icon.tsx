@@ -1,5 +1,7 @@
 import { ImageResponse } from "next/og";
 
+import { Marque } from "./marque";
+
 /**
  * iOS ignore le manifeste pour l'icône d'écran d'accueil : il lui faut celle-ci.
  * Sans elle, l'application installée porterait une capture d'écran de la page.
@@ -20,10 +22,7 @@ export default function AppleIcon() {
           background: "#17784f",
         }}
       >
-        <svg width="116" height="116" viewBox="0 0 512 512" fill="#fffcf5">
-          <path d="M256 90 140 262h60L110 396h292L312 262h60L256 90Z" />
-          <rect x="228" y="396" width="56" height="60" />
-        </svg>
+        <Marque taille={116} />
       </div>
     ),
     size,

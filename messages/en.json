@@ -179,18 +179,20 @@
   },
   "Agenda": {
     "titre": "Agenda",
-    "sousTitre": "Activities from across the canton, and who from your circles is going.",
+    "sousTitre": "Select an activity and tell the members of your circles you plan to go.",
     "filtrer": "Filter",
     "categorieQuand": "When",
     "categorieAge": "Age",
-    "categorieCommune": "Municipality",
+    "categorieCommunes": "Municipalities",
+    "toutesCommunes": "All",
+    "nCommunesChoisies": "{n} selected",
     "categoriePrix": "Price",
     "categorieInscription": "Registration",
     "categorieQuiYVa": "Who's going",
     "appliquerFiltres": "Show activities",
     "toutEffacer": "Clear all",
     "monCercle": "Where someone from my circles is going",
-    "proposerActivite": "📅 Suggest an activity",
+    "proposerActivite": "Suggest an activity",
     "enCeMoment": "Right now",
     "enCeMomentCarte": "right now",
     "rienNeCorrespond": "Nothing matches",
@@ -467,8 +469,8 @@
     "doublonsBouton": "It's the same child"
   },
   "Lieux": {
-    "titre": "Places",
-    "sousTitre": "Places you suggest to your circles. A misspelled name gets fixed once {n} people confirm it.",
+    "titre": "Playgrounds",
+    "sousTitre": "A correction only takes effect once {n} members or the webmaster confirm it.",
     "erreurs": {
       "nom_invalide": "This name doesn't work: it must be 2 to 80 characters.",
       "lieu_inconnu": "This place no longer exists.",
@@ -576,7 +578,7 @@
     "tuileFamilleDoublonsPluriel": "duplicates to merge",
     "tuileFamilleGenerique": "Children and co-parents",
     "tuileCerclesTitre": "Circles",
-    "tuileLieuxTitre": "Your places",
+    "tuileLieuxTitre": "Playgrounds",
     "tuileLieuxSous": "Places you've added and their positions.",
     "tuileDonneesTitre": "Your recorded data",
     "tuileDonneesSous": "What Allezou keeps about you, in plain text.",
@@ -602,7 +604,7 @@
     "profilGenerique": "Identity and language",
     "tuileNotificationsGenerique": "Push, agenda keywords, alerts",
     "tuileCerclesGenerique": "Notifications per circle",
-    "tuileLieuxGenerique": "Places you've added",
+    "tuileLieuxGenerique": "Correct a place",
     "tuileDonneesGenerique": "What Allezou records about you",
     "tuileQuestionsGenerique": "Answers to common questions",
     "tuileRelectureGenerique": "Check entries before publication",
@@ -816,7 +818,7 @@
     "itineraire": "Directions"
   },
   "Carte": {
-    "voirSurLaCarte": "🗺️ View on the map",
+    "voirSurLaCarte": "View on the map",
     "carteNonBranchee": "The map isn't hooked up yet: <code>GOOGLE_MAPS_API_KEY</code> is missing — the steps to fix that are in <code>docs/google-maps.md</code>. The ↗ links to Google Maps already work, though.",
     "choisi": "✓ Selected",
     "choisirCeLieu": "Choose this place",
@@ -866,7 +868,7 @@
   },
   "DemandeNotifications": {
     "titre": "Get notified when other parents go out?",
-    "texte": "When a parent in your circles publishes an outing, your phone can let you know — even when the app isn't open. You decide who can notify you, circle by circle.",
+    "texte": "You need to allow notifications in the Allezou app settings on your phone to be alerted about outings from your circle members. Depending on your phone model, you also need to allow notifications for the browser you install Allezou from.",
     "activer": "Turn on alerts",
     "plusTard": "Later"
   }

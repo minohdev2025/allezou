@@ -18,6 +18,7 @@ import { type PointCarte } from "@/lib/carte";
 import { requireAccount } from "@/lib/session";
 import { localeSure } from "@/lib/traduire";
 import { CarteDesLieux } from "../carte-client";
+import { FiltreCommunes } from "./filtre-communes-client";
 import { FormulaireFiltres } from "./filtres-client";
 import {
   Bouton,
@@ -225,40 +226,15 @@ export default async function Agenda({
             </Titre>
 
       <div className="mb-6">
-        <LienBouton href="/agenda/nouveau">{t("proposerActivite")}</LienBouton>
+        {/*
+          Le même gabarit que « Annoncer une sortie » sur « Maintenant » : le geste qui
+          enrichit l'agenda du canton mérite la même présence que celui qui remplit la
+          journée d'un cercle.
+        */}
+        <LienBouton href="/agenda/nouveau" variante="principal" className="!py-5 !text-xl">
+          {t("proposerActivite")}
+        </LienBouton>
       </div>
-
-      {/*
-        La même liste, posée sur la carte — celle des activités que les filtres retiennent,
-        pas une autre. « Quelque part près de chez moi mercredi » est une question de carte,
-        pas de liste, et c'est la carte des filtres actifs qui y répond.
-      */}
-      {entrees.length > 0 ? (
-        <CarteDesLieux
-          points={entrees.flatMap((entree): PointCarte[] =>
-            entree.lat != null && entree.lon != null
-              ? [
-                  {
-                    id: entree.id,
-                    nom: entree.title,
-                    sousTitre: [
-                      entree.enCours ? t("enCeMomentCarte") : libelleJour(entree.startsAt, locale),
-                      entree.place ?? entree.commune,
-                    ]
-                      .filter(Boolean)
-                      .join(" · "),
-                    lat: entree.lat,
-                    lon: entree.lon,
-                    href: `/agenda/${entree.id}`,
-                  },
-                ]
-              : [],
-          )}
-          sansPosition={entrees.filter((e) => e.lat == null || e.lon == null).length}
-          cleApi={process.env.GOOGLE_MAPS_API_KEY ?? null}
-          mapId={process.env.GOOGLE_MAPS_MAP_ID ?? null}
-        />
-      ) : null}
 
       <FormulaireFiltres
         action={`${getPathname({ href: "/agenda", locale })}#filtres`}
@@ -367,13 +343,7 @@ export default async function Agenda({
               </Rangee>
 
               {communes.length > 1 ? (
-                <Rangee titre={t("categorieCommune")}>
-                  {communes.map((c) => (
-                    <Puce key={c} nom="commune" valeur={c} coche={communesChoisies.includes(c)}>
-                      {c}
-                    </Puce>
-                  ))}
-                </Rangee>
+                <FiltreCommunes communes={communes} choisies={communesChoisies} />
               ) : null}
 
               {/*
@@ -398,6 +368,46 @@ export default async function Agenda({
                   </Puce>
                 ))}
               </Rangee>
+
+              {/*
+                La carte est un élément du filtrage, pas un écran à part : elle montre la
+                même liste que les filtres retiennent, posée sur les lieux. « Quelque part
+                près de chez moi mercredi » se répond donc là où le filtre se règle, et non
+                au-dessus de lui — elle ne poussait « Filtrer » et la liste hors de l'écran
+                que pour ceux qui ne la demandaient pas.
+              */}
+              {entrees.length > 0 ? (
+                <div className="py-3">
+                  <CarteDesLieux
+                    points={entrees.flatMap((entree): PointCarte[] =>
+                      entree.lat != null && entree.lon != null
+                        ? [
+                            {
+                              id: entree.id,
+                              nom: entree.title,
+                              sousTitre: [
+                                entree.enCours
+                                  ? t("enCeMomentCarte")
+                                  : libelleJour(entree.startsAt, locale),
+                                entree.place ?? entree.commune,
+                              ]
+                                .filter(Boolean)
+                                .join(" · "),
+                              lat: entree.lat,
+                              lon: entree.lon,
+                              href: `/agenda/${entree.id}`,
+                            },
+                          ]
+                        : [],
+                    )}
+                    sansPosition={
+                      entrees.filter((e) => e.lat == null || e.lon == null).length
+                    }
+                    cleApi={process.env.GOOGLE_MAPS_API_KEY ?? null}
+                    mapId={process.env.GOOGLE_MAPS_MAP_ID ?? null}
+                  />
+                </div>
+              ) : null}
             </div>
 
             <div className="pb-4">

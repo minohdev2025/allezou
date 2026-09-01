@@ -118,6 +118,7 @@ export default async function RootLayout({
   const messagesClient = Object.fromEntries(
     [
       "CleAcces",
+      "Agenda",
       "NotificationsClient",
       "DemandeNotifications",
       "Confirmation",
