@@ -15,13 +15,13 @@ import { Navigation, Titre } from "../ui";
 /**
  * Page d'accueil des réglages. Tout doit être lisible sans scroller : quatre
  * grandes tuiles en haut pour les paramètres courants, puis en bas les actions
- * secondaires (lieux, données, aide, contact) et — visible uniquement pour le
- * contact qui relit — les outils d'administration.
+ * secondaires (lieux, données, aide, contact) et — en tout dernier, visible
+ * uniquement pour le contact qui relit — les outils d'administration.
  *
  * On avait essayé un code couleur par tuile, puis plusieurs étages de
  * catégories typographiques ; rien n'aidait à se retrouver. Le gris neutre
  * avec un filet entre les éléments fait le travail : la hiérarchie est dans
- * la position sur la page (paramètres, admin, actions), pas dans la couleur.
+ * la position sur la page (paramètres, actions, admin), pas dans la couleur.
  *
  * Les sous-titres des tuiles restent génériques — la valeur courante d'un
  * réglage vit dans la sous-page. Seules les pastilles de la tuile Famille
@@ -103,36 +103,11 @@ export default async function Reglages() {
         </ul>
       </section>
 
-      {/* Outils d'administration — réservés au contact qui relit l'agenda. */}
-      {relecteur ? (
-        <section aria-labelledby="reglages-admin" className="mt-8">
-          <h2
-            id="reglages-admin"
-            className="mb-2 text-xs font-bold uppercase tracking-wide text-[color:var(--color-doux)]"
-          >
-            {t("sectionAdmin")}
-          </h2>
-          <ul className="divide-y divide-[color:var(--color-trait)]">
-            <Tuile
-              href="/relecture"
-              titre={t("tuileRelectureTitre")}
-              sous={t("tuileRelectureGenerique")}
-            />
-            <Tuile
-              href="/mesures"
-              titre={t("tuileMesuresTitre")}
-              sous={t("tuileMesuresGenerique")}
-            />
-          </ul>
-        </section>
-      ) : null}
-
-      {/* Actions — opérations qu'on fait rarement et qu'on ne règle pas. */}
+      {/* Actions — opérations qu'on fait rarement et qu'on ne règle pas.
+          Titre invisible comme pour les paramètres : l'ordre suffit à les faire
+          passer en second plan. */}
       <section aria-labelledby="reglages-actions" className="mt-8">
-        <h2
-          id="reglages-actions"
-          className="mb-2 text-xs font-bold uppercase tracking-wide text-[color:var(--color-doux)]"
-        >
+        <h2 id="reglages-actions" className="sr-only">
           {t("sectionActions")}
         </h2>
 
@@ -182,6 +157,31 @@ export default async function Reglages() {
           </form>
         </div>
       </section>
+
+      {/* Outils d'administration — en tout dernier : visibles uniquement par le
+          contact qui relit l'agenda, jamais une destination depuis le hub. */}
+      {relecteur ? (
+        <section aria-labelledby="reglages-admin" className="mt-8">
+          <h2
+            id="reglages-admin"
+            className="mb-2 text-xs font-bold uppercase tracking-wide text-[color:var(--color-doux)]"
+          >
+            {t("sectionAdmin")}
+          </h2>
+          <ul className="divide-y divide-[color:var(--color-trait)]">
+            <Tuile
+              href="/relecture"
+              titre={t("tuileRelectureTitre")}
+              sous={t("tuileRelectureGenerique")}
+            />
+            <Tuile
+              href="/mesures"
+              titre={t("tuileMesuresTitre")}
+              sous={t("tuileMesuresGenerique")}
+            />
+          </ul>
+        </section>
+      ) : null}
 
       {/* Sur une page plus longue que l'écran, ce div ne fait rien ; sur une page courte, il
           pousse le menu vers le bas plutôt que de le laisser flotter au milieu de rien. */}
