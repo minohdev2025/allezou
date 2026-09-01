@@ -260,17 +260,32 @@ export function ChoixDuLieu({
                     : "flex flex-wrap items-stretch gap-2"
                 }
               >
-                <div className="flex w-full items-center justify-between gap-2">
+                <div className="flex w-full items-stretch gap-2">
                 {/*
-                  La carte prend tout l'espace disponible entre le bord gauche
-                  et les boutons (flex-1), plafonnee a max-w-md (28rem) sur les
-                  ecrans larges. Un nom court comme "Moll" donne une carte
-                  pleine largeur, le texte reste aligne a gauche. Un nom long
-                  donne une carte plafonnee a 28rem avec retour a la ligne
-                  (line-clamp-2 sur le titre). Le bloc 2 boutons (étoile + œil)
-                  est toujours colle au bord droit via justify-between.
+                  La zone de sélection et le picto « situer » sont deux gestes
+                  distincts : un clic sur le nom choisit le lieu, un clic sur
+                  l'emoji carte ouvre le panneau de positionnement. Le picto
+                  vit donc à gauche du label : il n'est pas dans le label, et
+                  son clic ne déclenche pas le radio. Le label occupe le reste
+                  de la largeur, plafonnee a max-w-md pour ne pas écraser le
+                  nom sur grand ecran. Le bloc droit (favori + oeil) tient la
+                  meme largeur qu'avant, colle au bord par justify-between.
                 */}
-                <label className="min-w-0 flex-1 max-w-md">
+                <button
+                  type="button"
+                  onClick={() => basculerPanneauPosition(lieu.id)}
+                  aria-label={t("situerAria", { nom: lieu.name })}
+                  title={
+                    lieu.lat != null && lieu.lon != null
+                      ? t("voirSurLaCarte")
+                      : t("situer")
+                  }
+                  className="flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-full text-xl transition-transform active:translate-y-[1px]"
+                  style={{ background: `var(--color-${teinte(lieu.id)}-doux)` }}
+                >
+                  {choisi === lieu.id ? "✅" : "🗺️"}
+                </button>
+                <label className="min-w-0 flex-1 max-w-md cursor-pointer">
                   <input
                     type="radio"
                     name="lieu"
@@ -280,7 +295,6 @@ export function ChoixDuLieu({
                     onChange={() => {
                       setChoisi(lieu.id);
                       setOuvert(false);
-                      basculerPanneauPosition(lieu.id);
                     }}
                     className="peer sr-only"
                   />
@@ -288,24 +302,13 @@ export function ChoixDuLieu({
                     L'accent de couleur vit en style inline (la teinte est calculée), donc
                     la mise en valeur du choix passe par `outline` : un box-shadow de
                     classe perdrait toujours contre le style inline.
-
-                    Le clic sur la carte ouvre aussi le panneau de positionnement :
-                    choisir un lieu c'est aussi, souvent, le situer. Le geste combiné
-                    évite un aller-retour entre la cible et la sélection.
                   */}
                   <span
-                    className="flex h-full w-full cursor-pointer items-center gap-3 rounded-[var(--radius-carte)] bg-[color:var(--color-surface)] px-4 py-3 text-left transition-transform active:translate-y-[2px] peer-checked:outline peer-checked:outline-[3px] peer-checked:-outline-offset-[3px] peer-checked:outline-[color:var(--color-vert)] peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[color:var(--color-bleu)]"
+                    className="flex h-full w-full items-center gap-3 rounded-[var(--radius-carte)] bg-[color:var(--color-surface)] px-4 py-3 text-left transition-transform active:translate-y-[2px] peer-checked:outline peer-checked:outline-[3px] peer-checked:-outline-offset-[3px] peer-checked:outline-[color:var(--color-vert)] peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[color:var(--color-bleu)]"
                     style={{
                       boxShadow: `inset 0 0 0 2px var(--color-${teinte(lieu.id)}-doux)`,
                     }}
                   >
-                    <span
-                      aria-hidden
-                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-xl"
-                      style={{ background: `var(--color-${teinte(lieu.id)}-doux)` }}
-                    >
-                      {choisi === lieu.id ? "✅" : "📍"}
-                    </span>
                     <span className="min-w-0">
                       <span className="titre block font-bold leading-tight line-clamp-2 break-words">
                         {lieu.name}
@@ -322,16 +325,18 @@ export function ChoixDuLieu({
                   <button
                     type="button"
                     onClick={() => basculerMasqueIci(lieu.id)}
-                    className="shrink-0 rounded-full px-4 py-2 text-sm font-bold text-[color:var(--color-vert)] shadow-[inset_0_0_0_2px_var(--color-trait)]"
+                    className="shrink-0 self-stretch rounded-full px-4 text-sm font-bold text-[color:var(--color-vert)] shadow-[inset_0_0_0_2px_var(--color-trait)]"
                   >
                     {t("reafficher")}
                   </button>
                 ) : (
-                  <span className="flex shrink-0 gap-2">
-                    {/* Deux gestes ronds, côte à côte : étoile (mémoriser) et
-                        œil barré (ranger hors de la vue). Le clic sur la carte
-                        elle-même a remplacé l'ancien bouton cible — la
-                        sélection et le positionnement sont un seul geste. */}
+                  <span className="flex shrink-0 flex-col items-center justify-center gap-1">
+                    {/*
+                      Deux gestes empiles, sans cadre : l'emoji seul parle, le
+                      gain de largeur laisse plus de place au nom du parc.
+                      Le tooltip reste sur le titre pour les lecteurs
+                      d'ecran et la survol au doigt.
+                    */}
                     <button
                       type="button"
                       onClick={() => basculerFavoriIci(lieu.id)}
@@ -345,7 +350,7 @@ export function ChoixDuLieu({
                           ? t("retirerDesFavoris", { nom: lieu.name })
                           : t("mettreEnFavori", { nom: lieu.name })
                       }
-                      className="flex h-11 w-11 items-center justify-center rounded-full text-lg shadow-[inset_0_0_0_2px_var(--color-trait)] active:translate-y-[1px]"
+                      className="flex h-7 w-9 items-center justify-center text-lg active:translate-y-[1px]"
                     >
                       {favoris.has(lieu.id) ? "⭐" : "☆"}
                     </button>
@@ -354,7 +359,7 @@ export function ChoixDuLieu({
                       onClick={() => basculerMasqueIci(lieu.id)}
                       aria-label={t("masquerDeLaListe", { nom: lieu.name })}
                       title={t("masquerDeLaListe", { nom: lieu.name })}
-                      className="flex h-11 w-11 items-center justify-center rounded-full text-[color:var(--color-doux)] shadow-[inset_0_0_0_2px_var(--color-trait)] active:translate-y-[1px]"
+                      className="flex h-7 w-9 items-center justify-center text-[color:var(--color-doux)] active:translate-y-[1px]"
                     >
                       <IconeOeilBarre className="h-5 w-5" />
                     </button>

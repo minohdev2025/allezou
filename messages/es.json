@@ -807,6 +807,7 @@
     "choisirDabordUnLieu": "Elige primero un lugar.",
     "situer": "Ubicar en el mapa",
     "situerAria": "Ubicar {nom} en el mapa",
+    "voirSurLaCarte": "Ver en el mapa",
     "deplacerRepere": "Mover el pin",
     "fermer": "Cerrar"
   },
