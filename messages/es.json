@@ -617,7 +617,9 @@
     "nomAide": "Lo que ven los miembros de sus círculos.",
     "nomLabel": "Nombre mostrado",
     "tuileIdeesTitre": "Buzón de ideas",
-    "tuileIdeesGenerique": "Proponer, votar, seguir sus ideas"
+    "tuileIdeesGenerique": "Proponer, votar, seguir sus ideas",
+    "tuilePasskeysTitre": "Volver sin correo",
+    "tuilePasskeysGenerique": "Registrar un dispositivo de confianza"
   },
   "Connexion": {
     "accroche": "Para que nuestros hijos se encuentren al aire libre.",
@@ -875,7 +877,6 @@
   },
   "Idees": {
     "titre": "Buzón de ideas",
-    "sousTitre": "Lo que le falta a Allezou, propuesto por las familias y retomado por el soporte.",
     "ongletToutes": "Todas las ideas",
     "ongletMiennes": "Mis ideas",
     "nouvelle": "Proponer una idea",

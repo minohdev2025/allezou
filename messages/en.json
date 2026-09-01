@@ -617,7 +617,9 @@
     "nomAide": "What members of your circles see.",
     "nomLabel": "Display name",
     "tuileIdeesTitre": "Ideas box",
-    "tuileIdeesGenerique": "Suggest, vote, follow your ideas"
+    "tuileIdeesGenerique": "Suggest, vote, follow your ideas",
+    "tuilePasskeysTitre": "Come back without email",
+    "tuilePasskeysGenerique": "Register a trusted device"
   },
   "Connexion": {
     "accroche": "So our kids can meet up outside.",
@@ -875,7 +877,6 @@
   },
   "Idees": {
     "titre": "Ideas box",
-    "sousTitre": "What Allezou is missing, suggested by families and picked up by support.",
     "ongletToutes": "All ideas",
     "ongletMiennes": "My ideas",
     "nouvelle": "Suggest an idea",

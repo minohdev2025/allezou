@@ -617,7 +617,9 @@
     "nomAide": "Ce que voient les membres de vos cercles.",
     "nomLabel": "Nom affiché",
     "tuileIdeesTitre": "Boîte à idées",
-    "tuileIdeesGenerique": "Proposer, voter, suivre ses idées"
+    "tuileIdeesGenerique": "Proposer, voter, suivre ses idées",
+    "tuilePasskeysTitre": "Revenir sans courriel",
+    "tuilePasskeysGenerique": "Enregistrer un appareil de confiance"
   },
   "Connexion": {
     "accroche": "Pour que nos enfants se retrouvent dehors.",
@@ -875,7 +877,6 @@
   },
   "Idees": {
     "titre": "Boîte à idées",
-    "sousTitre": "Ce qui manquerait à Allezou, proposé par les familles et repris par le support.",
     "ongletToutes": "Toutes les idées",
     "ongletMiennes": "Mes idées",
     "nouvelle": "Proposer une idée",

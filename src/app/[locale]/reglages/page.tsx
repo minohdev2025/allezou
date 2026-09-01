@@ -113,6 +113,12 @@ export default async function Reglages() {
 
         <ul className="divide-y divide-[color:var(--color-trait)]">
           <Tuile
+            href="/reglages/passkeys"
+            titre={t("tuilePasskeysTitre")}
+            sous={t("tuilePasskeysGenerique")}
+          />
+
+          <Tuile
             href="/lieux"
             titre={t("tuileLieuxTitre")}
             sous={t("tuileLieuxGenerique")}

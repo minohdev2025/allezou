@@ -65,9 +65,7 @@ export default async function Idees({
 
   return (
     <main className="apparait">
-      <Titre emoji="💡" sous={t("sousTitre")}>
-        {t("titre")}
-      </Titre>
+      <Titre>{t("titre")}</Titre>
 
       {erreur ? (
         <Alerte ton="erreur">

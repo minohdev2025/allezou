@@ -617,7 +617,9 @@
     "nomAide": "Ajo që shohin anëtarët e rretheve tuaja.",
     "nomLabel": "Emri i shfaqur",
     "tuileIdeesTitre": "Kutia e ideve",
-    "tuileIdeesGenerique": "Propo, voto, ndjek idetë"
+    "tuileIdeesGenerique": "Propo, voto, ndjek idetë",
+    "tuilePasskeysTitre": "Kthehu pa email",
+    "tuilePasskeysGenerique": "Regjistroni një pajisje të besuar"
   },
   "Connexion": {
     "accroche": "Që fëmijët tanë të takohen jashtë.",
@@ -875,7 +877,6 @@
   },
   "Idees": {
     "titre": "Kutia e ideve",
-    "sousTitre": "Ajo që i mungon Allezout, të propozuara nga familjet dhe të marra nga supporti.",
     "ongletToutes": "Të gjitha idetë",
     "ongletMiennes": "Idetë e mia",
     "nouvelle": "Propo një ide",

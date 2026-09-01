@@ -1,10 +1,10 @@
 import { getTranslations } from "next-intl/server";
 
-import { LANGUES, type Locale } from "@/i18n/routing";
+import { LANGUES, languesVisibles, type Locale } from "@/i18n/routing";
 
 import { requireAccount } from "@/lib/session";
 import { changerLangue, changerNom, seDeconnecter } from "../../actions";
-import { Bouton, Carte, Champ, LienBouton, Navigation } from "../../ui";
+import { Bouton, Carte, Champ, Navigation } from "../../ui";
 import { EnteteReglages } from "../_entete";
 
 /**
@@ -12,20 +12,21 @@ import { EnteteReglages } from "../_entete";
  * messages, et la langue dans laquelle l'app vous parle. Pas de péage caché :
  * tout est modifiable sans confirmation, le prénom se voit partout.
  *
- * La carte « Famille » renvoie vers `/reglages/enfants` où se gèrent les
- * enfants du compte et l'invitation de l'autre parent — c'est volontairement
- * sur une autre page, parce que la co-parentalité mérite son propre écran
- * (formulaire long, listes d'enfants à renommer ou fusionner).
+ * La famille (vos enfants, l'autre parent, les clés d'accès) vit sur
+ * `/reglages/enfants` et `/reglages/passkeys` — accessibles depuis le hub.
+ * On ne duplique plus le lien ici : il était redondant avec la tuile
+ * Famille du hub, et cette page reste centrée sur l'identité.
  */
 export default async function ReglagesProfil() {
   const t = await getTranslations("Reglages");
   const account = await requireAccount();
 
-  // Langues proposées : on prend celles déclarées dans le routing plutôt que
-  // de hardcoder une liste ici. Si la locale courante n'y figure plus, on ne
-  // l'affiche pas en bouton (l'utilisateur ne peut pas la re-sélectionner).
-  const toutes = Object.keys(LANGUES) as Locale[];
-  const disponibles = toutes.filter((l) => l !== account.locale);
+  // Langues proposées : on n'affiche que celles qu'on promeut, plus la langue
+  // courante — un compte qui a déjà choisi le shqip (avant qu'on l'ait retiré
+  // du sélecteur public) doit pouvoir en sortir. Mêmes règles que sur les
+  // pages publiques : `languesVisibles` est l'autorité.
+  const visibles = languesVisibles(account.locale);
+  const disponibles = visibles.filter((l) => l !== account.locale);
 
   return (
     <main className="apparait">
@@ -69,14 +70,6 @@ export default async function ReglagesProfil() {
             </button>
           ))}
         </form>
-      </Carte>
-
-      <Carte accent="ambre" className="mb-5">
-        <h2 className="titre mb-2 text-lg font-bold">{t("familleTitre")}</h2>
-        <p className="mb-4 text-sm leading-snug text-[color:var(--color-doux)]">
-          {t("familleTexte")}
-        </p>
-        <LienBouton href="/reglages/enfants">{t("familleBouton")}</LienBouton>
       </Carte>
 
       <form action={seDeconnecter} className="mt-8 text-center">

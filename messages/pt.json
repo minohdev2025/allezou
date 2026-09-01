@@ -617,7 +617,9 @@
     "nomAide": "O que os membros dos seus círculos veem.",
     "nomLabel": "Nome exibido",
     "tuileIdeesTitre": "Caixa de ideias",
-    "tuileIdeesGenerique": "Propor, votar, acompanhar as suas ideias"
+    "tuileIdeesGenerique": "Propor, votar, acompanhar as suas ideias",
+    "tuilePasskeysTitre": "Voltar sem e-mail",
+    "tuilePasskeysGenerique": "Registar um dispositivo de confiança"
   },
   "Connexion": {
     "accroche": "Para que os nossos filhos se encontrem lá fora.",
@@ -875,7 +877,6 @@
   },
   "Idees": {
     "titre": "Caixa de ideias",
-    "sousTitre": "O que falta ao Allezou, proposto pelas famílias e retomado pelo apoio.",
     "ongletToutes": "Todas as ideias",
     "ongletMiennes": "As minhas ideias",
     "nouvelle": "Propor uma ideia",
