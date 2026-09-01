@@ -806,10 +806,8 @@
     "fermer": "Fechar"
   },
   "Position": {
-    "geolocaliser": "🗺️ Geolocalizar no mapa",
     "carteNonBranchee": "O mapa ainda não está ligado: falta <code>GOOGLE_MAPS_API_KEY</code> (ver <code>docs/google-maps.md</code>). Sem um ponto colocado, o local será geocodificado a partir do nome e da morada — menos preciso, mas nada fica bloqueado.",
     "pointPose": "Ponto colocado: {lat}, {lon}",
-    "retirer": "Remover",
     "touchezEndroit": "Toque no local exato.",
     "pointPropose": "Local proposta: {lat}, {lon}",
     "deplacer": "Mover",

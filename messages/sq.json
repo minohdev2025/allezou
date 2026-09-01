@@ -806,10 +806,8 @@
     "fermer": "Mbyll"
   },
   "Position": {
-    "geolocaliser": "🗺️ Gjeolokalizoni në hartë",
     "carteNonBranchee": "Harta nuk është ende e lidhur: mungon <code>GOOGLE_MAPS_API_KEY</code> (shihni <code>docs/google-maps.md</code>). Pa një pikë të vendosur, vendi do të gjeokodohet nga emri dhe adresa e tij — më pak i saktë, por asgjë nuk bllokohet.",
     "pointPose": "Pika e vendosur: {lat}, {lon}",
-    "retirer": "Hiqni",
     "touchezEndroit": "Prekni vendin e saktë.",
     "pointPropose": "Vendndodhja e propozuar: {lat}, {lon}",
     "deplacer": "Zhvendosni",

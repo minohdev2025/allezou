@@ -806,10 +806,8 @@
     "fermer": "Fermer"
   },
   "Position": {
-    "geolocaliser": "🗺️ Géolocaliser sur la carte",
     "carteNonBranchee": "La carte n'est pas encore branchée : il manque <code>GOOGLE_MAPS_API_KEY</code> (voir <code>docs/google-maps.md</code>). Sans point posé, le lieu sera géocodé depuis son nom et son adresse — moins précis, mais rien n'est bloqué.",
     "pointPose": "Point posé : {lat}, {lon}",
-    "retirer": "Retirer",
     "touchezEndroit": "Touchez l'endroit exact.",
     "pointPropose": "Repère proposé : {lat}, {lon}",
     "deplacer": "Déplacer",

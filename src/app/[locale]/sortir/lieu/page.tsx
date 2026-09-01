@@ -6,7 +6,6 @@ import { CATEGORIES_LIEU, EMOJIS_CATEGORIE } from "@/lib/categories-lieu";
 import { requireAccount } from "@/lib/session";
 import { ajouterLieu } from "../../actions";
 import { Alerte, Bouton, Carte, Champ, Titre } from "../../ui";
-import { ChoisirLaPosition } from "./position-client";
 
 export default async function NouveauLieu({
   searchParams,
@@ -74,10 +73,6 @@ export default async function NouveauLieu({
             name="adresse"
             maxLength={160}
             placeholder={t("placeholderAdresse")}
-          />
-          <ChoisirLaPosition
-            cleApi={process.env.GOOGLE_MAPS_API_KEY ?? null}
-            mapId={process.env.GOOGLE_MAPS_MAP_ID ?? null}
           />
           <Bouton type="submit">{t("ajouter")}</Bouton>
         </form>

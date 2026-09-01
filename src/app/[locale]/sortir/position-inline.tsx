@@ -23,8 +23,8 @@ import { GENEVE } from "@/lib/carte";
  * rien à faire.
  *
  * Réutilise `APIProvider` / `CarteGoogle` de `@vis.gl/react-google-maps`, comme
- * `lieu/position-client.tsx`, pour rester lisible par qui connaît déjà l'écran
- * d'ajout d'un lieu.
+ * l'écran d'ajout d'un lieu le faisait avant que la position ne soit plus que
+ * devinée par Nominatim, pour rester lisible par qui connaît déjà l'écran.
  */
 
 type Point = { lat: number; lon: number };

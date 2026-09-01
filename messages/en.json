@@ -806,10 +806,8 @@
     "fermer": "Close"
   },
   "Position": {
-    "geolocaliser": "🗺️ Locate on the map",
     "carteNonBranchee": "The map isn't hooked up yet: <code>GOOGLE_MAPS_API_KEY</code> is missing (see <code>docs/google-maps.md</code>). Without a pin placed, the place will be geocoded from its name and address — less precise, but nothing is blocked.",
     "pointPose": "Pin placed: {lat}, {lon}",
-    "retirer": "Remove",
     "touchezEndroit": "Tap the exact spot.",
     "pointPropose": "Proposed location: {lat}, {lon}",
     "deplacer": "Move",
