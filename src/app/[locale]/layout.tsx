@@ -127,7 +127,6 @@ export default async function RootLayout({
       "Position",
       "Carte",
       "Partage",
-      "Etiquettes",
     ]
       .filter((ns) => ns in messages)
       .map((ns) => [ns, messages[ns as keyof typeof messages]]),

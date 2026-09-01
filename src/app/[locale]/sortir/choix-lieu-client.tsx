@@ -1,21 +1,14 @@
 "use client";
-
 import { useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
 import { useState, useTransition } from "react";
 
 import { type PointCarte } from "@/lib/carte";
-import {
-  CATEGORIES_LIEU,
-  EMOJIS_CATEGORIE,
-  estCategorieLieu,
-  type CategorieLieu,
-} from "@/lib/categories-lieu";
 import { basculerFavoriLieu, basculerMasqueLieu, definirPositionLieu } from "../actions";
 import { CarteDesLieux } from "../carte-client";
 import { PositionInline } from "./position-inline";
-import { Bouton, IconeCible, IconeOeilBarre, IconePlus, teinte } from "../ui";
+import { Bouton, IconeOeilBarre, IconePlus, teinte } from "../ui";
 
 /**
  * Choisir le lieu, puis confirmer — en deux gestes qui se voient.
@@ -61,7 +54,6 @@ export function ChoixDuLieu({
   mapId?: string | null;
 }) {
   const t = useTranslations("ChoixLieu");
-  const tE = useTranslations("Etiquettes");
   const [choisi, setChoisi] = useState<string | null>(() => {
     if (!dernierLieuId) return null;
     const masque = new Set(masquesInitiaux ?? []).has(dernierLieuId);
@@ -69,7 +61,6 @@ export function ChoixDuLieu({
   });
   const [ouvert, setOuvert] = useState(choisi === null);
   const [recherche, setRecherche] = useState("");
-  const [filtre, setFiltre] = useState<CategorieLieu | null>(null);
   const [vueMasques, setVueMasques] = useState(false);
   const [favoris, setFavoris] = useState<Set<string>>(new Set(favorisInitiaux ?? []));
   const [masques, setMasques] = useState<Set<string>>(new Set(masquesInitiaux ?? []));
@@ -143,18 +134,14 @@ export function ChoixDuLieu({
   const visibles = lieux.filter((l) => !masques.has(l.id) && correspond(l));
   const listeMasques = lieux.filter((l) => masques.has(l.id) && correspond(l));
 
-  const categoriesPresentes = CATEGORIES_LIEU.filter((c) =>
-    visibles.some((l) => l.categorie === c),
-  );
-  const filtres = filtre ? visibles.filter((l) => l.categorie === filtre) : visibles;
   /* Les favoris d'abord — dans l'ordre du nom, comme le reste : deux listes triées, pas
      un classement. Étoiler un lieu le fait monter sous les yeux : c'est le geste qui
      s'explique lui-même. La vue « Masqués » remplace tout : on y va pour réafficher. */
   const ordonnes = vueMasques
     ? listeMasques
     : [
-        ...filtres.filter((l) => favoris.has(l.id)),
-        ...filtres.filter((l) => !favoris.has(l.id)),
+        ...visibles.filter((l) => favoris.has(l.id)),
+        ...visibles.filter((l) => !favoris.has(l.id)),
       ];
 
   const points = ordonnes.flatMap((lieu): PointCarte[] =>
@@ -216,36 +203,11 @@ export function ChoixDuLieu({
             className="w-full rounded-[var(--radius-pilule)] bg-[color:var(--color-surface)] px-5 py-3 text-base ring-2 ring-[color:var(--color-trait)] outline-none focus:ring-[color:var(--color-vert)]"
           />
 
-          {categoriesPresentes.length > 1 || listeMasques.length > 0 ? (
-            <div className="flex flex-wrap gap-2">
-              <PuceFiltre
-                actif={filtre === null && !vueMasques}
-                onClick={() => {
-                  setFiltre(null);
-                  setVueMasques(false);
-                }}
-              >
-                {t("tous")}
-              </PuceFiltre>
-              {categoriesPresentes.map((categorie) => (
-                <PuceFiltre
-                  key={categorie}
-                  actif={filtre === categorie && !vueMasques}
-                  onClick={() => {
-                    setFiltre(filtre === categorie ? null : categorie);
-                    setVueMasques(false);
-                  }}
-                >
-                  {EMOJIS_CATEGORIE[categorie]} {tE(`categorie.${categorie}`)}
-                </PuceFiltre>
-              ))}
-              {listeMasques.length > 0 ? (
-                <PuceFiltre actif={vueMasques} onClick={() => setVueMasques(!vueMasques)}>
-                  {t("masques", { n: listeMasques.length })}
-                </PuceFiltre>
-              ) : null}
-            </div>
-          ) : null}
+          {/*
+            Pas de filtre de catégorie — la liste suit le nom du lieu, et le geste
+            « c'est quoi » n'a pas besoin d'être posé au moment où on choisit où aller.
+            Les masqués restent accessibles par un lien inline en pied de liste.
+          */}
 
           {/*
             La carte vit entre les filtres et la liste, pour deux raisons. La première,
@@ -269,6 +231,25 @@ export function ChoixDuLieu({
             }}
           />
 
+          {/*
+            Dans la vue « masqués », on ne voit que les lieux rangés : la première
+            chose à offrir est le retour à la vue normale. Le bouton vit sous la
+            carte, au-dessus de la liste — la même place que les filtres avaient
+            dans l'autre vue.
+          */}
+          {vueMasques ? (
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => setVueMasques(false)}
+                className="rounded-[var(--radius-pilule)] px-4 py-2 text-sm font-bold"
+                style={{ background: "var(--color-vert)", color: "var(--color-fond)" }}
+              >
+                {t("reafficherTous")}
+              </button>
+            </div>
+          ) : null}
+
           <ul className="space-y-3">
             {ordonnes.map((lieu) => (
               <li
@@ -286,8 +267,8 @@ export function ChoixDuLieu({
                   ecrans larges. Un nom court comme "Moll" donne une carte
                   pleine largeur, le texte reste aligne a gauche. Un nom long
                   donne une carte plafonnee a 28rem avec retour a la ligne
-                  (line-clamp-2 sur le titre). Le bloc 3 boutons est toujours
-                  colle au bord droit via justify-between.
+                  (line-clamp-2 sur le titre). Le bloc 2 boutons (étoile + œil)
+                  est toujours colle au bord droit via justify-between.
                 */}
                 <label className="min-w-0 flex-1 max-w-md">
                   <input
@@ -299,6 +280,7 @@ export function ChoixDuLieu({
                     onChange={() => {
                       setChoisi(lieu.id);
                       setOuvert(false);
+                      basculerPanneauPosition(lieu.id);
                     }}
                     className="peer sr-only"
                   />
@@ -306,6 +288,10 @@ export function ChoixDuLieu({
                     L'accent de couleur vit en style inline (la teinte est calculée), donc
                     la mise en valeur du choix passe par `outline` : un box-shadow de
                     classe perdrait toujours contre le style inline.
+
+                    Le clic sur la carte ouvre aussi le panneau de positionnement :
+                    choisir un lieu c'est aussi, souvent, le situer. Le geste combiné
+                    évite un aller-retour entre la cible et la sélection.
                   */}
                   <span
                     className="flex h-full w-full cursor-pointer items-center gap-3 rounded-[var(--radius-carte)] bg-[color:var(--color-surface)] px-4 py-3 text-left transition-transform active:translate-y-[2px] peer-checked:outline peer-checked:outline-[3px] peer-checked:-outline-offset-[3px] peer-checked:outline-[color:var(--color-vert)] peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[color:var(--color-bleu)]"
@@ -318,11 +304,7 @@ export function ChoixDuLieu({
                       className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-xl"
                       style={{ background: `var(--color-${teinte(lieu.id)}-doux)` }}
                     >
-                      {choisi === lieu.id
-                        ? "✅"
-                        : lieu.categorie && estCategorieLieu(lieu.categorie)
-                          ? EMOJIS_CATEGORIE[lieu.categorie]
-                          : "📍"}
+                      {choisi === lieu.id ? "✅" : "📍"}
                     </span>
                     <span className="min-w-0">
                       <span className="titre block font-bold leading-tight line-clamp-2 break-words">
@@ -340,60 +322,39 @@ export function ChoixDuLieu({
                   <button
                     type="button"
                     onClick={() => basculerMasqueIci(lieu.id)}
-                    className="shrink-0 rounded-[var(--radius-carte)] px-3 text-sm font-bold text-[color:var(--color-vert)] shadow-[inset_0_0_0_2px_var(--color-trait)]"
+                    className="shrink-0 rounded-full px-4 py-2 text-sm font-bold text-[color:var(--color-vert)] shadow-[inset_0_0_0_2px_var(--color-trait)]"
                   >
                     {t("reafficher")}
                   </button>
                 ) : (
-                  <span className="flex w-28 shrink-0 flex-col gap-1">
-                    {/*
-                      Trois gestes, deux lignes : étoile (favori) et cible (situer)
-                      se partagent la première ligne, l'œil barré (masquer) tient
-                      la seconde. La cible suit le même rythme que l'étoile : les
-                      deux sont des rappels (mémoriser pour plus tard, repérer pour
-                      voir où), l'œil est un rangement (sortir du chemin). Le bloc
-                      entier est figé à `w-28` (7rem) pour que sa largeur ne varie
-                      jamais, et `ml-auto` le colle au bord droit du conteneur,
-                      l'écartant du texte sur les écrans larges.
-                    */}
-                    <span className="flex gap-1">
-                      <button
-                        type="button"
-                        onClick={() => basculerFavoriIci(lieu.id)}
-                        aria-label={
-                          favoris.has(lieu.id)
-                            ? t("retirerDesFavoris", { nom: lieu.name })
-                            : t("mettreEnFavori", { nom: lieu.name })
-                        }
-                        className="flex-1 rounded-[var(--radius-carte)] px-3 text-lg shadow-[inset_0_0_0_2px_var(--color-trait)]"
-                      >
-                        {favoris.has(lieu.id) ? "⭐" : "☆"}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => basculerPanneauPosition(lieu.id)}
-                        aria-label={t("situerAria", { nom: lieu.name })}
-                        title={t("situer")}
-                        className="flex-1 rounded-[var(--radius-carte)] px-3 text-lg shadow-[inset_0_0_0_2px_var(--color-trait)]"
-                        style={
-                          lieu.lat != null && lieu.lon != null
-                            ? undefined
-                            : { color: "var(--color-doux)" }
-                        }
-                      >
-                        {/* La cible prend la couleur du lieu quand il est situé,
-                            discrète tant qu'il ne l'est pas. */}
-                        <IconeCible
-                          className="mx-auto h-5 w-5"
-                          rempli={lieu.lat != null && lieu.lon != null}
-                        />
-                      </button>
-                    </span>
+                  <span className="flex shrink-0 gap-2">
+                    {/* Deux gestes ronds, côte à côte : étoile (mémoriser) et
+                        œil barré (ranger hors de la vue). Le clic sur la carte
+                        elle-même a remplacé l'ancien bouton cible — la
+                        sélection et le positionnement sont un seul geste. */}
+                    <button
+                      type="button"
+                      onClick={() => basculerFavoriIci(lieu.id)}
+                      aria-label={
+                        favoris.has(lieu.id)
+                          ? t("retirerDesFavoris", { nom: lieu.name })
+                          : t("mettreEnFavori", { nom: lieu.name })
+                      }
+                      title={
+                        favoris.has(lieu.id)
+                          ? t("retirerDesFavoris", { nom: lieu.name })
+                          : t("mettreEnFavori", { nom: lieu.name })
+                      }
+                      className="flex h-11 w-11 items-center justify-center rounded-full text-lg shadow-[inset_0_0_0_2px_var(--color-trait)] active:translate-y-[1px]"
+                    >
+                      {favoris.has(lieu.id) ? "⭐" : "☆"}
+                    </button>
                     <button
                       type="button"
                       onClick={() => basculerMasqueIci(lieu.id)}
                       aria-label={t("masquerDeLaListe", { nom: lieu.name })}
-                      className="flex flex-1 items-center justify-center rounded-[var(--radius-carte)] px-3 text-[color:var(--color-doux)] shadow-[inset_0_0_0_2px_var(--color-trait)]"
+                      title={t("masquerDeLaListe", { nom: lieu.name })}
+                      className="flex h-11 w-11 items-center justify-center rounded-full text-[color:var(--color-doux)] shadow-[inset_0_0_0_2px_var(--color-trait)] active:translate-y-[1px]"
                     >
                       <IconeOeilBarre className="h-5 w-5" />
                     </button>
@@ -438,7 +399,7 @@ export function ChoixDuLieu({
             </p>
           ) : null}
 
-          <p className="flex flex-wrap gap-x-5 gap-y-1">
+          <p className="flex flex-wrap items-center gap-x-5 gap-y-1">
             <Link
               href="/sortir/lieu"
               className="inline-flex items-center gap-1 font-bold text-[color:var(--color-vert)] underline underline-offset-4"
@@ -452,6 +413,15 @@ export function ChoixDuLieu({
             >
               {t("corrigerUnLieu")}
             </Link>
+            {masques.size > 0 ? (
+              <button
+                type="button"
+                onClick={() => setVueMasques((v) => !v)}
+                className="text-sm text-[color:var(--color-doux)] underline underline-offset-4 active:opacity-70"
+              >
+                🙈 {t("masquesInline", { n: masques.size })}
+              </button>
+            ) : null}
           </p>
 
           </div>
@@ -468,34 +438,5 @@ export function ChoixDuLieu({
         </p>
       </div>
     </>
-  );
-}
-
-function PuceFiltre({
-  actif,
-  onClick,
-  children,
-}: {
-  actif: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="shrink-0 rounded-[var(--radius-pilule)] px-4 py-2 text-sm font-bold"
-      style={
-        actif
-          ? { background: "var(--color-vert)", color: "var(--color-fond)" }
-          : {
-              background: "var(--color-surface)",
-              color: "var(--color-doux)",
-              boxShadow: "inset 0 0 0 2px var(--color-trait)",
-            }
-      }
-    >
-      {children}
-    </button>
   );
 }

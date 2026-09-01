@@ -2,7 +2,6 @@ import { getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
 
-import { CATEGORIES_LIEU, EMOJIS_CATEGORIE } from "@/lib/categories-lieu";
 import { requireAccount } from "@/lib/session";
 import { ajouterLieu } from "../../actions";
 import { Alerte, Bouton, Carte, Champ, Titre } from "../../ui";
@@ -14,7 +13,6 @@ export default async function NouveauLieu({
 }) {
   await requireAccount();
   const t = await getTranslations("SortirLieu");
-  const tE = await getTranslations("Etiquettes");
   const { erreur } = await searchParams;
 
   return (
@@ -42,25 +40,6 @@ export default async function NouveauLieu({
             maxLength={80}
             placeholder={t("placeholderNom")}
           />
-          <fieldset>
-            <legend className="mb-2 font-bold">{t("typeLegend")}</legend>
-            <div className="flex flex-wrap gap-2">
-              {CATEGORIES_LIEU.map((categorie) => (
-                <label key={categorie}>
-                  <input
-                    type="radio"
-                    name="categorie"
-                    value={categorie}
-                    required
-                    className="peer sr-only"
-                  />
-                  <span className="inline-flex cursor-pointer items-center gap-1 rounded-[var(--radius-pilule)] px-3.5 py-2 text-sm font-bold text-[color:var(--color-doux)] shadow-[inset_0_0_0_2px_var(--color-trait)] peer-checked:bg-[color:var(--color-vert)] peer-checked:text-[color:var(--color-fond)] peer-checked:shadow-none peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2">
-                    {EMOJIS_CATEGORIE[categorie]} {tE(`categorie.${categorie}`)}
-                  </span>
-                </label>
-              ))}
-            </div>
-          </fieldset>
           <Champ
             label={t("labelCommune")}
             name="commune"
