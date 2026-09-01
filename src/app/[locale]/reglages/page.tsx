@@ -130,6 +130,12 @@ export default async function Reglages() {
             sous={t("tuileQuestionsGenerique")}
           />
 
+          <Tuile
+            href="/idees"
+            titre={t("tuileIdeesTitre")}
+            sous={t("tuileIdeesGenerique")}
+          />
+
           <li>
             <a href="mailto:contact@allezou.ch" className="block active:translate-y-[1px]">
               <TuileBrute

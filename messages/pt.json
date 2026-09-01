@@ -615,7 +615,9 @@
     "langueTitre": "O seu idioma",
     "langueTexte": "Os ecrãs, os e-mails e as notificações falar-lhe-ão neste idioma.",
     "nomAide": "O que os membros dos seus círculos veem.",
-    "nomLabel": "Nome exibido"
+    "nomLabel": "Nome exibido",
+    "tuileIdeesTitre": "Caixa de ideias",
+    "tuileIdeesGenerique": "Propor, votar, acompanhar as suas ideias"
   },
   "Connexion": {
     "accroche": "Para que os nossos filhos se encontrem lá fora.",
@@ -870,5 +872,52 @@
     "activer": "Ativar alertas",
     "plusTard": "Mais tarde",
     "texte": "Você precisa permitir as notificações nas configurações do aplicativo Allezou no seu telefone para ser avisado das saídas dos membros dos seus círculos. Dependendo do modelo do seu telefone, você também precisa permitir as notificações para o navegador a partir do qual instala o Allezou."
+  },
+  "Idees": {
+    "titre": "Caixa de ideias",
+    "sousTitre": "O que falta ao Allezou, proposto pelas famílias e retomado pelo apoio.",
+    "ongletToutes": "Todas as ideias",
+    "ongletMiennes": "As minhas ideias",
+    "nouvelle": "Propor uma ideia",
+    "videTitre": "Ainda não há ideias",
+    "videTexte": "A primeira que a alguém faz falta, a outros também fará.",
+    "erreurGenerique": "Isso não resultou.",
+    "erreurs": {
+      "contenu_invalide": "Um título com pelo menos dois caracteres e um texto com pelo menos quatro."
+    },
+    "etat": {
+      "nouvelle": "nova",
+      "repondu": "respondida",
+      "relancee": "relançada",
+      "fermee": "encerrada"
+    },
+    "formTypeLabel": "Do que se trata?",
+    "formTypeFonctionnalite": "Uma funcionalidade",
+    "formTypeBug": "Um erro",
+    "formTitreLabel": "Título",
+    "formTitrePlaceholder": "Modo offline",
+    "formTexteLabel": "O detalhe",
+    "formTextePlaceholder": "Para que serviria, com que se depara hoje?",
+    "formSoumettre": "Propor",
+    "formAnnuler": "Cancelar"
+  },
+  "IdeeFil": {
+    "support": "apoio",
+    "voter": "Votar",
+    "retirerVote": "Retirar o meu voto",
+    "fermer": "Encerrar",
+    "cloture": "Esta ideia foi encerrada (por {par}).",
+    "formLabelSupport": "Responder ao autor",
+    "formLabelAuteur": "Relançar o apoio",
+    "formPlaceholder": "A sua mensagem…",
+    "formEnvoyer": "Enviar",
+    "erreurGenerique": "Isso não resultou.",
+    "fermeeInfo": "A ideia está encerrada — ninguém escreve mais.",
+    "erreurs": {
+      "idee_introuvable": "Esta ideia já não existe.",
+      "contenu_invalide": "Uma mensagem com pelo menos quatro caracteres.",
+      "pas_autorise": "Só o autor e o apoio escrevem nesta conversa.",
+      "deja_ferree": "Esta ideia já está encerrada."
+    }
   }
 }

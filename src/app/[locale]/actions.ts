@@ -52,6 +52,7 @@ import {
 } from "@/lib/circles";
 import { heureDeGeneve } from "@/lib/heure";
 import { geocoderUnLieu } from "@/lib/geo";
+import { creerIdee, fermerIdee, repondreIdee, voterIdee } from "@/lib/ideas";
 import { db } from "@/lib/db";
 import { sql } from "drizzle-orm";
 import { ACCES, TARIFS } from "@/lib/ingest/tarif";
@@ -60,6 +61,7 @@ import {
   DELAI_AVANT_ALERTE_MS,
   ajouterMotCle,
   muteMember,
+  notifyIdeaReply,
   notifyJoinRequest,
   notifyNewlyPublished,
   notifyPublication,
@@ -1165,3 +1167,55 @@ export async function confirmerConnexion(formData: FormData) {
   dernier lieu dans le choix (sortir/page.tsx) — même vitesse, mais la confirmation
   reste la seule porte par où une sortie part.
 */
+
+/* --------------------------------------------------------------- boîte à idées */
+
+/**
+ * Les quatre gestes de la boîte à idées : proposer, répondre, voter, fermer.
+ *
+ * Chacun renvoie à l'écran d'où il part, avec un paramètre de résultat — même loi que
+ * le reste de ce fichier : une action ratée se voit, une action réussie se recharge.
+ * La notification de réponse part `after` la redirection, comme une demande d'entrée
+ * dans un cercle : elle ne doit rien casser si elle n'aboutit pas.
+ */
+export async function proposerIdee(formData: FormData) {
+  const account = await requireAccount();
+  const result = await creerIdee(account, {
+    type: String(formData.get("type") ?? ""),
+    titre: String(formData.get("titre") ?? ""),
+    texte: String(formData.get("texte") ?? ""),
+  });
+  if (!result.ok) redirect("/idees?nouvelle=0");
+  redirect(`/idees/${result.value.id}`);
+}
+
+export async function repondreIdeeAction(formData: FormData) {
+  const account = await requireAccount();
+  const ideaId = String(formData.get("idee") ?? "");
+  const result = await repondreIdee(account, ideaId, String(formData.get("texte") ?? ""));
+  if (!result.ok) redirect(`/idees/${ideaId}?erreur=${result.reason}`);
+
+  after(async () => {
+    try {
+      await notifyIdeaReply(ideaId, account.id, await webPushSender());
+    } catch {
+      // Une notification qui ne part pas ne doit pas remettre la réponse en cause.
+    }
+  });
+  redirect(`/idees/${ideaId}`);
+}
+
+export async function voterPourIdee(formData: FormData) {
+  const account = await requireAccount();
+  await voterIdee(account, String(formData.get("idee") ?? ""));
+  revalidatePath("/idees");
+}
+
+export async function fermerIdeeAction(formData: FormData) {
+  const account = await requireAccount();
+  const ideaId = String(formData.get("idee") ?? "");
+  const result = await fermerIdee(account, ideaId);
+  if (!result.ok) redirect(`/idees/${ideaId}?erreur=${result.reason}`);
+  revalidatePath("/idees");
+  redirect(`/idees/${ideaId}?fermee=1`);
+}

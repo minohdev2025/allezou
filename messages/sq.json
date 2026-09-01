@@ -615,7 +615,9 @@
     "langueTitre": "Gjuha juaj",
     "langueTexte": "Ekranet, emailet dhe njoftime do t'ju flasin në këtë gjuhë.",
     "nomAide": "Ajo që shohin anëtarët e rretheve tuaja.",
-    "nomLabel": "Emri i shfaqur"
+    "nomLabel": "Emri i shfaqur",
+    "tuileIdeesTitre": "Kutia e ideve",
+    "tuileIdeesGenerique": "Propo, voto, ndjek idetë"
   },
   "Connexion": {
     "accroche": "Që fëmijët tanë të takohen jashtë.",
@@ -870,5 +872,52 @@
     "texte": "Duhet të lejoni njoftimet te cilësimet e aplikacionit Allezou në telefonin tuaj që të paralajmëroheni për daljet e anëtarëve të rrathëve tuaj. Varësisht nga modeli i telefonit tuaj, duhet gjithashtu të lejoni njoftimet për shfletuesin nga i cili e instaloni Allezou-n.",
     "activer": "Aktivizo sinjalizimet",
     "plusTard": "Më vonë"
+  },
+  "Idees": {
+    "titre": "Kutia e ideve",
+    "sousTitre": "Ajo që i mungon Allezout, të propozuara nga familjet dhe të marra nga supporti.",
+    "ongletToutes": "Të gjitha idetë",
+    "ongletMiennes": "Idetë e mia",
+    "nouvelle": "Propo një ide",
+    "videTitre": "Ende pa ide",
+    "videTexte": "E para që i mungon dikujt, do t'u mungojë edhe të tjerëve.",
+    "erreurGenerique": "Kjo nuk funksionoi.",
+    "erreurs": {
+      "contenu_invalide": "Një titull me të paktën dy shkronja dhe një tekst me të paktën katër."
+    },
+    "etat": {
+      "nouvelle": "e re",
+      "repondu": "e përgjigjur",
+      "relancee": "e rikthyer",
+      "fermee": "e mbyllur"
+    },
+    "formTypeLabel": "Për çfarë bëhet fjalë?",
+    "formTypeFonctionnalite": "Një funksion",
+    "formTypeBug": "Një gabim",
+    "formTitreLabel": "Titulli",
+    "formTitrePlaceholder": "Modaliteti pa internet",
+    "formTexteLabel": "Hollësia",
+    "formTextePlaceholder": "Për ç'do të jepte, çfarë hasni sot?",
+    "formSoumettre": "Propo",
+    "formAnnuler": "Anulo"
+  },
+  "IdeeFil": {
+    "support": "support",
+    "voter": "Voto",
+    "retirerVote": "Hiq votën",
+    "fermer": "Mbyll",
+    "cloture": "Kjo ide u mbyll (nga {par}).",
+    "formLabelSupport": "Iu përgjigji autorit",
+    "formLabelAuteur": "Rikthe te supporti",
+    "formPlaceholder": "Mesazhi juaj…",
+    "formEnvoyer": "Dërgo",
+    "erreurGenerique": "Kjo nuk funksionoi.",
+    "fermeeInfo": "Ideja është mbyllur — askush nuk shkruan më.",
+    "erreurs": {
+      "idee_introuvable": "Kjo ide nuk ekziston më.",
+      "contenu_invalide": "Një mesazh me të paktën katër shkronja.",
+      "pas_autorise": "Vetëm autori dhe supporti shkruajnë në këtë bisedë.",
+      "deja_ferree": "Kjo ide është tashmë e mbyllur."
+    }
   }
 }

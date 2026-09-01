@@ -615,7 +615,9 @@
     "langueTitre": "Votre langue",
     "langueTexte": "Les écrans, les courriels et les notifications vous parleront dans cette langue.",
     "nomAide": "Ce que voient les membres de vos cercles.",
-    "nomLabel": "Nom affiché"
+    "nomLabel": "Nom affiché",
+    "tuileIdeesTitre": "Boîte à idées",
+    "tuileIdeesGenerique": "Proposer, voter, suivre ses idées"
   },
   "Connexion": {
     "accroche": "Pour que nos enfants se retrouvent dehors.",
@@ -870,5 +872,52 @@
     "texte": "Vous devez autoriser les notifications dans les réglages de l'application Allezou sur votre téléphone pour être averti·e des sorties des membres de vos cercles. Selon le modèle de votre téléphone, vous devez aussi autoriser les notifications pour le navigateur depuis lequel vous installez Allezou.",
     "activer": "Activer les alertes",
     "plusTard": "Plus tard"
+  },
+  "Idees": {
+    "titre": "Boîte à idées",
+    "sousTitre": "Ce qui manquerait à Allezou, proposé par les familles et repris par le support.",
+    "ongletToutes": "Toutes les idées",
+    "ongletMiennes": "Mes idées",
+    "nouvelle": "Proposer une idée",
+    "videTitre": "Aucune idée pour l'instant",
+    "videTexte": "La première qui manque à quelqu'un manquera à d'autres.",
+    "erreurGenerique": "Cela n'a pas marché.",
+    "erreurs": {
+      "contenu_invalide": "Un titre d'au moins deux caractères et un texte d'au moins quatre."
+    },
+    "etat": {
+      "nouvelle": "nouvelle",
+      "repondu": "répondu",
+      "relancee": "relancée",
+      "fermee": "fermée"
+    },
+    "formTypeLabel": "De quoi s'agit-il ?",
+    "formTypeFonctionnalite": "Une fonctionnalité",
+    "formTypeBug": "Un bug",
+    "formTitreLabel": "Titre",
+    "formTitrePlaceholder": "Mode hors-ligne",
+    "formTexteLabel": "Le détail",
+    "formTextePlaceholder": "À quoi cela servirait-il, que rencontre-t-on aujourd'hui ?",
+    "formSoumettre": "Proposer",
+    "formAnnuler": "Annuler"
+  },
+  "IdeeFil": {
+    "support": "support",
+    "voter": "Voter",
+    "retirerVote": "Retirer mon vote",
+    "fermer": "Fermer",
+    "cloture": "Cette idée a été fermée (par {par}).",
+    "formLabelSupport": "Répondre à l'auteur",
+    "formLabelAuteur": "Relancer le support",
+    "formPlaceholder": "Votre message…",
+    "formEnvoyer": "Envoyer",
+    "erreurGenerique": "Cela n'a pas marché.",
+    "fermeeInfo": "L'idée est fermée — plus personne n'écrit.",
+    "erreurs": {
+      "idee_introuvable": "Cette idée n'existe plus.",
+      "contenu_invalide": "Un message d'au moins quatre caractères.",
+      "pas_autorise": "Seuls l'auteur et le support écrivent dans ce fil.",
+      "deja_ferree": "Cette idée est déjà fermée."
+    }
   }
 }

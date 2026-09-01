@@ -615,7 +615,9 @@
     "langueTitre": "Your language",
     "langueTexte": "Screens, emails and notifications will speak to you in this language.",
     "nomAide": "What members of your circles see.",
-    "nomLabel": "Display name"
+    "nomLabel": "Display name",
+    "tuileIdeesTitre": "Ideas box",
+    "tuileIdeesGenerique": "Suggest, vote, follow your ideas"
   },
   "Connexion": {
     "accroche": "So our kids can meet up outside.",
@@ -870,5 +872,52 @@
     "texte": "You need to allow notifications in the Allezou app settings on your phone to be alerted about outings from your circle members. Depending on your phone model, you also need to allow notifications for the browser you install Allezou from.",
     "activer": "Turn on alerts",
     "plusTard": "Later"
+  },
+  "Idees": {
+    "titre": "Ideas box",
+    "sousTitre": "What Allezou is missing, suggested by families and picked up by support.",
+    "ongletToutes": "All ideas",
+    "ongletMiennes": "My ideas",
+    "nouvelle": "Suggest an idea",
+    "videTitre": "No ideas yet",
+    "videTexte": "The first one someone misses, others will miss too.",
+    "erreurGenerique": "That didn't work.",
+    "erreurs": {
+      "contenu_invalide": "A title of at least two characters and a text of at least four."
+    },
+    "etat": {
+      "nouvelle": "new",
+      "repondu": "answered",
+      "relancee": "followed up",
+      "fermee": "closed"
+    },
+    "formTypeLabel": "What is it about?",
+    "formTypeFonctionnalite": "A feature",
+    "formTypeBug": "A bug",
+    "formTitreLabel": "Title",
+    "formTitrePlaceholder": "Offline mode",
+    "formTexteLabel": "The detail",
+    "formTextePlaceholder": "What would it be good for, what do you run into today?",
+    "formSoumettre": "Suggest",
+    "formAnnuler": "Cancel"
+  },
+  "IdeeFil": {
+    "support": "support",
+    "voter": "Vote",
+    "retirerVote": "Withdraw my vote",
+    "fermer": "Close",
+    "cloture": "This idea was closed (by {par}).",
+    "formLabelSupport": "Reply to the author",
+    "formLabelAuteur": "Follow up with support",
+    "formPlaceholder": "Your message…",
+    "formEnvoyer": "Send",
+    "erreurGenerique": "That didn't work.",
+    "fermeeInfo": "The idea is closed — no one can write anymore.",
+    "erreurs": {
+      "idee_introuvable": "This idea no longer exists.",
+      "contenu_invalide": "A message of at least four characters.",
+      "pas_autorise": "Only the author and support can write in this thread.",
+      "deja_ferree": "This idea is already closed."
+    }
   }
 }
