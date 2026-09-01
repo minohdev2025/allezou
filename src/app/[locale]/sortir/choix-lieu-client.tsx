@@ -260,32 +260,9 @@ export function ChoixDuLieu({
                     : "flex flex-wrap items-stretch gap-2"
                 }
               >
-                <div className="flex w-full items-stretch gap-2">
-                {/*
-                  La zone de sélection et le picto « situer » sont deux gestes
-                  distincts : un clic sur le nom choisit le lieu, un clic sur
-                  l'emoji carte ouvre le panneau de positionnement. Le picto
-                  vit donc à gauche du label : il n'est pas dans le label, et
-                  son clic ne déclenche pas le radio. Le label occupe le reste
-                  de la largeur, plafonnee a max-w-md pour ne pas écraser le
-                  nom sur grand ecran. Le bloc droit (favori + oeil) tient la
-                  meme largeur qu'avant, colle au bord par justify-between.
-                */}
-                <button
-                  type="button"
-                  onClick={() => basculerPanneauPosition(lieu.id)}
-                  aria-label={t("situerAria", { nom: lieu.name })}
-                  title={
-                    lieu.lat != null && lieu.lon != null
-                      ? t("voirSurLaCarte")
-                      : t("situer")
-                  }
-                  className="flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-full text-xl transition-transform active:translate-y-[1px]"
-                  style={{ background: `var(--color-${teinte(lieu.id)}-doux)` }}
+                <label
+                  className="flex w-full cursor-pointer items-stretch gap-2"
                 >
-                  {choisi === lieu.id ? "✅" : "🗺️"}
-                </button>
-                <label className="min-w-0 flex-1 max-w-md cursor-pointer">
                   <input
                     type="radio"
                     name="lieu"
@@ -299,12 +276,32 @@ export function ChoixDuLieu({
                     className="peer sr-only"
                   />
                   {/*
-                    L'accent de couleur vit en style inline (la teinte est calculée), donc
-                    la mise en valeur du choix passe par `outline` : un box-shadow de
-                    classe perdrait toujours contre le style inline.
+                    Toute la carte est une zone unifiée qui coche le radio au
+                    clic, sur le modèle des puces du filtre agenda. Les sous-
+                    boutons à l'intérieur (picto, favori, oeil) appellent
+                    preventDefault + stopPropagation pour ne pas sélectionner
+                    le lieu — chaque sous-bouton reste un geste indépendant.
                   */}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      basculerPanneauPosition(lieu.id);
+                    }}
+                    aria-label={t("situerAria", { nom: lieu.name })}
+                    title={
+                      lieu.lat != null && lieu.lon != null
+                        ? t("voirSurLaCarte")
+                        : t("situer")
+                    }
+                    className="flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-full text-xl transition-transform active:translate-y-[1px]"
+                    style={{ background: `var(--color-${teinte(lieu.id)}-doux)` }}
+                  >
+                    {choisi === lieu.id ? "✅" : "🗺️"}
+                  </button>
                   <span
-                    className="flex h-full w-full items-center gap-3 rounded-[var(--radius-carte)] bg-[color:var(--color-surface)] px-4 py-3 text-left transition-transform active:translate-y-[2px] peer-checked:outline peer-checked:outline-[3px] peer-checked:-outline-offset-[3px] peer-checked:outline-[color:var(--color-vert)] peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[color:var(--color-bleu)]"
+                    className="flex min-w-0 flex-1 items-center gap-3 rounded-[var(--radius-carte)] bg-[color:var(--color-surface)] px-4 py-3 text-left transition-transform active:translate-y-[2px] peer-checked:outline peer-checked:outline-[3px] peer-checked:-outline-offset-[3px] peer-checked:outline-[color:var(--color-vert)] peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[color:var(--color-bleu)]"
                     style={{
                       boxShadow: `inset 0 0 0 2px var(--color-${teinte(lieu.id)}-doux)`,
                     }}
@@ -320,52 +317,57 @@ export function ChoixDuLieu({
                       ) : null}
                     </span>
                   </span>
+                  {vueMasques ? (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        basculerMasqueIci(lieu.id);
+                      }}
+                      className="shrink-0 self-stretch rounded-full px-4 text-sm font-bold text-[color:var(--color-vert)] shadow-[inset_0_0_0_2px_var(--color-trait)]"
+                    >
+                      {t("reafficher")}
+                    </button>
+                  ) : (
+                    <span className="flex shrink-0 flex-col items-center justify-center gap-1">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          basculerFavoriIci(lieu.id);
+                        }}
+                        aria-label={
+                          favoris.has(lieu.id)
+                            ? t("retirerDesFavoris", { nom: lieu.name })
+                            : t("mettreEnFavori", { nom: lieu.name })
+                        }
+                        title={
+                          favoris.has(lieu.id)
+                            ? t("retirerDesFavoris", { nom: lieu.name })
+                            : t("mettreEnFavori", { nom: lieu.name })
+                        }
+                        className="flex h-7 w-9 cursor-pointer items-center justify-center text-lg active:translate-y-[1px]"
+                      >
+                        {favoris.has(lieu.id) ? "⭐" : "☆"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          basculerMasqueIci(lieu.id);
+                        }}
+                        aria-label={t("masquerDeLaListe", { nom: lieu.name })}
+                        title={t("masquerDeLaListe", { nom: lieu.name })}
+                        className="flex h-7 w-9 cursor-pointer items-center justify-center text-[color:var(--color-doux)] active:translate-y-[1px]"
+                      >
+                        <IconeOeilBarre className="h-5 w-5" />
+                      </button>
+                    </span>
+                  )}
                 </label>
-                {vueMasques ? (
-                  <button
-                    type="button"
-                    onClick={() => basculerMasqueIci(lieu.id)}
-                    className="shrink-0 self-stretch rounded-full px-4 text-sm font-bold text-[color:var(--color-vert)] shadow-[inset_0_0_0_2px_var(--color-trait)]"
-                  >
-                    {t("reafficher")}
-                  </button>
-                ) : (
-                  <span className="flex shrink-0 flex-col items-center justify-center gap-1">
-                    {/*
-                      Deux gestes empiles, sans cadre : l'emoji seul parle, le
-                      gain de largeur laisse plus de place au nom du parc.
-                      Le tooltip reste sur le titre pour les lecteurs
-                      d'ecran et la survol au doigt.
-                    */}
-                    <button
-                      type="button"
-                      onClick={() => basculerFavoriIci(lieu.id)}
-                      aria-label={
-                        favoris.has(lieu.id)
-                          ? t("retirerDesFavoris", { nom: lieu.name })
-                          : t("mettreEnFavori", { nom: lieu.name })
-                      }
-                      title={
-                        favoris.has(lieu.id)
-                          ? t("retirerDesFavoris", { nom: lieu.name })
-                          : t("mettreEnFavori", { nom: lieu.name })
-                      }
-                      className="flex h-7 w-9 items-center justify-center text-lg active:translate-y-[1px]"
-                    >
-                      {favoris.has(lieu.id) ? "⭐" : "☆"}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => basculerMasqueIci(lieu.id)}
-                      aria-label={t("masquerDeLaListe", { nom: lieu.name })}
-                      title={t("masquerDeLaListe", { nom: lieu.name })}
-                      className="flex h-7 w-9 items-center justify-center text-[color:var(--color-doux)] active:translate-y-[1px]"
-                    >
-                      <IconeOeilBarre className="h-5 w-5" />
-                    </button>
-                  </span>
-                )}
-                </div>
                 {/*
                   Le panneau d'édition vit sous la ligne du lieu, pas à côté : à
                   côté il pousserait les autres lieux hors de l'écran, et le clic
