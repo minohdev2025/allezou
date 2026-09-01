@@ -23,6 +23,7 @@ export async function resetDatabase(): Promise<void> {
       publication, publication_circle, publication_hidden_from,
       publication_participant, publication_participant_child,
       notification_pref, notification_mute, push_subscription,
+      idea, idea_message, idea_vote,
       magic_link, session, audit_log
     restart identity cascade
   `);

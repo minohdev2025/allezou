@@ -190,6 +190,13 @@
       "when": 1787341489577,
       "tag": "0026_slimy_old_lace",
       "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1788264310267,
+      "tag": "0027_zippy_hammerhead",
+      "breakpoints": true
     }
   ]
 }

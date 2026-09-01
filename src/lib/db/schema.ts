@@ -922,3 +922,79 @@ export const auditLog = pgTable(
   },
   (t) => [index("audit_log_circle_idx").on(t.circleId, t.at)],
 );
+
+/* -------------------------------------------------------------------- idées */
+
+/**
+ * La boîte à idées : proposer une fonctionnalité, signaler un bug.
+ *
+ * Contrairement aux publications, les idées sont publiques entre comptes : elles ne
+ * disent rien de personne — ni où l'on est, ni qui l'on voit — seulement ce que l'on
+ * aimerait voir dans l'application. Elles survivent donc aux cercles et n'ont pas de
+ * règle de visibilité.
+ *
+ * Un compte supprimé emporte ses idées et ses messages : une idée orpheline d'auteur
+ * ne veut plus rien dire, et « l'auteur peut fermer la sienne » suppose un auteur.
+ */
+export const ideaType = pgEnum("idea_type", ["fonctionnalite", "bug"]);
+
+export const idea = pgTable(
+  "idea",
+  {
+    id: uuid().primaryKey().defaultRandom(),
+    type: ideaType().notNull(),
+    titre: varchar({ length: 120 }).notNull(),
+    texte: varchar({ length: 2000 }).notNull(),
+    authorId: uuid()
+      .notNull()
+      .references(() => account.id, { onDelete: "cascade" }),
+    createdAt: timestamp({ withTimezone: true }).notNull().default(now),
+    /**
+     * Fermée par son auteur — ou par le support si l'auteur a déserté. Le compte qui
+     * a posé la fermeture est gardé pour que l'écran puisse dire qui l'a faite ; il
+     * devient nul si le compte est supprimé, la fermeture reste.
+     */
+    closedAt: timestamp({ withTimezone: true }),
+    closedBy: uuid().references(() => account.id, { onDelete: "set null" }),
+  },
+  (t) => [
+    index("idea_author_idx").on(t.authorId),
+    index("idea_open_idx").on(t.closedAt),
+  ],
+);
+
+/**
+ * Le fil d'une idée : premier message de l'auteur, réponse du support, relance de
+ * l'auteur. Les deux sens passent par la même table — c'est la discussion annoncée,
+ * pas deux mécaniques parallèles.
+ */
+export const ideaMessage = pgTable(
+  "idea_message",
+  {
+    id: uuid().primaryKey().defaultRandom(),
+    ideaId: uuid()
+      .notNull()
+      .references(() => idea.id, { onDelete: "cascade" }),
+    authorId: uuid()
+      .notNull()
+      .references(() => account.id, { onDelete: "cascade" }),
+    texte: varchar({ length: 2000 }).notNull(),
+    createdAt: timestamp({ withTimezone: true }).notNull().default(now),
+  },
+  (t) => [index("idea_message_idea_idx").on(t.ideaId, t.createdAt)],
+);
+
+/** Un vote (+1) par compte et par idée. Trier par popularité sans table de comptage. */
+export const ideaVote = pgTable(
+  "idea_vote",
+  {
+    ideaId: uuid()
+      .notNull()
+      .references(() => idea.id, { onDelete: "cascade" }),
+    accountId: uuid()
+      .notNull()
+      .references(() => account.id, { onDelete: "cascade" }),
+    createdAt: timestamp({ withTimezone: true }).notNull().default(now),
+  },
+  (t) => [primaryKey({ columns: [t.ideaId, t.accountId] })],
+);
