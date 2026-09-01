@@ -5,10 +5,12 @@
  */
 
 import { sql } from "drizzle-orm";
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { db } from "@/lib/db";
+import * as s from "@/lib/db/schema";
 import { notifyPendingPublications } from "@/lib/notifications";
+import { creerIdee, repondreIdee } from "@/lib/ideas";
 import { withdraw } from "@/lib/publications";
 
 import {
@@ -16,6 +18,7 @@ import {
   mesMotsCles,
   muteMember,
   notifyJoinRequest,
+  notifyIdeaReply,
   notifyNewlyPublished,
   notifyPublication,
   notifyUpcomingAttendances,
@@ -313,6 +316,81 @@ describe("Demande d'entrée dans un cercle", () => {
 
     const { send } = expediteur();
     expect((await notifyJoinRequest(classe.id, send)).sent).toBe(1);
+  });
+});
+
+describe("Réponse dans le fil d'une idée", () => {
+  const envSauve = process.env.ADMIN_EMAILS;
+
+  async function createSupport(): Promise<Account> {
+    const [row] = await db
+      .insert(s.account)
+      .values({ email: "support@example.test", displayName: "Support" })
+      .returning();
+    return row;
+  }
+
+  async function ideeD(alice: Account): Promise<string> {
+    const cree = await creerIdee(alice, {
+      type: "bug",
+      titre: "Carte blanche",
+      texte: "La carte reste blanche quand on zoome trop.",
+    });
+    if (!cree.ok) throw new Error("idee non creee");
+    return cree.value.id;
+  }
+
+  beforeEach(() => {
+    process.env.ADMIN_EMAILS = "support@example.test";
+  });
+  afterEach(() => {
+    process.env.ADMIN_EMAILS = envSauve;
+  });
+
+  it("la réponse du support prévient l'auteur, sans rien dire du texte", async () => {
+    const alice = await createAccount("Alice");
+    const support = await createSupport();
+    const ideaId = await ideeD(alice);
+    const reponse = await repondreIdee(support, ideaId, "Bonjour, nous regardons ça.");
+    if (!reponse.ok) throw new Error("reponse refusée");
+    await abonner(alice);
+
+    const { envois, send } = expediteur();
+    const rapport = await notifyIdeaReply(ideaId, support.id, send);
+
+    expect(rapport.sent).toBe(1);
+    expect(envois[0].accountId).toBe(alice.id);
+    expect(envois[0].payload.title).toBe("Carte blanche");
+    expect(envois[0].payload.body).toBe("Une réponse vient d'arriver dans votre idée");
+    expect(envois[0].payload.url).toBe(`/idees/${ideaId}`);
+  });
+
+  it("la relance de l'auteur prévient le support", async () => {
+    const alice = await createAccount("Alice");
+    const support = await createSupport();
+    const ideaId = await ideeD(alice);
+    await repondreIdee(alice, ideaId, "Une précision : cela arrive seulement le matin.");
+    await abonner(support);
+
+    const { envois, send } = expediteur();
+    const rapport = await notifyIdeaReply(ideaId, alice.id, send);
+
+    expect(rapport.recipients).toBe(1);
+    expect(rapport.sent).toBe(1);
+    expect(envois[0].accountId).toBe(support.id);
+  });
+
+  it("personne ne se notifie soi-même : un compte du support qui répond à sa propre idée reste seul", async () => {
+    const support = await createSupport();
+    const ideaId = await ideeD(support);
+    await repondreIdee(support, ideaId, "Je complète mon idée avec ce détail.");
+    await abonner(support);
+
+    const { envois, send } = expediteur();
+    const rapport = await notifyIdeaReply(ideaId, support.id, send);
+
+    expect(rapport.recipients).toBe(0);
+    expect(envois).toHaveLength(0);
   });
 });
 

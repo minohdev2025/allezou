@@ -13,11 +13,12 @@
  *    Le détail s'affiche à l'ouverture de l'application.
  */
 
-import { and, asc, eq, isNotNull, isNull, sql } from "drizzle-orm";
+import { and, asc, eq, inArray, isNotNull, isNull, sql } from "drizzle-orm";
 
 import { db } from "./db";
 import { asDateOrNull } from "./db/rows";
 import * as s from "./db/schema";
+import { emailsSupport } from "./ideas";
 import { contient, normaliser } from "./texte";
 import { cheminLocalise, localeSure, traducteur } from "./traduire";
 import { readersOfPublication } from "./visibility";
@@ -815,6 +816,77 @@ export async function notifyUpcomingAttendances(send: Sender): Promise<NotifyRep
       .update(s.publication)
       .set({ remindedAt: sql`now()` })
       .where(eq(s.publication.id, row.publication_id));
+  }
+
+  return report;
+}
+
+/* ---------------------------------------------------------------- boîte à idées */
+
+/**
+ * Avertit la partie d'en face qu'une réponse vient d'arriver dans le fil d'une idée.
+ *
+ * Le support répond → l'auteur est prévenu ; l'auteur relance → le support est prévenu.
+ * Personne n'est jamais prévenu de son propre message. Le corps ne recopie rien du fil
+ * et ne nomme personne : sur un écran verrouillé, il dit seulement qu'une discussion
+ * attend. Le titre de l'idée — que les deux parties connaissent — suffit à la retrouver.
+ */
+export async function notifyIdeaReply(
+  ideaId: string,
+  senderAccountId: string,
+  send: Sender,
+): Promise<NotifyReport> {
+  const [idee] = await db
+    .select({
+      titre: s.idea.titre,
+      authorId: s.idea.authorId,
+      auteurLocale: s.account.locale,
+    })
+    .from(s.idea)
+    .innerJoin(s.account, and(eq(s.account.id, s.idea.authorId), isNull(s.account.deletedAt)))
+    .where(eq(s.idea.id, ideaId))
+    .limit(1);
+  if (!idee) return { sent: 0, failed: 0, recipients: 0 };
+
+  const [sender] = await db
+    .select({ email: s.account.email })
+    .from(s.account)
+    .where(eq(s.account.id, senderAccountId))
+    .limit(1);
+
+  // Les e-mails du support sont stockés en minuscules (contrat de la table account).
+  const mails = new Set(emailsSupport());
+  const senderEstSupport = sender !== undefined && mails.has(sender.email.toLowerCase());
+
+  type Destinataire = { accountId: string; locale: string };
+  const destinataires: Destinataire[] = senderEstSupport
+    ? [{ accountId: idee.authorId, locale: idee.auteurLocale }]
+    : await db
+        .select({ accountId: s.account.id, locale: s.account.locale })
+        .from(s.account)
+        .where(and(inArray(s.account.email, [...mails]), isNull(s.account.deletedAt)));
+
+  const report: NotifyReport = {
+    sent: 0,
+    failed: 0,
+    // On ne se notifie jamais soi-même — un compte du support peut aussi soumettre des idées.
+    recipients: destinataires.filter((d) => d.accountId !== senderAccountId).length,
+  };
+
+  for (const dst of destinataires) {
+    if (dst.accountId === senderAccountId) continue;
+    const t = traducteur(dst.locale, "Notifications");
+    await envoyerA(
+      dst.accountId,
+      {
+        title: idee.titre,
+        body: t("reponseRecue"),
+        url: cheminLocalise(dst.locale, `/idees/${ideaId}`),
+        lang: localeSure(dst.locale),
+      },
+      send,
+      report,
+    );
   }
 
   return report;
