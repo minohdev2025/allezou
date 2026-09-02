@@ -28,7 +28,6 @@ const PAGE_PUBLIQUES = [
   "/questions",
   "/a-propos",
   "/comment",
-  "/parcs",
 ] as const;
 
 const LOCALES = routing.locales;

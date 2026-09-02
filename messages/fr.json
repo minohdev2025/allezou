@@ -613,8 +613,7 @@
     "tuilePasskeysGenerique": "Enregistrer un appareil de confiance",
     "enSavoirPlusTitre": "En savoir plus",
     "lienAPropos": "Qui sommes-nous",
-    "lienComment": "Comment ça marche, en détail",
-    "lienParcs": "Les parcs pour enfants à Genève"
+    "lienComment": "Comment ça marche, en détail"
   },
   "Connexion": {
     "accroche": "Pour que nos enfants se retrouvent dehors.",
@@ -930,14 +929,6 @@
     "titreOnglet": "Comment ça marche · Allezou",
     "phraseIntro": "Le guide complet : créer un compte, un cercle, annoncer une sortie, gérer les notifications.",
     "description": "Tout ce qu'Allezou fait, expliqué pas à pas : cercles, sorties, agenda des communes genevoises, notifications.",
-    "placeholder": "Contenu à rédiger — voir le brief dans la session.",
-    "retour": "Retour aux réglages"
-  },
-  "Parcs": {
-    "titre": "Les parcs pour enfants à Genève",
-    "titreOnglet": "Parcs pour enfants à Genève · Allezou",
-    "phraseIntro": "Notre sélection d'aires de jeux et de parcs où il fait bon se retrouver en famille le weekend.",
-    "description": "Les parcs et aires de jeux de Genève et alentours où Allezou vous aide à vous retrouver en famille : Bastions, La Grange, Plainpalais, Carouge et plus.",
     "placeholder": "Contenu à rédiger — voir le brief dans la session.",
     "retour": "Retour aux réglages"
   }

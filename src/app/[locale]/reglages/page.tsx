@@ -196,9 +196,9 @@ export default async function Reglages() {
       ) : null}
 
       {/*
-        Section « En savoir plus » : trois liens discrets vers les pages
+        Section « En savoir plus » : deux liens discrets vers les pages
         SEO qui vivent en marge de la navigation principale. Ces pages
-        (à-propos, comment, parcs) sont destinées au référencement Google
+        (à-propos, comment) sont destinées au référencement Google
         et au partage social de liens directs, pas à la navigation
         quotidienne. Les placer ici — en bas de la home des réglages,
         hors des grandes tuiles — les rend accessibles à qui les cherche
@@ -229,14 +229,6 @@ export default async function Reglages() {
               className="text-sm text-[color:var(--color-encre)] underline underline-offset-4"
             >
               {t("lienComment")}
-            </Link>
-          </li>
-          <li>
-            <Link
-              href="/parcs"
-              className="text-sm text-[color:var(--color-encre)] underline underline-offset-4"
-            >
-              {t("lienParcs")}
             </Link>
           </li>
         </ul>

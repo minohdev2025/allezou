@@ -613,8 +613,7 @@
     "tuilePasskeysGenerique": "Registrar un dispositivo de confianza",
     "enSavoirPlusTitre": "Más información",
     "lienAPropos": "Quiénes somos",
-    "lienComment": "Cómo funciona, en detalle",
-    "lienParcs": "Parques infantiles en Ginebra"
+    "lienComment": "Cómo funciona, en detalle"
   },
   "Connexion": {
     "accroche": "Para que nuestros hijos se encuentren al aire libre.",
@@ -930,14 +929,6 @@
     "titreOnglet": "Cómo funciona · Allezou",
     "phraseIntro": "La guía completa: crear una cuenta, un círculo, anunciar una salida, gestionar las notificaciones.",
     "description": "Todo lo que hace Allezou, paso a paso: círculos, salidas, agenda de los municipios ginebrinos, notificaciones.",
-    "placeholder": "Contenido por escribir — ver el brief en la sesión.",
-    "retour": "Volver a los ajustes"
-  },
-  "Parcs": {
-    "titre": "Parques infantiles en Ginebra",
-    "titreOnglet": "Parques infantiles en Ginebra · Allezou",
-    "phraseIntro": "Nuestra selección de parques y áreas de juego donde se encuentran las familias el fin de semana.",
-    "description": "Los parques y áreas de juego de Ginebra y alrededores donde Allezou ayuda a las familias a encontrarse: Bastions, La Grange, Plainpalais, Carouge y más.",
     "placeholder": "Contenido por escribir — ver el brief en la sesión.",
     "retour": "Volver a los ajustes"
   }

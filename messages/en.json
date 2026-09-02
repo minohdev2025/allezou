@@ -613,8 +613,7 @@
     "tuilePasskeysGenerique": "Register a trusted device",
     "enSavoirPlusTitre": "Learn more",
     "lienAPropos": "Who we are",
-    "lienComment": "How it works, in detail",
-    "lienParcs": "Playgrounds in Geneva"
+    "lienComment": "How it works, in detail"
   },
   "Connexion": {
     "accroche": "So our kids can meet up outside.",
@@ -930,14 +929,6 @@
     "titreOnglet": "How it works · Allezou",
     "phraseIntro": "The full guide: creating an account, a circle, posting an outing, managing notifications.",
     "description": "Everything Allezou does, step by step: circles, outings, the Geneva municipalities' agenda, notifications.",
-    "placeholder": "Content to be written — see the brief in the session.",
-    "retour": "Back to settings"
-  },
-  "Parcs": {
-    "titre": "Playgrounds in Geneva",
-    "titreOnglet": "Playgrounds in Geneva · Allezou",
-    "phraseIntro": "Our pick of playgrounds and parks where it's good to meet up with other families on weekends.",
-    "description": "The playgrounds and parks around Geneva where Allezou helps you meet up with other families: Bastions, La Grange, Plainpalais, Carouge and more.",
     "placeholder": "Content to be written — see the brief in the session.",
     "retour": "Back to settings"
   }

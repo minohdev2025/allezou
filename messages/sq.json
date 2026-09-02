@@ -613,8 +613,7 @@
     "tuilePasskeysGenerique": "Regjistroni një pajisje të besuar",
     "enSavoirPlusTitre": "Mëso më shumë",
     "lienAPropos": "Kush jemi ne",
-    "lienComment": "Si funksionon, në detaje",
-    "lienParcs": "Parqet për fëmijë në Gjenevë"
+    "lienComment": "Si funksionon, në detaje"
   },
   "Connexion": {
     "accroche": "Që fëmijët tanë të takohen jashtë.",
@@ -930,14 +929,6 @@
     "titreOnglet": "Si funksionon · Allezou",
     "phraseIntro": "Udhëzuesi i plotë: krijoni llogari, rreth, shpallni dalje, menaxhoni njoftimet.",
     "description": "Gjithçka bën Allezou, hap pas hapi: rrethet, daljet, agjenda e komunave të Gjenevës, njoftimet.",
-    "placeholder": "Përmbajtja për t'u shkruar — shih brief-in në sesion.",
-    "retour": "Kthehu te rregullimet"
-  },
-  "Parcs": {
-    "titre": "Parqet për fëmijë në Gjenevë",
-    "titreOnglet": "Parqet për fëmijë në Gjenevë · Allezou",
-    "phraseIntro": "Përzgjedhja jonë e parqeve dhe fushave të lojërave ku familjet takohen fundjavave.",
-    "description": "Parqet dhe fushat e lojërave në Gjenevë dhe rrethina ku Allezou ndihmon familjet të takohen: Bastions, La Grange, Plainpalais, Carouge e më shumë.",
     "placeholder": "Përmbajtja për t'u shkruar — shih brief-in në sesion.",
     "retour": "Kthehu te rregullimet"
   }

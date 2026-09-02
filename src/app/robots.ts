@@ -65,14 +65,12 @@ export default function robots(): MetadataRoute.Robots {
           "/questions",
           "/a-propos",
           "/comment",
-          "/parcs",
           ...prefixes.flatMap((l) => [
             `/${l}`,
             `/${l}/donnees`,
             `/${l}/questions`,
             `/${l}/a-propos`,
             `/${l}/comment`,
-            `/${l}/parcs`,
           ]),
         ],
         disallow: PRIVEES.flatMap((chemin) => [
