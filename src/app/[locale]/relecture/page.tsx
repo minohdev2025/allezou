@@ -85,7 +85,7 @@ export default async function Relecture() {
           {taches.map((tache) => (
             <li
               key={tache.name}
-              className="rounded-2xl bg-[color:var(--color-surface)] px-4 py-3 shadow-[inset_0_0_0_2px_var(--color-trait)]"
+              className="rounded-[var(--radius-carte)] bg-[color:var(--color-fond)] px-4 py-3 shadow-[inset_0_0_0_2px_var(--color-trait)]"
             >
               <div className="flex items-center justify-between gap-3">
                 <span className="font-bold">{tache.libelle}</span>
@@ -115,7 +115,7 @@ export default async function Relecture() {
           {sante.map((source) => (
             <li
               key={source.id}
-              className="rounded-2xl bg-[color:var(--color-surface)] px-4 py-3 shadow-[inset_0_0_0_2px_var(--color-trait)]"
+              className="rounded-[var(--radius-carte)] bg-[color:var(--color-fond)] px-4 py-3 shadow-[inset_0_0_0_2px_var(--color-trait)]"
             >
               <div className="flex items-center justify-between gap-3">
                 <span className="font-bold">{source.name}</span>
