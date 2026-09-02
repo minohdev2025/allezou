@@ -30,7 +30,7 @@ export default async function OptionsBienvenue() {
       <Titre sous={t("sousTitre")}>{t("titre")}</Titre>
 
       <CarteRepliable titre={t("notificationsTitre")}>
-        <Carte accent="rose" className="mb-0">
+        <Carte className="mb-0">
           <p className="mb-1 text-lg font-bold">{t("notificationsTitre")}</p>
           <p className="mb-4 leading-relaxed text-[color:var(--color-doux)]">
             {t("notificationsTexte")}
@@ -46,7 +46,7 @@ export default async function OptionsBienvenue() {
       </CarteRepliable>
 
       <CarteRepliable titre={t("installationTitre")}>
-        <Carte accent="vert" className="mb-0">
+        <Carte className="mb-0">
           <p className="mb-1 text-lg font-bold">{t("installationTitre")}</p>
           <p className="mb-4 leading-relaxed text-[color:var(--color-doux)]">
             {t("installationTexte")}

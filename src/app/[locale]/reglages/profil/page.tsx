@@ -32,7 +32,7 @@ export default async function ReglagesProfil() {
     <main className="apparait">
       <EnteteReglages titre={t("profilTitre")} />
 
-      <Carte accent="bleu" className="mb-5">
+      <Carte className="mb-5">
         <form action={changerNom} className="space-y-4">
           <Champ
             label={t("nomLabel")}
@@ -46,7 +46,7 @@ export default async function ReglagesProfil() {
         </form>
       </Carte>
 
-      <Carte accent="vert" className="mb-5">
+      <Carte className="mb-5">
         <h2 className="titre mb-2 text-lg font-bold">{t("langueTitre")}</h2>
         <p className="mb-4 text-sm leading-snug text-[color:var(--color-doux)]">
           {t("langueTexte")}

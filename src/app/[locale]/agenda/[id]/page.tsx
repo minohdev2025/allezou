@@ -182,7 +182,7 @@ export default async function Activite({
       ) : null}
 
       {activite.attendees.length > 0 ? (
-        <Carte className="mb-5" accent="vert">
+        <Carte className="mb-5">
           <h2 className="titre mb-3 text-lg font-bold">
             {t("familles", { n: activite.attendees.length })}
           </h2>
@@ -201,7 +201,7 @@ export default async function Activite({
 
       {activite.retiree ? (
         inscription ? (
-          <Carte accent="corail">
+          <Carte>
             <p className="leading-snug">{t("inscritRetireInfo")}</p>
           </Carte>
         ) : null
@@ -210,7 +210,7 @@ export default async function Activite({
           <p className="text-[color:var(--color-doux)]">{t("rejoindreCercle")}</p>
         </Carte>
       ) : (
-        <Carte accent="violet">
+        <Carte>
           <h2 className="titre mb-1 text-lg font-bold">
             {inscription ? t("vousYAllezTitre") : t("vousYAllezQuestion")}
           </h2>

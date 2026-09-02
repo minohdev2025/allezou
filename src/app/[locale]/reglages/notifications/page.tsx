@@ -45,7 +45,7 @@ export default async function ReglagesNotifications() {
     <main className="apparait">
       <EnteteReglages titre={t("notificationsTitre")} sous={t("notificationsSous")} />
 
-      <Carte accent="vert" className="mb-5">
+      <Carte className="mb-5">
         {clePublique ? (
           <ActiverNotifications
             clePublique={clePublique}
@@ -57,7 +57,7 @@ export default async function ReglagesNotifications() {
         )}
       </Carte>
 
-      <Carte accent="violet" className="mb-4">
+      <Carte className="mb-4">
         <p className="mb-1 font-bold">{t("motsTitre")}</p>
         <p className="mb-4 text-sm leading-snug text-[color:var(--color-doux)]">
           {t("motsTexte")}
@@ -104,7 +104,7 @@ export default async function ReglagesNotifications() {
         )}
       </Carte>
 
-      <Carte accent="corail" className="mb-4">
+      <Carte className="mb-4">
         <form action={basculerAlerteInscription}>
           <input type="hidden" name="actif" value={surInscription ? "0" : "1"} />
           <div className="mb-3 flex items-center justify-between gap-3">
@@ -122,7 +122,7 @@ export default async function ReglagesNotifications() {
         </form>
       </Carte>
 
-      <Carte accent="bleu" className="mb-4">
+      <Carte className="mb-4">
         <div className="mb-3 flex items-center justify-between gap-3">
           <span className="font-bold">{t("rappelTitre")}</span>
           <Pastille couleur={rappelHeures ? "vert" : "ambre"}>

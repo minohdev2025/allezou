@@ -50,7 +50,7 @@ export default async function Accueil({
 
       <ChoixLangue href="/" />
 
-      <Carte accent="ambre" className="mb-9">
+      <Carte className="mb-9">
         <p className="text-lg font-bold leading-relaxed">{t("presentation")}</p>
         <p className="mt-3 whitespace-pre-line leading-relaxed text-[color:var(--color-doux)]">
           {t("presentationCorps")}
@@ -117,7 +117,7 @@ export default async function Accueil({
       <h2 className="titre mb-2 text-xl font-bold">{t("gratuitTitre")}</h2>
       <p className="mb-10 leading-relaxed text-[color:var(--color-doux)]">{t("gratuitTexte")}</p>
 
-      <Carte accent="vert">
+      <Carte>
         <form action={entrer} className="space-y-4">
           <label className="flex cursor-pointer items-start gap-3">
             <input

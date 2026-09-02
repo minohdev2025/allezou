@@ -21,7 +21,7 @@ export default async function Mesures() {
         Les familles
       </Titre>
 
-      <Carte accent="corail" className="mb-6 text-center">
+      <Carte className="mb-6 text-center">
         <p className="text-5xl font-bold tabular-nums">{comptes}</p>
         <p className="mt-1 font-bold">
           compte{comptes > 1 ? "s" : ""} ouvert{comptes > 1 ? "s" : ""}

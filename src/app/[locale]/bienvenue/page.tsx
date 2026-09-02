@@ -21,7 +21,7 @@ export default async function Bienvenue({
 
       {erreur ? <Alerte ton="erreur">{t("erreur")}</Alerte> : null}
 
-      <Carte accent="bleu">
+      <Carte>
         <form action={enregistrerNom} className="space-y-5">
           <Champ
             label={t("label")}

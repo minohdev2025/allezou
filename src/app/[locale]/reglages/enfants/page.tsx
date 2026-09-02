@@ -44,7 +44,7 @@ export default async function ReglagesEnfants({
       <EnteteReglages titre={t("enfantsTitre")} />
 
       {rejoindre ? (
-        <Carte className="mb-5" accent="ambre">
+        <Carte className="mb-5">
           <h2 className="titre mb-2 text-lg font-bold">{t("rejoindreTitre")}</h2>
           <p className="mb-4 text-sm leading-snug text-[color:var(--color-doux)]">
             {t("rejoindreTexte")}
@@ -56,7 +56,7 @@ export default async function ReglagesEnfants({
         </Carte>
       ) : null}
 
-      <Carte accent="violet" className="mb-5">
+      <Carte className="mb-5">
         <ul className="mb-4 space-y-2">
           {enfants.map((enfant) => (
             <li key={enfant.id} className="flex items-center gap-2">
@@ -105,7 +105,7 @@ export default async function ReglagesEnfants({
       </Carte>
 
       {doublons.length > 0 ? (
-        <Carte accent="rose" className="mb-5">
+        <Carte className="mb-5">
           <h2 className="titre mb-2 text-lg font-bold">{t("doublonsTitre")}</h2>
           <p className="mb-4 text-sm leading-snug text-[color:var(--color-doux)]">
             {t("doublonsTexte")}
@@ -141,7 +141,7 @@ export default async function ReglagesEnfants({
         </Carte>
       ) : null}
 
-      <Carte accent="ambre" className="mb-5">
+      <Carte className="mb-5">
         <h2 className="titre mb-2 text-lg font-bold">{t("autreParentTitre")}</h2>
         <p className="mb-4 text-sm leading-snug text-[color:var(--color-doux)]">
           {t("autreParentTexte")}

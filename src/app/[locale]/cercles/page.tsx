@@ -30,7 +30,7 @@ import {
 function CarteInvitation({ mise = "second" }: { mise?: "principal" | "second" }) {
   const t = useTranslations("Cercles");
   return (
-    <Carte accent="bleu">
+    <Carte>
       <form action={rejoindreParLien} className="space-y-5">
         <Champ
           label={t("invitationLabel")}
@@ -51,7 +51,7 @@ function CarteInvitation({ mise = "second" }: { mise?: "principal" | "second" })
 function CarteCreation() {
   const t = useTranslations("Cercles");
   return (
-    <Carte accent="rose">
+    <Carte>
       <form action={creerCercle} className="space-y-5">
         <Champ
           label={t("creationLabel")}
@@ -159,7 +159,7 @@ export default async function Cercles({
         l'administrateur valide, comme pour n'importe quel lien.
       */}
       {cerclesDeLAutreParent.length > 0 ? (
-        <Carte className="mb-7" accent="violet">
+        <Carte className="mb-7">
           <h2 className="titre mb-2 text-lg font-bold">{t("coparentTitre")}</h2>
           <p className="mb-4 text-sm leading-snug text-[color:var(--color-doux)]">
             {t("coparentTexte")}

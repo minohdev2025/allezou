@@ -156,7 +156,7 @@ export default async function Relecture() {
               const date = jourCourt(activite.startsAt, "fr");
               return (
                 <li key={activite.id}>
-                  <Carte accent="ambre">
+                  <Carte>
                     <p className="mb-1 text-sm text-[color:var(--color-doux)]">
                       {activite.sourceName} · {date.jour} {date.nombre} {date.mois}
                     </p>

@@ -42,7 +42,7 @@ export default async function Enfants({
         </div>
       ) : null}
 
-      <Carte accent="ambre" className="mb-6">
+      <Carte className="mb-6">
         <form action={ajouterEnfant} className="space-y-4">
           <Champ label={t("label")} name="prenom" required maxLength={40} placeholder="Matéo" />
           <Bouton type="submit" variante="second">

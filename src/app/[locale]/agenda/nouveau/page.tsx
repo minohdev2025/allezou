@@ -59,7 +59,7 @@ export default async function NouvelleActivite({
           <p className="text-[color:var(--color-doux)]">{t("rejoindreCercle")}</p>
         </Carte>
       ) : (
-        <Carte accent="bleu">
+        <Carte>
           <form action={proposerActivite} className="space-y-5">
             <Champ
               label={t("labelQuoi")}

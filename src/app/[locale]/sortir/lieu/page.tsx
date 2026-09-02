@@ -31,7 +31,7 @@ export default async function NouveauLieu({
         </Alerte>
       ) : null}
 
-      <Carte accent="violet">
+      <Carte>
         <form action={ajouterLieu} className="space-y-5">
           <Champ
             label={t("labelNom")}

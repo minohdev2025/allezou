@@ -30,7 +30,7 @@ export default async function ReglagesPasskeys() {
     <main className="apparait">
       <EnteteReglages titre={t("passkeyTitre")} />
 
-      <Carte accent="vert" className="mb-5">
+      <Carte className="mb-5">
         <p className="mb-4 text-sm leading-snug text-[color:var(--color-doux)]">
           {t("passkeyTexte")}
         </p>

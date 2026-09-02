@@ -117,7 +117,7 @@ export default async function Connexion({
           <ol className="mb-6 space-y-3">
             {ETAPES.map((cle, rang) => (
               <li key={cle}>
-                <Carte accent="ambre" className="!p-4">
+                <Carte className="!p-4">
                   <p className="mb-1 flex items-baseline gap-2 font-bold">
                     <span
                       aria-hidden
@@ -139,7 +139,7 @@ export default async function Connexion({
             ))}
           </ol>
 
-          <Carte accent="vert">
+          <Carte>
             <form action={demanderLien} className="space-y-5">
               {reprise ? <input type="hidden" name="suite" value={reprise} /> : null}
               <Champ
@@ -164,7 +164,7 @@ export default async function Connexion({
             connecter={connecterParCleAcces}
           />
 
-          <Carte accent="vert">
+          <Carte>
             <form action={demanderLien} className="space-y-5">
               {reprise ? <input type="hidden" name="suite" value={reprise} /> : null}
               <Champ

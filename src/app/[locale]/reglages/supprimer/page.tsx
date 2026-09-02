@@ -35,7 +35,7 @@ export default async function ReglagesSupprimer({
         </Alerte>
       ) : null}
 
-      <Carte accent="corail">
+      <Carte>
         <p className="mb-4 text-sm leading-snug text-[color:var(--color-doux)]">
           {t("supprimerTexte")}
         </p>
