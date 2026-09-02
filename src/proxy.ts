@@ -68,6 +68,21 @@ export function proxy(request: NextRequest) {
     "geolocation=(), camera=(), microphone=(), payment=(), interest-cohort=()",
   );
 
+  /*
+   * Forcer 'no-store' sur les réponses HTML : un cache navigateur ou PWA peut
+   * garder une ancienne version d'une page après deploiement (Service Worker,
+   * back/forward cache, cache disque agressif). 'no-store' interdit la mise en
+   * cache de la reponse et de la requete, donc chaque navigation repart du
+   * serveur. Les ressources statiques (/_next/static/*, /icon, /apple-icon)
+   * ne sont pas touchees : leur URL change a chaque build, le cache est sur.
+   */
+  const typeContenu = reponse.headers.get("Content-Type") ?? "";
+  if (typeContenu.includes("text/html")) {
+    reponse.headers.set("Cache-Control", "no-store, must-revalidate");
+    reponse.headers.set("Pragma", "no-cache");
+    reponse.headers.set("Expires", "0");
+  }
+
   return reponse;
 }
 
