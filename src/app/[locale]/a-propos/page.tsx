@@ -6,6 +6,8 @@ import { getLocale, getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
 
+import { FilDarianeSchema } from "../ui";
+
 /*
  * Page « Qui sommes-nous » — version longue et détaillée de ce qui tient
  * déjà en quelques lignes sur la home. Contenu chargé depuis APROPOS.md
@@ -19,10 +21,17 @@ import { Link } from "@/i18n/navigation";
  */
 
 export async function generateMetadata() {
-  const t = await getTranslations("APropos");
+  const [t, locale] = await Promise.all([getTranslations("APropos"), getLocale()]);
+  const prefixe = locale === "fr" ? "" : `/${locale}`;
   return {
     title: t("titreOnglet"),
     description: t("description"),
+    alternates: {
+      // Canonical self-referencing : chaque variante pointe vers elle-même.
+      // Google accepte que les variantes linguistiques soient chacune leur
+      // propre canonical (tant que les hreflang sont cohérents).
+      canonical: `https://allezou.ch${prefixe}/a-propos`,
+    },
   };
 }
 
@@ -42,8 +51,12 @@ export default async function APropos() {
   const source = await sourcePour(locale);
   const html = await marked.parse(source);
 
+  const prefixe = locale === "fr" ? "" : `/${locale}`;
+  const urlPage = `https://allezou.ch${prefixe}/a-propos`;
+
   return (
     <main>
+      <FilDarianeSchema items={[{ nom: "Accueil", url: `https://allezou.ch${prefixe}` }, { nom: t("titre"), url: urlPage }]} />
       <article
         className="prose-totir"
         dangerouslySetInnerHTML={{ __html: html }}

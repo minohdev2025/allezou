@@ -918,7 +918,7 @@
   },
   "APropos": {
     "titre": "Who we are",
-    "titreOnglet": "Who we are · Allezou",
+    "titreOnglet": "Who we are",
     "phraseIntro": "The story behind Allezou, our values, and who's running the service.",
     "description": "Allezou was born in Geneva to get kids playing outside: the story, the values, and who runs the service.",
     "placeholder": "Content to be written — see the brief in the session.",
@@ -926,7 +926,7 @@
   },
   "Comment": {
     "titre": "How it works",
-    "titreOnglet": "How it works · Allezou",
+    "titreOnglet": "How it works",
     "phraseIntro": "The full guide: creating an account, a circle, posting an outing, managing notifications.",
     "description": "Everything Allezou does, step by step: circles, outings, the Geneva municipalities' agenda, notifications.",
     "placeholder": "Content to be written — see the brief in the session.",

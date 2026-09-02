@@ -386,6 +386,62 @@ export function Alerte({
   );
 }
 
+/**
+ * Une brique de Schema.org en JSON-LD, injectée dans le DOM via un
+ * `<script type="application/ld+json">`. Sert à signaler aux moteurs
+ * (Google, Bing) et aux crawlers IA (GPTBot, ClaudeBot…) la nature
+ * d'une page : organisation, FAQ, fil d'Ariane, article…
+ *
+ * `donnees` est sérialisé tel quel : le composant ne valide rien. C'est
+ * à l'appelant de produire un objet conforme à schema.org. Les bonnes
+ * pratiques 2025-2026 (politique anti-spam Google) restent : ne pas
+ * gonfler artificiellement, ne pas inventer de FAQ bidon.
+ */
+export function SchemaJsonLd({ donnees }: { donnees: Record<string, unknown> }) {
+  return (
+    <script
+      type="application/ld+json"
+      // Le contenu vient du code, pas d'une saisie utilisateur. Sérialisé
+      // côté serveur (RSC) donc aucun risque d'injection.
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(donnees) }}
+    />
+  );
+}
+
+/**
+ * Fil d'Ariane en Schema.org (BreadcrumbList).
+ *
+ * Chaque page publique autre que l'accueil a une position dans la
+ * hiérarchie du site. Google affiche ces fils dans les SERP, ce qui
+ * améliore la compréhension de la structure et le taux de clic. On
+ * omet le premier élément (« Accueil ») quand il n'apporte rien — la
+ * home n'a pas besoin d'être listée dans son propre fil.
+ *
+ * Les URLs sont absolues, dans la locale courante. C'est la locale
+ * qui décide — un visiteur `/en/donnees` voit un fil d'Ariane qui
+ * pointe vers `/en/donnees`, pas vers `/donnees`.
+ */
+export function FilDarianeSchema({
+  items,
+}: {
+  items: { nom: string; url: string }[];
+}) {
+  return (
+    <SchemaJsonLd
+      donnees={{
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: items.map((item, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          name: item.nom,
+          item: item.url,
+        })),
+      }}
+    />
+  );
+}
+
 /** Étiquette colorée : un nom de cercle, une tranche d'âge, un prénom d'enfant. */
 export function Pastille({
   children,

@@ -6,10 +6,18 @@ import { getLocale, getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
 
+import { FilDarianeSchema } from "../ui";
+
 // Le gabarit du layout ajoute « · Allezou » : le répéter ici le mettrait deux fois.
 export async function generateMetadata() {
-  const t = await getTranslations("Donnees");
-  return { title: t("titreOnglet") };
+  const [t, locale] = await Promise.all([getTranslations("Donnees"), getLocale()]);
+  const prefixe = locale === "fr" ? "" : `/${locale}`;
+  return {
+    title: t("titreOnglet"),
+    alternates: {
+      canonical: `https://allezou.ch${prefixe}/donnees`,
+    },
+  };
 }
 
 /**
@@ -45,8 +53,14 @@ export default async function Donnees() {
   const source = await sourcePour(locale);
   const html = await marked.parse(source);
 
+  // URL absolue du fil d'Ariane. La home par défaut n'a pas de préfixe
+  // de locale (fr = défaut), les autres oui.
+  const prefixe = locale === "fr" ? "" : `/${locale}`;
+  const urlPage = `https://allezou.ch${prefixe}/donnees`;
+
   return (
     <main>
+      <FilDarianeSchema items={[{ nom: "Accueil", url: `https://allezou.ch${prefixe}` }, { nom: t("titre"), url: urlPage }]} />
       <article
         className="prose-totir"
         // Le contenu vient d'un fichier du dépôt, pas d'une saisie utilisateur.

@@ -918,7 +918,7 @@
   },
   "APropos": {
     "titre": "Qui sommes-nous",
-    "titreOnglet": "Qui sommes-nous · Allezou",
+    "titreOnglet": "Qui sommes-nous",
     "phraseIntro": "L'histoire d'Allezou, les valeurs, et qui est derrière le service.",
     "description": "Allezou est né à Genève pour que les enfants se retrouvent dehors : l'histoire, les valeurs, et qui fait tourner le service.",
     "placeholder": "Contenu à rédiger — voir le brief dans la session.",
@@ -926,7 +926,7 @@
   },
   "Comment": {
     "titre": "Comment ça marche",
-    "titreOnglet": "Comment ça marche · Allezou",
+    "titreOnglet": "Comment ça marche",
     "phraseIntro": "Le guide complet : créer un compte, un cercle, annoncer une sortie, gérer les notifications.",
     "description": "Tout ce qu'Allezou fait, expliqué pas à pas : cercles, sorties, agenda des communes genevoises, notifications.",
     "placeholder": "Contenu à rédiger — voir le brief dans la session.",

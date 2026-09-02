@@ -7,7 +7,7 @@ import { accueilMasque, currentAccount } from "@/lib/session";
 import { entrer } from "./actions";
 import { ChoixLangue } from "./langue";
 import { MaquetteSortie } from "./maquette";
-import { Bouton, Carte, type Teinte } from "./ui";
+import { Bouton, Carte, SchemaJsonLd, type Teinte } from "./ui";
 
 /**
  * L'accueil public.
@@ -36,8 +36,47 @@ export default async function Accueil({
 
   const t = await getTranslations("Accueil");
 
+  // Schema.org : deux briques sur la home.
+  // - Organization : qui est derriere Allezou (Knowledge panel Google,
+  //   AI Overview brand card, E-E-A-T).
+  // - WebSite : le site lui-meme, avec un SearchAction potentiel (la
+  //   sitelinks searchbox Google lit cette brique). On ne declare pas
+  //   d'action de recherche specifique tant qu'Allezou n'a pas de
+  //   moteur de recherche interne.
+  const organization = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Allezou",
+    alternateName: "Allezou.ch",
+    url: "https://allezou.ch/",
+    logo: "https://allezou.ch/icon",
+    description: "Pour que nos enfants se retrouvent dehors. Sorties partagees et agenda des familles genevoises.",
+    foundingDate: "2026",
+    foundingLocation: { "@type": "Place", name: "Geneve, Suisse" },
+    areaServed: { "@type": "AdministrativeArea", name: "Canton de Geneve" },
+    email: "contact@allezou.ch",
+    sameAs: [],
+    contactPoint: {
+      "@type": "ContactPoint",
+      contactType: "customer support",
+      email: "contact@allezou.ch",
+      availableLanguage: ["French", "English", "Spanish", "Portuguese", "Albanian"],
+    },
+  };
+
+  const website = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Allezou",
+    url: "https://allezou.ch/",
+    inLanguage: ["fr-CH", "en", "es", "pt", "sq"],
+    publisher: { "@type": "Organization", name: "Allezou" },
+  };
+
   return (
     <main className="apparait">
+      <SchemaJsonLd donnees={organization} />
+      <SchemaJsonLd donnees={website} />
       <header className="mb-9 text-center">
         <div aria-hidden className="mb-3 text-6xl leading-none">
           🌳
