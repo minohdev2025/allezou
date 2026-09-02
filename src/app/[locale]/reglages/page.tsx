@@ -195,6 +195,53 @@ export default async function Reglages() {
         </section>
       ) : null}
 
+      {/*
+        Section « En savoir plus » : trois liens discrets vers les pages
+        SEO qui vivent en marge de la navigation principale. Ces pages
+        (à-propos, comment, parcs) sont destinées au référencement Google
+        et au partage social de liens directs, pas à la navigation
+        quotidienne. Les placer ici — en bas de la home des réglages,
+        hors des grandes tuiles — les rend accessibles à qui les cherche
+        sans polluer le parcours principal de paramétrage.
+      */}
+      <section
+        aria-labelledby="reglages-en-savoir-plus"
+        className="mt-8 border-t border-[color:var(--color-trait)] pt-4"
+      >
+        <h2
+          id="reglages-en-savoir-plus"
+          className="mb-2 px-1 text-xs font-bold uppercase tracking-wide text-[color:var(--color-doux)]"
+        >
+          {t("enSavoirPlusTitre")}
+        </h2>
+        <ul className="space-y-1.5 px-1">
+          <li>
+            <Link
+              href="/a-propos"
+              className="text-sm text-[color:var(--color-encre)] underline underline-offset-4"
+            >
+              {t("lienAPropos")}
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/comment"
+              className="text-sm text-[color:var(--color-encre)] underline underline-offset-4"
+            >
+              {t("lienComment")}
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/parcs"
+              className="text-sm text-[color:var(--color-encre)] underline underline-offset-4"
+            >
+              {t("lienParcs")}
+            </Link>
+          </li>
+        </ul>
+      </section>
+
       {/* Sur une page plus longue que l'écran, ce div ne fait rien ; sur une page courte, il
           pousse le menu vers le bas plutôt que de le laisser flotter au milieu de rien. */}
       <div className="mt-8 flex-1" aria-hidden />

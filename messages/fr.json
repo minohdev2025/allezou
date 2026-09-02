@@ -24,22 +24,11 @@
     "noteNotifications": "Vous pourrez activer les notifications et enregistrer cet appareil une fois connecté·e.",
     "boutonAnnuler": "Annuler"
   },
-  "Confirmation": {
-    "titre": "Se connecter à Allezou",
-    "sousTitreConnecte": "Vous êtes {email}.",
-    "sousTitreNouveau": "Cette adresse devient votre identifiant : {email}.",
-    "intro": "Ce lien ne se consomme qu'à votre clic, pas à celui d'un robot qui l'aurait ouvert avant vous.",
-    "verifieEnCours": "Vérification en cours…",
-    "verifieFait": "Tout est en ordre.",
-    "boutonConnecter": "Me connecter",
-    "noteNotifications": "Vous pourrez activer les notifications et enregistrer cet appareil une fois connecté·e.",
-    "boutonAnnuler": "Annuler"
-  },
   "Notifications": {
     "sortieEnCours": "Une sortie est en cours",
     "inscriptionAjoutee": "Une inscription vient d'être ajoutée",
     "demandeAdhesion": "Quelqu'un demande à rejoindre ce cercle",
-  "reponseRecue": "Une réponse vient d'arriver dans votre idée",
+    "reponseRecue": "Une réponse vient d'arriver dans votre idée",
     "agendaTitre": "Agenda",
     "motCorrespond": "Une activité correspond à « {mot} »",
     "inscriptionParue": "Une activité sur inscription vient de paraître",
@@ -531,7 +520,7 @@
     "inscriptionTitre": "Les activités sur inscription",
     "etatActif": "activé",
     "etatCoupe": "coupé",
-    "inscriptionTexte": "Prévenu·e dès qu'une activité sur inscription paraît, sans attendre. Pour celles-là, être prévenu·e tard revient à ne pas l'être.",
+    "inscriptionTexte": "être avertie.e que activité sur inscription est publiée dans l'agenda",
     "arreterPrevenir": "Ne plus me prévenir",
     "prevenir": "Me prévenir",
     "cerclesTitre": "Vos cercles",
@@ -550,8 +539,6 @@
     "rappel2h": "2h avant",
     "rappelVeille": "la veille",
     "rappelAucun": "Aucun rappel",
-    "inscriptionTitre": "Les activités sur inscription",
-    "inscriptionTexte": "être avertie.e que activité sur inscription est publiée dans l'agenda",
     "tuileAgendaTitre": "Préférences de l'agenda",
     "tuileAgendaAlerteActive": "Alerte sur inscription activée",
     "tuileAgendaAlerteInactive": "Alerte sur inscription coupée",
@@ -623,7 +610,11 @@
     "tuileIdeesTitre": "Boîte à idées",
     "tuileIdeesGenerique": "Proposer, voter, suivre ses idées",
     "tuilePasskeysTitre": "Revenir sans courriel",
-    "tuilePasskeysGenerique": "Enregistrer un appareil de confiance"
+    "tuilePasskeysGenerique": "Enregistrer un appareil de confiance",
+    "enSavoirPlusTitre": "En savoir plus",
+    "lienAPropos": "Qui sommes-nous",
+    "lienComment": "Comment ça marche, en détail",
+    "lienParcs": "Les parcs pour enfants à Genève"
   },
   "Connexion": {
     "accroche": "Pour que nos enfants se retrouvent dehors.",
@@ -925,5 +916,29 @@
       "pas_autorise": "Seuls l'auteur et le support écrivent dans ce fil.",
       "deja_ferree": "Cette idée est déjà fermée."
     }
+  },
+  "APropos": {
+    "titre": "Qui sommes-nous",
+    "titreOnglet": "Qui sommes-nous · Allezou",
+    "phraseIntro": "L'histoire d'Allezou, les valeurs, et qui est derrière le service.",
+    "description": "Allezou est né à Genève pour que les enfants se retrouvent dehors : l'histoire, les valeurs, et qui fait tourner le service.",
+    "placeholder": "Contenu à rédiger — voir le brief dans la session.",
+    "retour": "Retour aux réglages"
+  },
+  "Comment": {
+    "titre": "Comment ça marche",
+    "titreOnglet": "Comment ça marche · Allezou",
+    "phraseIntro": "Le guide complet : créer un compte, un cercle, annoncer une sortie, gérer les notifications.",
+    "description": "Tout ce qu'Allezou fait, expliqué pas à pas : cercles, sorties, agenda des communes genevoises, notifications.",
+    "placeholder": "Contenu à rédiger — voir le brief dans la session.",
+    "retour": "Retour aux réglages"
+  },
+  "Parcs": {
+    "titre": "Les parcs pour enfants à Genève",
+    "titreOnglet": "Parcs pour enfants à Genève · Allezou",
+    "phraseIntro": "Notre sélection d'aires de jeux et de parcs où il fait bon se retrouver en famille le weekend.",
+    "description": "Les parcs et aires de jeux de Genève et alentours où Allezou vous aide à vous retrouver en famille : Bastions, La Grange, Plainpalais, Carouge et plus.",
+    "placeholder": "Contenu à rédiger — voir le brief dans la session.",
+    "retour": "Retour aux réglages"
   }
 }

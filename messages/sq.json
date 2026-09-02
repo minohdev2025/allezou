@@ -24,22 +24,11 @@
     "noteNotifications": "Pasi të jeni brenda, mund të aktivizoni njoftimet dhe të regjistroni këtë pajisje.",
     "boutonAnnuler": "Anulo"
   },
-  "Confirmation": {
-    "titre": "Hyr në Allezou",
-    "sousTitreConnecte": "Ju jeni {email}.",
-    "sousTitreNouveau": "Kjo adresë do të jetë identifikuesi juaj: {email}.",
-    "intro": "Ky lidhje përdoret vetëm kur ju klikoni — jo kur një robot e hap para jush.",
-    "verifieEnCours": "Duke verifikuar…",
-    "verifieFait": "Gjithçka në rregull.",
-    "boutonConnecter": "Më lidh",
-    "noteNotifications": "Pasi të jeni brenda, mund të aktivizoni njoftimet dhe të regjistroni këtë pajisje.",
-    "boutonAnnuler": "Anulo"
-  },
   "Notifications": {
     "sortieEnCours": "Një dalje është në vazhdim",
     "inscriptionAjoutee": "Sapo u shtua një regjistrim",
     "demandeAdhesion": "Dikush kërkon të bashkohet me këtë rreth",
-  "reponseRecue": "Sapo erdhi një përgjigje për idenë tuaj",
+    "reponseRecue": "Sapo erdhi një përgjigje për idenë tuaj",
     "agendaTitre": "Agjenda",
     "motCorrespond": "Një aktivitet përputhet me « {mot} »",
     "inscriptionParue": "Sapo u shfaq një aktivitet me regjistrim",
@@ -531,7 +520,7 @@
     "inscriptionTitre": "Aktivitetet me regjistrim",
     "etatActif": "aktivizuar",
     "etatCoupe": "çaktivizuar",
-    "inscriptionTexte": "Njoftoheni sapo shfaqet një aktivitet me regjistrim, pa pritur. Për këto, të njoftohesh vonë është njësoj sikur të mos njoftohesh fare.",
+    "inscriptionTexte": "Njoftohu sapo publikohet një aktivitet me regjistrim në agjendë.",
     "arreterPrevenir": "Mos më njoftoni më",
     "prevenir": "Më njoftoni",
     "cerclesTitre": "Rrethet tuaja",
@@ -552,8 +541,6 @@
     "rappelAucun": "Pa kujtesë",
     "tuileNotificationsTitre": "Njoftime push",
     "tuileNotificationsSous": "Merrni aktivitetet e reja në telefon.",
-    "inscriptionTitre": "Aktivitetet me regjistrim",
-    "inscriptionTexte": "Njoftohu sapo publikohet një aktivitet me regjistrim në agjendë.",
     "tuileAgendaTitre": "Parapëlqime të agjendës",
     "tuileAgendaAlerteActive": "Sinjalizime për regjistrim aktiv",
     "tuileAgendaAlerteInactive": "Sinjalizime për regjistrim joaktiv",
@@ -623,7 +610,11 @@
     "tuileIdeesTitre": "Kutia e ideve",
     "tuileIdeesGenerique": "Propo, voto, ndjek idetë",
     "tuilePasskeysTitre": "Kthehu pa email",
-    "tuilePasskeysGenerique": "Regjistroni një pajisje të besuar"
+    "tuilePasskeysGenerique": "Regjistroni një pajisje të besuar",
+    "enSavoirPlusTitre": "Mëso më shumë",
+    "lienAPropos": "Kush jemi ne",
+    "lienComment": "Si funksionon, në detaje",
+    "lienParcs": "Parqet për fëmijë në Gjenevë"
   },
   "Connexion": {
     "accroche": "Që fëmijët tanë të takohen jashtë.",
@@ -925,5 +916,29 @@
       "pas_autorise": "Vetëm autori dhe supporti shkruajnë në këtë bisedë.",
       "deja_ferree": "Kjo ide është tashmë e mbyllur."
     }
+  },
+  "APropos": {
+    "titre": "Kush jemi ne",
+    "titreOnglet": "Kush jemi ne · Allezou",
+    "phraseIntro": "Historia e Allezou, vlerat dhe kush qëndron pas shërbimit.",
+    "description": "Allezou lindi në Gjenevë që fëmijët të luajnë jashtë: historia, vlerat dhe kush e mban shërbimin.",
+    "placeholder": "Përmbajtja për t'u shkruar — shih brief-in në sesion.",
+    "retour": "Kthehu te rregullimet"
+  },
+  "Comment": {
+    "titre": "Si funksionon",
+    "titreOnglet": "Si funksionon · Allezou",
+    "phraseIntro": "Udhëzuesi i plotë: krijoni llogari, rreth, shpallni dalje, menaxhoni njoftimet.",
+    "description": "Gjithçka bën Allezou, hap pas hapi: rrethet, daljet, agjenda e komunave të Gjenevës, njoftimet.",
+    "placeholder": "Përmbajtja për t'u shkruar — shih brief-in në sesion.",
+    "retour": "Kthehu te rregullimet"
+  },
+  "Parcs": {
+    "titre": "Parqet për fëmijë në Gjenevë",
+    "titreOnglet": "Parqet për fëmijë në Gjenevë · Allezou",
+    "phraseIntro": "Përzgjedhja jonë e parqeve dhe fushave të lojërave ku familjet takohen fundjavave.",
+    "description": "Parqet dhe fushat e lojërave në Gjenevë dhe rrethina ku Allezou ndihmon familjet të takohen: Bastions, La Grange, Plainpalais, Carouge e më shumë.",
+    "placeholder": "Përmbajtja për t'u shkruar — shih brief-in në sesion.",
+    "retour": "Kthehu te rregullimet"
   }
 }

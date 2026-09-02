@@ -24,22 +24,11 @@
     "noteNotifications": "Poderás ativar as notificações e registar este aparelho depois de entrar.",
     "boutonAnnuler": "Cancelar"
   },
-  "Confirmation": {
-    "titre": "Entrar no Allezou",
-    "sousTitreConnecte": "És {email}.",
-    "sousTitreNouveau": "Este endereço será o teu identificador: {email}.",
-    "intro": "Esta ligação só é usada quando clicas, não quando um robô a abre antes de ti.",
-    "verifieEnCours": "A verificar…",
-    "verifieFait": "Tudo em ordem.",
-    "boutonConnecter": "Entrar",
-    "noteNotifications": "Poderás ativar as notificações e registar este aparelho depois de entrar.",
-    "boutonAnnuler": "Cancelar"
-  },
   "Notifications": {
     "sortieEnCours": "Uma saída está em curso",
     "inscriptionAjoutee": "Uma inscrição acabou de ser adicionada",
     "demandeAdhesion": "Alguém pede para se juntar a este círculo",
-  "reponseRecue": "Chegou entretanto uma resposta à sua ideia",
+    "reponseRecue": "Chegou entretanto uma resposta à sua ideia",
     "agendaTitre": "Agenda",
     "motCorrespond": "Uma atividade corresponde a « {mot} »",
     "inscriptionParue": "Foi publicada uma nova atividade com inscrição",
@@ -531,7 +520,7 @@
     "inscriptionTitre": "As atividades com inscrição",
     "etatActif": "ativado",
     "etatCoupe": "desligado",
-    "inscriptionTexte": "Aviso imediato assim que for publicada uma atividade com inscrição, sem esperar. Para essas, avisar tarde equivale a não avisar.",
+    "inscriptionTexte": "Seja avisado assim que uma atividade com inscrição é publicada na agenda.",
     "arreterPrevenir": "Deixar de me avisar",
     "prevenir": "Avisar-me",
     "cerclesTitre": "Os seus círculos",
@@ -552,8 +541,6 @@
     "rappelAucun": "Sem lembrete",
     "tuileNotificationsTitre": "Notificações push",
     "tuileNotificationsSous": "Receba as novas atividades no seu telefone.",
-    "inscriptionTitre": "As atividades com inscrição",
-    "inscriptionTexte": "Seja avisado assim que uma atividade com inscrição é publicada na agenda.",
     "tuileAgendaTitre": "Preferências do agenda",
     "tuileAgendaAlerteActive": "Alertas de inscrição ativos",
     "tuileAgendaAlerteInactive": "Alertas de inscrição desativados",
@@ -623,7 +610,11 @@
     "tuileIdeesTitre": "Caixa de ideias",
     "tuileIdeesGenerique": "Propor, votar, acompanhar as suas ideias",
     "tuilePasskeysTitre": "Voltar sem e-mail",
-    "tuilePasskeysGenerique": "Registar um dispositivo de confiança"
+    "tuilePasskeysGenerique": "Registar um dispositivo de confiança",
+    "enSavoirPlusTitre": "Saber mais",
+    "lienAPropos": "Quem somos",
+    "lienComment": "Como funciona, em detalhe",
+    "lienParcs": "Parques infantis em Genebra"
   },
   "Connexion": {
     "accroche": "Para que os nossos filhos se encontrem lá fora.",
@@ -925,5 +916,29 @@
       "pas_autorise": "Só o autor e o apoio escrevem nesta conversa.",
       "deja_ferree": "Esta ideia já está encerrada."
     }
+  },
+  "APropos": {
+    "titre": "Quem somos",
+    "titreOnglet": "Quem somos · Allezou",
+    "phraseIntro": "A história do Allezou, os valores e quem está por trás do serviço.",
+    "description": "Allezou nasceu em Genebra para que as crianças brinquem ao ar livre: a história, os valores e quem faz o serviço funcionar.",
+    "placeholder": "Conteúdo a escrever — ver o brief na sessão.",
+    "retour": "Voltar às definições"
+  },
+  "Comment": {
+    "titre": "Como funciona",
+    "titreOnglet": "Como funciona · Allezou",
+    "phraseIntro": "O guia completo: criar uma conta, um círculo, anunciar uma saída, gerir as notificações.",
+    "description": "Tudo o que o Allezou faz, passo a passo: círculos, saídas, agenda dos municípios genebrinos, notificações.",
+    "placeholder": "Conteúdo a escrever — ver o brief na sessão.",
+    "retour": "Voltar às definições"
+  },
+  "Parcs": {
+    "titre": "Parques infantis em Genebra",
+    "titreOnglet": "Parques infantis em Genebra · Allezou",
+    "phraseIntro": "A nossa seleção de parques e áreas de jogo onde as famílias se encontram ao fim de semana.",
+    "description": "Os parques e áreas de jogo de Genebra e arredores onde o Allezou ajuda as famílias a encontrar-se: Bastions, La Grange, Plainpalais, Carouge e mais.",
+    "placeholder": "Conteúdo a escrever — ver o brief na sessão.",
+    "retour": "Voltar às definições"
   }
 }

@@ -24,22 +24,11 @@
     "noteNotifications": "You'll be able to turn on notifications and register this device once signed in.",
     "boutonAnnuler": "Cancel"
   },
-  "Confirmation": {
-    "titre": "Sign in to Allezou",
-    "sousTitreConnecte": "You are {email}.",
-    "sousTitreNouveau": "This address will become your identifier: {email}.",
-    "intro": "This link is only used when you click — not when a scanner opens it before you.",
-    "verifieEnCours": "Checking…",
-    "verifieFait": "All clear.",
-    "boutonConnecter": "Sign me in",
-    "noteNotifications": "You'll be able to turn on notifications and register this device once signed in.",
-    "boutonAnnuler": "Cancel"
-  },
   "Notifications": {
     "sortieEnCours": "An outing is happening now",
     "inscriptionAjoutee": "A sign-up was just added",
     "demandeAdhesion": "Someone wants to join this circle",
-  "reponseRecue": "A reply just arrived on your idea",
+    "reponseRecue": "A reply just arrived on your idea",
     "agendaTitre": "Agenda",
     "motCorrespond": "An activity matches “{mot}”",
     "inscriptionParue": "A registration-required activity was just posted",
@@ -531,7 +520,7 @@
     "inscriptionTitre": "Activities that require registration",
     "etatActif": "on",
     "etatCoupe": "off",
-    "inscriptionTexte": "Get notified the moment a registration-required activity appears, no waiting. For those, finding out late is as good as not finding out.",
+    "inscriptionTexte": "Get notified the moment a registration-required activity appears on the agenda.",
     "arreterPrevenir": "Stop notifying me",
     "prevenir": "Notify me",
     "cerclesTitre": "Your circles",
@@ -552,8 +541,6 @@
     "rappelAucun": "No reminder",
     "tuileNotificationsTitre": "Push notifications",
     "tuileNotificationsSous": "Get new activities on your phone.",
-    "inscriptionTitre": "Activities that require registration",
-    "inscriptionTexte": "Get notified the moment a registration-required activity appears on the agenda.",
     "tuileAgendaTitre": "Agenda preferences",
     "tuileAgendaAlerteActive": "Sign-up alerts on",
     "tuileAgendaAlerteInactive": "Sign-up alerts off",
@@ -623,7 +610,11 @@
     "tuileIdeesTitre": "Ideas box",
     "tuileIdeesGenerique": "Suggest, vote, follow your ideas",
     "tuilePasskeysTitre": "Come back without email",
-    "tuilePasskeysGenerique": "Register a trusted device"
+    "tuilePasskeysGenerique": "Register a trusted device",
+    "enSavoirPlusTitre": "Learn more",
+    "lienAPropos": "Who we are",
+    "lienComment": "How it works, in detail",
+    "lienParcs": "Playgrounds in Geneva"
   },
   "Connexion": {
     "accroche": "So our kids can meet up outside.",
@@ -925,5 +916,29 @@
       "pas_autorise": "Only the author and support can write in this thread.",
       "deja_ferree": "This idea is already closed."
     }
+  },
+  "APropos": {
+    "titre": "Who we are",
+    "titreOnglet": "Who we are · Allezou",
+    "phraseIntro": "The story behind Allezou, our values, and who's running the service.",
+    "description": "Allezou was born in Geneva to get kids playing outside: the story, the values, and who runs the service.",
+    "placeholder": "Content to be written — see the brief in the session.",
+    "retour": "Back to settings"
+  },
+  "Comment": {
+    "titre": "How it works",
+    "titreOnglet": "How it works · Allezou",
+    "phraseIntro": "The full guide: creating an account, a circle, posting an outing, managing notifications.",
+    "description": "Everything Allezou does, step by step: circles, outings, the Geneva municipalities' agenda, notifications.",
+    "placeholder": "Content to be written — see the brief in the session.",
+    "retour": "Back to settings"
+  },
+  "Parcs": {
+    "titre": "Playgrounds in Geneva",
+    "titreOnglet": "Playgrounds in Geneva · Allezou",
+    "phraseIntro": "Our pick of playgrounds and parks where it's good to meet up with other families on weekends.",
+    "description": "The playgrounds and parks around Geneva where Allezou helps you meet up with other families: Bastions, La Grange, Plainpalais, Carouge and more.",
+    "placeholder": "Content to be written — see the brief in the session.",
+    "retour": "Back to settings"
   }
 }
