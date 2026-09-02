@@ -284,11 +284,11 @@ export function Carte({
 }) {
   return (
     <div
-      className={`rounded-[var(--radius-carte)] bg-[color:var(--color-surface)] p-5 ${className}`}
+      className={`rounded-[var(--radius-carte)] bg-[color:var(--color-fond)] p-5 ${className}`}
       style={{
         boxShadow: accent
-          ? `inset 0 0 0 2px var(--color-${accent}), 0 3px 0 0 var(--color-${accent}-doux)`
-          : `inset 0 0 0 2px var(--color-trait), 0 3px 0 0 var(--color-trait)`,
+          ? `inset 0 0 0 2px var(--color-${accent})`
+          : `inset 0 0 0 2px var(--color-trait)`,
       }}
     >
       {children}
