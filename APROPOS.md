@@ -4,11 +4,9 @@
 
 ## L'histoire
 
-Avant Allezou, je coordonnais les sorties à la main : un message dans le groupe WhatsApp de la classe, un autre dans celui du voisinage, un SMS à une copine de leur mère. Le samedi, je recoupais trois conversations pour savoir qui sortait où, et souvent je constatais qu'on aurait pu se croiser.
+J'ai créé Allezou parce que mes filles adorent trouver des copines au parc, et qu'au lieu de passer un quart d'heure à s'ennuyer, elles passent maintenant des heures dehors, loin des écrans.
 
-J'ai commencé à coder Allezou pour ne plus avoir à faire cette gymnastique. La règle était simple : un seul endroit où dire *"on sera au parc du Gué jusqu'à 17h"* et où les autres parents du cercle voient en un clic s'ils viennent aussi. Pas de messagerie, pas de fil de discussion — l'application fait une chose, et la fait bien.
-
-Ce qui a commencé comme un outil pour mes propres sorties est devenu ce que vous utilisez aujourd'hui. J'ai ouvert Allezou à tout le canton de Genève parce que la même frustration valait pour les autres familles — il manquait juste un endroit commun pour se retrouver.
+Le samedi, elles reviennent en me racontant qu'elles ont joué avec trois copines, qu'elles ont couru après un pigeon, qu'elles ont construit une cabane. C'est ce qui me fait continuer.
 
 ## Ce qu'on résout
 
