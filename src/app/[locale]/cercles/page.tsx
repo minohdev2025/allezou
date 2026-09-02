@@ -119,7 +119,7 @@ export default async function Cercles({
                   data-bouton
                   className="flex items-center gap-4 rounded-[var(--radius-carte)] bg-[color:var(--color-surface)] px-5 py-4"
                   style={{
-                    boxShadow: `inset 0 0 0 2px var(--color-${couleur}), 0 3px 0 0 var(--color-${couleur}-doux)`,
+                    boxShadow: `inset 0 0 0 2px var(--color-${couleur}-doux)`,
                   }}
                 >
                   <span
@@ -127,7 +127,6 @@ export default async function Cercles({
                     className="h-12 w-12 shrink-0 rounded-full"
                     style={{
                       background: `var(--color-${couleur}-doux)`,
-                      border: `2px solid var(--color-${couleur})`,
                     }}
                   />
                   <span className="min-w-0 flex-1">

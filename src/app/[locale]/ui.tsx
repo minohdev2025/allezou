@@ -3,6 +3,8 @@
 import { useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
+
+import { stylesCarte } from "./carte-style";
 import { LOCALE_BCP47, type Locale } from "@/i18n/routing";
 
 /* ------------------------------------------------------------------ couleurs */
@@ -282,14 +284,11 @@ export function Carte({
   className?: string;
   accent?: Teinte;
 }) {
+  const styles = stylesCarte({ accent });
   return (
     <div
-      className={`rounded-[var(--radius-carte)] bg-[color:var(--color-fond)] p-5 ${className}`}
-      style={{
-        boxShadow: accent
-          ? `inset 0 0 0 2px var(--color-${accent})`
-          : `inset 0 0 0 2px var(--color-trait)`,
-      }}
+      className={`${styles.className} p-5 ${className}`}
+      style={styles.style}
     >
       {children}
     </div>
@@ -377,10 +376,9 @@ export function Alerte({
 
   return (
     <div
-      className="mb-5 rounded-[var(--radius-carte)] px-5 py-4 leading-snug"
+      className="mb-5 rounded-[var(--radius-carte)] bg-[color:var(--color-${t}-doux)] px-5 py-4 leading-snug"
       style={{
-        background: `var(--color-${t}-doux)`,
-        boxShadow: `inset 0 0 0 2px var(--color-${t})`,
+        boxShadow: `inset 0 0 0 2px var(--color-${t}-doux)`,
       }}
     >
       {children}
