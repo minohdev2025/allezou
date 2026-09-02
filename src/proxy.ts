@@ -69,19 +69,32 @@ export function proxy(request: NextRequest) {
   );
 
   /*
-   * Forcer 'no-store' sur les réponses HTML : un cache navigateur ou PWA peut
-   * garder une ancienne version d'une page après deploiement (Service Worker,
-   * back/forward cache, cache disque agressif). 'no-store' interdit la mise en
-   * cache de la reponse et de la requete, donc chaque navigation repart du
-   * serveur. Les ressources statiques (/_next/static/*, /icon, /apple-icon)
-   * ne sont pas touchees : leur URL change a chaque build, le cache est sur.
+   * Cache-Control : différent selon que la page est publique ou privée.
+   *
+   * Pages publiques (`/`, `/donnees`, `/questions`, `/a-propos`, `/comment`,
+   * `/parcs`, leurs variantes locales) : `public, max-age=300, s-maxage=3600,
+   * stale-while-revalidate=86400`. Un crawler comme Googlebot peut mettre
+   * la page en cache 5 minutes côté navigateur, 1 heure côté CDN, et
+   * réutiliser la version périmée jusqu'à 24h pendant qu'il régénère. C'est
+   * le standard pour un site de cette taille : le crawl budget est préservé
+   * sans cacher longtemps un contenu susceptible de bouger.
+   *
+   * Pages privées (`/maintenant`, `/reglages`, `/connexion`, etc.) :
+   * `private, no-store`. Ces pages affichent du contenu personnel, elles
+   * ne doivent jamais être cachées par un proxy intermédiaire ni par le
+   * back/forward cache du navigateur — sinon une autre personne connectée
+   * au même proxy verrait le compte d'avant.
+   *
+   * Le path d'origine est dans `request.nextUrl.pathname` ; on teste
+   * préfixe par préfixe, et tout ce qui n'est pas dans la liste publique
+   * tombe en `private, no-store` par défaut — sécurisant.
    */
-  const typeContenu = reponse.headers.get("Content-Type") ?? "";
-  if (typeContenu.includes("text/html")) {
-    reponse.headers.set("Cache-Control", "no-store, must-revalidate");
-    reponse.headers.set("Pragma", "no-cache");
-    reponse.headers.set("Expires", "0");
-  }
+  const chemin = request.nextUrl.pathname;
+  const PUBLIC = /^\/(?:$|(?:[a-z]{2}\/)?(?:donnees|questions|a-propos|comment|parcs)(?:\/.*)?$)/;
+  const estPublique = PUBLIC.test(chemin);
+  reponse.headers.set("Cache-Control", estPublique
+    ? "public, max-age=300, s-maxage=3600, stale-while-revalidate=86400"
+    : "private, no-store, no-cache, must-revalidate");
 
   return reponse;
 }
