@@ -1,36 +1,41 @@
 # Qui sommes-nous
 
-> Allezou est né à Genève, en 2026, d'un samedi matin où mes deux filles sont revenues de l'école en me disant qu'elles n'avaient personne avec qui jouer dehors.
+> Redonner aux enfants le goût de jouer dehors, simplement et en toute sécurité.
 
-## L'histoire
+## Notre mission
 
-J'ai créé Allezou parce que mes filles adorent trouver des copines au parc, et qu'au lieu de passer un quart d'heure à s'ennuyer, elles passent maintenant des heures dehors, loin des écrans.
+Je suis convaincu d'une chose simple : les enfants ont besoin de grandir en plein air, de courir, de grimper, de s'émerveiller loin des écrans. Mais en tant que parent, je manquais de visibilité sur ce qui se passait dehors — qui était déjà sorti, où étaient les copains, s'il y avait une activité près de chez nous.
 
-Le samedi, elles reviennent en me racontant qu'elles ont joué avec trois copines, qu'elles ont couru après un pigeon, qu'elles ont construit une cabane. C'est ce qui me fait continuer.
+Allezou est né pour répondre à cette question, et pour recréer du lien entre les familles d'un même quartier, d'une même classe, d'un même cercle d'amis.
 
-## Ce qu'on résout
+## Comment ça fonctionne
 
-Allezou aide les familles genevoises à faire trois choses concrètes :
+Allezou fait une chose, et la fait bien : aider les familles à se retrouver dehors.
 
-- **Se retrouver dans un parc** sans avoir à appeler cinq personnes
-- **Voir ce qui se passe dans le canton** sans consulter les sites des communes un par un
-- **Être prévenu·e** quand une activité qui correspond aux centres d'intérêt de vos enfants est publiée
+- **Des cercles privés.** Je crée ou rejoins un groupe fermé avec les familles qui comptent pour moi — voisins, parents d'élèves, amis. On est entre nous, c'est tout.
+- **Des sorties éphémères.** Je propose une sortie à 16h au parc, je l'annonce en un clic. Pas de planning surchargé : l'annonce s'efface automatiquement après l'heure de fin.
+- **Un œil sur le terrain.** Je n'envoie plus quinze messages. J'ouvre Allezou, je vois en un coup d'œil qui est déjà dehors, et je vais les rejoindre.
+- **Les activités du canton.** Je recense les animations, ateliers et événements familiaux dans tout le canton de Genève, pour ne rater aucune bonne idée de sortie.
 
-## Les valeurs
+## Ce en quoi je crois
 
-Quatre principes non négociables :
+Je suis un parent, pas un publicitaire. La protection de la vie privée n'est pas un argument marketing, c'est une conséquence directe de la façon dont j'ai construit Allezou pour mes propres filles :
 
-- **Pas de tracking publicitaire.** Aucun script tiers, aucun pixel, aucun profilage commercial. Vos données ne sont ni vendues, ni cédées, ni utilisées pour vous cibler ailleurs.
-- **Pas de fil d'actualité chronologique.** Ce qui apparaît sur votre écran dépend de ce que vous avez choisi de suivre (vos cercles, vos mots-clés, vos communes), pas d'un algorithme qui veut vous garder le plus longtemps possible.
-- **Pas d'historique exploitable.** Une sortie disparaît vingt-quatre heures après sa fin. Personne — y compris nous — ne peut reconstituer où votre famille est allée le mois dernier.
-- **Hébergement suisse, serveurs à Genève.** Vos données ne quittent pas le pays.
+- **Pas de géolocalisation traçante.** Vous choisissez un lieu dans une liste. L'application ne demande jamais à votre téléphone où vous êtes.
+- **Pas de messagerie intrusive.** Pas de fil de discussion, pas de message privé.
+- **Pas d'historique.** Une sortie disparaît vingt-quatre heures après sa fin. Personne — y compris moi — ne peut reconstituer où votre famille est allée.
+- **Pas de publicité, pas de traceur.** Aucun script tiers, aucun pixel, aucun profilage commercial. Vos données ne sont ni vendues, ni cédées.
 
-## Qui fait tourner Allezou
+Allezou est aussi accessible directement sur le web, depuis votre téléphone ou votre ordinateur. Pas besoin de télécharger une application.
 
-Allezou est développé par [Michael — michael@example.test](mailto:michael@example.test), développeur et parent à Genève. Pour les questions de modération ou de confiance, le contact est [contact@allezou.ch](mailto:contact@allezou.ch).
+## Pour qui
 
-Le projet n'a pas d'entreprise derrière et n'est pas financé par de la publicité. C'est un service mis à disposition des familles, gratuitement, dans l'idée qu'un samedi matin où trois enfants se retrouvent dehors plutôt que de jouer chacun dans leur chambre est un samedi matin réussi.
+Pour toutes les familles qui veulent que leurs enfants retrouvent le plaisir des jeux dans le sable, de la balle au pied et des rires partagés.
 
-## Comment nous contacter
+Pour les associations de quartier et les communes qui cherchent à favoriser le lien social local — il suffit de créer un cercle pour ses membres.
 
-Pour une question, un signalement, ou simplement dire bonjour : **[contact@allezou.ch](mailto:contact@allezou.ch)**. Je lis tout ce qui arrive à cette adresse, et je réponds toujours.
+Pour les écoles et les parents d'élèves, qui peuvent se coordonner pour des sorties entre copains de classe sans laisser les numéros de téléphone traîner dans des groupes WhatsApp.
+
+---
+
+Retrouvons-nous dehors. Bienvenue sur Allezou.
