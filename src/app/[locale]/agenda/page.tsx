@@ -432,6 +432,21 @@ export default async function Agenda({
         </details>
       </FormulaireFiltres>
 
+      {/*
+        Lien vers les réglages de notifications, qui abritent maintenant les
+        mots-clés et l'alerte sur inscription. Sous le bloc « Filtrer » et au-
+        dessus du contenu, que la liste soit vide ou non : c'est un raccourci
+        permanent, pas un message d'erreur ni un encouragement ponctuel.
+      */}
+      <p className="mb-6 text-sm text-[color:var(--color-doux)]">
+        <Link
+          href="/reglages/notifications"
+          className="underline underline-offset-4"
+        >
+          → {t("lienMotsCles")}
+        </Link>
+      </p>
+
       {entrees.length === 0 ? (
         <Vide emoji="🗓️" titre={t("rienNeCorrespond")}>
           {filtreActif ? (
