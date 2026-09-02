@@ -276,7 +276,7 @@ export default async function Cercle({
         {membres.map((membre) => (
           <li
             key={membre.accountId}
-            className={`rounded-2xl bg-[color:var(--color-surface)] px-4 py-3 ring-2 ring-[color:var(--color-trait)] ${
+            className={`rounded-2xl bg-[color:var(--color-surface)] px-4 py-3 shadow-[inset_0_0_0_2px_var(--color-trait)] ${
               membre.linkCut ? "opacity-55" : ""
             }`}
           >

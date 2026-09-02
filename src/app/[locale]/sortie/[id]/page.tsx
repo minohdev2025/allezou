@@ -139,7 +139,7 @@ export default async function Sortie({
         {participants.map((p) => (
           <li
             key={p.accountId}
-            className="flex items-center gap-3 rounded-2xl bg-[color:var(--color-surface)] px-4 py-3 ring-2 ring-[color:var(--color-trait)]"
+            className="flex items-center gap-3 rounded-2xl bg-[color:var(--color-surface)] px-4 py-3 shadow-[inset_0_0_0_2px_var(--color-trait)]"
           >
             <Jeton nom={p.displayName} id={p.accountId} taille={36} />
             <span className="min-w-0 flex-1">
