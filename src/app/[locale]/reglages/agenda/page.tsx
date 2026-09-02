@@ -113,7 +113,7 @@ export default async function ReglagesAgenda() {
               ? rappelHeures >= 24
                 ? t("rappelVeille")
                 : t("rappel2h")
-              : t("etatCoupe")}
+              : t("rappelAucun")}
           </Pastille>
         </div>
         <p className="mb-4 text-sm leading-snug text-[color:var(--color-doux)]">
@@ -121,7 +121,7 @@ export default async function ReglagesAgenda() {
         </p>
         <form action={reglerRappel} className="flex gap-2">
           {[
-            { heures: 0, libelle: t("etatCoupe") },
+            { heures: 0, libelle: t("rappelAucun") },
             { heures: 2, libelle: t("rappel2h") },
             { heures: 24, libelle: t("rappelVeille") },
           ].map((choix) => {
