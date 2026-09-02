@@ -23,6 +23,9 @@ import { z } from "zod";
 import { redirect as redirectVers, getPathname } from "@/i18n/navigation";
 import { LOCALE_COOKIE, routing, type Locale } from "@/i18n/routing";
 import { destroySession, requestMagicLink, setAccountLocale, setDisplayName, consumeMagicLink } from "@/lib/auth";
+import { recordAudit } from "@/lib/audit";
+import { hashIpDeLaRequete } from "@/lib/audit-ip";
+import { currentAccount } from "@/lib/session";
 import { deleteAccount } from "@/lib/account";
 import {
   acceptCoparent,
@@ -149,12 +152,59 @@ export async function demanderLien(formData: FormData) {
   if (suite) await poserSuite(suite);
 
   // La langue de la page d'où part la demande : celle de l'e-mail, et du compte à naître.
-  const result = await requestMagicLink(String(formData.get("email") ?? ""), await getLocale());
+  const emailBrute = String(formData.get("email") ?? "");
+  const result = await requestMagicLink(emailBrute, await getLocale());
+
+  // Le journal d'audit : on enregistre l'email tapé (déjà connu de l'utilisateur)
+  // pour pouvoir répondre à « je n'ai jamais reçu mon lien ». L'IP est hashée
+  // et salée (cf. audit-ip.ts), jamais stockée en clair.
+  const ipHash = await hashIpDeLaRequete();
+  await recordAudit(db, {
+    action: "auth.lien_magique.demande",
+    outcome: result.ok ? "ok" : outcomePourDemande(result.reason),
+    targetEmail: emailBrute,
+    ipHash,
+  });
 
   if (!result.ok) {
     redirect(`/connexion?erreur=${result.reason}`);
   }
   redirect("/connexion?envoye=1");
+}
+
+/**
+ * Le mapping entre les `reason` que renvoie `requestMagicLink` (en français,
+ * pour l'UI) et les `outcome` du journal d'audit (en français aussi, mais
+ * codes courts). Un seul endroit pour cette traduction : si on ajoute un
+ * nouveau reason plus tard, le compilateur ne crie pas ici, mais on perd
+ * la traçabilité — donc à surveiller.
+ */
+function outcomePourDemande(
+  reason: "adresse_invalide" | "trop_de_demandes" | "service_sature",
+): "entree_invalide" | "rate_limite" | "rate_limite" {
+  switch (reason) {
+    case "adresse_invalide":
+      return "entree_invalide";
+    case "trop_de_demandes":
+    case "service_sature":
+      return "rate_limite";
+  }
+}
+
+/**
+ * Idem pour la consommation d'un lien magique.
+ */
+function outcomePourConsommation(
+  reason: "lien_inconnu" | "lien_deja_utilise" | "lien_expire",
+): "jeton_inconnu" | "deja_utilise" | "expire" {
+  switch (reason) {
+    case "lien_inconnu":
+      return "jeton_inconnu";
+    case "lien_deja_utilise":
+      return "deja_utilise";
+    case "lien_expire":
+      return "expire";
+  }
 }
 
 /**
@@ -203,8 +253,20 @@ export async function terminerOptionsBienvenu() {
 
 export async function seDeconnecter() {
   const token = await readSessionToken();
+  const account = await currentAccount();
   if (token) await destroySession(token);
   await clearSessionCookie();
+  if (account) {
+    // On a pu identifier le compte, on garde la trace : utile pour répondre
+    // à « je me suis déconnecté sans le vouloir » et détecter les vols de session.
+    const ipHash = await hashIpDeLaRequete();
+    await recordAudit(db, {
+      action: "auth.session.detruite",
+      outcome: "ok",
+      targetAccountId: account.id,
+      ipHash,
+    });
+  }
   redirect("/connexion");
 }
 
@@ -366,6 +428,19 @@ export async function supprimerCompte(formData: FormData) {
 
   await deleteAccount(account.id);
   await clearSessionCookie();
+
+  // Trace de la suppression : utile si un parent revient en disant « ce n'est
+  // pas moi », et pour mesurer combien de comptes quittent l'app sur une
+  // période donnée.
+  const ipHashSupp = await hashIpDeLaRequete();
+  await recordAudit(db, {
+    action: "compte.supprime",
+    outcome: "ok",
+    actorId: account.id,
+    targetAccountId: account.id,
+    ipHash: ipHashSupp,
+  });
+
   redirect("/connexion?supprime=1");
 }
 
@@ -1120,9 +1195,27 @@ export async function confirmerConnexion(formData: FormData) {
   }
 
   const result = await consumeMagicLink(jeton);
+
+  // Le journal d'audit de la consommation d'un lien magique. Avant la
+  // redirection : si on redirige sans auditer, on perd la trace de
+  // l'événement (le redirect lance une exception controlée).
+  const ipHashConso = await hashIpDeLaRequete();
   if (!result.ok) {
+    await recordAudit(db, {
+      action: "auth.lien_magique.consommation.echec",
+      outcome: outcomePourConsommation(result.reason),
+      ipHash: ipHashConso,
+    });
     redirect(`/connexion?erreur=${result.reason}`);
   }
+
+  await recordAudit(db, {
+    action: "auth.lien_magique.consomme",
+    outcome: "ok",
+    targetAccountId: result.account.id,
+    ipHash: ipHashConso,
+    detail: result.isNew ? { isNew: true } : undefined,
+  });
 
   // La langue du compte prime sur celle du navigateur, comme avant.
   const locale: Locale = (routing.locales as readonly string[]).includes(result.account.locale)
