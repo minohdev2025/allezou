@@ -4,6 +4,25 @@
 # 443, sans rien demander de plus. Les en-têtes de sécurité viennent de l'application
 # (src/proxy.ts et next.config.ts) — ne pas les redéfinir ici, deux valeurs pour un même
 # en-tête et le navigateur n'en retient qu'une, ou aucune.
+#
+# NOTE : `rate_limit` (avec `zone`) requiert Caddy ≥ 2.7. La version installée
+# par apt ici est 2.6.2 (cf. `caddy version`). Le rate limit est donc porté
+# uniquement par l'application : `src/lib/auth.ts > requestMagicLink` bloque
+# par email + global par minute, et `src/proxy.ts` met un cache no-store
+# sur les pages auth. Quand Caddy sera upgradé, décommenter le bloc ci-dessous.
+#
+# Exemple pour Caddy 2.7+ :
+#
+#	zone connexion_zone {
+#		key {remote_host}
+#		events 1000
+#		discard 100
+#	}
+#	@connexion path /connexion /connexion/* /en/connexion /en/connexion/* /es/connexion /es/connexion/* /pt/connexion /pt/connexion/* /sq/connexion /sq/connexion/*
+#	rate_limit @connexion connexion_zone 30r/m 30
+#
+# La couche applicative protège déjà correctement les demandes de magic link
+# ; ce rate limit Caddy serait la couche 1 (côté edge), en complément.
 
 allezou.ch {
 	# Le port 80 est fermé : inutile de laisser Caddy tenter le défi HTTP à chaque

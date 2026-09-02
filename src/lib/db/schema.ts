@@ -903,11 +903,35 @@ export const jobRun = pgTable("job_run", {
 });
 
 /**
- * Traçabilité des actes sensibles : rôles, invitations, exclusions, suppressions.
+ * Traçabilité des actes sensibles : rôles, invitations, exclusions, suppressions,
+ * et — depuis l'audit logging — également les événements d'auth (demande et
+ * consommation d'un lien magique, échec de passkey, suppression de compte).
  *
  * Aucune publication n'entre ici, jamais. Un journal qui enregistrerait les présences
  * reconstituerait exactement l'historique de déplacement que PRODUIT.md interdit.
  * Cette règle est vérifiée par un test.
+ *
+ * Conventions sur `action` :
+ *  - Cercles : `circle.invite_sent`, `circle.member_added`, `circle.member_removed`,
+ *    `circle.link_cut`, `circle.link_uncut`, `circle.archived`...
+ *  - Co-parentalité : `coparent.invited`, `coparent.accepted`, `coparent.separated`
+ *  - Auth : `auth.magic_link_requested`, `auth.magic_link_consumed`,
+ *    `auth.magic_link_consume_failed`, `auth.passkey_used`, `auth.passkey_use_failed`,
+ *    `auth.account_deleted`, `auth.session_destroyed`
+ *  - Système : `system.rate_limit_blocked`
+ *
+ * `actorId` est l'auteur de l'action quand il y en a un. Pour `auth.magic_link_requested`
+ * (avant création du compte) il est nul : on sait juste que quelqu'un a demandé
+ * un lien pour cet email (`targetAccountId` est aussi nul dans ce cas).
+ *
+ * `outcome` est `ok` quand l'action a réussi, ou un code d'échec court :
+ * `invalid_input`, `rate_limited`, `expired`, `already_used`, `unknown_token`,
+ * `not_authenticated`, `forbidden`. Pour les actions « toujours ok »
+ * (circle.member_added par exemple), `outcome` reste à `ok`.
+ *
+ * `ipHash` est un SHA-256 salé côté serveur de l'IP du client. Pas de PII en clair :
+ * corrélation possible entre tentatives venues du même réseau sans reconstituer
+ * l'IP elle-même. Voir `src/lib/audit.ts` pour le calcul et le sel.
  */
 export const auditLog = pgTable(
   "audit_log",
@@ -918,9 +942,22 @@ export const auditLog = pgTable(
     action: varchar({ length: 60 }).notNull(),
     circleId: uuid().references(() => circle.id, { onDelete: "set null" }),
     targetAccountId: uuid().references(() => account.id, { onDelete: "set null" }),
+    /**
+     * Email tenté quand l'action concerne un email plutôt qu'un compte identifié
+     * (auth.magic_link_requested). Nul sinon. RGPD-compatible : c'est l'utilisateur
+     * qui l'a fourni, le support en a besoin pour répondre à « je n'ai jamais reçu ».
+     */
+    targetEmail: varchar({ length: 254 }),
+    outcome: varchar({ length: 30 }).notNull().default("ok"),
+    ipHash: varchar({ length: 64 }),
     detail: jsonb(),
   },
-  (t) => [index("audit_log_circle_idx").on(t.circleId, t.at)],
+  (t) => [
+    index("audit_log_circle_idx").on(t.circleId, t.at),
+    index("audit_log_target_idx").on(t.targetAccountId, t.at),
+    index("audit_log_action_at_idx").on(t.action, t.at),
+    index("audit_log_email_idx").on(t.targetEmail),
+  ],
 );
 
 /* -------------------------------------------------------------------- idées */

@@ -17,6 +17,7 @@ import * as s from "./db/schema";
 export type { Executor };
 
 export const AUDIT_ACTIONS = [
+  // Cercles — la liste blanche d'origine. Voir le commentaire en tête.
   "cercle.cree",
   "cercle.invitation.creee",
   "cercle.invitation.revoquee",
@@ -27,17 +28,64 @@ export const AUDIT_ACTIONS = [
   "cercle.membre.exclu",
   "cercle.role.change",
   "cercle.admin.succession",
+  "cercle.lien_coupe",
+  "cercle.lien_retabli",
+  // Co-parentalité — pas dans l'original, ajouté pour répondre à
+  // « qui a invité mon ex et quand ». Pas une publication, donc OK.
+  "coparent.invitation.creee",
+  "coparent.invitation.acceptee",
+  "coparent.separation",
+  // Auth — pas dans l'original, ajouté pour pouvoir répondre à
+  // « je n'ai jamais reçu mon lien magique » et détecter les attaques
+  // (même IP qui demande 100 liens / minute). Pas une publication, donc OK.
+  "auth.lien_magique.demande",
+  "auth.lien_magique.consomme",
+  "auth.lien_magique.consommation.echec",
+  "auth.passkey.enregistree",
+  "auth.passkey.utilisee",
+  "auth.passkey.utilisation.echec",
+  "auth.session.detruite",
+  "auth.tentative.bloquee_rate_limit",
+  // Comptes.
   "compte.supprime",
   "compte.sessions.revoquees",
 ] as const;
 
 export type AuditAction = (typeof AUDIT_ACTIONS)[number];
 
+/**
+ * Issue d'une action d'auth : `ok` quand elle a réussi, ou un code court
+ * qui dit pourquoi elle a échoué. Les actions non-auth (cercle.*, compte.*)
+ * restent à `ok` — leur succès/échec est encodé dans l'action elle-même
+ * (cercle.demande.refusee vs cercle.demande.acceptee).
+ */
+export type AuditOutcome =
+  | "ok"
+  | "entree_invalide"
+  | "rate_limite"
+  | "expire"
+  | "deja_utilise"
+  | "jeton_inconnu"
+  | "non_authentifie"
+  | "refuse"
+  | "erreur_interne";
+
 export type AuditEntry = {
   action: AuditAction;
   actorId?: string | null;
   circleId?: string | null;
   targetAccountId?: string | null;
+  /**
+   * Email visé par l'action, dans le cas d'auth (avant création du compte).
+   * Nul sinon. RGPD-compatible : c'est l'utilisateur qui l'a fourni.
+   */
+  targetEmail?: string | null;
+  outcome?: AuditOutcome;
+  /**
+   * Hash SHA-256 salé de l'IP du client. Voir `audit-ip.ts` pour le calcul
+   * et le sel. Nul si l'IP est absente (tests, scripts).
+   */
+  ipHash?: string | null;
   detail?: Record<string, unknown>;
 };
 
@@ -53,6 +101,9 @@ export async function recordAudit(exec: Executor, entry: AuditEntry): Promise<vo
     actorId: entry.actorId ?? null,
     circleId: entry.circleId ?? null,
     targetAccountId: entry.targetAccountId ?? null,
+    targetEmail: entry.targetEmail ?? null,
+    outcome: entry.outcome ?? "ok",
+    ipHash: entry.ipHash ?? null,
     detail: entry.detail ?? null,
   });
 }
