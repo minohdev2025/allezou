@@ -58,8 +58,8 @@ COPY --from=builder --chown=nextjs:nodejs /app/scripts ./scripts
 # Les pages /donnees et /questions lisent ces fichiers sur le disque : ils doivent voyager
 # avec le serveur, sinon les parents tomberaient sur une erreur à l'endroit précis où on leur
 # promet la clarté. Le joker embarque aussi les traductions (DONNEES.sq.md…) — sans elles,
-# le repli silencieux vers le français cacherait leur absence en production.
-COPY --from=builder --chown=nextjs:nodejs /app/DONNEES*.md /app/QUESTIONS*.md ./
+# une locale qui n'a pas son propre fichier retombe sur le français.
+COPY --from=builder --chown=nextjs:nodejs /app/DONNEES*.md /app/QUESTIONS*.md /app/APROPOS*.md /app/COMMENT*.md ./
 
 USER nextjs
 EXPOSE 4100
