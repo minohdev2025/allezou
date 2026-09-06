@@ -684,8 +684,6 @@
     "refuseeTexteNavigateur": "Es tu navegador el que las rechaza para este sitio, y ese ajuste es independiente del de tu teléfono. Toca el icono a la izquierda de la dirección, arriba de la pantalla, luego «Permisos», y activa las notificaciones."
   },
   "Maintenant": {
-    "bonjour": "Hola {nom} 👋",
-    "titre": "¿Quién está fuera?",
     "titreAucunCercle": "Todavía ningún círculo",
     "texteAucunCercle": "Ahí es donde se comparten las salidas.",
     "rejoindreOuCreer": "Unirse o crear un círculo",
@@ -695,7 +693,6 @@
     "voirAgenda": "Ver toda la agenda",
     "titrePersonneDehors": "No hay nadie fuera",
     "textePersonneDehors": "En tus círculos, nadie ha declarado una salida en curso.",
-    "titreAVenir": "Próximamente",
     "aVenirDate": "{jour} desde las {heure}",
     "enCoursJusqua": "hasta las {heure}",
     "vous": "Tú",
@@ -706,6 +703,11 @@
     "vousYEtes": "Estás ahí",
     "nousAussi": "Nosotros también",
     "autresFamilles": "{n, plural, one {# familia más} other {# familias más}}",
+    "famillesDehors": "{n, plural, =0 {familias fuera} one {familia fuera} other {familias fuera}}",
+    "parmiVosCercles": "entre tus {n} círculos",
+    "yEst": "está fuera",
+    "restants": "restantes",
+    "aVenirPar": "{nom} irá a",
     "annoncerSortie": "Anunciar una salida"
   },
   "Sortie": {

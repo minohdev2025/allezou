@@ -26,7 +26,7 @@ const titre = localFont({
 
 const texte = localFont({
   src: "../../fonts/nunito-latin.woff2",
-  weight: "400 700",
+  weight: "400 900",
   variable: "--font-texte",
 });
 

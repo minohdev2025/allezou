@@ -684,8 +684,6 @@
     "refuseeTexteNavigateur": "É o seu navegador que as recusa para este site, e essa definição é independente da do seu telemóvel. Toque no ícone à esquerda do endereço, na parte superior do ecrã, depois em « Permissões », e ative as notificações."
   },
   "Maintenant": {
-    "bonjour": "Olá, {nom} 👋",
-    "titre": "Quem está lá fora?",
     "titreAucunCercle": "Ainda sem círculos",
     "texteAucunCercle": "É aqui que as saídas são partilhadas.",
     "rejoindreOuCreer": "Juntar-se a um círculo ou criar um",
@@ -695,7 +693,6 @@
     "voirAgenda": "Ver toda a agenda",
     "titrePersonneDehors": "Ninguém está lá fora",
     "textePersonneDehors": "Nos seus círculos, ninguém tem uma saída em curso.",
-    "titreAVenir": "Brevemente",
     "aVenirDate": "{jour} a partir das {heure}",
     "enCoursJusqua": "até às {heure}",
     "vous": "Eu",
@@ -706,6 +703,11 @@
     "vousYEtes": "Está lá",
     "nousAussi": "Nós também",
     "autresFamilles": "{n, plural, one {# outra família} other {# outras famílias}}",
+    "famillesDehors": "{n, plural, =0 {famílias lá fora} one {família lá fora} other {famílias lá fora}}",
+    "parmiVosCercles": "entre os seus {n} círculos",
+    "yEst": "está lá fora",
+    "restants": "restantes",
+    "aVenirPar": "{nom} vai a",
     "annoncerSortie": "Anunciar uma saída"
   },
   "Sortie": {
@@ -797,7 +799,7 @@
     "lieuPasDansListe": "O local não está na lista",
     "corrigerUnLieu": "Corrigir um local",
     "confirmerLaSortie": "Confirmar a saída",
-    "confirmationDetail": "Vai para os círculos assinalados; os membros são avisados <strong>dentro de um minuto</strong> — tempo suficiente para cancelar.",
+    "confirmationDetail": "Vai para os círculos assinalados; os membros são avisados <strong>dentro de um minuto</strong>, tempo suficiente para cancelar.",
     "choisirDabordUnLieu": "Escolha primeiro um local.",
     "situer": "Localizar no mapa",
     "situerAria": "Localizar {nom} no mapa",

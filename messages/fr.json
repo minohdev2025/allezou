@@ -684,8 +684,6 @@
     "refuseeTexteNavigateur": "C'est votre navigateur qui les refuse pour ce site, et ce réglage-là est séparé de celui de votre téléphone. Touchez l'icône à gauche de l'adresse, en haut de l'écran, puis « Autorisations », et activez les notifications."
   },
   "Maintenant": {
-    "bonjour": "Bonjour {nom} 👋",
-    "titre": "Qui est dehors ?",
     "titreAucunCercle": "Aucun cercle pour l'instant",
     "texteAucunCercle": "C'est là que se partagent les sorties.",
     "rejoindreOuCreer": "Rejoindre ou créer un cercle",
@@ -695,7 +693,6 @@
     "voirAgenda": "Voir tout l'agenda",
     "titrePersonneDehors": "Personne n'est dehors",
     "textePersonneDehors": "Parmi vos cercles, personne n'a déclaré de sortie en cours.",
-    "titreAVenir": "À venir",
     "aVenirDate": "{jour} dès {heure}",
     "enCoursJusqua": "jusqu'à {heure}",
     "vous": "Vous",
@@ -706,6 +703,11 @@
     "vousYEtes": "Vous y êtes",
     "nousAussi": "Nous aussi",
     "autresFamilles": "{n, plural, one {# autre famille} other {# autres familles}}",
+    "famillesDehors": "{n, plural, =0 {famille dehors} one {famille dehors} other {familles dehors}}",
+    "parmiVosCercles": "parmi vos {n} cercles",
+    "yEst": "y est",
+    "restants": "restantes",
+    "aVenirPar": "{nom} ira",
     "annoncerSortie": "Annoncer une sortie"
   },
   "Sortie": {
@@ -797,7 +799,7 @@
     "lieuPasDansListe": "Le lieu n'est pas dans la liste",
     "corrigerUnLieu": "Corriger un lieu",
     "confirmerLaSortie": "Confirmer la sortie",
-    "confirmationDetail": "Part vers les cercles cochés ; membres prévenus <strong>dans une minute</strong> — le temps d'annuler.",
+    "confirmationDetail": "Part vers les cercles cochés ; membres prévenus <strong>dans une minute</strong>, le temps d'annuler.",
     "choisirDabordUnLieu": "Choisissez d'abord un lieu.",
     "situer": "Situer sur la carte",
     "situerAria": "Situer {nom} sur la carte",

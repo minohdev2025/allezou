@@ -129,10 +129,21 @@ export type VisiblePublication = {
   placeName: string | null;
   /** Où c'est, quand quelqu'un l'a renseigné. Sert à celui qui hésite à venir. */
   placeAddress: string | null;
+  /** La nature du lieu, pour l'emoji qui le reconnaît d'un coup d'œil. Nulle si non classé. */
+  placeCategorie: string | null;
+  /** La commune du lieu — affichée à côté de l'heure sur l'écran principal. */
+  placeCommune: string | null;
   placeLat: number | null;
   placeLon: number | null;
   eventId: string | null;
   eventTitle: string | null;
+  /**
+   * Le nom du cercle destinataire, quand la publication passe par un cercle.
+   * Affiché en pastille sur l'écran principal : « ● Classe de 4P ». Nul pour une
+   * publication dont l'auteur est seul destinataire (cas rare) ou quand plusieurs
+   * cercles sont destinataires (on prend le premier par simplicité).
+   */
+  circleName: string | null;
   note: string | null;
   startsAt: Date;
   endsAt: Date;
@@ -189,10 +200,13 @@ export async function visiblePublications(
     place_id: string | null;
     place_name: string | null;
     place_address: string | null;
+    place_categorie: string | null;
+    place_commune: string | null;
     place_lat: number | null;
     place_lon: number | null;
     event_id: string | null;
     event_title: string | null;
+    circle_name: string | null;
     note: string | null;
     starts_at: Date;
     ends_at: Date;
@@ -208,10 +222,27 @@ export async function visiblePublications(
       p.place_id,
       pl.name as place_name,
       pl.address as place_address,
+      pl.categorie as place_categorie,
+      pl.commune as place_commune,
       pl.lat as place_lat,
       pl.lon as place_lon,
       p.event_id,
       ev.title as event_title,
+      (
+        -- Le cercle destinataire, vu par le lecteur : son alias s'il en a choisi un,
+        -- sinon le nom du cercle. Limite 1 : une publication adressée à plusieurs
+        -- cercles n'affiche que le premier (par nom, donc stable entre deux rendus).
+        select coalesce(self.alias, c.name)
+        from publication_circle pc
+        join circle c on c.id = pc.circle_id and c.archived_at is null
+        left join circle_membership self
+          on self.circle_id = c.id
+          and self.account_id = ${readerId}::uuid
+          and self.left_at is null
+        where pc.publication_id = p.id
+        order by c.name asc
+        limit 1
+      ) as circle_name,
       p.note,
       p.starts_at,
       p.ends_at,
@@ -246,10 +277,13 @@ export async function visiblePublications(
     placeId: r.place_id,
     placeName: r.place_name,
     placeAddress: r.place_address,
+    placeCategorie: r.place_categorie,
+    placeCommune: r.place_commune,
     placeLat: r.place_lat,
     placeLon: r.place_lon,
     eventId: r.event_id,
     eventTitle: r.event_title,
+    circleName: r.circle_name,
     note: r.note,
     startsAt: asDate(r.starts_at),
     endsAt: asDate(r.ends_at),

@@ -684,8 +684,6 @@
     "refuseeTexteNavigateur": "Është shfletuesi juaj që i refuzon për këtë faqe, dhe ai cilësim është i ndarë nga ai i telefonit tuaj. Prekni ikonën në të majtë të adresës, lart në ekran, pastaj « Lejet », dhe aktivizoni njoftimet."
   },
   "Maintenant": {
-    "bonjour": "Mirëdita {nom} 👋",
-    "titre": "Kush është jashtë?",
     "titreAucunCercle": "Asnjë rreth për momentin",
     "texteAucunCercle": "Aty ndahen daljet.",
     "rejoindreOuCreer": "Bashkohuni ose krijoni një rreth",
@@ -695,7 +693,6 @@
     "voirAgenda": "Shihni gjithë agjendën",
     "titrePersonneDehors": "Askush nuk është jashtë",
     "textePersonneDehors": "Në rrethet tuaja, askush nuk ka shpallur ndonjë dalje në vazhdim.",
-    "titreAVenir": "Së shpejti",
     "aVenirDate": "{jour} që nga ora {heure}",
     "enCoursJusqua": "deri në {heure}",
     "vous": "Ju",
@@ -706,7 +703,12 @@
     "vousYEtes": "Ju jeni atje",
     "nousAussi": "Ne gjithashtu",
     "autresFamilles": "{n, plural, one {# familje tjetër} other {# familje të tjera}}",
-    "annoncerSortie": "Shpallni një dalje"
+    "famillesDehors": "{n, plural, =0 {familje jashtë} one {familje jashtë} other {familje jashtë}}",
+    "parmiVosCercles": "mes {n} rrathëve tuaj",
+    "yEst": "është jashtë",
+    "restants": "të mbetura",
+    "aVenirPar": "{nom} do të shkojë në",
+    "annoncerSortie": "Shpall një dalje"
   },
   "Sortie": {
     "erreurs": {
@@ -797,7 +799,7 @@
     "lieuPasDansListe": "Vendi nuk është në listë",
     "corrigerUnLieu": "Korrigjoni një vend",
     "confirmerLaSortie": "Konfirmoni daljen",
-    "confirmationDetail": "Shkon te rrethet e shënuara; anëtarët njoftohen <strong>brenda një minute</strong> — koha për ta anuluar.",
+    "confirmationDetail": "Shkon te rrethet e shënuara; anëtarët njoftohen <strong>brenda një minute</strong>, koha për ta anuluar.",
     "choisirDabordUnLieu": "Zgjidhni fillimisht një vend.",
     "situer": "Gjeolokalizo në hartë",
     "situerAria": "Gjeolokalizo {nom} në hartë",

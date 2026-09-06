@@ -1,9 +1,9 @@
 import { getLocale, getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
-import type { Locale } from "@/i18n/routing";
-
+import { LOCALE_BCP47, type Locale } from "@/i18n/routing";
 import { upcomingCalendar } from "@/lib/calendar";
+import { EMOJIS_CATEGORIE, estCategorieLieu } from "@/lib/categories-lieu";
 import { myChildren } from "@/lib/children";
 import { currentlyOut, upcomingOutings } from "@/lib/publications";
 import { requireAccount } from "@/lib/session";
@@ -13,8 +13,6 @@ import { rejoindreSortie, retirerSortie } from "../actions";
 import { DemandeNotifications } from "./demande-notifications";
 import {
   Carte,
-  IconeArbre,
-  Jeton,
   LienBouton,
   Navigation,
   Pastille,
@@ -24,6 +22,24 @@ import {
   teinte,
 } from "../ui";
 
+/*
+ * Écran « Plein jour » (DA V3, validée le 5 septembre 2026).
+ *
+ * Un parent dehors, une main occupée, trois secondes : il doit voir COMBIEN de
+ * familles sont dehors, et le bouton pour sortir. D'où la hiérarchie :
+ *
+ *  1. la date, petite, en capitales — on situe le jour sans le lire ;
+ *  2. le compteur géant en vert — le vert est la couleur du « dehors », jamais
+ *     d'autre chose ;
+ *  3. les cartes, avec l'anneau « reste Xh » qui rend le temps visible sans JS
+ *     (le pourcentage est calculé au rendu serveur) ;
+ *  4. la barre d'action unique « NOUS SORTONS » en vermillon, épinglée au-dessus
+ *     des onglets — le vermillon est l'unique couleur-signal : il ne porte que le
+ *     geste, jamais un état.
+ *
+ * Le thème `.plein-jour` (papier #f6f4ee, trait accordé) est porté par le <main> :
+ * il ne s'applique qu'à cet écran tant que la DA n'est pas généralisée.
+ */
 export default async function Maintenant() {
   const account = await requireAccount();
   const t = await getTranslations("Maintenant");
@@ -42,47 +58,73 @@ export default async function Maintenant() {
     dépendent de personne : c'est la seule chose qui vaille quelque chose le premier jour,
     quand tout le reste attend que d'autres familles arrivent.
 
-    Il était réservé à qui n'avait aucun cercle. Mais un parent qui en a trois voit le même
-    écran vide dès que personne n'est sorti, et c'est là, précisément, que ces activités
-    valent quelque chose. La condition n'est donc plus « pas de cercle », c'est « rien à
-    voir » — dont le premier jour n'est qu'un cas particulier.
-
-    L'appel à sortir reste en tête, et les sorties des autres passent avant : on n'a rien
-    caché de ce qu'il faut faire, on a ajouté ce qu'il y a à voir en attendant.
+    La condition n'est pas « pas de cercle » mais « rien à voir » — dont le premier jour
+    n'est qu'un cas particulier. L'appel à sortir reste épinglé en bas, et les sorties des
+    autres passent avant : on n'a rien caché de ce qu'il faut faire, on a ajouté ce qu'il
+    y a à voir en attendant.
   */
   const rienAVoir = cercles.length === 0 || (sorties.length === 0 && aVenir.length === 0);
   const enAttendant = rienAVoir ? await upcomingCalendar(account.id, { limit: 3 }) : [];
 
-  return (
-    <main className="apparait">
-      <header className="mb-6">
-        <p className="text-[color:var(--color-doux)]">
-          {t("bonjour", { nom: account.displayName })}
-        </p>
-        <h1 className="text-[1.75rem] font-bold leading-tight">{t("titre")}</h1>
-      </header>
+  /* « Samedi 5 septembre » — en capitales à l'affichage, première lettre majuscule ici
+     pour les lecteurs d'écran qui restituent la casse. */
+  const dateBrute = new Intl.DateTimeFormat(LOCALE_BCP47[locale], {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    timeZone: "Europe/Zurich",
+  }).format(new Date());
+  const dateEnTete =
+    dateBrute.charAt(0).toLocaleUpperCase(LOCALE_BCP47[locale]) + dateBrute.slice(1);
 
-      <div className="mb-7">
-        {/*
-          « Annoncer une sortie » et pas « Nous sortons » : sous « Qui est dehors ? », le
-          présent se lisait comme un constat — un état de la famille — alors que ce bouton
-          ouvre la déclaration. Le verbe rend l'invitation ; « Nous sortons » reste le
-          titre de l'écran qui s'ouvre.
-        */}
-        <LienBouton href="/sortir" variante="principal" className="!py-5 !text-xl">
-          <IconeArbre className="h-7 w-7" />
-          {t("annoncerSortie")}
-        </LienBouton>
-      </div>
+  /*
+    La barre d'action unique. « Annoncer une sortie » : le geste se dit au lecteur, pas
+    à la première personne — la maquette tranchait « Nous sortons » mais le titre
+    d'écran qui le justifiait a disparu, remplacé par le compteur, et l'utilisateur a
+    préféré l'infinitif explicite (2026-09-06). Le titre de /sortir reste « Nous
+    sortons » : sur l'écran lui-même, la première personne redevient juste.
+    Sans cercle, pas de barre : l'écran propose d'abord d'en rejoindre un.
+  */
+  const barreSortir =
+    cercles.length > 0 ? (
+      <Link
+        href="/sortir"
+        data-bouton
+        className="flex h-16 w-full items-center justify-between rounded-[18px] bg-[color:var(--color-signal)] px-5 text-[1.05rem] font-black uppercase tracking-wide text-[color:var(--color-signal-encre)] transition-transform active:translate-y-[2px]"
+      >
+        {t("annoncerSortie")}
+        <span aria-hidden className="text-2xl font-black">
+          →
+        </span>
+      </Link>
+    ) : null;
+
+  return (
+    <main className="plein-jour apparait">
+      <header className="mb-5">
+        <p className="text-[0.8rem] font-bold uppercase tracking-[0.18em] text-[color:var(--color-doux)]">
+          {dateEnTete}
+        </p>
+        <div className="mt-1.5 flex items-baseline gap-3">
+          <span className="text-[3.5rem] font-black leading-none tracking-[-0.04em] text-[color:var(--color-vert)]">
+            {sorties.length}
+          </span>
+          <span className="text-base font-extrabold uppercase leading-tight tracking-[0.02em]">
+            {t("famillesDehors", { n: sorties.length })}
+            {cercles.length > 0 ? (
+              <small className="mt-1 block text-xs font-semibold normal-case tracking-[0.04em] text-[color:var(--color-doux)]">
+                {t("parmiVosCercles", { n: cercles.length })}
+              </small>
+            ) : null}
+          </span>
+        </div>
+      </header>
 
       {/*
         Bannière de demande d'autorisation pour les notifications push. Visible
         uniquement quand l'utilisateur a déjà rejoint un cercle — c'est le
-        moment où les notifications deviennent utiles : on commence à recevoir
-        des informations des autres membres. Le composant client décide lui-même
-        s'il s'affiche réellement (vérifie la permission `Notification` et la
-        mémoire localStorage), donc ici on le rend dès qu'au moins un cercle
-        existe.
+        moment où les notifications deviennent utiles. Le composant client décide
+        lui-même s'il s'affiche réellement.
       */}
       {cercles.length > 0 ? <DemandeNotifications /> : null}
 
@@ -103,7 +145,7 @@ export default async function Maintenant() {
               {t("textePersonneDehors")}
             </Vide>
           ) : (
-            <ul className="space-y-4">
+            <ul className="space-y-3">
               {sorties.map((sortie) => (
                 <li key={sortie.id}>
                   <LigneSortie
@@ -117,21 +159,18 @@ export default async function Maintenant() {
           )}
 
           {aVenir.length > 0 ? (
-            <section className="mt-8">
-              <h2 className="titre mb-3 text-lg font-bold">{t("titreAVenir")}</h2>
-              <ul className="space-y-4">
-                {aVenir.map((sortie) => (
-                  <li key={sortie.id}>
-                    <LigneSortie
-                      sortie={sortie}
-                      accountId={account.id}
-                      mesEnfants={enfants.map((e) => e.id)}
-                      aVenir
-                    />
-                  </li>
-                ))}
-              </ul>
-            </section>
+            <ul className="mt-5 space-y-3">
+              {aVenir.map((sortie) => (
+                <li key={sortie.id}>
+                  <LigneSortie
+                    sortie={sortie}
+                    accountId={account.id}
+                    mesEnfants={enfants.map((e) => e.id)}
+                    aVenir
+                  />
+                </li>
+              ))}
+            </ul>
           ) : null}
         </>
       )}
@@ -142,7 +181,6 @@ export default async function Maintenant() {
           <p className="mb-3 text-sm leading-snug text-[color:var(--color-doux)]">
             {t("sousTitreCanton")}
           </p>
-
           <ul className="mb-4 space-y-2">
             {enAttendant.map((activite) => {
               /*
@@ -190,12 +228,11 @@ export default async function Maintenant() {
               );
             })}
           </ul>
-
           <LienBouton href="/agenda">{t("voirAgenda")}</LienBouton>
         </section>
       ) : null}
 
-      <Navigation actif="maintenant" />
+      <Navigation actif="maintenant" action={barreSortir} />
     </main>
   );
 }
@@ -217,138 +254,234 @@ async function LigneSortie({
   const autres = participants.filter((p) => !p.isAuthor);
   const jySuis = participants.some((p) => p.accountId === accountId);
   const cestMoi = sortie.authorId === accountId;
-  const couleur = teinte(sortie.placeId ?? sortie.id);
 
-  /**
-   * L'action tient dans une pastille à droite du nom plutôt que dans une barre pleine
-   * largeur : la carte descend d'environ 70 px, ce qui fait tenir une sortie de plus à
-   * l'écran sans rien retirer de ce qui se lit. Se retirer d'une sortie qu'on a rejointe
-   * reste possible depuis sa page de détail — c'est un geste rare, il n'a pas à occuper
-   * l'écran principal.
-   */
-  const pastilleAction =
-    "shrink-0 rounded-[var(--radius-pilule)] px-4 py-2.5 text-sm font-bold shadow-[inset_0_0_0_2px_var(--color-trait)] active:translate-y-[1px]";
+  /* Bouton fantôme : geste calme (annuler, rentrés) — jamais de vermillon dessus. */
+  const fantome =
+    "inline-flex shrink-0 items-center gap-1.5 rounded-[12px] bg-[color:var(--color-surface2)] px-3.5 py-2 text-sm font-extrabold shadow-[inset_0_0_0_1px_var(--color-trait)] active:translate-y-[1px]";
+  /* Le vermillon ne porte que le geste positif : rejoindre une sortie. */
+  const signal =
+    "inline-flex shrink-0 items-center gap-1.5 rounded-[12px] bg-[color:var(--color-signal)] px-4 py-2 text-sm font-black uppercase tracking-wide text-[color:var(--color-signal-encre)] active:translate-y-[1px]";
 
-  return (
-    <Carte accent={couleur} className="!p-4">
-      <div className="mb-2 flex items-start justify-between gap-3">
-        <h2 className="titre text-xl font-bold leading-tight">
-          <Link href={`/sortie/${sortie.id}`} className="underline-offset-4 hover:underline">
-            {sortie.placeName}
-          </Link>
-        </h2>
-        {/*
-          « jusqu'à » et « dès », écrits.
+  const enfantsLigne = [
+    sortie.authorChildren.length > 0
+      ? t("avecEnfants", { liste: listeFr(sortie.authorChildren) })
+      : null,
+    autres.length > 0 ? t("autresFamilles", { n: autres.length }) : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
 
-          Le même emplacement portait l'heure de fin pour une sortie en cours et l'heure de
-          début pour une sortie à venir, avec la même icône d'horloge : seule la couleur les
-          distinguait, et personne n'apprend un code couleur qu'on ne lui a pas donné. Deux
-          mots règlent la question, et l'horloge devient inutile — elle prenait la place
-          qu'ils occupent.
-        */}
-        <span
-          className="shrink-0 rounded-[var(--radius-pilule)] px-2.5 py-1 text-sm font-bold"
-          style={
-            aVenir
-              ? { background: "var(--color-bleu-doux)", color: "var(--color-bleu)" }
-              : { background: "var(--color-ambre-doux)", color: "var(--color-ambre)" }
-          }
-        >
-          {aVenir
-            ? t("aVenirDate", {
-                jour: jourCourt(sortie.startsAt, locale).jour,
-                heure: heureCourte(sortie.startsAt),
-              })
-            : t("enCoursJusqua", { heure: heureCourte(sortie.endsAt) })}
-        </span>
-      </div>
-
-      <div className="flex items-center gap-3">
-        <Jeton nom={sortie.authorName} id={sortie.authorId} />
-
-        <div className="min-w-0 flex-1">
-          <p className="font-bold leading-tight">{cestMoi ? t("vous") : sortie.authorName}</p>
-          {sortie.authorChildren.length > 0 ? (
-            <p className="text-sm text-[color:var(--color-doux)]">
-              {t("avecEnfants", { liste: listeFr(sortie.authorChildren) })}
-            </p>
-          ) : null}
+  /* ---- sortie à venir : ligne compacte, bloc date bleu à gauche ---- */
+  if (aVenir) {
+    const jour = jourCourt(sortie.startsAt, locale);
+    return (
+      <Carte className="flex items-center gap-3 !p-3">
+        <div className="flex w-16 shrink-0 flex-col items-center rounded-[13px] bg-[color:var(--color-bleu-doux)] px-1 py-2">
+          <span className="text-[0.7rem] font-extrabold uppercase tracking-[0.12em] text-[color:var(--color-bleu)]">
+            {jour.jour}
+          </span>
+          <span className="mt-0.5 text-[1.05rem] font-black leading-none text-[color:var(--color-bleu)]">
+            {heureCourte(sortie.startsAt)}
+          </span>
         </div>
-
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-[0.97rem] font-extrabold leading-tight">
+            <Link
+              href={`/sortie/${sortie.id}`}
+              className="underline-offset-4 hover:underline"
+            >
+              {sortie.placeName}
+            </Link>
+          </p>
+          <p className="mt-0.5 truncate text-xs text-[color:var(--color-doux)]">
+            {[
+              cestMoi ? t("vous") : t("aVenirPar", { nom: sortie.authorName }),
+              enfantsLigne,
+              sortie.circleName,
+            ]
+              .filter(Boolean)
+              .join(" · ")}
+          </p>
+        </div>
         {cestMoi ? (
-          <form action={retirerSortie} className="text-right">
+          <form action={retirerSortie}>
             <input type="hidden" name="sortie" value={sortie.id} />
-            {/*
-              Tant que la minute de silence court (notifiedAt vide), retirer la sortie ne
-              réveille personne : le bouton dit « Annuler », et la petite ligne dit
-              pourquoi c'est encore sans conséquence. Une fois les alertes parties, le
-              même geste redevient « Rentrés » — on ne reprend pas ce qui a sonné.
-            */}
-            <button className={pastilleAction}>
-              {aVenir || !sortie.notifiedAt ? t("annuler") : t("rentres")}
-            </button>
-            {!aVenir && !sortie.notifiedAt ? (
-              <p className="mt-1 text-xs leading-tight text-[color:var(--color-doux)]">
-                {t("pasEncorePrevenu")}
-              </p>
-            ) : null}
+            <button className={fantome}>{t("annuler")}</button>
           </form>
         ) : jySuis ? (
           <Pastille couleur="vert">{t("vousYEtes")}</Pastille>
         ) : (
-          <form action={rejoindreSortie}>
+          /*
+            Rejoindre avant le départ reste possible depuis cet écran : la maquette
+            n'affichait qu'une pastille « à venir », mais c'est un écran statique —
+            l'app, elle, a toujours laissé dire « nous aussi » en avance.
+          */
+          <form action={rejoindreSortie} className="shrink-0">
             <input type="hidden" name="sortie" value={sortie.id} />
             {mesEnfants.map((id) => (
               <input key={id} type="hidden" name="enfant" value={id} />
             ))}
-            <button
-              className={pastilleAction}
-              style={{ background: "var(--color-vert)", color: "var(--color-fond)" }}
-            >
+            <button className={signal}>
               {t("nousAussi")}
+              <span aria-hidden>→</span>
+            </button>
+          </form>
+        )}
+      </Carte>
+    );
+  }
+
+  /* ---- sortie en cours : anneau compte à rebours + lieu en grand ---- */
+
+  /*
+    L'anneau se remplit du temps RESTANT : il se vide à mesure que la sortie avance,
+    et le pouce restant est la quantité verte. Calculé au rendu serveur — aucun JS
+    côté client pour ça (le tic-tac en direct viendra plus tard, s'il vient).
+  */
+  const total = sortie.endsAt.getTime() - sortie.startsAt.getTime();
+  // `new Date()` et non `Date.now()` : la règle react-hooks/purity l'accepte, comme
+  // partout ailleurs dans les composants serveur de l'app (sortie/[id], reglages).
+  const resteMs = Math.max(0, sortie.endsAt.getTime() - new Date().getTime());
+  const pourcent = total > 0 ? Math.round((resteMs / total) * 100) : 0;
+  const minutes = Math.max(1, Math.round(resteMs / 60_000));
+  const duree =
+    minutes >= 60
+      ? `${Math.floor(minutes / 60)}h${String(minutes % 60).padStart(2, "0")}`
+      : `${minutes}min`;
+
+  const emoji =
+    sortie.placeCategorie && estCategorieLieu(sortie.placeCategorie)
+      ? EMOJIS_CATEGORIE[sortie.placeCategorie]
+      : "📍";
+
+  return (
+    <Carte className="relative overflow-hidden !p-3.5">
+      {/* Le liseré vert des sorties en cours : le « dehors » déborde de la carte. */}
+      <div
+        aria-hidden
+        className="absolute inset-y-0 left-0 w-[5px] bg-[color:var(--color-vert)]"
+      />
+      <div className="flex gap-4">
+        <div
+          role="img"
+          aria-label={`${duree} ${t("restants")}`}
+          className="relative h-16 w-16 shrink-0 rounded-full"
+          style={{
+            background: `conic-gradient(var(--color-vert) 0 ${pourcent}%, var(--color-anneau-vide) ${pourcent}% 100%)`,
+          }}
+        >
+          <div className="absolute inset-[7px] flex flex-col items-center justify-center rounded-full bg-[color:var(--color-surface)]">
+            <span className="text-[0.95rem] font-black leading-none tracking-tight">
+              {duree}
+            </span>
+            <span className="mt-0.5 text-[0.47rem] font-bold uppercase tracking-[0.06em] text-[color:var(--color-doux)]">
+              {t("restants")}
+            </span>
+          </div>
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-[0.97rem] font-extrabold leading-snug">
+            {cestMoi ? (
+              <Link
+                href={`/sortie/${sortie.id}`}
+                className="underline-offset-4 hover:underline"
+              >
+                {t("vousYEtes")}
+              </Link>
+            ) : (
+              <>
+                <Link
+                  href={`/sortie/${sortie.id}`}
+                  className="underline-offset-4 hover:underline"
+                >
+                  {sortie.authorName}
+                </Link>{" "}
+                <span className="font-bold text-[color:var(--color-doux)]">
+                  {t("yEst")}
+                </span>
+              </>
+            )}
+          </p>
+          {enfantsLigne ? (
+            <p className="mt-0.5 text-xs leading-snug text-[color:var(--color-doux)]">
+              {enfantsLigne}
+            </p>
+          ) : null}
+          {sortie.note ? <p className="mt-1 text-sm">{sortie.note}</p> : null}
+          <div className="mt-2 flex items-center gap-2">
+            <span
+              aria-hidden
+              className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-[9px] bg-[color:var(--color-surface2)] text-[15px]"
+            >
+              {emoji}
+            </span>
+            <div className="min-w-0">
+              <p className="truncate text-[1.05rem] font-black leading-tight tracking-tight">
+                <Link
+                  href={`/sortie/${sortie.id}`}
+                  className="underline-offset-4 hover:underline"
+                >
+                  {sortie.placeName}
+                </Link>
+              </p>
+              <p className="truncate text-xs font-semibold text-[color:var(--color-doux)]">
+                {[
+                  sortie.placeCommune,
+                  sortie.startsAt <= new Date()
+                    ? t("enCoursJusqua", { heure: heureCourte(sortie.endsAt) })
+                    : t("aVenirDate", {
+                        jour: jourCourt(sortie.startsAt, locale).jour,
+                        heure: heureCourte(sortie.startsAt),
+                      }),
+                ]
+                  .filter(Boolean)
+                  .join(" · ")}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="mt-3 flex items-center justify-between gap-2.5">
+        {sortie.circleName ? (
+          <span className="inline-flex min-w-0 items-center gap-1.5 rounded-full bg-[color:var(--color-vert-doux)] px-3 py-1.5 text-xs font-extrabold text-[color:var(--color-vert)]">
+            <span aria-hidden>●</span>
+            <span className="truncate">{sortie.circleName}</span>
+          </span>
+        ) : (
+          <span aria-hidden />
+        )}
+        {/*
+          Tant que la minute de silence court (notifiedAt vide), retirer la sortie ne
+          réveille personne : « Annuler ». Une fois les alertes parties, le même geste
+          redevient « Rentrés » — on ne reprend pas ce qui a sonné. Se retirer d'une
+          sortie qu'on a rejointe (sans l'avoir créée) reste possible depuis sa page.
+        */}
+        {cestMoi ? (
+          <form action={retirerSortie} className="shrink-0">
+            <input type="hidden" name="sortie" value={sortie.id} />
+            <button className={fantome}>
+              {!sortie.notifiedAt ? t("annuler") : t("rentres")}
+            </button>
+          </form>
+        ) : jySuis ? (
+          <Pastille couleur="vert">{t("vousYEtes")}</Pastille>
+        ) : (
+          <form action={rejoindreSortie} className="shrink-0">
+            <input type="hidden" name="sortie" value={sortie.id} />
+            {mesEnfants.map((id) => (
+              <input key={id} type="hidden" name="enfant" value={id} />
+            ))}
+            <button className={signal}>
+              {t("nousAussi")}
+              <span aria-hidden>→</span>
             </button>
           </form>
         )}
       </div>
-
-      {sortie.note ? <p className="mt-2 text-[0.95rem]">{sortie.note}</p> : null}
-
-      {autres.length > 0 ? (
-        <details className="mt-2">
-          {/*
-            « 5 autres familles » et non « +5 ».
-
-            Trois visages s'affichaient, suivis de « +5 » où 5 était le total : on lisait
-            « trois, et cinq de plus ». Le nombre annoncé compte maintenant tout le monde,
-            et les visages ne le contredisent plus.
-          */}
-          <summary className="flex cursor-pointer list-none items-center gap-2 py-1 text-sm font-bold text-[color:var(--color-vert)]">
-            <span className="flex -space-x-2">
-              {autres.slice(0, 3).map((p) => (
-                <Jeton key={p.accountId} nom={p.displayName} id={p.accountId} taille={24} />
-              ))}
-            </span>
-            {t("autresFamilles", { n: autres.length })}
-          </summary>
-          <ul className="mt-2 space-y-1.5 text-sm">
-            {autres.map((p) => (
-              <li key={p.accountId} className="flex items-center gap-2">
-                <Jeton nom={p.displayName} id={p.accountId} taille={26} />
-                <span>
-                  <span className="font-semibold">
-                    {p.accountId === accountId ? t("vous") : p.displayName}
-                  </span>
-                  {p.children.length > 0 ? (
-                    <span className="text-[color:var(--color-doux)]">
-                      {" "}
-                      {t("avecEnfants", { liste: listeFr(p.children) })}
-                    </span>
-                  ) : null}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </details>
+      {cestMoi && !sortie.notifiedAt ? (
+        <p className="mt-1.5 text-right text-xs leading-tight text-[color:var(--color-doux)]">
+          {t("pasEncorePrevenu")}
+        </p>
       ) : null}
     </Carte>
   );

@@ -684,8 +684,6 @@
     "refuseeTexteNavigateur": "It's your browser that's blocking them for this site, and that setting is separate from your phone's. Tap the icon to the left of the address bar, at the top of the screen, then “Permissions,” and turn notifications on."
   },
   "Maintenant": {
-    "bonjour": "Hi {nom} 👋",
-    "titre": "Who's outside?",
     "titreAucunCercle": "No circles yet",
     "texteAucunCercle": "This is where outings get shared.",
     "rejoindreOuCreer": "Join or create a circle",
@@ -695,7 +693,6 @@
     "voirAgenda": "See the full agenda",
     "titrePersonneDehors": "No one's outside",
     "textePersonneDehors": "No one in your circles has an outing going on right now.",
-    "titreAVenir": "Coming up",
     "aVenirDate": "{jour} from {heure}",
     "enCoursJusqua": "until {heure}",
     "vous": "You",
@@ -706,6 +703,11 @@
     "vousYEtes": "You're there",
     "nousAussi": "Us too",
     "autresFamilles": "{n, plural, one {# other family} other {# other families}}",
+    "famillesDehors": "{n, plural, =0 {families out} one {family out} other {families out}}",
+    "parmiVosCercles": "across your {n} circles",
+    "yEst": "is out",
+    "restants": "left",
+    "aVenirPar": "{nom} is going to",
     "annoncerSortie": "Announce an outing"
   },
   "Sortie": {
@@ -797,7 +799,7 @@
     "lieuPasDansListe": "The place isn't in the list",
     "corrigerUnLieu": "Correct a place",
     "confirmerLaSortie": "Confirm the outing",
-    "confirmationDetail": "Goes out to the circles you checked; members are notified <strong>in one minute</strong> — time enough to cancel.",
+    "confirmationDetail": "Goes out to the circles you checked; members are notified <strong>in one minute</strong>, time enough to cancel.",
     "choisirDabordUnLieu": "Choose a place first.",
     "situer": "Locate on the map",
     "situerAria": "Locate {nom} on the map",

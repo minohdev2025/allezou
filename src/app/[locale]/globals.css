@@ -43,8 +43,33 @@
   --color-socle-ambre: rgba(0, 0, 0, 0.18);
   --color-socle-corail: rgba(0, 0, 0, 0.18);
 
+  /* DA « Plein jour » (V3, validée le 5 septembre 2026) : le vermillon des balises de
+     sentier est l'unique couleur-signal — il ne porte que le geste (« Nous sortons »,
+     « Nous aussi »), jamais un état. Le vert reste la couleur du « dehors ». */
+  --color-signal: #e8590c;
+  --color-signal-encre: #ffffff;
+  /* Fond secondaire : pastilles d'icône, boutons fantômes. */
+  --color-surface2: #efece3;
+  /* Piste vide de l'anneau compte à rebours. */
+  --color-anneau-vide: #e7e3d9;
+
   --radius-carte: 1.5rem;
   --radius-pilule: 999px;
+}
+
+/*
+ * Le thème « Plein jour » de l'écran Maintenant : papier plus gris que le crème
+ * historique (lisible en plein soleil, le vrai contexte d'usage), trait accordé.
+ * Portée volontairement limitée à cet écran tant que la DA n'est pas généralisée —
+ * les autres pages gardent le fond crème. En mode sombre, aucune redéfinition :
+ * la palette sombre existante s'applique telle quelle (variante sombre V3 à dériver
+ * plus tard, si besoin).
+ */
+@media (prefers-color-scheme: light) {
+  .plein-jour {
+    --color-fond: #f6f4ee;
+    --color-trait: #e0dbd0;
+  }
 }
 
 /*
@@ -76,6 +101,11 @@
     --color-socle-vert: #17784f;
     --color-socle-ambre: #9c5c00;
     --color-socle-corail: #c0362f;
+
+    /* Signal vermillon éclairci : sur fond sombre, #e8590c s'assombrit trop. */
+    --color-signal: #f76707;
+    --color-surface2: #2b2836;
+    --color-anneau-vide: #383343;
   }
 }
 

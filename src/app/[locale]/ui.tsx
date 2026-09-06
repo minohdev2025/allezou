@@ -512,8 +512,15 @@ export function Vide({
  */
 export function Navigation({
   actif,
+  action,
 }: {
   actif: "maintenant" | "agenda" | "cercles" | "reglages";
+  /**
+   * Le geste principal de l'écran, épinglé juste au-dessus des onglets (DA « Plein
+   * jour » : une seule barre d'action, toujours visible). Les autres pages n'en
+   * passent pas et ne changent pas.
+   */
+  action?: React.ReactNode;
 }) {
   // `useTranslations` marche aussi dans un composant serveur, et celui-ci n'a rien d'async.
   const t = useTranslations("Navigation");
@@ -547,6 +554,9 @@ export function Navigation({
         faisaient rogner. Au moins 0.75rem, davantage quand l'appareil dit sa vraie marge.
       */}
       <nav className="sticky bottom-0 z-20 -mx-5 border-t-2 border-[color:var(--color-trait)] bg-[color:var(--color-surface)] pb-[max(env(safe-area-inset-bottom),0.75rem)]">
+        {action ? (
+          <div className="mx-auto max-w-lg px-4 pt-3">{action}</div>
+        ) : null}
         <ul className="mx-auto flex max-w-lg">
         {onglets.map(({ cle, href, texte, Icone }) => {
           const estActif = actif === cle;
