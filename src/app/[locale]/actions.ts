@@ -23,6 +23,7 @@ import { z } from "zod";
 import { redirect as redirectVers, getPathname } from "@/i18n/navigation";
 import { LOCALE_COOKIE, routing, type Locale } from "@/i18n/routing";
 import { destroySession, requestMagicLink, setAccountLocale, setDisplayName, consumeMagicLink } from "@/lib/auth";
+import { extraireDeLien, extraireDePhoto, extraireDeTexte, poserAnnonceCookie } from "@/lib/annonce";
 import { recordAudit } from "@/lib/audit";
 import { hashIpDeLaRequete } from "@/lib/audit-ip";
 import { currentAccount } from "@/lib/session";
@@ -929,9 +930,44 @@ export async function proposerActivite(formData: FormData) {
   });
 
   if (!result.ok) redirect(`/agenda/nouveau?erreur=${result.reason}`);
-
   prevenir(result.value.publicationId);
   redirect(`/agenda/${result.value.eventId}`);
+}
+
+/**
+ * Lire une annonce (photo d'affiche, lien ou texte collé) et pré-remplir le formulaire.
+ *
+ * Une seule action pour trois entrées : le formulaire envoie la photo, le lien ou le
+ * texte, on prend le premier présent. Rien n'est publié ici ; l'annonce lue part dans un
+ * témoin de quinze minutes que la page du formulaire relit pour pré-remplir les champs.
+ * Le parent relit et corrige avant de proposer.
+ */
+export async function lireAnnonce(formData: FormData) {
+  await requireAccount();
+
+  const fichier = formData.get("photo");
+  const lien = formData.get("lien")?.toString().trim();
+  const texte = formData.get("texte")?.toString().trim();
+
+  const photo = fichier instanceof File && fichier.size > 0 ? fichier : undefined;
+  if (!photo && !lien && !texte) redirect("/agenda/nouveau?annonce=rien_trouve");
+
+  let resultat;
+  try {
+    if (photo) resultat = await extraireDePhoto(photo);
+    else if (lien) resultat = await extraireDeLien(lien);
+    else resultat = await extraireDeTexte(texte!);
+  } catch {
+    // Le modèle a échoué (réseau, quota, réponse illisible). Pas de détail technique
+    // dans l'URL : le parent voit juste que la lecture n'a pas abouti.
+    redirect("/agenda/nouveau?annonce=rien_trouve");
+  }
+
+  if (!resultat.ok) redirect(`/agenda/nouveau?annonce=${resultat.raison}`);
+
+  const { ok: _ok, ...annonce } = resultat;
+  await poserAnnonceCookie(annonce);
+  redirect("/agenda/nouveau?annonce=1");
 }
 
 /* ---------------------------------------------------------------------- lieux */

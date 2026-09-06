@@ -306,6 +306,51 @@ export async function appelMiniMax(systeme: string, utilisateur: string): Promis
   return content;
 }
 
+/**
+ * Le même appel, avec une image en plus du texte. MiniMax M3 lit les images directement
+ * (spike validé en septembre 2026) : pas d'OCR local, la photo d'affiche part en base64
+ * dans le message utilisateur, au format OpenAI vision.
+ */
+export async function appelMiniMaxVision(
+  systeme: string,
+  utilisateur: string,
+  image: { mime: string; base64: string },
+): Promise<string> {
+  const response = await fetch(MINIMAX_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey()}`,
+    },
+    body: JSON.stringify({
+      model: MINIMAX_MODEL,
+      temperature: 0,
+      response_format: { type: "json_object" },
+      messages: [
+        { role: "system", content: systeme },
+        {
+          role: "user",
+          content: [
+            { type: "text", text: utilisateur },
+            { type: "image_url", image_url: { url: `data:${image.mime};base64,${image.base64}` } },
+          ],
+        },
+      ],
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`MiniMax : HTTP ${response.status} ${await lireTexte(response, 500)}`);
+  }
+
+  const body = (await response.json()) as {
+    choices?: { message?: { content?: string } }[];
+  };
+  const content = body.choices?.[0]?.message?.content;
+  if (!content) throw new Error("MiniMax : réponse vide");
+  return content;
+}
+
 export async function extractEventsWithMiniMax(
   pageText: string,
   pageUrl: string,

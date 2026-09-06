@@ -250,7 +250,24 @@
     "visiblePar": "Visível para",
     "vousYAllezAvec": "Vai com",
     "proposerEtSInscrire": "Propor e inscrever-se",
-    "retourAgenda": "Voltar à agenda"
+    "retourAgenda": "Voltar à agenda",
+    "annonceTitre": "Partir de um anúncio",
+    "annonceAide": "Uma foto do cartaz, um link ou o texto do anúncio: o Allezou lê e preenche o formulário. Confirme os campos antes de propor.",
+    "annoncePhoto": "Foto do anúncio",
+    "annonceLien": "Link do anúncio",
+    "annonceTexte": "Texto do anúncio",
+    "annonceTextePlaceholder": "Cole aqui o texto do anúncio",
+    "annonceLire": "Ler o anúncio",
+    "annonceAnalyse": "Analisando a página, o texto ou a foto…",
+    "annonceTermineeTitre": "Análise concluída",
+    "annonceRelue": "As informações abaixo foram encontradas no anúncio. Confirme-as e complete-as se necessário antes de propor.",
+    "annonceErreurs": {
+      "image_invalide": "Não foi possível ler a foto. Tente outra imagem.",
+      "lien_invalide": "Não foi possível abrir esse link. Verifique o endereço ou cole o texto do anúncio.",
+      "texte_trop_court": "O texto é curto demais para descrever uma saída. Acrescente os detalhes do anúncio.",
+      "rien_trouve": "Nenhuma saída com data encontrada no anúncio. Preencha o formulário manualmente.",
+      "date_invraisemblable": "A data lida parece passada ou distante demais. Corrija o campo antes de propor."
+    }
   },
   "Cercles": {
     "titre": "Os seus círculos",

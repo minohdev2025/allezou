@@ -1,13 +1,15 @@
 import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
 
+import { lireAnnonceCookie } from "@/lib/annonce";
 import { myChildren } from "@/lib/children";
 import { searchPlaces } from "@/lib/places";
 import { defaultAudience } from "@/lib/publications";
 import { requireAccount } from "@/lib/session";
 import { readerCircles } from "@/lib/visibility";
-import { proposerActivite } from "../../actions";
+import { lireAnnonce, proposerActivite } from "../../actions";
 import { Alerte, Bouton, Carte, Champ, PUCE_COCHEE, Titre, teinte } from "../../ui";
+import { BoutonLireAnnonce } from "./bouton-lire-annonce";
 
 const champ =
   "w-full rounded-2xl bg-[color:var(--color-surface)] px-4 py-3.5 text-base ring-2 ring-[color:var(--color-trait)] outline-none focus:ring-[color:var(--color-vert)]";
@@ -18,22 +20,37 @@ const champ =
  * Un seul geste crée l'entrée du calendrier *et* y inscrit son auteur : quelqu'un qui
  * signale une activité y va, sinon il ne la signalerait pas. L'activité elle-même est
  * publique ; c'est l'inscription qui choisit ses cercles.
+ *
+ * Une annonce déjà écrite (photo d'affiche, lien ou texte collé) peut être lue en
+ * amont : `lireAnnonce` pose le résultat dans un témoin, cette page le relit et
+ * pré-remplit les champs. Rien n'est publié sans relecture du parent.
  */
 export default async function NouvelleActivite({
   searchParams,
 }: {
-  searchParams: Promise<{ erreur?: string }>;
+  searchParams: Promise<{ erreur?: string; annonce?: string }>;
 }) {
   const t = await getTranslations("AgendaNouveau");
   const account = await requireAccount();
-  const { erreur } = await searchParams;
-
+  const { erreur, annonce } = await searchParams;
   const MESSAGES: Record<string, string> = {
     titre_invalide: t("erreurs.titre_invalide"),
     dates_invalides: t("erreurs.dates_invalides"),
     aucun_destinataire: t("erreurs.aucun_destinataire"),
     cercle_interdit: t("erreurs.cercle_interdit"),
   };
+  const MESSAGES_ANNONCE: Record<string, string> = {
+    image_invalide: t("annonceErreurs.image_invalide"),
+    lien_invalide: t("annonceErreurs.lien_invalide"),
+    texte_trop_court: t("annonceErreurs.texte_trop_court"),
+    rien_trouve: t("annonceErreurs.rien_trouve"),
+    date_invraisemblable: t("annonceErreurs.date_invraisemblable"),
+  };
+
+  // `annonce=1` : la lecture a abouti, le témoin porte les champs. Sinon la valeur
+  // est la raison de l'échec, affichée en alerte.
+  const annonceLue = annonce === "1" ? await lireAnnonceCookie() : undefined;
+  const annonceEchec = annonce && annonce !== "1" ? annonce : undefined;
 
   const [lieux, cercles, enfants, defauts] = await Promise.all([
     searchPlaces("", 50),
@@ -54,31 +71,106 @@ export default async function NouvelleActivite({
         <Alerte ton="erreur">{MESSAGES[erreur] ?? t("erreurGenerique")}</Alerte>
       ) : null}
 
+      {annonceEchec ? (
+        <Alerte ton="erreur">
+          {MESSAGES_ANNONCE[annonceEchec] ?? t("annonceErreurs.rien_trouve")}
+        </Alerte>
+      ) : null}
+
       {cercles.length === 0 ? (
         <Carte>
           <p className="text-[color:var(--color-doux)]">{t("rejoindreCercle")}</p>
         </Carte>
       ) : (
-        <Carte>
-          <form action={proposerActivite} className="space-y-5">
-            <Champ
-              label={t("labelQuoi")}
-              name="titre"
-              required
-              maxLength={120}
-              placeholder={t("placeholderTitre")}
-            />
-
-            <div className="flex gap-2">
-              <label className="flex-1">
-                <span className="mb-1 block font-bold">{t("debut")}</span>
-                <input type="datetime-local" name="debut" required className={champ} />
-              </label>
-              <label className="flex-1">
-                <span className="mb-1 block font-bold">{t("fin")}</span>
-                <input type="datetime-local" name="fin" className={champ} />
-              </label>
+        <div className="space-y-5">
+          {/*
+            La lecture d'annonce est un raccourci, pas le chemin principal : repliée par
+            défaut, elle ne prend pas de place à qui remplit le formulaire à la main. Elle
+            se rouvre seule quand la dernière tentative a échoué, pour corriger et relancer
+            sans chercher l'entrée.
+          */}
+          <details
+            open={annonceEchec !== undefined}
+            className="rounded-[var(--radius-carte)] bg-[color:var(--color-surface)] shadow-[inset_0_0_0_2px_var(--color-trait)]"
+          >
+            <summary className="cursor-pointer px-5 py-4 text-sm font-bold text-[color:var(--color-encre)]">
+              {t("annonceTitre")}
+            </summary>
+            <div className="border-t border-[color:var(--color-trait)] px-5 py-4">
+              <form action={lireAnnonce} className="space-y-4">
+                <p className="text-sm leading-snug text-[color:var(--color-doux)]">
+                  {t("annonceAide")}
+                </p>
+                <label className="block">
+                  <span className="mb-1 block font-bold">{t("annoncePhoto")}</span>
+                  <input
+                    type="file"
+                    name="photo"
+                    accept="image/*"
+                    className="block w-full text-sm text-[color:var(--color-doux)] file:mr-3 file:rounded-[var(--radius-pilule)] file:border-0 file:bg-[color:var(--color-surface)] file:px-4 file:py-2.5 file:text-sm file:font-bold file:text-[color:var(--color-encre)] file:ring-2 file:ring-[color:var(--color-trait)]"
+                  />
+                </label>
+                <label className="block">
+                  <span className="mb-1 block font-bold">{t("annonceLien")}</span>
+                  <input
+                    type="url"
+                    name="lien"
+                    placeholder="https://"
+                    className={champ}
+                  />
+                </label>
+                <label className="block">
+                  <span className="mb-1 block font-bold">{t("annonceTexte")}</span>
+                  <textarea
+                    name="texte"
+                    rows={4}
+                    placeholder={t("annonceTextePlaceholder")}
+                    className={`${champ} resize-y`}
+                  />
+                </label>
+                <BoutonLireAnnonce />
+              </form>
             </div>
+          </details>
+
+          <Carte>
+            <form action={proposerActivite} className="space-y-5">
+              {annonceLue ? (
+                <div className="apparait rounded-2xl bg-[color:var(--color-vert-doux)] px-4 py-3">
+                  <p className="font-bold">{t("annonceTermineeTitre")}</p>
+                  <p className="mt-1 text-sm leading-snug">{t("annonceRelue")}</p>
+                </div>
+              ) : null}
+              <Champ
+                label={t("labelQuoi")}
+                name="titre"
+                required
+                maxLength={120}
+                defaultValue={annonceLue?.titre}
+                placeholder={t("placeholderTitre")}
+              />
+
+              <div className="flex gap-2">
+                <label className="flex-1">
+                  <span className="mb-1 block font-bold">{t("debut")}</span>
+                  <input
+                    type="datetime-local"
+                    name="debut"
+                    required
+                    defaultValue={annonceLue?.debut}
+                    className={champ}
+                  />
+                </label>
+                <label className="flex-1">
+                  <span className="mb-1 block font-bold">{t("fin")}</span>
+                  <input
+                    type="datetime-local"
+                    name="fin"
+                    defaultValue={annonceLue?.fin}
+                    className={champ}
+                  />
+                </label>
+              </div>
 
             <label className="block">
               <span className="mb-1 block font-bold">{t("ou")}</span>
@@ -148,8 +240,9 @@ export default async function NouvelleActivite({
             ) : null}
 
             <Bouton type="submit">{t("proposerEtSInscrire")}</Bouton>
-          </form>
-        </Carte>
+            </form>
+          </Carte>
+        </div>
       )}
 
       <p className="mt-6 text-center">

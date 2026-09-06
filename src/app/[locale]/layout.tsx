@@ -119,6 +119,7 @@ export default async function RootLayout({
     [
       "CleAcces",
       "Agenda",
+      "AgendaNouveau",
       "NotificationsClient",
       "DemandeNotifications",
       "Confirmation",
