@@ -13,6 +13,7 @@ import { rejoindreSortie, retirerSortie } from "../actions";
 import { DemandeNotifications } from "./demande-notifications";
 import {
   Carte,
+  IconeFleche,
   LienBouton,
   Navigation,
   Pastille,
@@ -90,12 +91,10 @@ export default async function Maintenant() {
       <Link
         href="/sortir"
         data-bouton
-        className="flex h-16 w-full items-center justify-between rounded-[18px] bg-[color:var(--color-signal)] px-5 text-[1.05rem] font-black uppercase tracking-wide text-[color:var(--color-signal-encre)] transition-transform active:translate-y-[2px]"
+        className="flex h-16 w-full items-center justify-center gap-2 rounded-[18px] bg-[color:var(--color-signal)] px-5 text-[1.05rem] font-black uppercase tracking-wide text-[color:var(--color-signal-encre)] transition-transform active:translate-y-[2px]"
       >
         {t("annoncerSortie")}
-        <span aria-hidden className="text-2xl font-black">
-          →
-        </span>
+        <IconeFleche />
       </Link>
     ) : null;
 
@@ -232,7 +231,7 @@ export default async function Maintenant() {
         </section>
       ) : null}
 
-      <Navigation actif="maintenant" action={barreSortir} />
+      <Navigation actif="maintenant" action={barreSortir} papier />
     </main>
   );
 }

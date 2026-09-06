@@ -66,9 +66,20 @@
  * plus tard, si besoin).
  */
 @media (prefers-color-scheme: light) {
-  .plein-jour {
+  /*
+    Le body porte aussi les variables, pas seulement `.plein-jour` : le fond visible
+    est peint sur le <body>, hors de la portée du <main> qui les redéfinit — sans
+    cela le papier « Plein jour » restait théorique, et tout élément peint en
+    var(--color-fond) dans le main (le menu collant) tranchait sur le crème du body.
+    Sans :has() (navigateurs anciens), dégradation douce : le crème historique partout.
+  */
+  .plein-jour,
+  body:has(.plein-jour) {
     --color-fond: #f6f4ee;
     --color-trait: #e0dbd0;
+  }
+  body:has(.plein-jour) {
+    background: var(--color-fond);
   }
 }
 

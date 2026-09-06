@@ -52,6 +52,25 @@ type IconeProps = { className?: string };
 
 const base = "h-6 w-6 shrink-0";
 
+/**
+ * Flèche droite, même trait que les pictogrammes d'onglets : le bouton vermillon de
+ * /maintenant l'emploie à la place d'un « → » typographique, qui flottait mal aligné
+ * à côté des capitales.
+ */
+export function IconeFleche({ className = "" }: IconeProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={`${base} ${className}`} aria-hidden>
+      <path
+        d="M4 12h15m0 0-6-6m6 6-6 6"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export function IconeArbre({ className = "" }: IconeProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={`${base} ${className}`} aria-hidden>
@@ -513,6 +532,7 @@ export function Vide({
 export function Navigation({
   actif,
   action,
+  papier,
 }: {
   actif: "maintenant" | "agenda" | "cercles" | "reglages";
   /**
@@ -521,6 +541,12 @@ export function Navigation({
    * passent pas et ne changent pas.
    */
   action?: React.ReactNode;
+  /**
+   * Écran au papier « Plein jour » : le panneau prend le fond de l'écran au lieu de
+   * la surface blanche, pour ne pas trancher (la couture blanc/crème se lisait comme
+   * une rustine collée sur la page). Le filet gris suffit à marquer la barre.
+   */
+  papier?: boolean;
 }) {
   // `useTranslations` marche aussi dans un composant serveur, et celui-ci n'a rien d'async.
   const t = useTranslations("Navigation");
@@ -553,9 +579,13 @@ export function Navigation({
         boutons système sans annoncer de marge (env() rend 0), et les libellés se
         faisaient rogner. Au moins 0.75rem, davantage quand l'appareil dit sa vraie marge.
       */}
-      <nav className="sticky bottom-0 z-20 -mx-5 border-t-2 border-[color:var(--color-trait)] bg-[color:var(--color-surface)] pb-[max(env(safe-area-inset-bottom),0.75rem)]">
+      <nav
+        className={`sticky bottom-0 z-20 -mx-5 border-t-2 border-[color:var(--color-trait)] pb-[max(env(safe-area-inset-bottom),0.75rem)] ${
+          papier ? "bg-[color:var(--color-fond)]" : "bg-[color:var(--color-surface)]"
+        }`}
+      >
         {action ? (
-          <div className="mx-auto max-w-lg px-4 pt-3">{action}</div>
+          <div className="mx-auto max-w-lg px-5 pt-3">{action}</div>
         ) : null}
         <ul className="mx-auto flex max-w-lg">
         {onglets.map(({ cle, href, texte, Icone }) => {
