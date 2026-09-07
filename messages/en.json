@@ -631,7 +631,6 @@
   },
   "Maintenant": {
     "titreAucunCercle": "No circles yet",
-    "texteAucunCercle": "This is where outings get shared.",
     "rejoindreOuCreer": "Join or create a circle",
     "titreCanton": "Upcoming outings around the canton",
     "sousTitreCanton": "Activities from Geneva's municipalities, open to everyone.",
@@ -694,7 +693,6 @@
       "debut_invalide": "This time doesn't work: an outing can be posted up to two weeks ahead, not in the past."
     },
     "videCercleTitre": "You'll need a circle first",
-    "videCercleTexte": "An outing goes out to the families in a circle. Without one, no one would see it, and Allezou won't post it into thin air.",
     "creerRejoindreCercle": "Create or join a circle",
     "videLieuTitre": "No places in the catalog",
     "ajouterPremierLieu": "Add the first one",

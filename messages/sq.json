@@ -631,7 +631,6 @@
   },
   "Maintenant": {
     "titreAucunCercle": "Asnjë rreth për momentin",
-    "texteAucunCercle": "Aty ndahen daljet.",
     "rejoindreOuCreer": "Bashkohuni ose krijoni një rreth",
     "titreCanton": "Daljet e ardhshme të kantonit",
     "sousTitreCanton": "Aktivitetet e komunave të Gjenevës, të hapura për të gjithë.",
@@ -694,7 +693,6 @@
       "debut_invalide": "Kjo orë nuk përshtatet: një dalje njoftohet deri në dy javë përpara, jo në të shkuarën."
     },
     "videCercleTitre": "Ju duhet fillimisht një rreth",
-    "videCercleTexte": "Një dalje u drejtohet familjeve të një rrethi. Pa rreth, askush nuk do ta shihte, dhe Allezou refuzon ta botojë në boshllëk.",
     "creerRejoindreCercle": "Krijoni ose bashkohuni me një rreth",
     "videLieuTitre": "Asnjë vend në katalog",
     "ajouterPremierLieu": "Shtoni të parin",

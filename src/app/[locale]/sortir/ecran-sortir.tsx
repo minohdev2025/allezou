@@ -134,7 +134,6 @@ export async function EcranSortir({
       */}
       {account && cercles.length === 0 ? (
         <Vide titre={t("videCercleTitre")}>
-          <p className="mb-4">{t("videCercleTexte")}</p>
           <LienBouton href="/cercles" variante="principal">
             {t("creerRejoindreCercle")}
           </LienBouton>

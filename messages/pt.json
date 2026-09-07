@@ -631,7 +631,6 @@
   },
   "Maintenant": {
     "titreAucunCercle": "Ainda sem círculos",
-    "texteAucunCercle": "É aqui que as saídas são partilhadas.",
     "rejoindreOuCreer": "Juntar-se a um círculo ou criar um",
     "titreCanton": "As próximas saídas do cantão",
     "sousTitreCanton": "As atividades das comunas genebrinas, abertas a todos.",
@@ -694,7 +693,6 @@
       "debut_invalide": "Esta hora não é válida: uma saída pode ser anunciada com até duas semanas de antecedência, nunca no passado."
     },
     "videCercleTitre": "Primeiro precisa de um círculo",
-    "videCercleTexte": "Uma saída dirige-se às famílias de um círculo. Sem círculo, ninguém a veria, e o Allezou recusa-se a publicá-la no vazio.",
     "creerRejoindreCercle": "Criar ou juntar-se a um círculo",
     "videLieuTitre": "Nenhum local no catálogo",
     "ajouterPremierLieu": "Adicionar o primeiro",

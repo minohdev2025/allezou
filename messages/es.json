@@ -631,7 +631,6 @@
   },
   "Maintenant": {
     "titreAucunCercle": "Todavía ningún círculo",
-    "texteAucunCercle": "Ahí es donde se comparten las salidas.",
     "rejoindreOuCreer": "Unirse o crear un círculo",
     "titreCanton": "Las próximas salidas del cantón",
     "sousTitreCanton": "Las actividades de los municipios de Ginebra, abiertas a todos.",
@@ -694,7 +693,6 @@
       "debut_invalide": "Esta hora no es válida: una salida se puede anunciar hasta con dos semanas de antelación, no en el pasado."
     },
     "videCercleTitre": "Primero necesitas un círculo",
-    "videCercleTexte": "Una salida se dirige a las familias de un círculo. Sin círculo, nadie la vería, y Allezou no la publica en el vacío.",
     "creerRejoindreCercle": "Crear o unirse a un círculo",
     "videLieuTitre": "Ningún lugar en el catálogo",
     "ajouterPremierLieu": "Añadir el primero",
