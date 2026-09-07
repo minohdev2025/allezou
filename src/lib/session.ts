@@ -68,7 +68,7 @@ export const UN_AN_EN_SECONDES = 365 * 24 * 60 * 60;
 export function destinationSure(valeur: string | undefined | null): string | undefined {
   if (!valeur) return undefined;
   const invitation = /^\/(rejoindre|parent)\/[A-Za-z0-9_-]{8,200}$/;
-  const ecranPublic = /^\/(sortir|agenda|lieux|agenda\/[0-9a-f-]{36})$/;
+  const ecranPublic = /^\/(sortir|agenda|lieux|agenda\/nouveau|agenda\/[0-9a-f-]{36})$/;
   return invitation.test(valeur) || ecranPublic.test(valeur) ? valeur : undefined;
 }
 

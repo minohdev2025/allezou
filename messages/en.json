@@ -149,7 +149,8 @@
     "finalementNon": "Actually, no",
     "source": "Source: {nom} · updated {jour} {mois}",
     "retourAgenda": "Back to the agenda",
-    "connexionPourInscrire": "Sign in to tell your circles you are going."
+    "connexionPourInscrire": "Create your account to tell your circles you are going. An email address is enough.",
+    "creerRejoindreCercle": "Create or join a circle"
   },
   "AgendaNouveau": {
     "titre": "Suggest an activity",
@@ -191,7 +192,8 @@
       "date_invraisemblable": "The date read looks past or too far away. Correct the field before proposing.",
       "indisponible": "Reading is unavailable right now. Fill in the form manually, or try again later."
     },
-    "annoncePhotoChoisir": "Choose a photo"
+    "annoncePhotoChoisir": "Choose a photo",
+    "creerRejoindreCercle": "Create or join a circle"
   },
   "Cercles": {
     "titre": "Your circles",
@@ -440,7 +442,7 @@
     "adresseFausseResume": "Is the address wrong?",
     "adresseFausseTexte": "Just like the name, it takes {n} confirmations: the address is what sends families to the right place.",
     "ajouterLieu": "Add a place",
-    "connexionPourCorriger": "Sign in to correct a place or add one."
+    "connexionPourCorriger": "Create your account to correct a place or add one."
   },
   "Reglages": {
     "titre": "Settings",
@@ -596,8 +598,8 @@
     "lienAPropos": "What is Allezou for?",
     "lienDonnees": "What Allezou stores, and who can see it",
     "lienQuestions": "Frequently asked questions",
-    "repriseEcranTitre": "You will be taken back after signing in",
-    "repriseEcranTexte": "What you started is waiting: sign in, and you will be taken straight back."
+    "repriseEcranTitre": "Create your account, you will be taken back",
+    "repriseEcranTexte": "An email address is enough, no password. Already have an account? Use the left tab."
   },
   "CleAcces": {
     "erreurs": {
@@ -759,7 +761,8 @@
     "fermer": "Close",
     "noteAide": "A word for the others (optional)",
     "notePlaceholder": "We're by the slide",
-    "autreLieu": "Other place"
+    "autreLieu": "Other place",
+    "confirmationSansCompte": "You need an account to confirm: an email address, no password. You will be taken back here."
   },
   "Position": {
     "carteNonBranchee": "The map isn't hooked up yet: <code>GOOGLE_MAPS_API_KEY</code> is missing (see <code>docs/google-maps.md</code>). Without a pin placed, the place will be geocoded from its name and address — less precise, but nothing is blocked.",

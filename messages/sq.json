@@ -149,7 +149,8 @@
     "finalementNon": "Përfundimisht jo",
     "source": "Burimi: {nom} · përditësuar më {jour} {mois}",
     "retourAgenda": "Kthehuni te agjenda",
-    "connexionPourInscrire": "Hyni për t'u treguar rretheve tuaja se do të shkoni."
+    "connexionPourInscrire": "Krijoni llogarinë për t'u treguar rretheve tuaja se do të shkoni. Mjafton një adresë e-mail.",
+    "creerRejoindreCercle": "Krijoni ose bashkohuni me një rreth"
   },
   "AgendaNouveau": {
     "titre": "Propozoni një aktivitet",
@@ -191,7 +192,8 @@
       "date_invraisemblable": "Data e lexuar duket e kaluar ose shumë larg. Korrigjoni fushën para se të propozoni.",
       "indisponible": "Leximi nuk është i disponueshëm për momentin. Plotësoni formularin me dorë ose provoni më vonë."
     },
-    "annoncePhotoChoisir": "Zgjidh një foto"
+    "annoncePhotoChoisir": "Zgjidh një foto",
+    "creerRejoindreCercle": "Krijoni ose bashkohuni me një rreth"
   },
   "Cercles": {
     "titre": "Rrethet tuaja",
@@ -440,7 +442,7 @@
     "adresseFausseResume": "Adresa është e gabuar?",
     "adresseFausseTexte": "Ashtu si për emrin, duhen {n} miratime: është ajo që i çon familjet në vendin e duhur.",
     "ajouterLieu": "Shtoni një vend",
-    "connexionPourCorriger": "Hyni për të korrigjuar një vend ose për të shtuar një."
+    "connexionPourCorriger": "Krijoni llogarinë për të korrigjuar një vend ose për të shtuar një."
   },
   "Reglages": {
     "titre": "Cilësimet",
@@ -596,8 +598,8 @@
     "lienAPropos": "Për çfarë shërben Allezou?",
     "lienDonnees": "Çfarë regjistron Allezou, dhe kush mund ta shohë",
     "lienQuestions": "Pyetje të shpeshta",
-    "repriseEcranTitre": "Do të ktheheni atje pas hyrjes",
-    "repriseEcranTexte": "Ajo që filluat ju pret: hyni dhe ktheheni vetë atje."
+    "repriseEcranTitre": "Krijoni llogarinë, do të ktheheni atje",
+    "repriseEcranTexte": "Mjafton një adresë e-mail, pa fjalëkalim. Keni tashmë llogari? Skeda majtas."
   },
   "CleAcces": {
     "erreurs": {
@@ -759,7 +761,8 @@
     "fermer": "Mbyll",
     "noteAide": "Një fjalë për të tjerët (opsionale)",
     "notePlaceholder": "Jemi pranë rrëshqitëses",
-    "autreLieu": "Vend tjetër"
+    "autreLieu": "Vend tjetër",
+    "confirmationSansCompte": "Duhet një llogari për të konfirmuar: një adresë e-mail, pa fjalëkalim. Do të ktheheni këtu."
   },
   "Position": {
     "carteNonBranchee": "Harta nuk është ende e lidhur: mungon <code>GOOGLE_MAPS_API_KEY</code> (shihni <code>docs/google-maps.md</code>). Pa një pikë të vendosur, vendi do të gjeokodohet nga emri dhe adresa e tij — më pak i saktë, por asgjë nuk bllokohet.",

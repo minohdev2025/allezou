@@ -140,7 +140,10 @@ export default async function Maintenant() {
             qu'on a été invité. Envoyer d'emblée vers la création ferait fabriquer un cercle
             vide à quelqu'un qui a déjà le lien du bon dans ses messages.
           */}
-          <LienBouton href="/cercles">{t("rejoindreOuCreer")}</LienBouton>
+          {/* Le geste de l'écran quand on n'a pas de cercle : il porte la couleur du geste. */}
+          <LienBouton href="/cercles" variante="principal">
+            {t("rejoindreOuCreer")}
+          </LienBouton>
         </Vide>
       ) : (
         <>

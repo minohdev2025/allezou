@@ -80,7 +80,7 @@
   "BienvenueOptions": {
     "titre": "Une ou deux choses à activer",
     "sousTitre": "Ce n'est pas obligatoire, mais ça rend le retour plus simple.",
-    "notificationsTitre": "Authoriser les notifications pour être prévenu quand quelqu'un sort",
+    "notificationsTitre": "Autoriser les notifications pour être prévenu quand quelqu'un sort",
     "notificationsTexte": "Quand un parent de vos cercles publie une sortie, votre téléphone peut vous prévenir même si l'application n'est pas ouverte.",
     "installationTitre": "Ajouter Allezou à votre écran d'accueil",
     "installationTexte": "Allezou s'ouvre alors comme une vraie application.",
@@ -149,7 +149,8 @@
     "finalementNon": "Finalement non",
     "source": "Source : {nom} · mise à jour le {jour} {mois}",
     "retourAgenda": "Retour à l'agenda",
-    "connexionPourInscrire": "Connectez-vous pour dire à vos cercles que vous y allez."
+    "connexionPourInscrire": "Créez votre compte pour dire à vos cercles que vous y allez. Une adresse courriel suffit.",
+    "creerRejoindreCercle": "Créer ou rejoindre un cercle"
   },
   "AgendaNouveau": {
     "titre": "Proposer une activité",
@@ -191,7 +192,8 @@
       "date_invraisemblable": "La date lue semble passée ou trop lointaine. Corrigez le champ avant de proposer.",
       "indisponible": "La lecture est indisponible pour le moment. Remplissez le formulaire à la main, ou réessayez plus tard."
     },
-    "annoncePhotoChoisir": "Choisir une photo"
+    "annoncePhotoChoisir": "Choisir une photo",
+    "creerRejoindreCercle": "Créer ou rejoindre un cercle"
   },
   "Cercles": {
     "titre": "Vos cercles",
@@ -440,7 +442,7 @@
     "adresseFausseResume": "L'adresse est fausse ?",
     "adresseFausseTexte": "Comme pour le nom, il faut {n} validations : c'est elle qui envoie les familles au bon endroit.",
     "ajouterLieu": "Ajouter un lieu",
-    "connexionPourCorriger": "Connectez-vous pour corriger un lieu ou en ajouter un."
+    "connexionPourCorriger": "Créez votre compte pour corriger un lieu ou en ajouter un."
   },
   "Reglages": {
     "titre": "Réglages",
@@ -596,8 +598,8 @@
     "lienAPropos": "À quoi sert Allezou ?",
     "lienDonnees": "Ce qu'Allezou enregistre, et qui peut le voir",
     "lienQuestions": "Questions fréquentes",
-    "repriseEcranTitre": "Vous y reviendrez après la connexion",
-    "repriseEcranTexte": "Ce que vous avez commencé vous attend : connectez-vous, et vous y revenez tout seul."
+    "repriseEcranTitre": "Créez votre compte, vous y reviendrez",
+    "repriseEcranTexte": "Une adresse courriel suffit, sans mot de passe. Vous avez déjà un compte ? L'onglet de gauche."
   },
   "CleAcces": {
     "erreurs": {
@@ -759,7 +761,8 @@
     "fermer": "Fermer",
     "noteAide": "Un mot pour les autres (facultatif)",
     "notePlaceholder": "On est côté toboggan",
-    "autreLieu": "Autre lieu"
+    "autreLieu": "Autre lieu",
+    "confirmationSansCompte": "Il faut un compte pour confirmer : une adresse courriel, sans mot de passe. Vous reviendrez ici."
   },
   "Position": {
     "carteNonBranchee": "La carte n'est pas encore branchée : il manque <code>GOOGLE_MAPS_API_KEY</code> (voir <code>docs/google-maps.md</code>). Sans point posé, le lieu sera géocodé depuis son nom et son adresse — moins précis, mais rien n'est bloqué.",

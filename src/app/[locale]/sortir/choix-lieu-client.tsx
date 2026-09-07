@@ -299,34 +299,45 @@ export function ChoixDuLieu({
                     preventDefault + stopPropagation pour ne pas sélectionner
                     le lieu — chaque sous-bouton reste un geste indépendant.
                   */}
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      basculerPanneauPosition(lieu.id);
-                    }}
-                    aria-label={t("situerAria", { nom: lieu.name })}
-                    title={
-                      lieu.lat != null && lieu.lon != null
-                        ? t("voirSurLaCarte")
-                        : t("situer")
-                    }
-                    className="flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-full text-xl transition-transform active:translate-y-[1px]"
-                    style={{ background: `var(--color-${teinte(lieu.id)}-doux)` }}
-                  >
-                    {/*
-                      Trois états visibles au même endroit : ✅ quand le lieu
-                      est choisi, 🗺️ quand il est situé sur la carte, ❓
-                      quand il ne l'est pas encore (le clic ouvre le panneau
-                      de positionnement dans les trois cas).
-                    */}
-                    {choisi === lieu.id
-                      ? "✅"
-                      : lieu.lat != null && lieu.lon != null
-                        ? "🗺️"
-                        : "❓"}
-                  </button>
+                  {/*
+                    Trois états visibles au même endroit : ✅ quand le lieu est choisi,
+                    🗺️ quand il est situé sur la carte, ❓ quand il ne l'est pas encore
+                    (le clic ouvre le panneau de positionnement dans les trois cas).
+                    Sans compte, le picto ne fait rien : situer un lieu corrige le
+                    catalogue, et ça se fait avec un compte.
+                  */}
+                  {connecte ? (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        basculerPanneauPosition(lieu.id);
+                      }}
+                      aria-label={t("situerAria", { nom: lieu.name })}
+                      title={
+                        lieu.lat != null && lieu.lon != null
+                          ? t("voirSurLaCarte")
+                          : t("situer")
+                      }
+                      className="flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-full text-xl transition-transform active:translate-y-[1px]"
+                      style={{ background: `var(--color-${teinte(lieu.id)}-doux)` }}
+                    >
+                      {choisi === lieu.id
+                        ? "✅"
+                        : lieu.lat != null && lieu.lon != null
+                          ? "🗺️"
+                          : "❓"}
+                    </button>
+                  ) : (
+                    <span
+                      aria-hidden
+                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-xl"
+                      style={{ background: `var(--color-${teinte(lieu.id)}-doux)` }}
+                    >
+                      {choisi === lieu.id ? "✅" : "📍"}
+                    </span>
+                  )}
                   <span
                     className="flex min-w-0 flex-1 items-center gap-3 rounded-[var(--radius-carte)] bg-[color:var(--color-surface)] px-4 py-3 text-left transition-transform active:translate-y-[2px] peer-checked:outline peer-checked:outline-[3px] peer-checked:-outline-offset-[3px] peer-checked:outline-[color:var(--color-vert)] peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[color:var(--color-bleu)]"
                     style={{
@@ -344,7 +355,8 @@ export function ChoixDuLieu({
                       ) : null}
                     </span>
                   </span>
-                  {vueMasques ? (
+                  {/* Favoris et masquage appartiennent à un compte : sans compte, rien. */}
+                  {!connecte ? null : vueMasques ? (
                     <button
                       type="button"
                       onClick={(e) => {
@@ -483,11 +495,14 @@ export function ChoixDuLieu({
         <div>
           <Bouton>{t("confirmerLaSortie")}</Bouton>
           <p className="mt-2 text-center text-sm leading-snug text-[color:var(--color-doux)]">
-          {lieuChoisi
-            ? t.rich("confirmationDetail", {
-                strong: (chunks) => <strong>{chunks}</strong>,
-              })
-            : t("choisirDabordUnLieu")}
+          {/* Sans compte, le bouton mène à la création du compte : on le dit avant. */}
+          {!connecte
+            ? t("confirmationSansCompte")
+            : lieuChoisi
+              ? t.rich("confirmationDetail", {
+                  strong: (chunks) => <strong>{chunks}</strong>,
+                })
+              : t("choisirDabordUnLieu")}
         </p>
       </div>
     </>

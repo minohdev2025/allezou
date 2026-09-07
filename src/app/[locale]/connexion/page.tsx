@@ -45,9 +45,17 @@ export default async function Connexion({
 
   const t = await getTranslations("Connexion");
   const { envoye, erreur, premiere, suite } = await searchParams;
-  const premiereFois = premiere === "1";
   // Vérifiée ici pour ne pas la réafficher telle quelle : elle vient d'une URL.
   const reprise = destinationSure(suite);
+  const depuisInvitation = reprise !== undefined && /^\/(rejoindre|parent)\//.test(reprise);
+  /*
+    Qui arrive d'un bouton du site public (« Confirmer la sortie », « Nous y allons »)
+    n'a très probablement pas de compte : on lui ouvre l'onglet de création, l'autre
+    reste à un toucher. Une invitation ou une visite directe gardent l'onglet
+    « J'ai déjà un compte », comme avant.
+  */
+  const premiereFois =
+    premiere === "1" || (premiere === undefined && reprise !== undefined && !depuisInvitation);
   const lienDeDeveloppement = envoye ? lienDeConnexionEnDeveloppement() : null;
   const erreurs: Record<string, string> = {
     adresse_invalide: t("erreurs.adresse_invalide"),
@@ -105,9 +113,9 @@ export default async function Connexion({
       {reprise ? (
         <Alerte>
           <strong className="mb-1 block">
-            {/^\/(rejoindre|parent)\//.test(reprise) ? t("repriseTitre") : t("repriseEcranTitre")}
+            {depuisInvitation ? t("repriseTitre") : t("repriseEcranTitre")}
           </strong>
-          {/^\/(rejoindre|parent)\//.test(reprise) ? t("repriseTexte") : t("repriseEcranTexte")}
+          {depuisInvitation ? t("repriseTexte") : t("repriseEcranTexte")}
         </Alerte>
       ) : null}
 

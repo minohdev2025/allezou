@@ -14,6 +14,7 @@ import {
   Carte,
   IconeHorloge,
   Jeton,
+  LienBouton,
   Navigation,
   PUCE_COCHEE,
   Pastille,
@@ -242,8 +243,15 @@ export default async function Activite({
           </form>
         </Carte>
       ) : cercles.length === 0 ? (
+        /* Un compte sans cercle : le geste existe, il lui manque des destinataires. */
         <Carte>
-          <p className="text-[color:var(--color-doux)]">{t("rejoindreCercle")}</p>
+          <h2 className="titre mb-1 text-lg font-bold">{t("vousYAllezQuestion")}</h2>
+          <p className="mb-4 text-sm leading-snug text-[color:var(--color-doux)]">
+            {t("rejoindreCercle")}
+          </p>
+          <LienBouton href="/cercles" variante="principal">
+            {t("creerRejoindreCercle")}
+          </LienBouton>
         </Carte>
       ) : (
         <Carte>

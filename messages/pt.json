@@ -149,7 +149,8 @@
     "finalementNon": "Afinal não",
     "source": "Fonte: {nom} · atualizado a {jour} de {mois}",
     "retourAgenda": "Voltar à agenda",
-    "connexionPourInscrire": "Entre para dizer aos seus círculos que vai."
+    "connexionPourInscrire": "Crie a sua conta para dizer aos seus círculos que vai. Basta um endereço de correio.",
+    "creerRejoindreCercle": "Criar ou juntar-se a um círculo"
   },
   "AgendaNouveau": {
     "titre": "Propor uma atividade",
@@ -191,7 +192,8 @@
       "date_invraisemblable": "A data lida parece passada ou distante demais. Corrija o campo antes de propor.",
       "indisponible": "A leitura está indisponível de momento. Preencha o formulário manualmente ou tente mais tarde."
     },
-    "annoncePhotoChoisir": "Escolher uma foto"
+    "annoncePhotoChoisir": "Escolher uma foto",
+    "creerRejoindreCercle": "Criar ou juntar-se a um círculo"
   },
   "Cercles": {
     "titre": "Os seus círculos",
@@ -440,7 +442,7 @@
     "adresseFausseResume": "A morada está errada?",
     "adresseFausseTexte": "Tal como para o nome, são precisas {n} validações: é ela que leva as famílias ao sítio certo.",
     "ajouterLieu": "Adicionar um local",
-    "connexionPourCorriger": "Entre para corrigir um local ou adicionar um."
+    "connexionPourCorriger": "Crie a sua conta para corrigir um local ou adicionar um."
   },
   "Reglages": {
     "titre": "Definições",
@@ -596,8 +598,8 @@
     "lienAPropos": "Para que serve o Allezou?",
     "lienDonnees": "O que o Allezou regista, e quem o pode ver",
     "lienQuestions": "Perguntas frequentes",
-    "repriseEcranTitre": "Voltará lá depois de entrar",
-    "repriseEcranTexte": "O que começou está à sua espera: entre e volta lá sozinho."
+    "repriseEcranTitre": "Crie a sua conta e voltará lá",
+    "repriseEcranTexte": "Basta um endereço de correio, sem palavra-passe. Já tem conta? O separador da esquerda."
   },
   "CleAcces": {
     "erreurs": {
@@ -759,7 +761,8 @@
     "fermer": "Fechar",
     "noteAide": "Uma palavra para os outros (opcional)",
     "notePlaceholder": "Estamos junto ao escorrega",
-    "autreLieu": "Outro local"
+    "autreLieu": "Outro local",
+    "confirmationSansCompte": "É preciso uma conta para confirmar: um endereço de correio, sem palavra-passe. Voltará aqui."
   },
   "Position": {
     "carteNonBranchee": "O mapa ainda não está ligado: falta <code>GOOGLE_MAPS_API_KEY</code> (ver <code>docs/google-maps.md</code>). Sem um ponto colocado, o local será geocodificado a partir do nome e da morada — menos preciso, mas nada fica bloqueado.",

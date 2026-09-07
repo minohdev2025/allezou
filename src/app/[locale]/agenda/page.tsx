@@ -529,7 +529,7 @@ export default async function Agenda({
         actif="agenda"
         publique={account === null}
         action={
-          <BarreAction href={account ? "/agenda/nouveau" : "/connexion?suite=%2Fagenda"}>
+          <BarreAction href={account ? "/agenda/nouveau" : "/connexion?suite=%2Fagenda%2Fnouveau"}>
             {t("proposerActivite")}
           </BarreAction>
         }

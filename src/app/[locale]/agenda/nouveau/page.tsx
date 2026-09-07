@@ -9,7 +9,7 @@ import { requireAccount } from "@/lib/session";
 import { contient, normaliser } from "@/lib/texte";
 import { readerCircles } from "@/lib/visibility";
 import { lireAnnonce, proposerActivite } from "../../actions";
-import { Alerte, Bouton, Carte, Champ, PUCE_COCHEE, Titre, teinte } from "../../ui";
+import { Alerte, Bouton, Carte, Champ, LienBouton, PUCE_COCHEE, Titre, teinte } from "../../ui";
 import { BoutonLireAnnonce } from "./bouton-lire-annonce";
 import { ChampPhoto } from "./champ-photo";
 
@@ -95,8 +95,12 @@ export default async function NouvelleActivite({
       ) : null}
 
       {cercles.length === 0 ? (
+        /* Un compte sans cercle : on dit pourquoi, et on mène au geste qui débloque. */
         <Carte>
-          <p className="text-[color:var(--color-doux)]">{t("rejoindreCercle")}</p>
+          <p className="mb-4 text-[color:var(--color-doux)]">{t("rejoindreCercle")}</p>
+          <LienBouton href="/cercles" variante="principal">
+            {t("creerRejoindreCercle")}
+          </LienBouton>
         </Carte>
       ) : (
         <div className="space-y-5">

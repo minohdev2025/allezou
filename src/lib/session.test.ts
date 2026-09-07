@@ -40,6 +40,8 @@ describe("La destination de reprise", () => {
     expect(destinationSure("/lieux")).toBe("/lieux");
     const id = "0f5217a4-1b2c-4d3e-8f90-abcdef123456";
     expect(destinationSure(`/agenda/${id}`)).toBe(`/agenda/${id}`);
+    // « Proposer une activité » depuis l'agenda public : on revient sur le formulaire.
+    expect(destinationSure("/agenda/nouveau")).toBe("/agenda/nouveau");
   });
 
   it("refuse un autre écran, même chez nous", () => {
@@ -47,7 +49,6 @@ describe("La destination de reprise", () => {
     // élargit la surface.
     expect(destinationSure("/compte")).toBeUndefined();
     expect(destinationSure("/relecture")).toBeUndefined();
-    expect(destinationSure("/agenda/nouveau")).toBeUndefined();
     expect(destinationSure("/sortir/lieu")).toBeUndefined();
     expect(destinationSure("/agenda?cercle=1")).toBeUndefined();
   });
