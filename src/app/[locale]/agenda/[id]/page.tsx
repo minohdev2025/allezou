@@ -1,4 +1,3 @@
-import { Link } from "@/i18n/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 
@@ -15,6 +14,7 @@ import {
   Carte,
   IconeHorloge,
   Jeton,
+  Navigation,
   PUCE_COCHEE,
   Pastille,
   heureCourte,
@@ -138,16 +138,35 @@ export default async function Activite({
           un parent décide s'il y va : lui dire qu'on ignore le prix vaut mieux que de le
           laisser supposer, et le lien vers le site de l'organisateur est juste en dessous.
         */}
+        {/*
+          Ce qu'on sait porte une pastille ; ce qu'on ignore se dit en une ligne grise. Deux
+          pastilles « non défini » côte à côte faisaient de l'ignorance l'information la plus
+          visible de la fiche.
+        */}
         <div className="mt-3 flex flex-wrap gap-2">
-          <Pastille couleur={activite.tarif === "gratuit" ? "vert" : "violet"}>
-            {tE(`tarif.${activite.tarif}`)}
-          </Pastille>
-          <Pastille couleur={activite.acces === "inscription" ? "corail" : "bleu"}>
-            {tE(`acces.${activite.acces}`)}
-          </Pastille>
+          {activite.tarif !== "inconnu" ? (
+            <Pastille couleur={activite.tarif === "gratuit" ? "vert" : "violet"}>
+              {tE(`tarif.${activite.tarif}`)}
+            </Pastille>
+          ) : null}
+          {activite.acces !== "inconnu" ? (
+            <Pastille couleur={activite.acces === "inscription" ? "corail" : "bleu"}>
+              {tE(`acces.${activite.acces}`)}
+            </Pastille>
+          ) : null}
           {activite.ageLabel ? <Pastille couleur="ambre">{activite.ageLabel}</Pastille> : null}
           {activite.commune ? <Pastille couleur="bleu">{activite.commune}</Pastille> : null}
         </div>
+        {activite.tarif === "inconnu" || activite.acces === "inconnu" ? (
+          <p className="mt-2 text-sm text-[color:var(--color-doux)]">
+            {[
+              activite.tarif === "inconnu" ? tE("tarif.inconnu") : null,
+              activite.acces === "inconnu" ? tE("acces.inconnu") : null,
+            ]
+              .filter(Boolean)
+              .join(" · ")}
+          </p>
+        ) : null}
       </header>
 
       {erreur ? (
@@ -304,11 +323,12 @@ export default async function Activite({
         </p>
       ) : null}
 
-      <p className="mt-4 text-center">
-        <Link href="/agenda" className="text-[color:var(--color-doux)] underline underline-offset-4">
-          {t("retourAgenda")}
-        </Link>
-      </p>
+      {/*
+        La barre d'onglets, comme sur l'agenda : une fiche est la page d'entrée la plus
+        probable depuis un moteur de recherche, et « Retour à l'agenda » en faisait une
+        impasse pour qui arrivait de dehors.
+      */}
+      <Navigation actif="agenda" publique={account === null} />
     </main>
   );
 }

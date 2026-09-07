@@ -15,6 +15,13 @@
     "lieux": "Vendet",
     "connexion": "Hyrja"
   },
+  "Maquette": {
+    "descriptionEcran": "Shembull ekrani: Sophie është te parku i Gué me Léa dhe Matéo, deri në orën 17:00. Dy familje të tjera janë me ta, dhe një buton « Ne gjithashtu » lejon t'u bashkoheni.",
+    "heureLimite": "deri në {heure}",
+    "avecEnfants": "me Léa dhe Matéo",
+    "nousAussi": "Ne gjithashtu",
+    "autresFamilles": "{n, plural, one {# familje tjetër} other {# familje të tjera}}"
+  },
   "Confirmation": {
     "titre": "Hyr në Allezou",
     "sousTitreConnecte": "Ju jeni {email}.",
@@ -85,7 +92,6 @@
   },
   "Agenda": {
     "titre": "Agjenda",
-    "sousTitre": "Përzgjidhni një aktivitet dhe u thoni anëtarëve të rretheve tuaja se mendoni të shkoni.",
     "filtrer": "Filtro",
     "categorieQuand": "Kur",
     "categorieAge": "Mosha",
@@ -167,7 +173,7 @@
     "vousYAllezAvec": "Ju shkoni me",
     "proposerEtSInscrire": "Propozojeni dhe regjistrohuni",
     "retourAgenda": "Kthehuni te agjenda",
-    "annonceTitre": "Importo një aktivitet",
+    "annonceTitre": "Lexo një afishe ose një lidhje",
     "annonceAide": "Foto e afishes, një link ose teksti i njoftimit: Allezou e lexon dhe plotëson formularin. Kontrolloni fushat para se të propozoni.",
     "annoncePhoto": "Fotoja e njoftimit",
     "annonceLien": "Linku i njoftimit",
@@ -200,7 +206,7 @@
     "videTitre": "Nuk keni ende asnjë rreth",
     "videTexte": "Një rreth është një klasë, një shkollë, një lagje: familjet për të cilat do të jenë të dukshme daljet tuaja. Për sa kohë nuk keni asnjë, askush nuk i sheh tuajat dhe ju nuk shihni të askujt.",
     "membresCount": "{count, plural, one {# familje} other {# familje}}",
-    "etiquetteAdmin": "admin",
+    "etiquetteAdmin": "përgjegjës",
     "invitationLabel": "Kam marrë një ftesë",
     "invitationAide": "Ngjisni lidhjen e marrë me mesazh, ose vetëm kodin që përmban.",
     "invitationPlaceholder": "https://…/rejoindre/…",
@@ -368,7 +374,7 @@
     "recuLienAide": "Ngjiteni këtu për t'u bashkuar me fëmijët e prindit tjetër.",
     "recuLienPlaceholder": "https://…/parent/…",
     "rejoindreBouton": "Bashkohuni",
-    "passkeyTitre": "Hyni pa email",
+    "passkeyTitre": "Çelësa hyrjeje",
     "passkeyTexte": "Regjistrojeni këtë pajisje dhe më pas do të hyni ashtu si e shkyçni: gjurmë gishti, fytyrë ose kod, sipas telefonit tuaj. Asgjë nga kjo nuk na kalon neve: pajisja ruan një çelës që nuk ia zbulon askujt, dhe ne njohim vetëm gjysmën e tij publike. Lidhja me email mbetet aty nëse ndërroni telefon.",
     "dernier": "hyrja e fundit më {date}",
     "jamaisUtilise": "nuk është përdorur kurrë",
@@ -395,7 +401,7 @@
     "doublonsBouton": "C'est le même enfant"
   },
   "Lieux": {
-    "titre": "Zona lojrash",
+    "titre": "Vendet",
     "sousTitre": "Një korrigjim vihet në fuqi vetëm pasi ta miratojnë {n} anëtarë ose webmasteri.",
     "erreurs": {
       "nom_invalide": "Ky emër nuk përshtatet: nga 2 deri në 80 shkronja.",
@@ -506,7 +512,7 @@
     "tuileFamilleDoublonsPluriel": "dyfishë për të bashkuar",
     "tuileFamilleGenerique": "Fëmijët dhe bashkë-prindërit",
     "tuileCerclesTitre": "Rrethet",
-    "tuileLieuxTitre": "Zona lojrash",
+    "tuileLieuxTitre": "Vendet",
     "tuileLieuxSous": "Vendet që keni shtuar dhe pozicionet e tyre.",
     "tuileDonneesTitre": "Të dhënat tuaja të regjistruara",
     "tuileDonneesSous": "Çfarë ruan Allezou për ju, me tekst të thjeshtë.",
@@ -545,7 +551,7 @@
     "nomLabel": "Emri i shfaqur",
     "tuileIdeesTitre": "Kutia e ideve",
     "tuileIdeesGenerique": "Propo, voto, ndjek idetë",
-    "tuilePasskeysTitre": "Kthehu pa email",
+    "tuilePasskeysTitre": "Çelësa hyrjeje",
     "tuilePasskeysGenerique": "Regjistroni një pajisje të besuar",
     "enSavoirPlusTitre": "Mëso më shumë",
     "lienAPropos": "Kush jemi ne",
@@ -676,7 +682,6 @@
   },
   "Sortir": {
     "titre": "Ne dalim",
-    "sousTitre": "Zgjidhni vendin, pastaj konfirmoni.",
     "erreurGenerique": "Dalja nuk u shpall dot.",
     "erreurs": {
       "aucun_destinataire": "Shënoni të paktën një rreth: një dalje që askush nuk do ta shihte, nuk ka marrës.",
@@ -753,7 +758,8 @@
     "deplacerRepere": "Zhvendosni pikën",
     "fermer": "Mbyll",
     "noteAide": "Një fjalë për të tjerët (opsionale)",
-    "notePlaceholder": "Jemi pranë rrëshqitëses"
+    "notePlaceholder": "Jemi pranë rrëshqitëses",
+    "autreLieu": "Vend tjetër"
   },
   "Position": {
     "carteNonBranchee": "Harta nuk është ende e lidhur: mungon <code>GOOGLE_MAPS_API_KEY</code> (shihni <code>docs/google-maps.md</code>). Pa një pikë të vendosur, vendi do të gjeokodohet nga emri dhe adresa e tij — më pak i saktë, por asgjë nuk bllokohet.",

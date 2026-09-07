@@ -194,7 +194,8 @@ export function ChoixDuLieu({
             )}
           </span>
           <span className="shrink-0 text-sm font-bold text-[color:var(--color-vert)]">
-            {lieuChoisi ? t("changer") : t("ouvrir")}
+            {/* « Autre lieu » et non « Changer » : la ligne du dessus dit déjà « Changer ». */}
+            {lieuChoisi ? t("autreLieu") : t("ouvrir")}
           </span>
         </summary>
 

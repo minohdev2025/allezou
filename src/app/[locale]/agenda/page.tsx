@@ -226,9 +226,7 @@ export default async function Agenda({
 
   return (
     <main className="apparait">
-      <Titre sous={t("sousTitre")}>
-              {t("titre")}
-            </Titre>
+      <Titre>{t("titre")}</Titre>
 
       <div className="mb-6">
         {/*

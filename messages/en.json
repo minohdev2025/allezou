@@ -15,6 +15,13 @@
     "lieux": "Places",
     "connexion": "Sign in"
   },
+  "Maquette": {
+    "descriptionEcran": "Example screen: Sophie is at Parc du Gué with Léa and Matéo, until 17:00. Two other families are there too, and an “Us too” button lets you join them.",
+    "heureLimite": "until {heure}",
+    "avecEnfants": "with Léa and Matéo",
+    "nousAussi": "Us too",
+    "autresFamilles": "{n, plural, one {# other family} other {# other families}}"
+  },
   "Confirmation": {
     "titre": "Sign in to Allezou",
     "sousTitreConnecte": "You are {email}.",
@@ -85,7 +92,6 @@
   },
   "Agenda": {
     "titre": "Agenda",
-    "sousTitre": "Select an activity and tell the members of your circles you plan to go.",
     "filtrer": "Filter",
     "categorieQuand": "When",
     "categorieAge": "Age",
@@ -167,7 +173,7 @@
     "vousYAllezAvec": "You're going with",
     "proposerEtSInscrire": "Suggest it and sign up",
     "retourAgenda": "Back to the agenda",
-    "annonceTitre": "Import an activity",
+    "annonceTitre": "Read a poster or a link",
     "annonceAide": "A poster photo, a link or the announcement text: Allezou reads it and prefills the form. Check the fields before proposing.",
     "annoncePhoto": "Announcement photo",
     "annonceLien": "Announcement link",
@@ -368,7 +374,7 @@
     "recuLienAide": "Paste it here to join the other parent's kids.",
     "recuLienPlaceholder": "https://…/parent/…",
     "rejoindreBouton": "Join",
-    "passkeyTitre": "Sign in without email",
+    "passkeyTitre": "Passkeys",
     "passkeyTexte": "Save a passkey on this device, and next time you'll sign in the same way you unlock your phone: fingerprint, face, or passcode. None of that ever reaches us: your device keeps a private key it shares with no one, and we only ever see the public half. The email link is still there if you switch phones.",
     "dernier": "last used on {date}",
     "jamaisUtilise": "never used",
@@ -395,7 +401,7 @@
     "doublonsBouton": "It's the same child"
   },
   "Lieux": {
-    "titre": "Playgrounds",
+    "titre": "Places",
     "sousTitre": "A correction only takes effect once {n} members or the webmaster confirm it.",
     "erreurs": {
       "nom_invalide": "This name doesn't work: it must be 2 to 80 characters.",
@@ -506,7 +512,7 @@
     "tuileFamilleDoublonsPluriel": "duplicates to merge",
     "tuileFamilleGenerique": "Children and co-parents",
     "tuileCerclesTitre": "Circles",
-    "tuileLieuxTitre": "Playgrounds",
+    "tuileLieuxTitre": "Places",
     "tuileLieuxSous": "Places you've added and their positions.",
     "tuileDonneesTitre": "Your recorded data",
     "tuileDonneesSous": "What Allezou keeps about you, in plain text.",
@@ -545,7 +551,7 @@
     "nomLabel": "Display name",
     "tuileIdeesTitre": "Ideas box",
     "tuileIdeesGenerique": "Suggest, vote, follow your ideas",
-    "tuilePasskeysTitre": "Come back without email",
+    "tuilePasskeysTitre": "Passkeys",
     "tuilePasskeysGenerique": "Register a trusted device",
     "enSavoirPlusTitre": "Learn more",
     "lienAPropos": "Who we are",
@@ -676,7 +682,6 @@
   },
   "Sortir": {
     "titre": "We're heading out",
-    "sousTitre": "Choose the place, then confirm.",
     "erreurGenerique": "The outing couldn't be posted.",
     "erreurs": {
       "aucun_destinataire": "Check at least one circle: an outing no one would see doesn't reach anyone.",
@@ -753,7 +758,8 @@
     "deplacerRepere": "Move the pin",
     "fermer": "Close",
     "noteAide": "A word for the others (optional)",
-    "notePlaceholder": "We're by the slide"
+    "notePlaceholder": "We're by the slide",
+    "autreLieu": "Other place"
   },
   "Position": {
     "carteNonBranchee": "The map isn't hooked up yet: <code>GOOGLE_MAPS_API_KEY</code> is missing (see <code>docs/google-maps.md</code>). Without a pin placed, the place will be geocoded from its name and address — less precise, but nothing is blocked.",

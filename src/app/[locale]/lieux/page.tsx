@@ -58,7 +58,8 @@ export default async function Lieux({
 
   return (
     <main className="apparait">
-      <Titre emoji="📍" sous={t("sousTitre", { n: VALIDATIONS_RENOMMAGE })}>
+      {/* La règle des validations ne concerne que qui peut voter. */}
+      <Titre emoji="📍" sous={account ? t("sousTitre", { n: VALIDATIONS_RENOMMAGE }) : undefined}>
         {t("titre")}
       </Titre>
 

@@ -8,6 +8,7 @@ import { lieuxFavoris, lieuxMasques, searchPlaces } from "@/lib/places";
 import { defaultAudience, lastOuting } from "@/lib/publications";
 import { readerCircles } from "@/lib/visibility";
 import { declarerSortie, seConnecterPuisRevenir } from "../actions";
+import { MaquetteSortie } from "../maquette";
 import { ChoixDuLieu } from "./choix-lieu-client";
 import { ChoixDuree } from "./duree-client";
 import { LiaisonEnfantsCercles } from "./liaison-client";
@@ -87,20 +88,28 @@ export async function EcranSortir({
 
   return (
     <main className="apparait">
-      <Titre sous={account ? t("sousTitre") : t("publicAccroche")}>{t("titre")}</Titre>
+      <Titre sous={account ? undefined : t("publicAccroche")}>{t("titre")}</Titre>
 
       {!account ? (
-        <p className="mb-6 flex flex-wrap gap-x-5 gap-y-1 text-sm">
-          <Link href="/comment" className="font-bold underline underline-offset-4">
-            {t("lienComment")}
-          </Link>
-          <Link
-            href="/a-propos"
-            className="text-[color:var(--color-doux)] underline underline-offset-4"
-          >
-            {t("lienAPropos")}
-          </Link>
-        </p>
+        <>
+          {/*
+            Une carte de sortie dessinée, plutôt qu'un paragraphe de plus : c'est ce que
+            les autres familles verront, et c'est la seule chose qu'un visiteur doit
+            comprendre avant de choisir un lieu.
+          */}
+          <MaquetteSortie className="mb-4" />
+          <p className="mb-6 flex flex-wrap gap-x-5 gap-y-1 text-sm">
+            <Link href="/comment" className="font-bold underline underline-offset-4">
+              {t("lienComment")}
+            </Link>
+            <Link
+              href="/a-propos"
+              className="text-[color:var(--color-doux)] underline underline-offset-4"
+            >
+              {t("lienAPropos")}
+            </Link>
+          </p>
+        </>
       ) : null}
 
       {erreur ? (
@@ -149,33 +158,36 @@ export async function EcranSortir({
             réglages du cercle, mais visible et décochable ici, pour cette sortie-là, sans
             toucher aux réglages des suivantes.
           */}
-          <fieldset className="mb-4">
-            <legend className="mb-2 font-bold">{t("visiblePar")}</legend>
-            {cercles.length > 0 ? (
-              <div className="flex flex-wrap gap-2">
-                {cercles.map((cercle) => (
-                  <label key={cercle.id}>
-                    <input
-                      type="checkbox"
-                      name="cercle"
-                      value={cercle.id}
-                      defaultChecked={cerclesCoches.has(cercle.id)}
-                      className="peer sr-only"
-                    />
-                    <span
-                      className={`inline-flex cursor-pointer items-center rounded-[var(--radius-pilule)] px-4 py-2 font-bold text-[color:var(--color-doux)] shadow-[inset_0_0_0_2px_var(--color-trait)] peer-checked:text-[color:var(--color-fond)] peer-checked:shadow-none ${PUCE_COCHEE[teinte(cercle.id)]}`}
-                    >
-                      {cercle.name}
-                    </span>
-                  </label>
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm leading-snug text-[color:var(--color-doux)]">
-                {account ? t("aucunCercle") : t("publicCercles")}
-              </p>
-            )}
-          </fieldset>
+          {/* Sans compte, pas de destinataire à montrer : le bloc s'efface plutôt que de s'excuser. */}
+          {account ? (
+            <fieldset className="mb-4">
+              <legend className="mb-2 font-bold">{t("visiblePar")}</legend>
+              {cercles.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {cercles.map((cercle) => (
+                    <label key={cercle.id}>
+                      <input
+                        type="checkbox"
+                        name="cercle"
+                        value={cercle.id}
+                        defaultChecked={cerclesCoches.has(cercle.id)}
+                        className="peer sr-only"
+                      />
+                      <span
+                        className={`inline-flex cursor-pointer items-center rounded-[var(--radius-pilule)] px-4 py-2 font-bold text-[color:var(--color-doux)] shadow-[inset_0_0_0_2px_var(--color-trait)] peer-checked:text-[color:var(--color-fond)] peer-checked:shadow-none ${PUCE_COCHEE[teinte(cercle.id)]}`}
+                      >
+                        {cercle.name}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm leading-snug text-[color:var(--color-doux)]">
+                  {t("aucunCercle")}
+                </p>
+              )}
+            </fieldset>
+          ) : null}
 
           {/*
             Les réglages sont repliés au-dessus des lieux plutôt qu'étalés devant eux.

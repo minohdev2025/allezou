@@ -15,6 +15,13 @@
     "lieux": "Locais",
     "connexion": "Entrar"
   },
+  "Maquette": {
+    "descriptionEcran": "Exemplo de ecrã: a Sophie está no Parque do Gué com a Léa e o Matéo, até às 17:00. Duas outras famílias estão com eles, e um botão « Nós também » permite juntar-se a eles.",
+    "heureLimite": "até às {heure}",
+    "avecEnfants": "com a Léa e o Matéo",
+    "nousAussi": "Nós também",
+    "autresFamilles": "{n, plural, one {# outra família} other {# outras famílias}}"
+  },
   "Confirmation": {
     "titre": "Entrar no Allezou",
     "sousTitreConnecte": "És {email}.",
@@ -85,7 +92,6 @@
   },
   "Agenda": {
     "titre": "Agenda",
-    "sousTitre": "Selecione uma atividade e diga aos membros dos seus círculos que tenciona ir.",
     "filtrer": "Filtrar",
     "categorieQuand": "Quando",
     "categorieAge": "Idade",
@@ -167,7 +173,7 @@
     "vousYAllezAvec": "Vai com",
     "proposerEtSInscrire": "Propor e inscrever-se",
     "retourAgenda": "Voltar à agenda",
-    "annonceTitre": "Importar uma atividade",
+    "annonceTitre": "Ler um cartaz ou uma ligação",
     "annonceAide": "Uma foto do cartaz, um link ou o texto do anúncio: o Allezou lê e preenche o formulário. Confirme os campos antes de propor.",
     "annoncePhoto": "Foto do anúncio",
     "annonceLien": "Link do anúncio",
@@ -200,7 +206,7 @@
     "videTitre": "Ainda não tem nenhum círculo",
     "videTexte": "Um círculo é uma turma, uma escola, uma vizinhança: as famílias para quem as suas saídas ficam visíveis. Enquanto não tiver nenhum, ninguém vê as suas, e não vê as de mais ninguém.",
     "membresCount": "{count, plural, one {# família} other {# famílias}}",
-    "etiquetteAdmin": "admin",
+    "etiquetteAdmin": "responsável",
     "invitationLabel": "Recebi um convite",
     "invitationAide": "Cole a ligação recebida por mensagem, ou apenas o código que ela contém.",
     "invitationPlaceholder": "https://…/rejoindre/…",
@@ -368,7 +374,7 @@
     "recuLienAide": "Cole-a aqui para se juntar aos filhos do outro progenitor.",
     "recuLienPlaceholder": "https://…/parent/…",
     "rejoindreBouton": "Juntar-se",
-    "passkeyTitre": "Entrar sem e-mail",
+    "passkeyTitre": "Chaves de acesso",
     "passkeyTexte": "Registe este dispositivo e depois vai entrar da mesma forma que o desbloqueia: impressão digital, rosto ou código, consoante o telemóvel. Nada disto nos é transmitido: o dispositivo guarda uma chave que não revela a ninguém, e nós só conhecemos a metade pública. A ligação por e-mail continua disponível se mudar de telemóvel.",
     "dernier": "última entrada a {date}",
     "jamaisUtilise": "nunca utilizado",
@@ -395,7 +401,7 @@
     "doublonsBouton": "É a mesma criança"
   },
   "Lieux": {
-    "titre": "Parques infantis",
+    "titre": "Locais",
     "sousTitre": "Uma correção só tem efeito quando {n} membros ou o webmaster a validam.",
     "erreurs": {
       "nom_invalide": "Este nome não é válido: de 2 a 80 carateres.",
@@ -506,7 +512,7 @@
     "tuileFamilleDoublonsPluriel": "duplicados a fundir",
     "tuileFamilleGenerique": "Filhos e co-parentes",
     "tuileCerclesTitre": "Círculos",
-    "tuileLieuxTitre": "Parques infantis",
+    "tuileLieuxTitre": "Locais",
     "tuileLieuxSous": "Lugares que adicionou e suas posições.",
     "tuileDonneesTitre": "Os seus dados registados",
     "tuileDonneesSous": "O que Allezou guarda sobre si, em texto simples.",
@@ -545,7 +551,7 @@
     "nomLabel": "Nome exibido",
     "tuileIdeesTitre": "Caixa de ideias",
     "tuileIdeesGenerique": "Propor, votar, acompanhar as suas ideias",
-    "tuilePasskeysTitre": "Voltar sem e-mail",
+    "tuilePasskeysTitre": "Chaves de acesso",
     "tuilePasskeysGenerique": "Registar um dispositivo de confiança",
     "enSavoirPlusTitre": "Saber mais",
     "lienAPropos": "Quem somos",
@@ -676,7 +682,6 @@
   },
   "Sortir": {
     "titre": "Vamos sair",
-    "sousTitre": "Escolha o local e depois confirme.",
     "erreurGenerique": "Não foi possível declarar a saída.",
     "erreurs": {
       "aucun_destinataire": "Assinale pelo menos um círculo: uma saída que ninguém visse não teria destinatário.",
@@ -753,7 +758,8 @@
     "deplacerRepere": "Mover o pino",
     "fermer": "Fechar",
     "noteAide": "Uma palavra para os outros (opcional)",
-    "notePlaceholder": "Estamos junto ao escorrega"
+    "notePlaceholder": "Estamos junto ao escorrega",
+    "autreLieu": "Outro local"
   },
   "Position": {
     "carteNonBranchee": "O mapa ainda não está ligado: falta <code>GOOGLE_MAPS_API_KEY</code> (ver <code>docs/google-maps.md</code>). Sem um ponto colocado, o local será geocodificado a partir do nome e da morada — menos preciso, mas nada fica bloqueado.",

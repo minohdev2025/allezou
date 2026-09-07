@@ -15,6 +15,13 @@
     "lieux": "Lieux",
     "connexion": "Connexion"
   },
+  "Maquette": {
+    "descriptionEcran": "Exemple d'écran : Sophie est au parc du Gué avec Léa et Matéo, jusqu'à 17h. Deux autres familles sont avec eux, et un bouton « Nous aussi » permet de les rejoindre.",
+    "heureLimite": "jusqu'à {heure}",
+    "avecEnfants": "avec Léa et Matéo",
+    "nousAussi": "Nous aussi",
+    "autresFamilles": "{n, plural, one {# autre famille} other {# autres familles}}"
+  },
   "Confirmation": {
     "titre": "Se connecter à Allezou",
     "sousTitreConnecte": "Vous êtes {email}.",
@@ -85,7 +92,6 @@
   },
   "Agenda": {
     "titre": "Agenda",
-    "sousTitre": "Sélectionnez une activité et annoncez aux membres de vos cercles que vous comptez vous y rendre.",
     "filtrer": "Filtrer",
     "categorieQuand": "Quand",
     "categorieAge": "Âge",
@@ -167,7 +173,7 @@
     "vousYAllezAvec": "Vous y allez avec",
     "proposerEtSInscrire": "Proposer et s'y inscrire",
     "retourAgenda": "Retour à l'agenda",
-    "annonceTitre": "Importer une activité",
+    "annonceTitre": "Lire une affiche ou un lien",
     "annonceAide": "Une affiche en photo, un lien ou le texte de l'annonce : c'est Allezou qui le lit et pré-remplit le formulaire. Vérifiez les champs avant de proposer.",
     "annoncePhoto": "Photo de l'annonce",
     "annonceLien": "Lien de l'annonce",
@@ -200,7 +206,7 @@
     "videTitre": "Vous n'avez encore aucun cercle",
     "videTexte": "Un cercle, c'est une classe, une école, un voisinage : les familles à qui vos sorties seront visibles. Tant qu'il n'y en a aucun, personne ne voit les vôtres et vous ne voyez celles de personne.",
     "membresCount": "{count, plural, one {# famille} other {# familles}}",
-    "etiquetteAdmin": "admin",
+    "etiquetteAdmin": "responsable",
     "invitationLabel": "J'ai reçu une invitation",
     "invitationAide": "Collez le lien reçu par message, ou seulement le code qu'il contient.",
     "invitationPlaceholder": "https://…/rejoindre/…",
@@ -368,7 +374,7 @@
     "recuLienAide": "Collez-le ici pour rejoindre les enfants de l'autre parent.",
     "recuLienPlaceholder": "https://…/parent/…",
     "rejoindreBouton": "Rejoindre",
-    "passkeyTitre": "Revenir sans courriel",
+    "passkeyTitre": "Clés d'accès",
     "passkeyTexte": "Enregistrez cet appareil et vous entrerez ensuite comme vous le déverrouillez : empreinte, visage ou code, selon votre téléphone. Rien de tout cela ne nous est transmis : l'appareil garde une clé qu'il ne révèle à personne, et nous n'en connaissons que la moitié publique. Le lien par courriel reste là si vous changez de téléphone.",
     "dernier": "dernière entrée le {date}",
     "jamaisUtilise": "jamais utilisé",
@@ -395,7 +401,7 @@
     "doublonsBouton": "C'est le même enfant"
   },
   "Lieux": {
-    "titre": "Aires de jeux",
+    "titre": "Lieux",
     "sousTitre": "Une correction n'est effective qu'à partir du moment où {n} membres ou le webmaster valident la correction.",
     "erreurs": {
       "nom_invalide": "Ce nom ne convient pas : de 2 à 80 caractères.",
@@ -506,7 +512,7 @@
     "tuileFamilleDoublonsPluriel": "doublons à fusionner",
     "tuileFamilleGenerique": "Enfants et co-parents",
     "tuileCerclesTitre": "Cercles",
-    "tuileLieuxTitre": "Aires de jeux",
+    "tuileLieuxTitre": "Lieux",
     "tuileLieuxSous": "Lieux que vous avez ajoutés et leurs positions.",
     "tuileDonneesTitre": "Vos données enregistrées",
     "tuileDonneesSous": "Ce qu'Allezou garde sur vous, en clair.",
@@ -545,7 +551,7 @@
     "nomLabel": "Nom affiché",
     "tuileIdeesTitre": "Boîte à idées",
     "tuileIdeesGenerique": "Proposer, voter, suivre ses idées",
-    "tuilePasskeysTitre": "Revenir sans courriel",
+    "tuilePasskeysTitre": "Clés d'accès",
     "tuilePasskeysGenerique": "Enregistrer un appareil de confiance",
     "enSavoirPlusTitre": "En savoir plus",
     "lienAPropos": "Qui sommes-nous",
@@ -676,7 +682,6 @@
   },
   "Sortir": {
     "titre": "Nous sortons",
-    "sousTitre": "Choisissez le lieu, puis confirmez.",
     "erreurGenerique": "La sortie n'a pas pu être déclarée.",
     "erreurs": {
       "aucun_destinataire": "Cochez au moins un cercle : une sortie que personne ne verrait n'a pas de destinataire.",
@@ -753,7 +758,8 @@
     "deplacerRepere": "Déplacer le repère",
     "fermer": "Fermer",
     "noteAide": "Un mot pour les autres (facultatif)",
-    "notePlaceholder": "On est côté toboggan"
+    "notePlaceholder": "On est côté toboggan",
+    "autreLieu": "Autre lieu"
   },
   "Position": {
     "carteNonBranchee": "La carte n'est pas encore branchée : il manque <code>GOOGLE_MAPS_API_KEY</code> (voir <code>docs/google-maps.md</code>). Sans point posé, le lieu sera géocodé depuis son nom et son adresse — moins précis, mais rien n'est bloqué.",

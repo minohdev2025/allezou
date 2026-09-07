@@ -159,24 +159,29 @@ export default async function NouvelleActivite({
                 placeholder={t("placeholderTitre")}
               />
 
-              <div className="flex gap-2">
-                <label className="flex-1">
+              {/*
+                Deux colonnes en grille, avec `min-w-0` : un champ `datetime-local` a une
+                largeur intrinsèque que `flex-1` ne sait pas réduire, et « Fin » sortait de
+                la carte sur un écran de 375 px.
+              */}
+              <div className="grid grid-cols-2 gap-2">
+                <label className="min-w-0">
                   <span className="mb-1 block font-bold">{t("debut")}</span>
                   <input
                     type="datetime-local"
                     name="debut"
                     required
                     defaultValue={annonceLue?.debut}
-                    className={champ}
+                    className={`${champ} min-w-0`}
                   />
                 </label>
-                <label className="flex-1">
+                <label className="min-w-0">
                   <span className="mb-1 block font-bold">{t("fin")}</span>
                   <input
                     type="datetime-local"
                     name="fin"
                     defaultValue={annonceLue?.fin}
-                    className={champ}
+                    className={`${champ} min-w-0`}
                   />
                 </label>
               </div>
