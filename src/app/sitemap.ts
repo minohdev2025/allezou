@@ -32,6 +32,14 @@ import { asDate } from "@/lib/db/rows";
  * soeurs sans dupliquer le sitemap.
  */
 
+/*
+ * Rendu à la demande, jamais au build : le plan de site lit la base, et `next build`
+ * tourne dans une image sans base. Sans cette ligne, Next tentait de le pré-rendre
+ * et la construction de l'image échouait sur ECONNREFUSED. Les moteurs le lisent
+ * quelques fois par jour ; une requête SQL bornée à chaque lecture ne coûte rien.
+ */
+export const dynamic = "force-dynamic";
+
 const PAGES_PUBLIQUES = [
   "",
   "/agenda",
