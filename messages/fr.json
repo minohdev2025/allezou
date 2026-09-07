@@ -251,7 +251,7 @@
     "vousYAllezAvec": "Vous y allez avec",
     "proposerEtSInscrire": "Proposer et s'y inscrire",
     "retourAgenda": "Retour à l'agenda",
-    "annonceTitre": "Partir d'une annonce",
+    "annonceTitre": "Importer une activité",
     "annonceAide": "Une affiche en photo, un lien ou le texte de l'annonce : c'est Allezou qui le lit et pré-remplit le formulaire. Vérifiez les champs avant de proposer.",
     "annoncePhoto": "Photo de l'annonce",
     "annonceLien": "Lien de l'annonce",
@@ -267,7 +267,8 @@
       "texte_trop_court": "Le texte est trop court pour décrire une sortie. Ajoutez le détail de l'annonce.",
       "rien_trouve": "Aucune sortie datée trouvée dans l'annonce. Remplissez le formulaire à la main.",
       "date_invraisemblable": "La date lue semble passée ou trop lointaine. Corrigez le champ avant de proposer."
-    }
+    },
+    "annoncePhotoChoisir": "Choisir une photo"
   },
   "Cercles": {
     "titre": "Vos cercles",

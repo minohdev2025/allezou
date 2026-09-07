@@ -251,7 +251,7 @@
     "vousYAllezAvec": "You're going with",
     "proposerEtSInscrire": "Suggest it and sign up",
     "retourAgenda": "Back to the agenda",
-    "annonceTitre": "Start from an announcement",
+    "annonceTitre": "Import an activity",
     "annonceAide": "A poster photo, a link or the announcement text: Allezou reads it and prefills the form. Check the fields before proposing.",
     "annoncePhoto": "Announcement photo",
     "annonceLien": "Announcement link",
@@ -267,7 +267,8 @@
       "texte_trop_court": "The text is too short to describe an outing. Add the announcement details.",
       "rien_trouve": "No dated outing found in the announcement. Fill in the form manually.",
       "date_invraisemblable": "The date read looks past or too far away. Correct the field before proposing."
-    }
+    },
+    "annoncePhotoChoisir": "Choose a photo"
   },
   "Cercles": {
     "titre": "Your circles",

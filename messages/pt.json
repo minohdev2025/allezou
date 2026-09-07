@@ -251,7 +251,7 @@
     "vousYAllezAvec": "Vai com",
     "proposerEtSInscrire": "Propor e inscrever-se",
     "retourAgenda": "Voltar à agenda",
-    "annonceTitre": "Partir de um anúncio",
+    "annonceTitre": "Importar uma atividade",
     "annonceAide": "Uma foto do cartaz, um link ou o texto do anúncio: o Allezou lê e preenche o formulário. Confirme os campos antes de propor.",
     "annoncePhoto": "Foto do anúncio",
     "annonceLien": "Link do anúncio",
@@ -267,7 +267,8 @@
       "texte_trop_court": "O texto é curto demais para descrever uma saída. Acrescente os detalhes do anúncio.",
       "rien_trouve": "Nenhuma saída com data encontrada no anúncio. Preencha o formulário manualmente.",
       "date_invraisemblable": "A data lida parece passada ou distante demais. Corrija o campo antes de propor."
-    }
+    },
+    "annoncePhotoChoisir": "Escolher uma foto"
   },
   "Cercles": {
     "titre": "Os seus círculos",

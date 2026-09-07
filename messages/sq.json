@@ -251,7 +251,7 @@
     "vousYAllezAvec": "Ju shkoni me",
     "proposerEtSInscrire": "Propozojeni dhe regjistrohuni",
     "retourAgenda": "Kthehuni te agjenda",
-    "annonceTitre": "Nis nga një njoftim",
+    "annonceTitre": "Importo një aktivitet",
     "annonceAide": "Foto e afishes, një link ose teksti i njoftimit: Allezou e lexon dhe plotëson formularin. Kontrolloni fushat para se të propozoni.",
     "annoncePhoto": "Fotoja e njoftimit",
     "annonceLien": "Linku i njoftimit",
@@ -267,7 +267,8 @@
       "texte_trop_court": "Teksti është shumë i shkurtër për të përshkruar një dalje. Shtoni hollësitë e njoftimit.",
       "rien_trouve": "Nuk u gjet asnjë dalje me datë në njoftim. Plotësoni formularin me dorë.",
       "date_invraisemblable": "Data e lexuar duket e kaluar ose shumë larg. Korrigjoni fushën para se të propozoni."
-    }
+    },
+    "annoncePhotoChoisir": "Zgjidh një foto"
   },
   "Cercles": {
     "titre": "Rrethet tuaja",

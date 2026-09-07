@@ -10,6 +10,7 @@ import { readerCircles } from "@/lib/visibility";
 import { lireAnnonce, proposerActivite } from "../../actions";
 import { Alerte, Bouton, Carte, Champ, PUCE_COCHEE, Titre, teinte } from "../../ui";
 import { BoutonLireAnnonce } from "./bouton-lire-annonce";
+import { ChampPhoto } from "./champ-photo";
 
 const champ =
   "w-full rounded-2xl bg-[color:var(--color-surface)] px-4 py-3.5 text-base ring-2 ring-[color:var(--color-trait)] outline-none focus:ring-[color:var(--color-vert)]";
@@ -101,15 +102,7 @@ export default async function NouvelleActivite({
                 <p className="text-sm leading-snug text-[color:var(--color-doux)]">
                   {t("annonceAide")}
                 </p>
-                <label className="block">
-                  <span className="mb-1 block font-bold">{t("annoncePhoto")}</span>
-                  <input
-                    type="file"
-                    name="photo"
-                    accept="image/*"
-                    className="block w-full text-sm text-[color:var(--color-doux)] file:mr-3 file:rounded-[var(--radius-pilule)] file:border-0 file:bg-[color:var(--color-surface)] file:px-4 file:py-2.5 file:text-sm file:font-bold file:text-[color:var(--color-encre)] file:ring-2 file:ring-[color:var(--color-trait)]"
-                  />
-                </label>
+                <ChampPhoto />
                 <label className="block">
                   <span className="mb-1 block font-bold">{t("annonceLien")}</span>
                   <input
