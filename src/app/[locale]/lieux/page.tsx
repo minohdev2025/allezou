@@ -4,7 +4,7 @@ import { Link } from "@/i18n/navigation";
 
 import { CATEGORIES_LIEU, EMOJIS_CATEGORIE, estCategorieLieu } from "@/lib/categories-lieu";
 import { VALIDATIONS_RENOMMAGE, openRenames, searchPlaces } from "@/lib/places";
-import { estRelecteur, requireAccount } from "@/lib/session";
+import { currentAccount, estRelecteur } from "@/lib/session";
 import {
   completerAdresseLieu,
   completerCategorieLieu,
@@ -37,13 +37,18 @@ export default async function Lieux({
 }) {
   const t = await getTranslations("Lieux");
   const tE = await getTranslations("Etiquettes");
-  const account = await requireAccount();
+  /*
+    Le catalogue est public : un lieu n'appartient à personne. Le corriger, si — c'est un
+    geste collectif entre gens qui ont un compte. Sans compte, la liste se lit, la carte
+    aussi, et une seule ligne dit où passer pour proposer une correction.
+  */
+  const account = await currentAccount();
   const { q, erreur, propose, applique, adresse, categorie, retire } = await searchParams;
-  const relecteur = estRelecteur(account);
+  const relecteur = account ? estRelecteur(account) : false;
 
   const [lieux, corrections] = await Promise.all([
     searchPlaces(q ?? "", 100),
-    openRenames(account.id),
+    account ? openRenames(account.id) : [],
   ]);
 
   const parLieu = new Map<string, (typeof corrections)[number][]>();
@@ -141,7 +146,7 @@ export default async function Lieux({
                     Une adresse déjà écrite se corrige à plusieurs, comme le nom, parce que
                     l'écraser en est bien le contraire.
                   */}
-                  {!lieu.address ? (
+                  {account && !lieu.address ? (
                     <form action={completerAdresseLieu} className="mb-2 flex gap-2">
                       <input type="hidden" name="lieu" value={lieu.id} />
                       <input
@@ -161,7 +166,7 @@ export default async function Lieux({
                     Classer un lieu encore sans catégorie : un vide se remplit seul, comme
                     l'adresse — et chaque catégorie est le bouton d'envoi, un seul geste.
                   */}
-                  {!classe ? (
+                  {account && !classe ? (
                     <details className="mb-2">
                       <summary className="cursor-pointer py-1 text-sm font-bold text-[color:var(--color-doux)]">
                         {t("categorieResume")}
@@ -211,6 +216,7 @@ export default async function Lieux({
                     </div>
                   ))}
 
+                  {account ? (
                   <details>
                     <summary className="cursor-pointer py-1 text-sm font-bold text-[color:var(--color-doux)]">
                       {t("renommerResume")}
@@ -229,6 +235,7 @@ export default async function Lieux({
                       </button>
                     </form>
                   </details>
+                  ) : null}
 
                   {/*
                     Retirer un lieu est le seul geste de cette page qui ne soit pas
@@ -250,7 +257,7 @@ export default async function Lieux({
                     </details>
                   ) : null}
 
-                  {lieu.address ? (
+                  {account && lieu.address ? (
                     <details>
                       <summary className="cursor-pointer py-1 text-sm font-bold text-[color:var(--color-doux)]">
                         {t("adresseFausseResume")}
@@ -280,16 +287,27 @@ export default async function Lieux({
         </ul>
       )}
 
-      <p className="mt-7 text-center">
-        <Link
-          href="/sortir/lieu"
-          className="font-bold text-[color:var(--color-vert)] underline underline-offset-4"
-        >
-          {t("ajouterLieu")}
-        </Link>
-      </p>
+      {account ? (
+        <p className="mt-7 text-center">
+          <Link
+            href="/sortir/lieu"
+            className="font-bold text-[color:var(--color-vert)] underline underline-offset-4"
+          >
+            {t("ajouterLieu")}
+          </Link>
+        </p>
+      ) : (
+        <p className="mt-7 text-center">
+          <Link
+            href="/connexion?suite=%2Flieux"
+            className="font-bold text-[color:var(--color-vert)] underline underline-offset-4"
+          >
+            {t("connexionPourCorriger")}
+          </Link>
+        </p>
+      )}
 
-      <Navigation actif="reglages" />
+      <Navigation actif={account ? "reglages" : "lieux"} publique={account === null} />
     </main>
   );
 }

@@ -11,7 +11,9 @@
     "sorties": "Saídas",
     "agenda": "Agenda",
     "cercles": "Círculos",
-    "reglages": "Definições"
+    "reglages": "Definições",
+    "lieux": "Locais",
+    "connexion": "Entrar"
   },
   "Confirmation": {
     "titre": "Entrar no Allezou",
@@ -48,92 +50,6 @@
   "Donnees": {
     "titreOnglet": "Os seus dados",
     "retour": "Voltar"
-  },
-  "Accueil": {
-    "titre": "Allezou",
-    "accroche": "Para que os nossos filhos se encontrem lá fora.",
-    "presentation": "Olá e bem-vindo ao Allezou.ch",
-    "presentationCorps": "Criei este site para que as minhas duas filhas pudessem voltar a sentir o prazer de brincar lá fora, rodeadas de crianças com quem gostam de passar tempo (e sobretudo para eu me poder sentar tranquilamente enquanto elas andam entretidas com os filhos dos outros).\n\nEste site é posto à disposição de todos, gratuitamente, com votos de bons momentos de brincadeira com os vossos filhos.",
-    "presentationGestes": "O que se faz aqui:",
-    "titreGestes": "O que se faz aqui",
-    "gestes": {
-      "cercles": {
-        "titre": "Crie os seus círculos",
-        "texte": "Cria grupos com as famílias com quem os seus filhos gostam de passar tempo (a turma, a vizinhança…). Convida-as para o seu círculo privado, elas inscrevem-se da mesma forma que você, com os seus nomes e os dos filhos, valida os membros do círculo e podem começar a convidar-se mutuamente para saídas."
-      },
-      "sortir": {
-        "titre": "Anunciar uma saída",
-        "texte": "Qualquer membro de um círculo pode anunciar uma saída, com a hora e o local. Os membros do círculo recebem uma notificação (se ativada) e podem juntar-se. A saída desaparece sozinha e não é guardado nenhum histórico."
-      },
-      "voir": {
-        "titre": "Ver quem está fora",
-        "texte": "Vê quem saiu agora mesmo e junta-se com um clique se lhe apetecer."
-      },
-      "agenda": {
-        "titre": "Seguir as atividades do cantão",
-        "texte": "O Allezou percorre os sites das comunas genebrinas para listar as atividades propostas para famílias e crianças. Pode anunciar que vai participar numa atividade e os membros dos seus círculos verão. Também pode filtrar as atividades para ver apenas aquelas em que membros dos seus círculos planeiam ir."
-      },
-      "notifications": {
-        "titre": "Receber avisos sobre o que lhe interessa",
-        "texte": "Pode configurar avisos para ser notificado quando um certo tipo de atividade é publicado no site de uma comuna, seja por palavra-chave (judo, natureza…), seja por inscrição, e ser avisado assim que uma atividade é publicada ou quando a inscrição é obrigatória."
-      },
-      "selectives": {
-        "titre": "Notificações seletivas",
-        "texte": "Num círculo, pode desmarcar alguém: essa pessoa deixa de ver as suas saídas e você deixa de ver as dela."
-      }
-    },
-    "installation": {
-      "titre": "Adicioná-lo ao seu telemóvel",
-      "intro": "O Allezou é um site, não é bem uma aplicação para descarregar numa loja. Consoante o navegador, ele pode propor instalá-lo sozinho. Pode aceitar: é um atalho para esta página, que a abre em ecrã inteiro e evita ter de iniciar sessão de cada vez.",
-      "sansProposition": {
-        "titre": "Se nada lhe for proposto",
-        "texte": "Procure « Instalar aplicação » no menu do navegador, normalmente no canto superior direito."
-      },
-      "iphone": {
-        "titre": "No iPhone",
-        "texte": "Toque no botão Partilhar, na parte inferior do ecrã, e depois em « Adicionar ao Ecrã Principal ». É também a única forma de receber as notificações."
-      }
-    },
-    "absencesTitre": "O que o Allezou não faz",
-    "absences": {
-      "messagerie": {
-        "titre": "Sem mensagens",
-        "texte": "Não há fio de conversa nem mensagens privadas."
-      },
-      "position": {
-        "titre": "Sem posição GPS",
-        "texte": "Escolhe um local numa lista. A aplicação nunca pergunta ao seu telemóvel onde está."
-      },
-      "historique": {
-        "titre": "Sem histórico",
-        "texte": "Uma saída desaparece 24 horas depois de terminar. Ninguém consegue reconstituir onde a sua família esteve no mês passado."
-      },
-      "inconnus": {
-        "titre": "Sem desconhecidos",
-        "texte": "Ninguém entra num círculo sem que um administrador o aceite. Só vê os membros dos seus círculos, e juntar-se a uma saída não o(a) mostra a mais ninguém."
-      },
-      "publicite": {
-        "titre": "Sem publicidade, sem rastreadores",
-        "texte": "Nenhum rastreador, nenhuma publicidade. Os seus dados não são vendidos nem cedidos."
-      },
-      "prenom": {
-        "titre": "Sobre os seus filhos, um primeiro nome",
-        "texte": "E nada mais: é tudo o que o Allezou sabe sobre eles."
-      }
-    },
-    "gratuitTitre": "É grátis",
-    "gratuitTexte": "Não há nenhuma empresa por trás do Allezou e nada é pago. Os servidores estão na Suíça. A agenda preenche-se sozinha a partir dos sites das comunas genebrinas.",
-    "nePlusAfficher": "Não voltar a mostrar esta página neste dispositivo",
-    "entrer": "Entrar",
-    "lienDonnees": "O que o Allezou regista, e quem o pode ver",
-    "lienQuestions": "Perguntas frequentes"
-  },
-  "Maquette": {
-    "descriptionEcran": "Exemplo de ecrã: a Sophie está no Parque do Gué com a Léa e o Matéo, até às 17:00. Duas outras famílias estão com eles, e um botão « Nós também » permite juntar-se a eles.",
-    "heureLimite": "até às {heure}",
-    "avecEnfants": "com a Léa e o Matéo",
-    "nousAussi": "Nós também",
-    "autresFamilles": "{n, plural, one {# outra família} other {# outras famílias}}"
   },
   "Bienvenue": {
     "titre": "Boas-vindas",
@@ -226,7 +142,8 @@
     "nousYAllons": "Vamos",
     "finalementNon": "Afinal não",
     "source": "Fonte: {nom} · atualizado a {jour} de {mois}",
-    "retourAgenda": "Voltar à agenda"
+    "retourAgenda": "Voltar à agenda",
+    "connexionPourInscrire": "Entre para dizer aos seus círculos que vai."
   },
   "AgendaNouveau": {
     "titre": "Propor uma atividade",
@@ -516,7 +433,8 @@
     "retirerCatalogue": "Remover do catálogo",
     "adresseFausseResume": "A morada está errada?",
     "adresseFausseTexte": "Tal como para o nome, são precisas {n} validações: é ela que leva as famílias ao sítio certo.",
-    "ajouterLieu": "Adicionar um local"
+    "ajouterLieu": "Adicionar um local",
+    "connexionPourCorriger": "Entre para corrigir um local ou adicionar um."
   },
   "Reglages": {
     "titre": "Definições",
@@ -671,7 +589,9 @@
     "boutonRecevoirLien": "Receber a minha ligação",
     "lienAPropos": "Para que serve o Allezou?",
     "lienDonnees": "O que o Allezou regista, e quem o pode ver",
-    "lienQuestions": "Perguntas frequentes"
+    "lienQuestions": "Perguntas frequentes",
+    "repriseEcranTitre": "Voltará lá depois de entrar",
+    "repriseEcranTexte": "O que começou está à sua espera: entre e volta lá sozinho."
   },
   "CleAcces": {
     "erreurs": {
@@ -783,7 +703,11 @@
     "annuler": "Cancelar",
     "jusqua": "Até",
     "heureRetour": "Hora de regresso",
-    "dureeAide": "Entre 15 minutos e 8 horas, antes da meia-noite."
+    "dureeAide": "Entre 15 minutos e 8 horas, antes da meia-noite.",
+    "publicAccroche": "Diga aos seus círculos onde está: «no parque do Gué até ao meio-dia». As famílias de confiança juntam-se a si, sem chat nem geolocalização.",
+    "publicCercles": "Os seus círculos aparecerão aqui depois de entrar: a saída é para eles.",
+    "lienComment": "Como funciona",
+    "lienAPropos": "Quem está por trás do Allezou"
   },
   "SortirLieu": {
     "titre": "Adicionar um local",

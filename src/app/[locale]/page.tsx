@@ -1,47 +1,39 @@
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 
-import { Link } from "@/i18n/navigation";
-import { redirect } from "next/navigation";
-
-import { accueilMasque, currentAccount } from "@/lib/session";
-import { entrer } from "./actions";
-import { ChoixLangue } from "./langue";
-import { MaquetteSortie } from "./maquette";
-import { Bouton, Carte, SchemaJsonLd, type Teinte } from "./ui";
+import { currentAccount } from "@/lib/session";
+import { EcranSortir } from "./sortir/ecran-sortir";
+import { SchemaJsonLd } from "./ui";
 
 /**
- * L'accueil public.
+ * L'accueil public, c'est « Nous sortons ».
  *
- * Cette page existe parce qu'on parle d'Allezou de bouche à oreille : la personne qui suit
- * le lien n'a pas de compte et n'a rien lu. La faire tomber sur un formulaire de connexion
- * lui demandait son adresse électronique avant de lui avoir dit à quoi elle sert.
+ * Il y a eu ici une page de présentation, longue, close par une case « ne plus
+ * afficher ». Depuis que /comment et /a-propos racontent le produit, elle faisait
+ * double emploi, et la case était une porte de plus entre un parent et l'écran. Ce qui
+ * distingue Allezou d'un agenda, c'est qu'on y annonce une sortie : c'est donc cet écran
+ * qu'on montre en premier, tel qu'il est, lieux et carte compris. Confirmer sans compte
+ * mène à la connexion, qui ramène ici (décision du 7 septembre 2026).
  *
- * Elle commence par quelqu'un, pas par un produit. Un parent qui confie le prénom de sa
- * fille à un site veut savoir qui est derrière, et « Michael, papa de deux filles au
- * Petit-Lancy » répond mieux que n'importe quelle phrase sur la protection des données.
- *
- * Qui est déjà connecté n'a rien à faire ici et repart vers l'écran des sorties. Qui a
- * coché « ne plus afficher » aussi : la page a fait son travail une fois, et on ne redemande
- * pas à quelqu'un de relire une présentation à chaque connexion. `/?revoir=1` la ramène.
+ * Qui est connecté voit le même écran avec ses cercles, ses enfants et ses favoris.
  */
-export default async function Accueil({
-  searchParams,
-}: {
-  searchParams: Promise<{ revoir?: string }>;
-}) {
-  if (await currentAccount()) redirect("/maintenant");
+export async function generateMetadata() {
+  const [t, locale] = await Promise.all([getTranslations("Metadata"), getLocale()]);
+  const prefixe = locale === "fr" ? "" : `/${locale}`;
+  return {
+    description: t("promesse"),
+    alternates: { canonical: `https://allezou.ch${prefixe}` },
+  };
+}
 
-  const { revoir } = await searchParams;
-  if (!revoir && (await accueilMasque())) redirect("/connexion");
-
-  const t = await getTranslations("Accueil");
+export default async function Accueil() {
+  const account = await currentAccount();
 
   // Schema.org : deux briques sur la home.
-  // - Organization : qui est derriere Allezou (Knowledge panel Google,
+  // - Organization : qui est derrière Allezou (Knowledge panel Google,
   //   AI Overview brand card, E-E-A-T).
-  // - WebSite : le site lui-meme, avec un SearchAction potentiel (la
-  //   sitelinks searchbox Google lit cette brique). On ne declare pas
-  //   d'action de recherche specifique tant qu'Allezou n'a pas de
+  // - WebSite : le site lui-même, avec un SearchAction potentiel (la
+  //   sitelinks searchbox Google lit cette brique). On ne déclare pas
+  //   d'action de recherche spécifique tant qu'Allezou n'a pas de
   //   moteur de recherche interne.
   const organization = {
     "@context": "https://schema.org",
@@ -50,10 +42,11 @@ export default async function Accueil({
     alternateName: "Allezou.ch",
     url: "https://allezou.ch/",
     logo: "https://allezou.ch/icon",
-    description: "Pour que nos enfants se retrouvent dehors. Sorties partagees et agenda des familles genevoises.",
+    description:
+      "Pour que nos enfants se retrouvent dehors. Sorties partagées et agenda des familles genevoises.",
     foundingDate: "2026",
-    foundingLocation: { "@type": "Place", name: "Geneve, Suisse" },
-    areaServed: { "@type": "AdministrativeArea", name: "Canton de Geneve" },
+    foundingLocation: { "@type": "Place", name: "Genève, Suisse" },
+    areaServed: { "@type": "AdministrativeArea", name: "Canton de Genève" },
     email: "contact@allezou.ch",
     sameAs: [],
     contactPoint: {
@@ -74,150 +67,10 @@ export default async function Accueil({
   };
 
   return (
-    <main className="apparait">
+    <>
       <SchemaJsonLd donnees={organization} />
       <SchemaJsonLd donnees={website} />
-      <header className="mb-9 text-center">
-        <div aria-hidden className="mb-3 text-6xl leading-none">
-          🌳
-        </div>
-        <h1 className="text-4xl font-bold tracking-tight">{t("titre")}</h1>
-        <p className="mx-auto mt-3 max-w-xs leading-snug text-[color:var(--color-doux)]">
-          {t("accroche")}
-        </p>
-      </header>
-
-      <ChoixLangue href="/" />
-
-      <Carte className="mb-9">
-        <p className="text-lg font-bold leading-relaxed">{t("presentation")}</p>
-        <p className="mt-3 whitespace-pre-line leading-relaxed text-[color:var(--color-doux)]">
-          {t("presentationCorps")}
-        </p>
-      </Carte>
-
-      <h2 className="titre mb-4 text-xl font-bold">{t("presentationGestes")}</h2>
-      <ul className="mb-10 space-y-4">
-        {GESTES.map((geste) => (
-          <li key={geste.cle}>
-            <Carte accent={geste.accent}>
-              <p className="mb-1 text-lg font-bold">
-                {t(`gestes.${geste.cle}.titre`)}
-              </p>
-              <p className="leading-relaxed text-[color:var(--color-doux)]">
-                {t(`gestes.${geste.cle}.texte`)}
-              </p>
-              {/*
-                La maquette, plutôt qu'une capture : la page décrivait cinq écrans sans en
-                montrer aucun, et demandait une adresse électronique sur la foi d'un texte.
-                Un seul écran suffit, celui que les autres familles voient.
-              */}
-              {geste.avecMaquette ? <MaquetteSortie className="mt-4" /> : null}
-            </Carte>
-          </li>
-        ))}
-      </ul>
-
-      <h2 className="titre mb-2 text-xl font-bold">{t("installation.titre")}</h2>
-      <p className="mb-4 leading-relaxed text-[color:var(--color-doux)]">
-        {t("installation.intro")}
-      </p>
-      <Carte className="mb-10">
-        <ul className="space-y-3">
-          <li>
-            <p className="font-bold">{t("installation.sansProposition.titre")}</p>
-            <p className="leading-relaxed text-[color:var(--color-doux)]">
-              {t("installation.sansProposition.texte")}
-            </p>
-          </li>
-          <li>
-            <p className="font-bold">{t("installation.iphone.titre")}</p>
-            <p className="leading-relaxed text-[color:var(--color-doux)]">
-              {t("installation.iphone.texte")}
-            </p>
-          </li>
-        </ul>
-      </Carte>
-
-      <h2 className="titre mb-2 text-xl font-bold">{t("absencesTitre")}</h2>
-      <Carte className="mb-10">
-        <ul className="space-y-4">
-          {ABSENCES.map((absence) => (
-            <li key={absence.cle}>
-              <p className="font-bold">{t(`absences.${absence.cle}.titre`)}</p>
-              <p className="leading-relaxed text-[color:var(--color-doux)]">
-                {t(`absences.${absence.cle}.texte`)}
-              </p>
-            </li>
-          ))}
-        </ul>
-      </Carte>
-
-      <h2 className="titre mb-2 text-xl font-bold">{t("gratuitTitre")}</h2>
-      <p className="mb-10 leading-relaxed text-[color:var(--color-doux)]">{t("gratuitTexte")}</p>
-
-      <Carte>
-        <form action={entrer} className="space-y-4">
-          <label className="flex cursor-pointer items-start gap-3">
-            <input
-              type="checkbox"
-              name="ne_plus_afficher"
-              className="mt-0.5 h-6 w-6 shrink-0 accent-[color:var(--color-vert)]"
-            />
-            <span className="leading-snug">{t("nePlusAfficher")}</span>
-          </label>
-          <Bouton type="submit">{t("entrer")}</Bouton>
-        </form>
-      </Carte>
-
-      <p className="mt-8 text-center text-sm">
-        <Link
-          href="/donnees"
-          className="font-semibold text-[color:var(--color-doux)] underline underline-offset-4"
-        >
-          {t("lienDonnees")}
-        </Link>
-      </p>
-
-      <p className="mt-3 text-center text-sm">
-        <Link
-          href="/questions"
-          className="font-semibold text-[color:var(--color-doux)] underline underline-offset-4"
-        >
-          {t("lienQuestions")}
-        </Link>
-      </p>
-    </main>
+      <EcranSortir account={account} />
+    </>
   );
 }
-
-/**
- * Les cercles en premier.
- *
- * Sans eux, les trois autres gestes n'ont personne à qui parler : une sortie publiée dans le
- * vide ne sert à rien, et c'est la première chose à faire en arrivant.
- */
-const GESTES: {
-  accent: Teinte;
-  /** Sous-clé dans les messages `Accueil.gestes` : le titre et le texte en dépendent. */
-  cle: string;
-  /** Montre la carte de sortie dessinée sous le texte. Un seul geste la porte. */
-  avecMaquette?: boolean;
-}[] = [
-  { accent: "corail", cle: "cercles" },
-  { accent: "vert", cle: "sortir" },
-  { accent: "bleu", cle: "voir", avecMaquette: true },
-  { accent: "violet", cle: "agenda" },
-  { accent: "corail", cle: "notifications" },
-  { accent: "rose", cle: "selectives" },
-];
-
-/** Sous-clé dans les messages `Accueil.absences` : le titre et le texte en dépendent. */
-const ABSENCES: { cle: string }[] = [
-  { cle: "messagerie" },
-  { cle: "position" },
-  { cle: "historique" },
-  { cle: "inconnus" },
-  { cle: "publicite" },
-  { cle: "prenom" },
-];

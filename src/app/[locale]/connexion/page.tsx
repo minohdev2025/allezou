@@ -96,10 +96,18 @@ export default async function Connexion({
         </Alerte>
       ) : null}
 
+      {/*
+        Deux raisons d'avoir une reprise : une invitation qu'on suivait, ou un bouton
+        touché sur un écran public (« Confirmer la sortie », « Nous y allons »). Le
+        message dit laquelle, sans quoi « une invitation vous attend » mentirait à qui
+        voulait juste annoncer une sortie.
+      */}
       {reprise ? (
         <Alerte>
-          <strong className="mb-1 block">{t("repriseTitre")}</strong>
-          {t("repriseTexte")}
+          <strong className="mb-1 block">
+            {/^\/(rejoindre|parent)\//.test(reprise) ? t("repriseTitre") : t("repriseEcranTitre")}
+          </strong>
+          {/^\/(rejoindre|parent)\//.test(reprise) ? t("repriseTexte") : t("repriseEcranTexte")}
         </Alerte>
       ) : null}
 
@@ -184,11 +192,9 @@ export default async function Connexion({
       )}
 
       <div className="mt-8 space-y-3 text-center text-sm">
-        {/* `revoir` passe outre la case « ne plus afficher » : rien de ce qu'on coche ici
-            ne doit fermer une porte définitivement. */}
         <p>
           <Link
-            href="/?revoir=1"
+            href="/comment"
             className="font-semibold text-[color:var(--color-doux)] underline underline-offset-4"
           >
             {t("lienAPropos")}

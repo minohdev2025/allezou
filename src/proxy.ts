@@ -71,13 +71,18 @@ export function proxy(request: NextRequest) {
   /*
    * Cache-Control : différent selon que la page est publique ou privée.
    *
-   * Pages publiques (`/`, `/donnees`, `/questions`, `/a-propos`, `/comment`,
-   * `/parcs`, leurs variantes locales) : `public, max-age=300, s-maxage=3600,
-   * stale-while-revalidate=86400`. Un crawler comme Googlebot peut mettre
-   * la page en cache 5 minutes côté navigateur, 1 heure côté CDN, et
-   * réutiliser la version périmée jusqu'à 24h pendant qu'il régénère. C'est
+   * Pages publiques (`/`, `/sortir`, `/agenda` et ses fiches, `/lieux`, `/donnees`,
+   * `/questions`, `/a-propos`, `/comment`, leurs variantes locales) : `public,
+   * max-age=300, s-maxage=3600, stale-while-revalidate=86400`. Un crawler comme
+   * Googlebot peut mettre la page en cache 5 minutes côté navigateur, 1 heure côté
+   * CDN, et réutiliser la version périmée jusqu'à 24h pendant qu'il régénère. C'est
    * le standard pour un site de cette taille : le crawl budget est préservé
    * sans cacher longtemps un contenu susceptible de bouger.
+   *
+   * Mais ces mêmes adresses servent un écran personnel à qui est connecté : ses
+   * cercles sur « Nous sortons », ses inscrits à l'agenda. Elles ne sont donc
+   * publiques qu'en l'absence du témoin de session, et `Vary: Cookie` le dit aux
+   * caches intermédiaires. `/agenda/nouveau` reste privée dans tous les cas.
    *
    * Pages privées (`/maintenant`, `/reglages`, `/connexion`, etc.) :
    * `private, no-store`. Ces pages affichent du contenu personnel, elles
@@ -90,8 +95,11 @@ export function proxy(request: NextRequest) {
    * tombe en `private, no-store` par défaut — sécurisant.
    */
   const chemin = request.nextUrl.pathname;
-  const PUBLIC = /^\/(?:$|(?:[a-z]{2}\/)?(?:donnees|questions|a-propos|comment|parcs)(?:\/.*)?$)/;
-  const estPublique = PUBLIC.test(chemin);
+  const PUBLIC =
+    /^\/(?:[a-z]{2}\/?)?$|^\/(?:[a-z]{2}\/)?(?:sortir|lieux|donnees|questions|a-propos|comment|parcs|agenda|agenda\/(?!nouveau)[^/]+)$/;
+  const connecte = request.cookies.has("totir_session");
+  const estPublique = PUBLIC.test(chemin) && !connecte;
+  reponse.headers.set("Vary", "Cookie");
   reponse.headers.set("Cache-Control", estPublique
     ? "public, max-age=300, s-maxage=3600, stale-while-revalidate=86400"
     : "private, no-store, no-cache, must-revalidate");

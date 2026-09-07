@@ -1,7 +1,7 @@
 "use client";
 import { useTranslations } from "next-intl";
 
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { useState, useTransition } from "react";
 
 import { type PointCarte } from "@/lib/carte";
@@ -42,6 +42,7 @@ export function ChoixDuLieu({
   dernierLieuId,
   favorisInitiaux,
   masquesInitiaux,
+  connecte = true,
   cleApi,
   mapId,
 }: {
@@ -50,10 +51,17 @@ export function ChoixDuLieu({
   dernierLieuId?: string | null;
   favorisInitiaux?: string[];
   masquesInitiaux?: string[];
+  /**
+   * Sans compte, l'étoile, l'œil et le repère restent visibles — ils disent ce qu'un
+   * compte permet — mais mènent à la connexion au lieu d'agir : un favori appartient à
+   * quelqu'un, et le catalogue ne se corrige pas anonymement.
+   */
+  connecte?: boolean;
   cleApi?: string | null;
   mapId?: string | null;
 }) {
   const t = useTranslations("ChoixLieu");
+  const router = useRouter();
   const [choisi, setChoisi] = useState<string | null>(() => {
     if (!dernierLieuId) return null;
     const masque = new Set(masquesInitiaux ?? []).has(dernierLieuId);
@@ -74,7 +82,11 @@ export function ChoixDuLieu({
 
   const lieuChoisi = lieux.find((l) => l.id === choisi) ?? null;
 
+  /** Le geste demande un compte : on va le chercher, et on revient ici. */
+  const versConnexion = () => router.push("/connexion?suite=%2Fsortir");
+
   const basculerFavoriIci = (id: string) => {
+    if (!connecte) return versConnexion();
     // L'étoile change tout de suite ; le serveur suit. Au pire d'un échec réseau, le
     // prochain chargement remettra la vérité de la base — un favori n'est pas une sortie.
     setFavoris((avant) => {
@@ -87,6 +99,7 @@ export function ChoixDuLieu({
   };
 
   const basculerMasqueIci = (id: string) => {
+    if (!connecte) return versConnexion();
     const masquer = !masques.has(id);
     setMasques((avant) => {
       const apres = new Set(avant);
@@ -111,6 +124,7 @@ export function ChoixDuLieu({
   };
 
   const basculerPanneauPosition = (id: string) => {
+    if (!connecte) return versConnexion();
     setPanneauPositionPour((actuel) => (actuel === id ? null : id));
   };
 

@@ -11,7 +11,9 @@
     "sorties": "Sorties",
     "agenda": "Agenda",
     "cercles": "Cercles",
-    "reglages": "Réglages"
+    "reglages": "Réglages",
+    "lieux": "Lieux",
+    "connexion": "Connexion"
   },
   "Confirmation": {
     "titre": "Se connecter à Allezou",
@@ -48,92 +50,6 @@
   "Donnees": {
     "titreOnglet": "Vos données",
     "retour": "Retour"
-  },
-  "Accueil": {
-    "titre": "Allezou",
-    "accroche": "Pour que nos enfants se retrouvent dehors.",
-    "presentation": "Bonjour et bienvenue sur Allezou.ch",
-    "presentationCorps": "J'ai créé ce site pour permettre à mes deux filles de retrouver le plaisir de jouer dehors, entourées d'enfants avec qui elles aiment passer du temps (et surtout que je puisse me poser tranquillement pendant qu'elles s'occupent avec les enfants des autres).\n\nCe site est mis à disposition de tous, gratuitement, en vous souhaitant de bons moments de jeux avec vos enfants.",
-    "presentationGestes": "Ce qu'on y fait :",
-    "titreGestes": "Ce qu'on y fait",
-    "gestes": {
-      "cercles": {
-        "titre": "Créez vos cercles",
-        "texte": "Vous créez des groupes avec les familles avec qui vos enfants aiment passer du temps (la classe, le voisinage…). Vous les invitez dans votre cercle privé, ils s'inscrivent de la même façon que vous avec leurs noms et ceux de leurs enfants, vous validez les membres du cercle et vous pouvez commencer à vous inviter à des sorties."
-      },
-      "sortir": {
-        "titre": "Annoncer une sortie",
-        "texte": "Tous les membres d'un cercle peuvent annoncer une sortie, avec l'heure et le lieu de la sortie. Les membres du cercle reçoivent une notification (si activée) et peuvent vous rejoindre. La sortie s'efface toute seule de l'application et aucun historique n'est conservé."
-      },
-      "voir": {
-        "titre": "Voir qui va dehors",
-        "texte": "Vous voyez qui est sorti en ce moment, et vous les rejoignez en un clic si vous en avez envie."
-      },
-      "agenda": {
-        "titre": "Suivre les activités du canton",
-        "texte": "Allezou parcours les différents sites des communes genevoises pour recenser les différentes activités proposées pour les familles et les enfants. Vous pouvez annoncer que vous participer à une activité et les membres de vos cercles le verront. Vous pouvez également filtrer les activités pour voir uniquement celles où des membres de vos cercles comptent se rendre."
-      },
-      "notifications": {
-        "titre": "Être prévenu de ce qui vous intéresse",
-        "texte": "Vous avez la possibilité de vous mettre des notifications pour être averti si un certain type d'activité est publié sur le site d'une commune, soit par mot clé (judo, nature…) soit par inscription et ainsi être averti dès qu'une activité ou l'inscription est obligatoire est publiée."
-      },
-      "selectives": {
-        "titre": "Notifications sélectives",
-        "texte": "Dans un cercle, vous pouvez décocher quelqu'un : cette personne ne voit plus vos sorties, vous ne voyez plus les siennes."
-      }
-    },
-    "installation": {
-      "titre": "L'ajouter à votre téléphone",
-      "intro": "Allezou est un site web, pas une vraie application à télécharger dans un magasin. Selon votre navigateur, il vous proposera peut-être de l'installer tout seul. Vous pouvez accepter : c'est un raccourci vers cette page, qui l'ouvre en plein écran et vous évite de vous reconnecter à chaque fois.",
-      "sansProposition": {
-        "titre": "Si rien ne vous est proposé",
-        "texte": "Cherchez « Installer l'application » dans le menu de votre navigateur, souvent en haut à droite."
-      },
-      "iphone": {
-        "titre": "Sur iPhone",
-        "texte": "Touchez le bouton Partager, en bas de l'écran, puis « Sur l'écran d'accueil ». C'est aussi la seule façon d'y recevoir les notifications."
-      }
-    },
-    "absencesTitre": "Ce qu'Allezou ne fait pas",
-    "absences": {
-      "messagerie": {
-        "titre": "Pas de messagerie",
-        "texte": "Il n'y a ni fil de discussion, ni message privé."
-      },
-      "position": {
-        "titre": "Pas de position GPS",
-        "texte": "Vous choisissez un lieu dans une liste. L'application ne demande jamais à votre téléphone où vous êtes."
-      },
-      "historique": {
-        "titre": "Pas d'historique",
-        "texte": "Une sortie disparaît 24 heures après sa fin. Personne ne peut reconstituer où votre famille est allée le mois dernier."
-      },
-      "inconnus": {
-        "titre": "Pas d'inconnus",
-        "texte": "Personne n'entre dans un cercle sans qu'un responsable l'accepte. Vous ne voyez que les membres de vos cercles, et rejoindre une sortie ne vous montre à personne d'autre."
-      },
-      "publicite": {
-        "titre": "Pas de publicité, pas de traceur",
-        "texte": "Aucun traceur, aucune publicité. Vos données ne sont ni vendues ni cédées."
-      },
-      "prenom": {
-        "titre": "Sur vos enfants, un prénom",
-        "texte": "Et rien de plus : c'est tout ce qu'Allezou sait d'eux."
-      }
-    },
-    "gratuitTitre": "C'est gratuit",
-    "gratuitTexte": "Il n'y a pas d'entreprise derrière Allezou et rien n'est payant. Les serveurs sont en Suisse. L'agenda se remplit tout seul depuis les sites des communes genevoises.",
-    "nePlusAfficher": "Ne plus afficher cette page sur cet appareil",
-    "entrer": "Entrer",
-    "lienDonnees": "Ce qu'Allezou enregistre, et qui peut le voir",
-    "lienQuestions": "Questions fréquentes"
-  },
-  "Maquette": {
-    "descriptionEcran": "Exemple d'écran : Sophie est au parc du Gué avec Léa et Matéo, jusqu'à 17h. Deux autres familles sont avec eux, et un bouton « Nous aussi » permet de les rejoindre.",
-    "heureLimite": "jusqu'à {heure}",
-    "avecEnfants": "avec Léa et Matéo",
-    "nousAussi": "Nous aussi",
-    "autresFamilles": "{n, plural, one {# autre famille} other {# autres familles}}"
   },
   "Bienvenue": {
     "titre": "Bienvenue",
@@ -226,7 +142,8 @@
     "nousYAllons": "Nous y allons",
     "finalementNon": "Finalement non",
     "source": "Source : {nom} · mise à jour le {jour} {mois}",
-    "retourAgenda": "Retour à l'agenda"
+    "retourAgenda": "Retour à l'agenda",
+    "connexionPourInscrire": "Connectez-vous pour dire à vos cercles que vous y allez."
   },
   "AgendaNouveau": {
     "titre": "Proposer une activité",
@@ -516,7 +433,8 @@
     "retirerCatalogue": "Retirer du catalogue",
     "adresseFausseResume": "L'adresse est fausse ?",
     "adresseFausseTexte": "Comme pour le nom, il faut {n} validations : c'est elle qui envoie les familles au bon endroit.",
-    "ajouterLieu": "Ajouter un lieu"
+    "ajouterLieu": "Ajouter un lieu",
+    "connexionPourCorriger": "Connectez-vous pour corriger un lieu ou en ajouter un."
   },
   "Reglages": {
     "titre": "Réglages",
@@ -671,7 +589,9 @@
     "boutonRecevoirLien": "Recevoir mon lien",
     "lienAPropos": "À quoi sert Allezou ?",
     "lienDonnees": "Ce qu'Allezou enregistre, et qui peut le voir",
-    "lienQuestions": "Questions fréquentes"
+    "lienQuestions": "Questions fréquentes",
+    "repriseEcranTitre": "Vous y reviendrez après la connexion",
+    "repriseEcranTexte": "Ce que vous avez commencé vous attend : connectez-vous, et vous y revenez tout seul."
   },
   "CleAcces": {
     "erreurs": {
@@ -783,7 +703,11 @@
     "annuler": "Annuler",
     "jusqua": "Jusqu'à",
     "heureRetour": "Heure de retour",
-    "dureeAide": "Entre 15 minutes et 8 heures, avant minuit."
+    "dureeAide": "Entre 15 minutes et 8 heures, avant minuit.",
+    "publicAccroche": "Dites à vos cercles où vous êtes : « au parc du Gué jusqu'à midi ». Les familles de confiance vous rejoignent, sans messagerie ni géolocalisation.",
+    "publicCercles": "Vos cercles apparaîtront ici une fois connecté·e : c'est à eux que la sortie s'adresse.",
+    "lienComment": "Comment ça marche",
+    "lienAPropos": "Qui est derrière Allezou"
   },
   "SortirLieu": {
     "titre": "Ajouter un lieu",

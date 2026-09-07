@@ -28,15 +28,6 @@ export const COOKIE_INVITATION = "totir_invitation";
 export const COOKIE_DEFI = "totir_defi";
 
 /**
- * Marque que l'accueil a été lu et qu'on ne veut plus le revoir.
- *
- * Il n'y a pas de compte à ce moment-là : la personne n'est pas connectée, c'est justement
- * pourquoi elle voit cette page. Le réglage vit donc dans un témoin de navigation, propre à
- * cet appareil, et `/?revoir=1` ramène la page à qui la redemande.
- */
-export const COOKIE_ACCUEIL = "totir_accueil";
-
-/**
  * Où reprendre après la connexion.
  *
  * Une invitation arrive par message, et celle qui la suit n'est presque jamais connectée.
@@ -69,10 +60,16 @@ export const UN_AN_EN_SECONDES = 365 * 24 * 60 * 60;
  * Ce qui entre ici vient d'une URL, donc de n'importe qui. Sans cette vérification, un lien
  * bien tourné enverrait quelqu'un vers un autre site juste après s'être connecté chez nous,
  * ce qui est la forme la plus efficace d'hameçonnage.
+ *
+ * Deux familles de destinations : les invitations (un jeton), et les écrans publics depuis
+ * lesquels on a touché un bouton qui demande un compte — « Nous sortons », l'agenda, une
+ * activité, les lieux. On revient exactement là où l'on était, et nulle part ailleurs.
  */
 export function destinationSure(valeur: string | undefined | null): string | undefined {
   if (!valeur) return undefined;
-  return /^\/(rejoindre|parent)\/[A-Za-z0-9_-]{8,200}$/.test(valeur) ? valeur : undefined;
+  const invitation = /^\/(rejoindre|parent)\/[A-Za-z0-9_-]{8,200}$/;
+  const ecranPublic = /^\/(sortir|agenda|lieux|agenda\/[0-9a-f-]{36})$/;
+  return invitation.test(valeur) || ecranPublic.test(valeur) ? valeur : undefined;
 }
 
 /**
@@ -107,15 +104,6 @@ export async function releverSuite(): Promise<string | undefined> {
   const destination = destinationSure(store.get(COOKIE_SUITE)?.value);
   store.delete(COOKIE_SUITE);
   return destination;
-}
-
-export async function masquerAccueil(): Promise<void> {
-  await poserTemoin(COOKIE_ACCUEIL, "lu", UN_AN_EN_SECONDES);
-}
-
-export async function accueilMasque(): Promise<boolean> {
-  const store = await cookies();
-  return store.get(COOKIE_ACCUEIL)?.value === "lu";
 }
 
 export async function setSessionCookie(token: string): Promise<void> {

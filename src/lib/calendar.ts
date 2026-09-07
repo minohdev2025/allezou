@@ -170,13 +170,17 @@ function fenetreSql(quand: Fenetre): SQL {
 }
 
 export async function upcomingCalendar(
-  actorId: string,
+  actorId: string | null,
   filtre: FiltreAgenda = {},
 ): Promise<CalendarEntry[]> {
   const limit = Math.min(Math.max(filtre.limit ?? 100, 1), 500);
 
-  // Une seule lecture des participations, par la règle commune.
-  const participations = await visiblePublications(actorId, { kind: "attendance" });
+  // Une seule lecture des participations, par la règle commune. Sans compte (l'agenda
+  // est public), il n'y a rien à lire : personne ne partage de cercle avec personne, et
+  // la règle de visibilité n'est même pas interrogée.
+  const participations = actorId
+    ? await visiblePublications(actorId, { kind: "attendance" })
+    : [];
   const parEvenement = new Map<string, CalendarEntry["attendees"]>();
   for (const p of participations) {
     if (!p.eventId) continue;
@@ -205,7 +209,9 @@ export async function upcomingCalendar(
     .filter(([, inscrits]) => inscrits.some((i) => i.accountId === actorId))
     .map(([eventId]) => eventId);
 
-  if (filtre.avecMonCercle && idsAvecMonCercle.length === 0) return [];
+  // « Mon cercle » n'a pas de sens sans compte : le filtre est ignoré, pas appliqué à vide.
+  const avecMonCercle = actorId !== null && Boolean(filtre.avecMonCercle);
+  if (avecMonCercle && idsAvecMonCercle.length === 0) return [];
 
   const conditions: SQL[] = [
     sql`e.published_at is not null`,
@@ -258,7 +264,7 @@ export async function upcomingCalendar(
     );
   }
 
-  if (filtre.avecMonCercle) {
+  if (avecMonCercle) {
     conditions.push(sql`e.id = any(${sql.param(idsAvecMonCercle)}::uuid[])`);
   }
 
@@ -337,7 +343,7 @@ export async function upcomingCalendar(
 
 /** Une activité précise, avec les personnes inscrites que ce lecteur a le droit de voir. */
 export async function calendarEntry(
-  actorId: string,
+  actorId: string | null,
   eventId: string,
 ): Promise<CalendarEntry | null> {
   const rows = await db.execute<{
@@ -382,10 +388,10 @@ export async function calendarEntry(
   const r = rows[0];
   if (!r) return null;
 
-  const participations = await visiblePublications(actorId, {
-    kind: "attendance",
-    eventId,
-  });
+  // Sans compte, la fiche se lit sans ses inscrits : ils appartiennent aux cercles.
+  const participations = actorId
+    ? await visiblePublications(actorId, { kind: "attendance", eventId })
+    : [];
 
   return {
     id: r.id,

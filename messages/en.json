@@ -11,7 +11,9 @@
     "sorties": "Outings",
     "agenda": "Agenda",
     "cercles": "Circles",
-    "reglages": "Settings"
+    "reglages": "Settings",
+    "lieux": "Places",
+    "connexion": "Sign in"
   },
   "Confirmation": {
     "titre": "Sign in to Allezou",
@@ -48,92 +50,6 @@
   "Donnees": {
     "titreOnglet": "Your data",
     "retour": "Back"
-  },
-  "Accueil": {
-    "titre": "Allezou",
-    "accroche": "So our kids can meet up outside.",
-    "presentation": "Hello and welcome to Allezou.ch",
-    "presentationCorps": "I built this site so my two daughters could rediscover the joy of playing outside, surrounded by children they like spending time with (and so that I could sit down for a moment while they were off playing with the other kids' children).\n\nThis site is offered to everyone, free of charge. I hope it brings you many good moments of play with your children.",
-    "presentationGestes": "What you can do:",
-    "titreGestes": "What you can do",
-    "gestes": {
-      "cercles": {
-        "titre": "Create your circles",
-        "texte": "You create groups with the families your children like spending time with (the class, the neighbourhood…). You invite them into your private circle; they sign up the same way you did, with their names and their children's, you approve circle members, and you can start inviting each other to outings."
-      },
-      "sortir": {
-        "titre": "Announce an outing",
-        "texte": "Any circle member can announce an outing, with the time and place. Circle members get a notification (if enabled) and can join you. The outing disappears on its own and no history is kept."
-      },
-      "voir": {
-        "titre": "See who is outside",
-        "texte": "You see who is out right now, and you can join them in one click if you feel like it."
-      },
-      "agenda": {
-        "titre": "Follow the canton's activities",
-        "texte": "Allezou scans the websites of Geneva's municipalities to list the activities offered for families and children. You can say you'll join an activity and your circle members will see it. You can also filter activities to see only those where members of your circles plan to go."
-      },
-      "notifications": {
-        "titre": "Be notified about what matters to you",
-        "texte": "You can set up notifications to be told when a given type of activity is published on a municipality website — either by keyword (judo, nature…) or by sign-up — and you'll be notified as soon as an activity is published, or when sign-up is required."
-      },
-      "selectives": {
-        "titre": "Selective notifications",
-        "texte": "In a circle, you can uncheck someone: that person no longer sees your outings, and you no longer see theirs."
-      }
-    },
-    "installation": {
-      "titre": "Add it to your phone",
-      "intro": "Allezou is a website, not a real app you download from a store. Depending on your browser, it may offer to install itself for you. You can say yes: it's just a shortcut to this page that opens full-screen and saves you from signing in every time.",
-      "sansProposition": {
-        "titre": "If nothing is offered",
-        "texte": "Look for “Install app” in your browser's menu, usually in the top right."
-      },
-      "iphone": {
-        "titre": "On iPhone",
-        "texte": "Tap the Share button at the bottom of the screen, then “Add to Home Screen.” It's also the only way to get notifications there."
-      }
-    },
-    "absencesTitre": "What Allezou does not do",
-    "absences": {
-      "messagerie": {
-        "titre": "No messaging",
-        "texte": "There's no chat thread, and no private messaging."
-      },
-      "position": {
-        "titre": "No GPS location",
-        "texte": "You pick a place from a list. The app never asks your phone where you are."
-      },
-      "historique": {
-        "titre": "No history",
-        "texte": "An outing disappears 24 hours after it ends. No one can piece together where your family went last month."
-      },
-      "inconnus": {
-        "titre": "No strangers",
-        "texte": "No one enters a circle without an admin accepting them. You only see members of your circles, and joining an outing doesn't show you to anyone else."
-      },
-      "publicite": {
-        "titre": "No ads, no trackers",
-        "texte": "No trackers, no ads. Your data is never sold or shared."
-      },
-      "prenom": {
-        "titre": "About your children, only a first name",
-        "texte": "And nothing else: that's all Allezou knows about them."
-      }
-    },
-    "gratuitTitre": "It's free",
-    "gratuitTexte": "There's no company behind Allezou, and nothing costs anything. The servers are in Switzerland. The agenda fills itself in automatically from the websites of Geneva's municipalities.",
-    "nePlusAfficher": "Don't show this page again on this device",
-    "entrer": "Enter",
-    "lienDonnees": "What Allezou stores, and who can see it",
-    "lienQuestions": "Frequently asked questions"
-  },
-  "Maquette": {
-    "descriptionEcran": "Example screen: Sophie is at Parc du Gué with Léa and Matéo, until 17:00. Two other families are there too, and an “Us too” button lets you join them.",
-    "heureLimite": "until {heure}",
-    "avecEnfants": "with Léa and Matéo",
-    "nousAussi": "Us too",
-    "autresFamilles": "{n, plural, one {# other family} other {# other families}}"
   },
   "Bienvenue": {
     "titre": "Welcome",
@@ -226,7 +142,8 @@
     "nousYAllons": "We're going",
     "finalementNon": "Actually, no",
     "source": "Source: {nom} · updated {jour} {mois}",
-    "retourAgenda": "Back to the agenda"
+    "retourAgenda": "Back to the agenda",
+    "connexionPourInscrire": "Sign in to tell your circles you are going."
   },
   "AgendaNouveau": {
     "titre": "Suggest an activity",
@@ -516,7 +433,8 @@
     "retirerCatalogue": "Remove from catalog",
     "adresseFausseResume": "Is the address wrong?",
     "adresseFausseTexte": "Just like the name, it takes {n} confirmations: the address is what sends families to the right place.",
-    "ajouterLieu": "Add a place"
+    "ajouterLieu": "Add a place",
+    "connexionPourCorriger": "Sign in to correct a place or add one."
   },
   "Reglages": {
     "titre": "Settings",
@@ -671,7 +589,9 @@
     "boutonRecevoirLien": "Send me my link",
     "lienAPropos": "What is Allezou for?",
     "lienDonnees": "What Allezou stores, and who can see it",
-    "lienQuestions": "Frequently asked questions"
+    "lienQuestions": "Frequently asked questions",
+    "repriseEcranTitre": "You will be taken back after signing in",
+    "repriseEcranTexte": "What you started is waiting: sign in, and you will be taken straight back."
   },
   "CleAcces": {
     "erreurs": {
@@ -783,7 +703,11 @@
     "annuler": "Cancel",
     "jusqua": "Until",
     "heureRetour": "Return time",
-    "dureeAide": "Between 15 minutes and 8 hours, before midnight."
+    "dureeAide": "Between 15 minutes and 8 hours, before midnight.",
+    "publicAccroche": "Tell your circles where you are: “at the Gué park until noon”. Trusted families join you, with no chat and no geolocation.",
+    "publicCercles": "Your circles will appear here once you sign in: they are who the outing is for.",
+    "lienComment": "How it works",
+    "lienAPropos": "Who is behind Allezou"
   },
   "SortirLieu": {
     "titre": "Add a place",

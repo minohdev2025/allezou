@@ -221,6 +221,21 @@ export function IconePersonne({ className = "" }: IconeProps) {
   );
 }
 
+/** Une épingle de carte : l'onglet « Lieux » du site public. */
+export function IconeEpingle({ className = "" }: IconeProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={`${base} ${className}`} aria-hidden>
+      <path
+        d="M12 21s-6.5-6.1-6.5-11a6.5 6.5 0 0 1 13 0c0 4.9-6.5 11-6.5 11Z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinejoin="round"
+      />
+      <circle cx="12" cy="10" r="2.3" stroke="currentColor" strokeWidth="1.8" />
+    </svg>
+  );
+}
+
 export function IconeMaison({ className = "" }: IconeProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={`${base} ${className}`} aria-hidden>
@@ -533,8 +548,9 @@ export function Navigation({
   actif,
   action,
   papier,
+  publique = false,
 }: {
-  actif: "maintenant" | "agenda" | "cercles" | "reglages";
+  actif: "maintenant" | "agenda" | "cercles" | "reglages" | "sortir" | "lieux" | "connexion";
   /**
    * Le geste principal de l'écran, épinglé juste au-dessus des onglets (DA « Plein
    * jour » : une seule barre d'action, toujours visible). Les autres pages n'en
@@ -547,15 +563,28 @@ export function Navigation({
    * une rustine collée sur la page). Le filet gris suffit à marquer la barre.
    */
   papier?: boolean;
+  /**
+   * Sans compte, les onglets sont ceux du site public : « Nous sortons », l'agenda,
+   * les lieux, et la connexion à la place des cercles et des réglages, qui n'existent
+   * pas encore pour qui regarde.
+   */
+  publique?: boolean;
 }) {
   // `useTranslations` marche aussi dans un composant serveur, et celui-ci n'a rien d'async.
   const t = useTranslations("Navigation");
-  const onglets = [
-    { cle: "maintenant", href: "/maintenant", texte: t("sorties"), Icone: IconeArbre },
-    { cle: "agenda", href: "/agenda", texte: t("agenda"), Icone: IconeCalendrier },
-    { cle: "cercles", href: "/cercles", texte: t("cercles"), Icone: IconeCercle },
-    { cle: "reglages", href: "/reglages", texte: t("reglages"), Icone: IconeEngrenage },
-  ] as const;
+  const onglets = publique
+    ? ([
+        { cle: "sortir", href: "/", texte: t("sorties"), Icone: IconeArbre },
+        { cle: "agenda", href: "/agenda", texte: t("agenda"), Icone: IconeCalendrier },
+        { cle: "lieux", href: "/lieux", texte: t("lieux"), Icone: IconeEpingle },
+        { cle: "connexion", href: "/connexion", texte: t("connexion"), Icone: IconePersonne },
+      ] as const)
+    : ([
+        { cle: "maintenant", href: "/maintenant", texte: t("sorties"), Icone: IconeArbre },
+        { cle: "agenda", href: "/agenda", texte: t("agenda"), Icone: IconeCalendrier },
+        { cle: "cercles", href: "/cercles", texte: t("cercles"), Icone: IconeCercle },
+        { cle: "reglages", href: "/reglages", texte: t("reglages"), Icone: IconeEngrenage },
+      ] as const);
 
   return (
     <>

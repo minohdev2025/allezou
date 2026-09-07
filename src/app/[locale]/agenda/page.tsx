@@ -15,7 +15,7 @@ import {
 } from "@/lib/calendar";
 import { ACCES, TARIFS, type Acces, type Tarif } from "@/lib/ingest/tarif";
 import { type PointCarte } from "@/lib/carte";
-import { requireAccount } from "@/lib/session";
+import { currentAccount } from "@/lib/session";
 import { localeSure } from "@/lib/traduire";
 import { CarteDesLieux } from "../carte-client";
 import { FiltreCommunes } from "./filtre-communes-client";
@@ -132,7 +132,12 @@ export default async function Agenda({
   const t = await getTranslations("Agenda");
   const tE = await getTranslations("Etiquettes");
   const locale = localeSure(await getLocale());
-  const account = await requireAccount();
+  /*
+    L'agenda est public : ce qu'il liste vient des communes, pas des familles. Sans
+    compte, il se lit tel quel ; ce qui appartient aux cercles — qui y va, le filtre
+    « mon cercle », les alertes — n'apparaît qu'avec un compte.
+  */
+  const account = await currentAccount();
   const params = await searchParams;
 
   /** La fenêtre qu'on voit sans rien demander : assez large pour qu'il y ait à lire. */
@@ -158,7 +163,7 @@ export default async function Agenda({
   const acces = valeursDemandees(params.acces).filter((v): v is Acces =>
     (ACCES as readonly string[]).includes(v),
   );
-  const avecMonCercle = params.cercle === "1";
+  const avecMonCercle = account !== null && params.cercle === "1";
 
   /*
     La signature des filtres appliqués, qui sert de `key` aux cases.
@@ -190,7 +195,7 @@ export default async function Agenda({
     acces.length > 0;
 
   const [entrees, communes] = await Promise.all([
-    upcomingCalendar(account.id, {
+    upcomingCalendar(account?.id ?? null, {
       quand,
       ages,
       communes: communesChoisies,
@@ -305,11 +310,13 @@ export default async function Agenda({
                 prix, inscription — resserrent un résultat, mais c'est elle qui le rend
                 personnel.
               */}
-              <Rangee titre={t("categorieQuiYVa")}>
-                <Puce nom="cercle" valeur="1" coche={avecMonCercle}>
-                  {t("monCercle")}
-                </Puce>
-              </Rangee>
+              {account ? (
+                <Rangee titre={t("categorieQuiYVa")}>
+                  <Puce nom="cercle" valeur="1" coche={avecMonCercle}>
+                    {t("monCercle")}
+                  </Puce>
+                </Rangee>
+              ) : null}
 
               <Rangee titre={t("categorieQuand")}>
                 {/*
@@ -438,9 +445,10 @@ export default async function Agenda({
         dessus du contenu, que la liste soit vide ou non : c'est un raccourci
         permanent, pas un message d'erreur ni un encouragement ponctuel.
       */}
+      {/* Les alertes appartiennent à un compte : sans compte, le lien mène à la connexion. */}
       <p className="mb-6 text-sm text-[color:var(--color-doux)]">
         <Link
-          href="/reglages/notifications"
+          href={account ? "/reglages/notifications" : "/connexion?suite=%2Fagenda"}
           className="underline underline-offset-4"
         >
           → {t("lienMotsCles")}
@@ -496,7 +504,7 @@ export default async function Agenda({
                   <LigneActivite
                     key={entree.id}
                     entree={entree}
-                    lecteurId={account.id}
+                    lecteurId={account?.id ?? null}
                     locale={locale}
                   />
                 ))}
@@ -512,7 +520,7 @@ export default async function Agenda({
                       <LigneActivite
                         key={entree.id}
                         entree={entree}
-                        lecteurId={account.id}
+                        lecteurId={account?.id ?? null}
                         locale={locale}
                       />
                     ))}
@@ -524,7 +532,7 @@ export default async function Agenda({
         })
       )}
 
-      <Navigation actif="agenda" />
+      <Navigation actif="agenda" publique={account === null} />
     </main>
   );
 }
@@ -536,7 +544,8 @@ function LigneActivite({
   locale,
 }: {
   entree: CalendarEntry;
-  lecteurId: string;
+  /** Null sans compte : la ligne n'a alors aucun inscrit à montrer. */
+  lecteurId: string | null;
   locale: Locale;
 }) {
   // `useTranslations` marche aussi dans un composant serveur, et celui-ci n'a rien d'async.

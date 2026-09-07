@@ -128,7 +128,6 @@ import {
   SIX_MOIS_EN_SECONDES,
   clearSessionCookie,
   destinationSure,
-  masquerAccueil,
   poserSuite,
   readSessionToken,
   releverSuite,
@@ -140,14 +139,17 @@ import {
 /* -------------------------------------------------------------------- accueil */
 
 /**
- * Quitter l'accueil pour la connexion, en retenant au passage qu'on ne veut plus le revoir.
+ * Un bouton touché sans compte, sur un écran public : « Confirmer la sortie », « Nous y
+ * allons ». On retient d'où l'on vient, on passe par la connexion, et on revient.
  *
- * La case est dans le même formulaire que le bouton : cochée seule, elle n'aurait rien
- * enregistré sans JavaScript, et l'application doit tenir sans lui.
+ * La destination est vérifiée comme toute reprise : elle vient d'un formulaire, donc
+ * d'une page qu'on a pu fabriquer. Sans destination valable, on va simplement se
+ * connecter.
  */
-export async function entrer(formData: FormData) {
-  if (formData.get("ne_plus_afficher")) await masquerAccueil();
-  redirect("/connexion");
+export async function seConnecterPuisRevenir(formData: FormData) {
+  const suite = destinationSure(formData.get("suite")?.toString());
+  if (suite) await poserSuite(suite);
+  redirect(suite ? `/connexion?suite=${encodeURIComponent(suite)}` : "/connexion");
 }
 
 /* ------------------------------------------------------------------ connexion */

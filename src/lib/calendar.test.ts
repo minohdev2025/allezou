@@ -56,6 +56,12 @@ describe("Le calendrier", () => {
     const vueDeLInconnu = await upcomingCalendar(inconnu.id);
     expect(vueDeLInconnu.map((e) => e.title)).toEqual(["Visite du Muséum"]);
     expect(vueDeLInconnu[0].attendees).toEqual([]);
+
+    // Sans compte du tout (l'agenda est public) : la même liste, et aucun inscrit — même
+    // avec le filtre « mon cercle », qui n'a pas de sens sans cercle.
+    const vueSansCompte = await upcomingCalendar(null, { avecMonCercle: true });
+    expect(vueSansCompte.map((e) => e.title)).toEqual(["Visite du Muséum"]);
+    expect(vueSansCompte[0].attendees).toEqual([]);
   });
 
   it("porte la provenance et la date de mise à jour de chaque entrée", async () => {

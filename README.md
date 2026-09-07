@@ -64,7 +64,7 @@ src/app/
   compte/       nom, enfants, second parent, suppression du compte
   relecture/    file de l'agenda pour qui figure dans ADMIN_EMAILS
   donnees/      rend DONNEES.md : une seule source pour le dépôt et les parents
-  page.tsx      l'accueil public, pour qui arrive sans compte
+  page.tsx      l'accueil : « Nous sortons », public — l'agenda et les lieux le sont aussi
   actions.ts    toutes les mutations, chacune ouverte par requireAccount()
   icon.tsx      l'icône, dessinée plutôt qu'embarquée en binaire
 

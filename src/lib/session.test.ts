@@ -33,10 +33,23 @@ describe("La destination de reprise", () => {
     expect(destinationSure("/\\exemple.test/rejoindre/abcdefghij")).toBeUndefined();
   });
 
+  it("accepte les écrans publics d'où l'on a touché un bouton", () => {
+    // « Nous sortons », l'agenda, une fiche, les lieux : on revient exactement là.
+    expect(destinationSure("/sortir")).toBe("/sortir");
+    expect(destinationSure("/agenda")).toBe("/agenda");
+    expect(destinationSure("/lieux")).toBe("/lieux");
+    const id = "0f5217a4-1b2c-4d3e-8f90-abcdef123456";
+    expect(destinationSure(`/agenda/${id}`)).toBe(`/agenda/${id}`);
+  });
+
   it("refuse un autre écran, même chez nous", () => {
-    // La reprise ne sert qu'aux invitations : élargir sans raison élargit la surface.
+    // La reprise ne sert qu'aux invitations et aux écrans publics : élargir sans raison
+    // élargit la surface.
     expect(destinationSure("/compte")).toBeUndefined();
     expect(destinationSure("/relecture")).toBeUndefined();
+    expect(destinationSure("/agenda/nouveau")).toBeUndefined();
+    expect(destinationSure("/sortir/lieu")).toBeUndefined();
+    expect(destinationSure("/agenda?cercle=1")).toBeUndefined();
   });
 
   it("refuse ce qui n'a pas la forme d'un jeton", () => {

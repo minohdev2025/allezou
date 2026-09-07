@@ -5,35 +5,37 @@ import { routing } from "@/i18n/routing";
 /**
  * Ce qu'un moteur a le droit d'explorer.
  *
- * Deux pages seulement sont publiques : l'accueil et la page données. Tout le reste renvoie
- * au formulaire de connexion, et rien n'y fuit pour autant. Mais laisser un robot parcourir
+ * Le site public, c'est « Nous sortons » (l'accueil), l'agenda du canton et ses fiches, le
+ * catalogue des lieux, et les pages qui racontent le produit. Tout le reste renvoie au
+ * formulaire de connexion, et rien n'y fuit pour autant. Mais laisser un robot parcourir
  * `/sortie/<identifiant>` et `/rejoindre/<jeton>` n'a aucun intérêt et laisse ces adresses
  * dans des journaux qui ne sont pas les nôtres.
  *
  * On écrit la liste plutôt qu'un `Allow: /$` : l'ancrage de fin de ligne est une extension
  * que tous les robots ne comprennent pas, et un robot qui l'ignore cesserait d'explorer
  * jusqu'à l'accueil.
- *
- * Pas de plan de site : deux pages n'en font pas un.
  */
+const PUBLIQUES = ["/sortir", "/agenda", "/lieux", "/donnees", "/questions", "/a-propos", "/comment"];
+
 const PRIVEES = [
   "/connexion",
   "/bienvenue",
   "/maintenant",
-  "/sortir",
+  "/sortir/lieu",
   "/sortie",
-  "/agenda",
+  "/agenda/nouveau",
   "/cercles",
   "/rejoindre",
-  "/lieux",
   "/reglages",
   "/compte",
   "/relecture",
+  "/idees",
+  "/parent",
 ];
 
 export default function robots(): MetadataRoute.Robots {
-  // Chaque page privée existe aussi sous son préfixe de langue (/en/connexion…) : une règle
-  // par langue, écrite depuis la même liste — deux listes finiraient par diverger.
+  // Chaque page existe aussi sous son préfixe de langue (/en/connexion…) : une règle par
+  // langue, écrite depuis la même liste — deux listes finiraient par diverger.
   const prefixes = routing.locales.filter((l) => l !== routing.defaultLocale);
 
   /*
@@ -61,17 +63,8 @@ export default function robots(): MetadataRoute.Robots {
         userAgent: "*",
         allow: [
           "/",
-          "/donnees",
-          "/questions",
-          "/a-propos",
-          "/comment",
-          ...prefixes.flatMap((l) => [
-            `/${l}`,
-            `/${l}/donnees`,
-            `/${l}/questions`,
-            `/${l}/a-propos`,
-            `/${l}/comment`,
-          ]),
+          ...PUBLIQUES,
+          ...prefixes.flatMap((l) => [`/${l}`, ...PUBLIQUES.map((chemin) => `/${l}${chemin}`)]),
         ],
         disallow: PRIVEES.flatMap((chemin) => [
           chemin,

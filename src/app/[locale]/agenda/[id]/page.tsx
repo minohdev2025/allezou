@@ -5,10 +5,10 @@ import { notFound } from "next/navigation";
 import { calendarEntry } from "@/lib/calendar";
 import { myChildren } from "@/lib/children";
 import { defaultAudience, myAttendance } from "@/lib/publications";
-import { requireAccount } from "@/lib/session";
+import { currentAccount } from "@/lib/session";
 import { localeSure } from "@/lib/traduire";
 import { readerCircles } from "@/lib/visibility";
-import { annulerParticipation, sInscrireActivite } from "../../actions";
+import { annulerParticipation, sInscrireActivite, seConnecterPuisRevenir } from "../../actions";
 import {
   Alerte,
   Bouton,
@@ -33,7 +33,9 @@ export default async function Activite({
   const t = await getTranslations("AgendaActivite");
   const tE = await getTranslations("Etiquettes");
   const locale = localeSure(await getLocale());
-  const account = await requireAccount();
+  // La fiche est publique, comme l'agenda : les inscrits et le geste « nous y allons »
+  // n'existent qu'avec un compte.
+  const account = await currentAccount();
   const { id } = await params;
   const { erreur } = await searchParams;
 
@@ -43,14 +45,14 @@ export default async function Activite({
     activite_inconnue: t("erreurs.activite_inconnue"),
   };
 
-  const activite = await calendarEntry(account.id, id);
+  const activite = await calendarEntry(account?.id ?? null, id);
   if (!activite) notFound();
 
   const [cercles, enfants, inscription, defauts] = await Promise.all([
-    readerCircles(account.id),
-    myChildren(account.id),
-    myAttendance(account.id, id),
-    defaultAudience(account.id),
+    account ? readerCircles(account.id) : [],
+    account ? myChildren(account.id) : [],
+    account ? myAttendance(account.id, id) : null,
+    account ? defaultAudience(account.id) : [],
   ]);
 
   const cerclesCoches = new Set(
@@ -191,7 +193,7 @@ export default async function Activite({
               <li key={a.publicationId} className="flex items-center gap-3">
                 <Jeton nom={a.displayName} id={a.accountId} taille={32} />
                 <span className="font-semibold">
-                  {a.accountId === account.id ? t("vous") : a.displayName}
+                  {a.accountId === account?.id ? t("vous") : a.displayName}
                 </span>
               </li>
             ))}
@@ -205,6 +207,21 @@ export default async function Activite({
             <p className="leading-snug">{t("inscritRetireInfo")}</p>
           </Carte>
         ) : null
+      ) : !account ? (
+        /*
+          Sans compte, le geste reste visible — c'est lui qui distingue Allezou d'un
+          agenda — et mène à la connexion, qui ramène sur cette fiche.
+        */
+        <Carte>
+          <h2 className="titre mb-1 text-lg font-bold">{t("vousYAllezQuestion")}</h2>
+          <p className="mb-4 text-sm leading-snug text-[color:var(--color-doux)]">
+            {t("connexionPourInscrire")}
+          </p>
+          <form action={seConnecterPuisRevenir}>
+            <input type="hidden" name="suite" value={`/agenda/${id}`} />
+            <Bouton>{t("nousYAllons")}</Bouton>
+          </form>
+        </Carte>
       ) : cercles.length === 0 ? (
         <Carte>
           <p className="text-[color:var(--color-doux)]">{t("rejoindreCercle")}</p>
