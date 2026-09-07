@@ -11,6 +11,16 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   serverExternalPackages: ["postgres", "web-push", "nodemailer"],
 
+  experimental: {
+    serverActions: {
+      // Une photo d'affiche prise au téléphone pèse couramment 3 à 6 Mo ; la limite par
+      // défaut d'une Server Action est 1 Mo et refuserait la requête avant même que
+      // `lireAnnonce` ne s'exécute. 10 Mo laisse la marge du multipart au-dessus des
+      // 8 Mo que `extraireDePhoto` accepte (MAX_IMAGE_OCTETS).
+      bodySizeLimit: "10mb",
+    },
+  },
+
   async headers() {
     return [
       {

@@ -2,7 +2,7 @@ import { getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
 
-import { Bouton, Navigation, Titre } from "../ui";
+import { Bouton, Titre } from "../ui";
 
 /**
  * En-tête réutilisé par toutes les sous-pages de réglages : un fil

@@ -4,7 +4,7 @@ import { Link } from "@/i18n/navigation";
 
 import { prefsParCercle } from "@/lib/notifications";
 import { requireAccount } from "@/lib/session";
-import { enregistrerAbonnement, mettreEnPause, oublierAbonnement, reglerCercle } from "../../../actions";
+import { mettreEnPause, reglerCercle } from "../../../actions";
 import { Bouton, Carte, heureCourte, Navigation, Pastille, teinte, Titre } from "../../../ui";
 
 /**

@@ -981,8 +981,12 @@ export async function lireAnnonce(formData: FormData) {
 
   if (!resultat.ok) redirect(`/agenda/nouveau?annonce=${resultat.raison}`);
 
-  const { ok: _ok, ...annonce } = resultat;
-  await poserAnnonceCookie(annonce);
+  await poserAnnonceCookie({
+    titre: resultat.titre,
+    debut: resultat.debut,
+    fin: resultat.fin,
+    lieu: resultat.lieu,
+  });
   redirect("/agenda/nouveau?annonce=1");
 }
 
