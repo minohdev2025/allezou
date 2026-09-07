@@ -542,15 +542,18 @@ export function Vide({
   titre,
   children,
 }: {
-  emoji: string;
+  /** Facultatif : un état vide qui invite à un geste se passe d'illustration. */
+  emoji?: string;
   titre: string;
   children?: React.ReactNode;
 }) {
   return (
     <Carte className="text-center">
-      <div aria-hidden className="mb-3 text-5xl leading-none">
-        {emoji}
-      </div>
+      {emoji ? (
+        <div aria-hidden className="mb-3 text-5xl leading-none">
+          {emoji}
+        </div>
+      ) : null}
       <p className="titre text-lg font-bold">{titre}</p>
       {children ? (
         <div className="mt-2 text-[color:var(--color-doux)]">{children}</div>

@@ -133,7 +133,7 @@ export default async function Maintenant() {
       {cercles.length > 0 ? <DemandeNotifications /> : null}
 
       {cercles.length === 0 ? (
-        <Vide emoji="🫱" titre={t("titreAucunCercle")}>
+        <Vide titre={t("titreAucunCercle")}>
           <p className="mb-4">{t("texteAucunCercle")}</p>
           {/*
             « Rejoindre ou créer » et pas « créer » : on arrive presque toujours ici parce

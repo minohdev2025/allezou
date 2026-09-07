@@ -29,7 +29,7 @@ export default async function ReglagesCerclesIndex() {
       <Titre sous={t("cerclesIndexSous")}>{t("cerclesTitre")}</Titre>
 
       {cercles.length === 0 ? (
-        <Vide emoji="👥" titre={t("videTitre")}>
+        <Vide titre={t("videTitre")}>
           {t("videTexte")}
         </Vide>
       ) : (

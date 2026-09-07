@@ -133,7 +133,7 @@ export async function EcranSortir({
         la vitrine, et confirmer mène à la porte.
       */}
       {account && cercles.length === 0 ? (
-        <Vide emoji="👥" titre={t("videCercleTitre")}>
+        <Vide titre={t("videCercleTitre")}>
           <p className="mb-4">{t("videCercleTexte")}</p>
           <LienBouton href="/cercles" variante="principal">
             {t("creerRejoindreCercle")}

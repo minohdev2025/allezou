@@ -103,7 +103,7 @@ export default async function Cercles({
           au sortir de l'inscription n'a encore rien vu de l'application : l'écran doit dire
           ce qu'est un cercle, et pourquoi il ne se passera rien tant qu'il n'en a pas.
         */
-        <Vide emoji="👥" titre={t("videTitre")}>
+        <Vide titre={t("videTitre")}>
           <p className="leading-snug">{t("videTexte")}</p>
         </Vide>
       ) : null}
