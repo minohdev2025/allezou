@@ -95,14 +95,29 @@ export function proxy(request: NextRequest) {
    * tombe en `private, no-store` par défaut — sécurisant.
    */
   const chemin = request.nextUrl.pathname;
-  const PUBLIC =
-    /^\/(?:[a-z]{2}\/?)?$|^\/(?:[a-z]{2}\/)?(?:sortir|lieux|donnees|questions|a-propos|comment|parcs|agenda|agenda\/(?!nouveau)[^/]+)$/;
+  // Les pages qui racontent le produit : même contenu pour tout le monde.
+  const INFORMATIVE = /^\/(?:[a-z]{2}\/)?(?:donnees|questions|a-propos|comment|parcs)$/;
+  // Les écrans publics qui changent avec un compte : « Nous sortons », l'agenda, les lieux.
+  const ECRAN =
+    /^\/(?:[a-z]{2}\/?)?$|^\/(?:[a-z]{2}\/)?(?:sortir|lieux|agenda|agenda\/(?!nouveau)[^/]+)$/;
   const connecte = request.cookies.has("totir_session");
-  const estPublique = PUBLIC.test(chemin) && !connecte;
-  reponse.headers.set("Vary", "Cookie");
-  reponse.headers.set("Cache-Control", estPublique
-    ? "public, max-age=300, s-maxage=3600, stale-while-revalidate=86400"
-    : "private, no-store, no-cache, must-revalidate");
+  /*
+    Next réécrit l'en-tête Vary avec sa propre liste (rsc, next-router-…), et un
+    `Vary: Cookie` posé ici n'y survit pas. Un écran qui varie avec la session ne peut
+    donc pas être gardé par le navigateur : la version anonyme de `/` resterait
+    affichée cinq minutes après la connexion. Ces écrans se revalident à chaque visite ;
+    les pages informatives, elles, se gardent.
+  */
+  reponse.headers.set(
+    "Cache-Control",
+    connecte
+      ? "private, no-store, no-cache, must-revalidate"
+      : INFORMATIVE.test(chemin)
+        ? "public, max-age=300, s-maxage=3600, stale-while-revalidate=86400"
+        : ECRAN.test(chemin)
+          ? "public, max-age=0, must-revalidate"
+          : "private, no-store, no-cache, must-revalidate",
+  );
 
   return reponse;
 }
