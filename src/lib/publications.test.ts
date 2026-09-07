@@ -15,7 +15,6 @@ import {
   declareAttendance,
   declarePresence,
   defaultAudience,
-  dureesProposees,
   extendPresence,
   lastOuting,
   myAttendance,
@@ -273,21 +272,6 @@ describe("Annoncer une sortie pour plus tard", () => {
 
     expect(await currentlyOut(bob.id)).toHaveLength(1);
     expect(await upcomingOutings(bob.id)).toEqual([]);
-  });
-
-  it("propose trois durées, dont un repère qui dépend de l'heure", () => {
-    const matin = dureesProposees(new Date("2026-08-10T07:30:00+02:00"));
-    expect(matin.map((d) => d.libelle)).toEqual(["1 h", "2 h", "jusqu'à 12h"]);
-    expect(matin[2].minutes).toBe(300);
-
-    const apresMidi = dureesProposees(new Date("2026-08-10T15:00:00+02:00"));
-    expect(apresMidi.map((d) => d.libelle)).toEqual(["1 h", "2 h", "jusqu'à 18h"]);
-
-    // À 16 h, « jusqu'à 18h » vaudrait 2 h : on ne propose jamais deux fois la même durée.
-    for (const heure of ["06", "10", "11", "12", "16", "17", "19", "23"]) {
-      const durees = dureesProposees(new Date(`2026-08-10T${heure}:00:00+02:00`));
-      expect(new Set(durees.map((d) => d.minutes)).size, `à ${heure} h`).toBe(3);
-    }
   });
 });
 

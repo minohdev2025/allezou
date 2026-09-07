@@ -64,7 +64,7 @@ export default async function NouvelleActivite({
 
   return (
     <main className="apparait">
-      <Titre sous={t("sousTitre")}>
+      <Titre>
               {t("titre")}
             </Titre>
 

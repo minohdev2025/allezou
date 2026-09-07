@@ -446,6 +446,25 @@ export function ChoixDuLieu({
           </div>
         </details>
 
+        {/*
+          Le mot de 140 caractères vit sous les lieux, pas dans les réglages pliés :
+          « on est côté toboggan », « pataugeoire ouverte » se dit après avoir choisi
+          où l'on va, et c'est la seule chose que les autres liront avant de venir.
+          Facultatif — une sortie sans mot reste une sortie.
+        */}
+        <label className="mb-4 block">
+          <span className="mb-1 block text-sm text-[color:var(--color-doux)]">
+            {t("noteAide")}
+          </span>
+          <input
+            type="text"
+            name="note"
+            maxLength={140}
+            placeholder={t("notePlaceholder")}
+            className="w-full rounded-[var(--radius-pilule)] bg-[color:var(--color-surface)] px-5 py-3 text-base ring-2 ring-[color:var(--color-trait)] outline-none focus:ring-[color:var(--color-vert)]"
+          />
+        </label>
+
         <div>
           <Bouton>{t("confirmerLaSortie")}</Bouton>
           <p className="mt-2 text-center text-sm leading-snug text-[color:var(--color-doux)]">

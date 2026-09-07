@@ -230,7 +230,6 @@
   },
   "AgendaNouveau": {
     "titre": "Propozoni një aktivitet",
-    "sousTitre": "Një atelie, një festë lagjeje, një vizitë në muze: çka agjenda e kantonit nuk e njeh.",
     "erreurs": {
       "titre_invalide": "Duhet një titull, nga 3 deri në 120 shkronja.",
       "dates_invalides": "Data e fillimit është e nevojshme, dhe mbarimi duhet të vijë pas saj.",
@@ -779,7 +778,9 @@
     "combienDeTemps": "Sa kohë",
     "aPartirDeQuand": "Që nga kur",
     "laissezVide": "Lëreni bosh nëse jeni tashmë atje.",
-    "annuler": "Anuloni"
+    "annuler": "Anuloni",
+    "jusqua": "Deri në",
+    "heureRetour": "Ora e kthimit"
   },
   "SortirLieu": {
     "titre": "Shtoni një vend",
@@ -823,7 +824,9 @@
     "situerAria": "Gjeolokalizo {nom} në hartë",
     "voirSurLaCarte": "Shihni në hartë",
     "deplacerRepere": "Zhvendosni pikën",
-    "fermer": "Mbyll"
+    "fermer": "Mbyll",
+    "noteAide": "Një fjalë për të tjerët (opsionale)",
+    "notePlaceholder": "Jemi pranë rrëshqitëses"
   },
   "Position": {
     "carteNonBranchee": "Harta nuk është ende e lidhur: mungon <code>GOOGLE_MAPS_API_KEY</code> (shihni <code>docs/google-maps.md</code>). Pa një pikë të vendosur, vendi do të gjeokodohet nga emri dhe adresa e tij — më pak i saktë, por asgjë nuk bllokohet.",

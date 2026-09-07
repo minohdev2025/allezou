@@ -125,6 +125,7 @@ export default async function RootLayout({
       "Confirmation",
             "BienvenueOptions",
             "ChoixLieu",
+      "Sortir",
       "Position",
       "Carte",
       "Partage",

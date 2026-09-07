@@ -230,7 +230,6 @@
   },
   "AgendaNouveau": {
     "titre": "Proposer une activité",
-    "sousTitre": "Un atelier, une fête de quartier, une sortie au musée : ce que l'agenda du canton ne connaît pas.",
     "erreurs": {
       "titre_invalide": "Il faut un titre, de 3 à 120 caractères.",
       "dates_invalides": "La date de début est nécessaire, et la fin doit venir après.",
@@ -779,7 +778,9 @@
     "combienDeTemps": "Combien de temps",
     "aPartirDeQuand": "À partir de quand",
     "laissezVide": "Laissez vide si vous y êtes déjà.",
-    "annuler": "Annuler"
+    "annuler": "Annuler",
+    "jusqua": "Jusqu'à",
+    "heureRetour": "Heure de retour"
   },
   "SortirLieu": {
     "titre": "Ajouter un lieu",
@@ -823,7 +824,9 @@
     "situerAria": "Situer {nom} sur la carte",
     "voirSurLaCarte": "Voir sur la carte",
     "deplacerRepere": "Déplacer le repère",
-    "fermer": "Fermer"
+    "fermer": "Fermer",
+    "noteAide": "Un mot pour les autres (facultatif)",
+    "notePlaceholder": "On est côté toboggan"
   },
   "Position": {
     "carteNonBranchee": "La carte n'est pas encore branchée : il manque <code>GOOGLE_MAPS_API_KEY</code> (voir <code>docs/google-maps.md</code>). Sans point posé, le lieu sera géocodé depuis son nom et son adresse — moins précis, mais rien n'est bloqué.",

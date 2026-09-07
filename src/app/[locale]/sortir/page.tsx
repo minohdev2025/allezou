@@ -4,11 +4,12 @@ import { Link } from "@/i18n/navigation";
 
 import { circlesByChild, myChildren } from "@/lib/children";
 import { lieuxFavoris, lieuxMasques, searchPlaces } from "@/lib/places";
-import { defaultAudience, dureesProposees, lastOuting } from "@/lib/publications";
+import { defaultAudience, lastOuting } from "@/lib/publications";
 import { requireAccount } from "@/lib/session";
 import { readerCircles } from "@/lib/visibility";
 import { declarerSortie } from "../actions";
 import { ChoixDuLieu } from "./choix-lieu-client";
+import { ChoixDuree } from "./duree-client";
 import { LiaisonEnfantsCercles } from "./liaison-client";
 import {
   Alerte,
@@ -63,8 +64,11 @@ export default async function Sortir({
 
   const cerclesCoches = new Set(defauts.map((c) => c.id));
 
-  const durees = dureesProposees();
-  const dureeParDefaut = durees.find((d) => d.minutes === 120)?.libelle ?? "2 h";
+  // Le résumé plié annonce ce qui partira si l'on ne touche à rien : la durée par
+  // défaut de ChoixDuree (« 2 h »), choisie côté navigateur. Ne pas importer depuis
+  // le module client : un serveur qui importe une valeur d'un « use client » reçoit
+  // une référence de proxy, pas la chaîne.
+  const dureeParDefaut = "2 h";
 
   return (
     <main className="apparait">
@@ -199,25 +203,7 @@ export default async function Sortir({
             </fieldset>
           ) : null}
 
-          <fieldset className="mb-4">
-            <legend className="mb-2 font-bold">{t("combienDeTemps")}</legend>
-            <div className="flex gap-2">
-              {durees.map((duree) => (
-                <label key={duree.minutes} className="flex-1">
-                  <input
-                    type="radio"
-                    name="duree"
-                    value={duree.minutes}
-                    defaultChecked={duree.minutes === 120}
-                    className="peer sr-only"
-                  />
-                  <span className="flex h-12 cursor-pointer items-center justify-center rounded-[var(--radius-pilule)] bg-[color:var(--color-surface)] text-center font-bold text-[color:var(--color-doux)] shadow-[inset_0_0_0_2px_var(--color-trait)] peer-checked:bg-[color:var(--color-vert)] peer-checked:text-[color:var(--color-fond)] peer-checked:shadow-none">
-                    {duree.libelle}
-                  </span>
-                </label>
-              ))}
-            </div>
-          </fieldset>
+          <ChoixDuree />
 
           <label className="mb-5 block">
             <span className="mb-1 block font-bold">{t("aPartirDeQuand")}</span>

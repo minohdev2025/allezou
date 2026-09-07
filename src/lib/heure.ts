@@ -47,3 +47,38 @@ export function heureDeGeneve(valeur: string | null | undefined): Date | null {
   const approche = new Date(naif.getTime() - decalage(naif));
   return new Date(naif.getTime() - decalage(approche));
 }
+
+/** La date du jour à Genève (« 2026-08-15 »), quel que soit le fuseau du serveur. */
+function dateDeGeneve(instant: Date): string {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: ZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(instant);
+}
+
+/**
+ * Une heure de fin saisie seule (« 18:30 ») devient une durée en minutes.
+ *
+ * Le jour est celui du départ annoncé, sinon celui d'aujourd'hui à Genève. Passer
+ * minuit n'est pas interprété comme « le lendemain » : la durée devient négative et
+ * le serveur la refuse — une sortie s'annonce pour la journée, pas à cheval.
+ *
+ * Null si la saisie est vide ou illisible : l'appelant retombe alors sur la durée
+ * choisie par ailleurs, comme une heure de début illisible retombe sur « maintenant ».
+ */
+export function minutesJusquAHeurePrecise(
+  finSaisie: string | null | undefined,
+  debut: Date | null,
+  maintenant: Date,
+): number | null {
+  if (!finSaisie || !/^\d{2}:\d{2}$/.test(finSaisie)) return null;
+
+  const jour = dateDeGeneve(debut ?? maintenant);
+  const fin = heureDeGeneve(`${jour}T${finSaisie}`);
+  if (!fin) return null;
+
+  const reference = debut ?? maintenant;
+  return Math.round((fin.getTime() - reference.getTime()) / 60_000);
+}

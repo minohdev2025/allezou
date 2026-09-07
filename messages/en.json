@@ -230,7 +230,6 @@
   },
   "AgendaNouveau": {
     "titre": "Suggest an activity",
-    "sousTitre": "A workshop, a neighborhood party, a museum trip: whatever the canton's agenda doesn't already know about.",
     "erreurs": {
       "titre_invalide": "A title is required, between 3 and 120 characters.",
       "dates_invalides": "A start date is required, and the end must come after it.",
@@ -779,7 +778,9 @@
     "combienDeTemps": "How long",
     "aPartirDeQuand": "Starting when",
     "laissezVide": "Leave blank if you're already there.",
-    "annuler": "Cancel"
+    "annuler": "Cancel",
+    "jusqua": "Until",
+    "heureRetour": "Return time"
   },
   "SortirLieu": {
     "titre": "Add a place",
@@ -823,7 +824,9 @@
     "situerAria": "Locate {nom} on the map",
     "voirSurLaCarte": "View on the map",
     "deplacerRepere": "Move the pin",
-    "fermer": "Close"
+    "fermer": "Close",
+    "noteAide": "A word for the others (optional)",
+    "notePlaceholder": "We're by the slide"
   },
   "Position": {
     "carteNonBranchee": "The map isn't hooked up yet: <code>GOOGLE_MAPS_API_KEY</code> is missing (see <code>docs/google-maps.md</code>). Without a pin placed, the place will be geocoded from its name and address — less precise, but nothing is blocked.",

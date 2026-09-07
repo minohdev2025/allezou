@@ -54,7 +54,7 @@ import {
   setCircleAlias,
   setRole,
 } from "@/lib/circles";
-import { heureDeGeneve } from "@/lib/heure";
+import { heureDeGeneve, minutesJusquAHeurePrecise } from "@/lib/heure";
 import { geocoderUnLieu } from "@/lib/geo";
 import { creerIdee, fermerIdee, repondreIdee, voterIdee } from "@/lib/ideas";
 import { db } from "@/lib/db";
@@ -99,6 +99,7 @@ import {
   voteRename,
 } from "@/lib/places";
 import {
+  DUREE_DEFAUT_MINUTES,
   createEventAndAttend,
   declareAttendance,
   declarePresence,
@@ -886,6 +887,20 @@ export async function declarerSortie(formData: FormData) {
   const debut = heureDeGeneve(formData.get("debut")?.toString());
 
   /*
+    « Jusqu'à une heure précise » gagne sur la puce de durée quand elle est remplie :
+    une heure saisie est un choix plus récent et plus explicite qu'un réglage laissé
+    par défaut. Elle reste dans les bornes que declarePresence vérifie (15 min à 8 h) :
+    une fin avant le départ, ou au-delà de minuit, tombe sur `duree_invalide`.
+  */
+  const minutesPrecises = minutesJusquAHeurePrecise(
+    formData.get("fin")?.toString(),
+    debut,
+    new Date(),
+  );
+  const minutes =
+    minutesPrecises ?? Number(formData.get("duree") ?? DUREE_DEFAUT_MINUTES);
+
+  /*
     Les cercles cochés à l'écran font foi, y compris quand il n'y en a aucun : c'est alors
     `aucun_destinataire` et non un repli silencieux sur les réglages par défaut. Une sortie
     publiée vers un cercle qu'on croyait avoir décoché est exactement la faute que l'écran
@@ -893,7 +908,8 @@ export async function declarerSortie(formData: FormData) {
   */
   const result = await declarePresence(account.id, {
     placeId: String(formData.get("lieu") ?? ""),
-    minutes: Number(formData.get("duree") ?? 120),
+    minutes,
+    note: formData.get("note")?.toString() || undefined,
     circleIds: formData.getAll("cercle").map(String),
     childIds: formData.getAll("enfant").map(String),
     startsAt: debut ?? undefined,

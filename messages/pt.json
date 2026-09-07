@@ -230,7 +230,6 @@
   },
   "AgendaNouveau": {
     "titre": "Propor uma atividade",
-    "sousTitre": "Uma oficina, uma festa de bairro, uma saída ao museu: o que a agenda do cantão não conhece.",
     "erreurs": {
       "titre_invalide": "É preciso um título, de 3 a 120 carateres.",
       "dates_invalides": "A data de início é obrigatória, e o fim tem de vir depois dela.",
@@ -779,7 +778,9 @@
     "combienDeTemps": "Quanto tempo",
     "aPartirDeQuand": "A partir de quando",
     "laissezVide": "Deixe em branco se já lá está.",
-    "annuler": "Cancelar"
+    "annuler": "Cancelar",
+    "jusqua": "Até",
+    "heureRetour": "Hora de regresso"
   },
   "SortirLieu": {
     "titre": "Adicionar um local",
@@ -823,7 +824,9 @@
     "situerAria": "Localizar {nom} no mapa",
     "voirSurLaCarte": "Ver no mapa",
     "deplacerRepere": "Mover o pino",
-    "fermer": "Fechar"
+    "fermer": "Fechar",
+    "noteAide": "Uma palavra para os outros (opcional)",
+    "notePlaceholder": "Estamos junto ao escorrega"
   },
   "Position": {
     "carteNonBranchee": "O mapa ainda não está ligado: falta <code>GOOGLE_MAPS_API_KEY</code> (ver <code>docs/google-maps.md</code>). Sem um ponto colocado, o local será geocodificado a partir do nome e da morada — menos preciso, mas nada fica bloqueado.",

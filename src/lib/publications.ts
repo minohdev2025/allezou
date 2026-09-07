@@ -671,40 +671,6 @@ export function upcomingOutings(actorId: string): Promise<VisiblePublication[]> 
   return visiblePublications(actorId, { kind: "presence", onlyUpcoming: true });
 }
 
-/**
- * Trois durées proposées à l'écran, dont une qui dépend de l'heure qu'il est.
- * « jusqu'à midi » à 9 h du matin dit quelque chose ; « 180 minutes » non.
- */
-export function dureesProposees(maintenant = new Date()): {
-  minutes: number;
-  libelle: string;
-}[] {
-  // On lit la partie « heure » plutôt que la chaîne entière : en français, une heure seule
-  // se formate « 07 h », que Number() ne sait pas lire.
-  const parties = new Intl.DateTimeFormat("fr-CH", {
-    hour: "numeric",
-    hour12: false,
-    timeZone: "Europe/Zurich",
-  }).formatToParts(maintenant);
-
-  const heure = Number(parties.find((p) => p.type === "hour")?.value ?? NaN);
-
-  // Un repère de fin naturel : midi le matin, 18 h l'après-midi.
-  const repere = heure < 11 ? 12 : 18;
-  const minutesJusquAuRepere = (repere - heure) * 60;
-
-  // Les trois propositions doivent être distinctes : à 16 h, « jusqu'à 18h » vaudrait
-  // exactement 2 heures et l'on afficherait deux fois le même bouton.
-  const contextuelleUtilisable =
-    minutesJusquAuRepere > 120 && minutesJusquAuRepere <= DUREE_MAX_MINUTES;
-
-  const contextuelle = contextuelleUtilisable
-    ? { minutes: minutesJusquAuRepere, libelle: `jusqu'à ${repere}h` }
-    : { minutes: 240, libelle: "4 h" };
-
-  return [{ minutes: 60, libelle: "1 h" }, { minutes: 120, libelle: "2 h" }, contextuelle];
-}
-
 /** Les participations visibles à une activité du calendrier. */
 export function attendanceFor(
   actorId: string,
