@@ -265,7 +265,8 @@
       "lien_invalide": "Ce lien n'a pas pu être ouvert. Vérifiez l'adresse ou collez le texte de l'annonce.",
       "texte_trop_court": "Le texte est trop court pour décrire une sortie. Ajoutez le détail de l'annonce.",
       "rien_trouve": "Aucune sortie datée trouvée dans l'annonce. Remplissez le formulaire à la main.",
-      "date_invraisemblable": "La date lue semble passée ou trop lointaine. Corrigez le champ avant de proposer."
+      "date_invraisemblable": "La date lue semble passée ou trop lointaine. Corrigez le champ avant de proposer.",
+      "indisponible": "La lecture est indisponible pour le moment. Remplissez le formulaire à la main, ou réessayez plus tard."
     },
     "annoncePhotoChoisir": "Choisir une photo"
   },
@@ -721,7 +722,7 @@
     "nousAussi": "Nous aussi",
     "autresFamilles": "{n, plural, one {# autre famille} other {# autres familles}}",
     "famillesDehors": "{n, plural, =0 {famille dehors} one {famille dehors} other {familles dehors}}",
-    "parmiVosCercles": "parmi vos {n} cercles",
+    "parmiVosCercles": "{n, plural, one {parmi votre cercle} other {parmi vos # cercles}}",
     "yEst": "y est",
     "restants": "restantes",
     "aVenirPar": "{nom} ira",
@@ -761,7 +762,8 @@
       "aucun_destinataire": "Cochez au moins un cercle : une sortie que personne ne verrait n'a pas de destinataire.",
       "cercle_interdit": "Vous n'êtes pas membre d'un des cercles cochés.",
       "lieu_inconnu": "Ce lieu n'existe plus.",
-      "duree_invalide": "Cette durée n'est pas possible.",
+      "duree_invalide": "Une sortie dure entre 15 minutes et 8 heures, et se termine avant minuit.",
+      "note_invalide": "Ce mot est trop long : 140 caractères au maximum.",
       "debut_invalide": "Cette heure ne convient pas : une sortie s'annonce jusqu'à deux semaines à l'avance, pas dans le passé."
     },
     "videCercleTitre": "Il vous faut d'abord un cercle",
@@ -780,7 +782,8 @@
     "laissezVide": "Laissez vide si vous y êtes déjà.",
     "annuler": "Annuler",
     "jusqua": "Jusqu'à",
-    "heureRetour": "Heure de retour"
+    "heureRetour": "Heure de retour",
+    "dureeAide": "Entre 15 minutes et 8 heures, avant minuit."
   },
   "SortirLieu": {
     "titre": "Ajouter un lieu",

@@ -44,8 +44,8 @@ const MINIMAX_MODEL = "MiniMax-M3";
  * ans. Le passé se mesure sur la fin : une activité commencée en juin et ouverte jusqu'en
  * septembre est en cours, pas périmée.
  */
-const FENETRE_PASSE_MS = 24 * 3_600_000;
-const FENETRE_FUTUR_MS = 365 * 24 * 3_600_000;
+export const FENETRE_PASSE_MS = 24 * 3_600_000;
+export const FENETRE_FUTUR_MS = 365 * 24 * 3_600_000;
 
 /**
  * Un champ absent et un champ à `null` veulent dire la même chose ici : le modèle renvoie
@@ -272,69 +272,49 @@ const SYSTEME_FICHE = [
   "- Si la page ne détaille pas une activité datée ouverte au public, réponds {\"evenements\":[]}.",
 ].join("\n");
 
-/**
- * Un appel au modèle, une réponse texte. Les trois lecteurs — liste, fiche, vérification —
- * partagent ce chemin : même clé, même température nulle, même façon d'échouer.
- */
-export async function appelMiniMax(systeme: string, utilisateur: string): Promise<string> {
-  const response = await fetch(MINIMAX_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey()}`,
-    },
-    body: JSON.stringify({
-      model: MINIMAX_MODEL,
-      temperature: 0,
-      response_format: { type: "json_object" },
-      messages: [
-        { role: "system", content: systeme },
-        { role: "user", content: utilisateur },
-      ],
-    }),
-  });
-
-  if (!response.ok) {
-    throw new Error(`MiniMax : HTTP ${response.status} ${await lireTexte(response, 500)}`);
-  }
-
-  const body = (await response.json()) as {
-    choices?: { message?: { content?: string } }[];
-  };
-  const content = body.choices?.[0]?.message?.content;
-  if (!content) throw new Error("MiniMax : réponse vide");
-  return content;
-}
+/** Une image jointe au message utilisateur, au format OpenAI vision. */
+export type ImageJointe = { mime: string; base64: string };
 
 /**
- * Le même appel, avec une image en plus du texte. MiniMax M3 lit les images directement
- * (spike validé en septembre 2026) : pas d'OCR local, la photo d'affiche part en base64
- * dans le message utilisateur, au format OpenAI vision.
+ * Un appel au modèle, une réponse texte. Les lecteurs — liste, fiche, vérification,
+ * annonce — partagent ce chemin : même clé, même température nulle, même façon d'échouer.
+ *
+ * `image` : MiniMax M3 lit les images directement (spike validé en septembre 2026) ; pas
+ * d'OCR local, la photo part en base64 dans le message utilisateur.
+ *
+ * `timeoutMs` : sans lui, un modèle qui ne répond plus garde l'appel ouvert. L'ingest
+ * n'en pose pas — ses pages sont longues et personne n'attend devant — ; un parent qui
+ * attend devant un bouton, si.
  */
-export async function appelMiniMaxVision(
+export async function appelMiniMax(
   systeme: string,
   utilisateur: string,
-  image: { mime: string; base64: string },
+  options: { image?: ImageJointe; timeoutMs?: number } = {},
 ): Promise<string> {
+  const contenu = options.image
+    ? [
+        { type: "text", text: utilisateur },
+        {
+          type: "image_url",
+          image_url: { url: `data:${options.image.mime};base64,${options.image.base64}` },
+        },
+      ]
+    : utilisateur;
+
   const response = await fetch(MINIMAX_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${apiKey()}`,
     },
+    signal: options.timeoutMs ? AbortSignal.timeout(options.timeoutMs) : undefined,
     body: JSON.stringify({
       model: MINIMAX_MODEL,
       temperature: 0,
       response_format: { type: "json_object" },
       messages: [
         { role: "system", content: systeme },
-        {
-          role: "user",
-          content: [
-            { type: "text", text: utilisateur },
-            { type: "image_url", image_url: { url: `data:${image.mime};base64,${image.base64}` } },
-          ],
-        },
+        { role: "user", content: contenu },
       ],
     }),
   });

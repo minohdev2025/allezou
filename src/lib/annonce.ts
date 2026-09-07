@@ -11,11 +11,20 @@
  * Genève pour les champs `datetime-local`.
  */
 
+import { lookup } from "node:dns/promises";
+
 import { cookies } from "next/headers";
 import { z } from "zod";
 
-import { appelMiniMax, appelMiniMaxVision, htmlToText, parseModelJson } from "./ingest/minimax";
-import { USER_AGENT } from "./ingest/types";
+import {
+  FENETRE_FUTUR_MS,
+  FENETRE_PASSE_MS,
+  appelMiniMax,
+  htmlToText,
+  parseModelJson,
+} from "./ingest/minimax";
+import { TAILLE_MAX_REPONSE, USER_AGENT, lireTexte } from "./ingest/types";
+import { UN_QUART_D_HEURE, poserTemoin } from "./session";
 
 /** Le témoin qui porte l'annonce lue de l'action vers le formulaire. Un quart d'heure. */
 const COOKIE_ANNONCE = "totir_annonce";
@@ -23,9 +32,14 @@ const MAX_IMAGE_OCTETS = 8 * 1024 * 1024;
 const MIMES_IMAGE = new Set(["image/jpeg", "image/png", "image/webp"]);
 const MAX_TEXTE = 30_000;
 
-/** Comme l'ingest : rien ne commence dans deux ans, rien n'a commencé il y a un mois. */
-const FENETRE_PASSE_MS = 24 * 3_600_000;
-const FENETRE_FUTUR_MS = 365 * 24 * 3_600_000;
+/**
+ * Un parent attend devant un bouton : au-delà, on lui rend la main plutôt que de garder
+ * l'appel ouvert. Une affiche de cinq mégaoctets se lit en une dizaine de secondes.
+ */
+const MODELE_TIMEOUT_MS = 45_000;
+/** Une page publique répond en quelques secondes ; on ne suit pas une chaîne sans fin. */
+const PAGE_TIMEOUT_MS = 15_000;
+const REDIRECTIONS_MAX = 5;
 
 const texteFacultatif = z
   .string()
@@ -82,7 +96,9 @@ export type RaisonEchec =
   | "lien_invalide"
   | "texte_trop_court"
   | "rien_trouve"
-  | "date_invraisemblable";
+  | "date_invraisemblable"
+  /** Le modèle n'a pas répondu (clé absente, quota, panne) : ce n'est pas l'annonce. */
+  | "indisponible";
 
 /**
  * « 2026-08-15T15:00:00+02:00 » → l'heure murale de Genève au format `datetime-local`.
@@ -110,10 +126,42 @@ export function murDeGeneve(iso: string): string | null {
 }
 
 /**
+ * Une adresse IP qui n'a rien à faire dans un lien public : boucle locale, réseaux privés,
+ * lien local (dont 169.254.169.254, les métadonnées d'un hébergeur), non spécifiée.
+ *
+ * Reçoit l'adresse telle que `new URL()` ou `dns.lookup` la donnent. Une IPv6 mappée sur
+ * IPv4 (« ::ffff:7f00:1 » pour 127.0.0.1) est ramenée à son IPv4 avant d'être jugée : sans
+ * cela, elle échappait aux deux listes et ouvrait la boucle locale.
+ */
+export function adressePrivee(adresse: string): boolean {
+  let ip = adresse.toLowerCase().replace(/^\[|\]$/g, "");
+
+  const mappee = /^::ffff:(.+)$/.exec(ip);
+  if (mappee) {
+    const reste = mappee[1];
+    if (reste.includes(".")) {
+      ip = reste;
+    } else {
+      // Deux groupes hexadécimaux : « 7f00:1 » → 127.0.0.1.
+      const [haut = "0", bas = "0"] = reste.split(":");
+      const h = parseInt(haut, 16);
+      const b = parseInt(bas, 16);
+      ip = `${h >> 8}.${h & 255}.${b >> 8}.${b & 255}`;
+    }
+  }
+
+  if (ip.includes(":")) {
+    // IPv6 : boucle (::1), non spécifiée (::), lien local (fe80::/10), unique locale (fc00::/7).
+    return ip === "::1" || ip === "::" || /^fe[89ab]/.test(ip) || /^f[cd]/.test(ip);
+  }
+  return /^(0\.|10\.|127\.|169\.254\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)/.test(ip);
+}
+
+/**
  * Garde-fou SSRF : l'URL vient d'un utilisateur, le fetch part du serveur. On refuse tout
- * ce qui n'est pas http(s), et tout hôte qui sonne local ou privé. Les hôtes privés en
- * littéral IP sont couverts ; un nom DNS qui résoudrait vers une IP privée reste possible,
- * mais l'appel ne renvoie rien d'autre que du texte public déjà limité en taille.
+ * ce qui n'est pas http(s), et tout hôte qui sonne local ou privé. Ce contrôle est
+ * syntaxique et synchrone ; `hoteResoutEnPublic` vérifie ensuite ce que le DNS en fait,
+ * et `extraireDeLien` repasse les deux à chaque redirection.
  */
 export function urlPubliqueSure(valeur: string): URL | null {
   let url: URL;
@@ -128,17 +176,26 @@ export function urlPubliqueSure(valeur: string): URL | null {
   if (hote === "localhost" || hote.endsWith(".local") || hote.endsWith(".internal")) {
     return null;
   }
-  if (/^(0\.|10\.|127\.|169\.254\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)/.test(hote)) {
-    return null;
-  }
-  // IPv6 littéral : boucle (::1), non spécifié, lien local (fe80::/10), unique local (fc00::/7).
-  if (hote.startsWith("[")) {
-    const ip = hote.slice(1, -1);
-    if (ip === "::1" || ip === "::" || /^fe[89ab]/i.test(ip) || /^f[cd]/i.test(ip)) {
-      return null;
-    }
-  }
+  if (adressePrivee(hote)) return null;
   return url;
+}
+
+/**
+ * Le nom résout-il vers des adresses publiques, et rien d'autre ?
+ *
+ * Un nom DNS qui pointe vers 127.0.0.1 ou vers le réseau interne passerait le contrôle
+ * syntaxique. On résout donc avant d'ouvrir, et toutes les réponses doivent être publiques.
+ * Un nom introuvable est refusé comme un nom privé. Un littéral IP se juge sans DNS.
+ */
+export async function hoteResoutEnPublic(url: URL): Promise<boolean> {
+  const hote = url.hostname;
+  if (hote.startsWith("[") || /^\d+(\.\d+){3}$/.test(hote)) return !adressePrivee(hote);
+  try {
+    const adresses = await lookup(hote, { all: true });
+    return adresses.length > 0 && adresses.every((a) => !adressePrivee(a.address));
+  } catch {
+    return false;
+  }
 }
 
 function dansLaFenetre(instant: Date): boolean {
@@ -184,12 +241,49 @@ export async function extraireDePhoto(fichier: File): Promise<ResultatLecture> {
     return { ok: false, raison: "image_invalide" };
   }
   const base64 = Buffer.from(await fichier.arrayBuffer()).toString("base64");
-  const content = await appelMiniMaxVision(
+  const content = await appelMiniMax(
     SYSTEME,
     `${utilisateur()}\n\nVoici la photo d'une annonce.`,
-    { mime: fichier.type, base64 },
+    { image: { mime: fichier.type, base64 }, timeoutMs: MODELE_TIMEOUT_MS },
   );
   return annonceDepuisPayload(parseModelJson(content));
+}
+
+/**
+ * Ouvre une page publique en suivant les redirections une à une.
+ *
+ * `redirect: "follow"` aurait suivi vers n'importe où : le contrôle SSRF ne portait que
+ * sur l'adresse tapée, et une page publique qui renvoie vers 169.254.169.254 aurait été
+ * lue depuis le serveur. Chaque saut repasse donc les deux contrôles, syntaxique et DNS.
+ * Null si un saut est refusé, si la chaîne est trop longue, ou si la page ne répond pas.
+ */
+async function ouvrirPagePublique(depart: URL): Promise<Response | null> {
+  let url = depart;
+  for (let saut = 0; saut <= REDIRECTIONS_MAX; saut += 1) {
+    if (!(await hoteResoutEnPublic(url))) return null;
+
+    let reponse: Response;
+    try {
+      reponse = await fetch(url, {
+        headers: { "User-Agent": USER_AGENT },
+        signal: AbortSignal.timeout(PAGE_TIMEOUT_MS),
+        redirect: "manual",
+      });
+    } catch {
+      return null;
+    }
+
+    if (reponse.status >= 300 && reponse.status < 400) {
+      await reponse.body?.cancel().catch(() => undefined);
+      const destination = reponse.headers.get("location");
+      const suivante = destination ? urlPubliqueSure(new URL(destination, url).href) : null;
+      if (!suivante) return null;
+      url = suivante;
+      continue;
+    }
+    return reponse;
+  }
+  return null;
 }
 
 /** Lien vers une page : fetch côté serveur (URL filtrée), puis lecture du texte. */
@@ -197,24 +291,26 @@ export async function extraireDeLien(lien: string): Promise<ResultatLecture> {
   const url = urlPubliqueSure(lien);
   if (!url) return { ok: false, raison: "lien_invalide" };
 
-  let reponse: Response;
-  try {
-    reponse = await fetch(url, {
-      headers: { "User-Agent": USER_AGENT },
-      signal: AbortSignal.timeout(15_000),
-      redirect: "follow",
-    });
-  } catch {
+  const reponse = await ouvrirPagePublique(url);
+  if (!reponse || !reponse.ok) return { ok: false, raison: "lien_invalide" };
+
+  // Une page d'annonce est du HTML ou du texte. Un PDF ou une image passerait par
+  // `htmlToText` pour ne donner que du bruit, après avoir été lu en entier.
+  const type = reponse.headers.get("content-type") ?? "";
+  if (!/^(text\/|application\/xhtml)/i.test(type)) {
+    await reponse.body?.cancel().catch(() => undefined);
     return { ok: false, raison: "lien_invalide" };
   }
-  if (!reponse.ok) return { ok: false, raison: "lien_invalide" };
 
-  const texte = htmlToText(await reponse.text(), MAX_TEXTE);
+  // `lireTexte` s'arrête à deux mégaoctets et referme la connexion, comme pour les
+  // sources de l'agenda : ce qu'on lit d'un site inconnu a un plafond.
+  const texte = htmlToText(await lireTexte(reponse, TAILLE_MAX_REPONSE), MAX_TEXTE);
   if (texte.length < 40) return { ok: false, raison: "rien_trouve" };
 
   const content = await appelMiniMax(
     SYSTEME,
-    `${utilisateur()}\nPage : ${url.href}\n\n${texte}`,
+    `${utilisateur()}\nPage : ${reponse.url || url.href}\n\n${texte}`,
+    { timeoutMs: MODELE_TIMEOUT_MS },
   );
   return annonceDepuisPayload(parseModelJson(content));
 }
@@ -224,20 +320,19 @@ export async function extraireDeTexte(texte: string): Promise<ResultatLecture> {
   const propre = texte.trim().slice(0, MAX_TEXTE);
   if (propre.length < 20) return { ok: false, raison: "texte_trop_court" };
 
-  const content = await appelMiniMax(SYSTEME, `${utilisateur()}\n\n${propre}`);
+  const content = await appelMiniMax(SYSTEME, `${utilisateur()}\n\n${propre}`, {
+    timeoutMs: MODELE_TIMEOUT_MS,
+  });
   return annonceDepuisPayload(parseModelJson(content));
 }
 
 /** Pose l'annonce lue dans un témoin, entre l'action qui lit et le formulaire qui affiche. */
 export async function poserAnnonceCookie(annonce: AnnonceLue): Promise<void> {
-  const store = await cookies();
-  store.set(COOKIE_ANNONCE, encodeURIComponent(JSON.stringify(annonce)), {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    maxAge: 15 * 60,
-  });
+  await poserTemoin(
+    COOKIE_ANNONCE,
+    encodeURIComponent(JSON.stringify(annonce)),
+    UN_QUART_D_HEURE,
+  );
 }
 
 /** Lit sans consommer : une page ne peut pas effacer un témoin (pattern de `lireSuite`). */

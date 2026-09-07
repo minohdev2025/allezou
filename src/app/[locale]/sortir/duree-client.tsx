@@ -71,6 +71,14 @@ export function ChoixDuree() {
           />
         </label>
       </div>
+      {/*
+        La règle du serveur, dite avant qu'il ne la rappelle : une heure trop proche,
+        déjà passée ou au-delà de minuit tombe sur `duree_invalide`, et le formulaire
+        se vide. Mieux vaut le lire ici que le découvrir après.
+      */}
+      <p className="mt-2 text-xs leading-snug text-[color:var(--color-doux)]">
+        {t("dureeAide")}
+      </p>
     </fieldset>
   );
 }

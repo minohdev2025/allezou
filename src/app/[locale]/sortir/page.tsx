@@ -48,6 +48,7 @@ export default async function Sortir({
     lieu_inconnu: t("erreurs.lieu_inconnu"),
     duree_invalide: t("erreurs.duree_invalide"),
     debut_invalide: t("erreurs.debut_invalide"),
+    note_invalide: t("erreurs.note_invalide"),
   };
 
   const [lieux, cercles, defauts, enfants, derniere, cerclesParEnfant, favoris, masques] =

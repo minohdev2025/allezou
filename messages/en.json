@@ -265,7 +265,8 @@
       "lien_invalide": "That link could not be opened. Check the address or paste the announcement text.",
       "texte_trop_court": "The text is too short to describe an outing. Add the announcement details.",
       "rien_trouve": "No dated outing found in the announcement. Fill in the form manually.",
-      "date_invraisemblable": "The date read looks past or too far away. Correct the field before proposing."
+      "date_invraisemblable": "The date read looks past or too far away. Correct the field before proposing.",
+      "indisponible": "Reading is unavailable right now. Fill in the form manually, or try again later."
     },
     "annoncePhotoChoisir": "Choose a photo"
   },
@@ -721,7 +722,7 @@
     "nousAussi": "Us too",
     "autresFamilles": "{n, plural, one {# other family} other {# other families}}",
     "famillesDehors": "{n, plural, =0 {families out} one {family out} other {families out}}",
-    "parmiVosCercles": "across your {n} circles",
+    "parmiVosCercles": "{n, plural, one {across your circle} other {across your # circles}}",
     "yEst": "is out",
     "restants": "left",
     "aVenirPar": "{nom} is going to",
@@ -761,7 +762,8 @@
       "aucun_destinataire": "Check at least one circle: an outing no one would see doesn't reach anyone.",
       "cercle_interdit": "You're not a member of one of the circles you checked.",
       "lieu_inconnu": "This place no longer exists.",
-      "duree_invalide": "This duration isn't possible.",
+      "duree_invalide": "An outing lasts between 15 minutes and 8 hours, and ends before midnight.",
+      "note_invalide": "This note is too long: 140 characters maximum.",
       "debut_invalide": "This time doesn't work: an outing can be posted up to two weeks ahead, not in the past."
     },
     "videCercleTitre": "You'll need a circle first",
@@ -780,7 +782,8 @@
     "laissezVide": "Leave blank if you're already there.",
     "annuler": "Cancel",
     "jusqua": "Until",
-    "heureRetour": "Return time"
+    "heureRetour": "Return time",
+    "dureeAide": "Between 15 minutes and 8 hours, before midnight."
   },
   "SortirLieu": {
     "titre": "Add a place",

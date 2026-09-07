@@ -7,6 +7,8 @@
  * donc explicitement à l'heure de Genève, quel que soit l'endroit où tourne l'application.
  */
 
+import { jourGenevois } from "./ingest/types";
+
 const ZONE = "Europe/Zurich";
 
 /** Décalage de Genève, en millisecondes, à un instant donné (gère l'heure d'été). */
@@ -48,16 +50,6 @@ export function heureDeGeneve(valeur: string | null | undefined): Date | null {
   return new Date(naif.getTime() - decalage(approche));
 }
 
-/** La date du jour à Genève (« 2026-08-15 »), quel que soit le fuseau du serveur. */
-function dateDeGeneve(instant: Date): string {
-  return new Intl.DateTimeFormat("en-CA", {
-    timeZone: ZONE,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(instant);
-}
-
 /**
  * Une heure de fin saisie seule (« 18:30 ») devient une durée en minutes.
  *
@@ -75,7 +67,7 @@ export function minutesJusquAHeurePrecise(
 ): number | null {
   if (!finSaisie || !/^\d{2}:\d{2}$/.test(finSaisie)) return null;
 
-  const jour = dateDeGeneve(debut ?? maintenant);
+  const jour = jourGenevois(debut ?? maintenant);
   const fin = heureDeGeneve(`${jour}T${finSaisie}`);
   if (!fin) return null;
 

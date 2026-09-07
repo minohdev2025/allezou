@@ -8,7 +8,7 @@ import { myChildren } from "@/lib/children";
 import { currentlyOut, upcomingOutings } from "@/lib/publications";
 import { requireAccount } from "@/lib/session";
 import { listeFr } from "@/lib/texte";
-import { readerCircles, visibleParticipants, type VisiblePublication } from "@/lib/visibility";
+import { readerCircles, type VisiblePublication } from "@/lib/visibility";
 import { rejoindreSortie, retirerSortie } from "../actions";
 import { DemandeNotifications } from "./demande-notifications";
 import {
@@ -104,19 +104,24 @@ export default async function Maintenant() {
         <p className="text-[0.8rem] font-bold uppercase tracking-[0.18em] text-[color:var(--color-doux)]">
           {dateEnTete}
         </p>
-        <div className="mt-1.5 flex items-baseline gap-3">
+        {/*
+          Le compteur est le titre de l'écran : « 3 familles dehors » est exactement ce
+          que la page dit, et un lecteur d'écran y arrive par la navigation de titres
+          comme sur tout autre écran. Le nombre garde son style de compteur.
+        */}
+        <h1 className="mt-1.5 flex items-baseline gap-3">
           <span className="text-[3.5rem] font-black leading-none tracking-[-0.04em] text-[color:var(--color-vert)]">
             {sorties.length}
           </span>
           <span className="text-base font-extrabold uppercase leading-tight tracking-[0.02em]">
             {t("famillesDehors", { n: sorties.length })}
-            {cercles.length > 0 ? (
-              <small className="mt-1 block text-xs font-semibold normal-case tracking-[0.04em] text-[color:var(--color-doux)]">
-                {t("parmiVosCercles", { n: cercles.length })}
-              </small>
-            ) : null}
           </span>
-        </div>
+        </h1>
+        {cercles.length > 0 ? (
+          <p className="mt-1 pl-[4.4rem] text-xs font-semibold tracking-[0.04em] text-[color:var(--color-doux)]">
+            {t("parmiVosCercles", { n: cercles.length })}
+          </p>
+        ) : null}
       </header>
 
       {/*
@@ -249,9 +254,14 @@ async function LigneSortie({
 }) {
   const t = await getTranslations("Maintenant");
   const locale = (await getLocale()) as Locale;
-  const participants = await visibleParticipants(accountId, sortie.id);
-  const autres = participants.filter((p) => !p.isAuthor);
-  const jySuis = participants.some((p) => p.accountId === accountId);
+  /*
+    Le compte des autres familles et « j'y suis » viennent de la requête de visibilité,
+    pas d'une requête de participants par carte : l'écran principal se charge le plus
+    souvent, et n'affiche ni nom ni enfant des autres — c'est la page de la sortie qui
+    les liste.
+  */
+  const autres = sortie.otherParticipants;
+  const jySuis = sortie.readerParticipates;
   const cestMoi = sortie.authorId === accountId;
 
   /* Bouton fantôme : geste calme (annuler, rentrés) — jamais de vermillon dessus. */
@@ -265,7 +275,7 @@ async function LigneSortie({
     sortie.authorChildren.length > 0
       ? t("avecEnfants", { liste: listeFr(sortie.authorChildren) })
       : null,
-    autres.length > 0 ? t("autresFamilles", { n: autres.length }) : null,
+    autres > 0 ? t("autresFamilles", { n: autres }) : null,
   ]
     .filter(Boolean)
     .join(" · ");
@@ -373,7 +383,8 @@ async function LigneSortie({
             <span className="text-[0.95rem] font-black leading-none tracking-tight">
               {duree}
             </span>
-            <span className="mt-0.5 text-[0.47rem] font-bold uppercase tracking-[0.06em] text-[color:var(--color-doux)]">
+            {/* Neuf lettres dans un cercle de 50 px : petit et serré, sinon ça déborde. */}
+            <span className="mt-0.5 max-w-full text-[0.4rem] font-bold uppercase tracking-[0.02em] text-[color:var(--color-doux)]">
               {t("restants")}
             </span>
           </div>
@@ -424,14 +435,14 @@ async function LigneSortie({
                 </Link>
               </p>
               <p className="truncate text-xs font-semibold text-[color:var(--color-doux)]">
+                {/*
+                  Toujours « jusqu'à » : cette branche ne reçoit que `currentlyOut`, dont
+                  la base a déjà jugé le départ passé. Re-comparer ici avec l'horloge de
+                  Node pouvait contredire la base de quelques millisecondes.
+                */}
                 {[
                   sortie.placeCommune,
-                  sortie.startsAt <= new Date()
-                    ? t("enCoursJusqua", { heure: heureCourte(sortie.endsAt) })
-                    : t("aVenirDate", {
-                        jour: jourCourt(sortie.startsAt, locale).jour,
-                        heure: heureCourte(sortie.startsAt),
-                      }),
+                  t("enCoursJusqua", { heure: heureCourte(sortie.endsAt) }),
                 ]
                   .filter(Boolean)
                   .join(" · ")}

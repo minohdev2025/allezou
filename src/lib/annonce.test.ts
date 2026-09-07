@@ -6,7 +6,12 @@
 
 import { describe, expect, it } from "vitest";
 
-import { annonceDepuisPayload, murDeGeneve, urlPubliqueSure } from "@/lib/annonce";
+import {
+  adressePrivee,
+  annonceDepuisPayload,
+  murDeGeneve,
+  urlPubliqueSure,
+} from "@/lib/annonce";
 
 describe("murDeGeneve", () => {
   it("affiche un instant d'été dans l'heure murale de Genève", () => {
@@ -52,9 +57,28 @@ describe("urlPubliqueSure", () => {
       "http://[::1]/a",
       "http://[fe80::1]/a",
       "http://[fc00::1]/a",
+      // IPv6 mappée sur IPv4 : le navigateur l'écrit « [::ffff:7f00:1] », la boucle locale
+      // se cachait derrière ce format.
+      "http://[::ffff:127.0.0.1]/a",
+      "http://[::ffff:169.254.169.254]/latest/meta-data/",
+      "http://[::ffff:10.0.0.1]/a",
+      // Formes déguisées d'une IPv4, que `new URL()` ramène à la forme décimale.
+      "http://0x7f000001/a",
+      "http://2130706433/a",
+      "http://127.1/a",
     ]) {
       expect(urlPubliqueSure(url), url).toBeNull();
     }
+  });
+
+  it("juge une adresse résolue par le DNS comme une adresse tapée", () => {
+    expect(adressePrivee("127.0.0.1")).toBe(true);
+    expect(adressePrivee("::ffff:7f00:1")).toBe(true);
+    expect(adressePrivee("::ffff:a9fe:a9fe")).toBe(true);
+    expect(adressePrivee("fd12::1")).toBe(true);
+    expect(adressePrivee("93.184.216.34")).toBe(false);
+    expect(adressePrivee("2001:db8::1")).toBe(false);
+    expect(adressePrivee("::ffff:5db8:d822")).toBe(false);
   });
 
   it("accepte une IP publique", () => {

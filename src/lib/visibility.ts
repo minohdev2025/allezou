@@ -144,6 +144,12 @@ export type VisiblePublication = {
    * cercles sont destinataires (on prend le premier par simplicité).
    */
   circleName: string | null;
+  /**
+   * Le lecteur a-t-il dit « nous aussi » (ou est-il l'auteur, inscrit d'office) ?
+   * Lu ici plutôt que par une requête de participants par sortie : l'écran principal
+   * n'a besoin que de ce bit et du compte des autres.
+   */
+  readerParticipates: boolean;
   note: string | null;
   startsAt: Date;
   endsAt: Date;
@@ -207,6 +213,7 @@ export async function visiblePublications(
     event_id: string | null;
     event_title: string | null;
     circle_name: string | null;
+    reader_participates: boolean;
     note: string | null;
     starts_at: Date;
     ends_at: Date;
@@ -229,20 +236,36 @@ export async function visiblePublications(
       p.event_id,
       ev.title as event_title,
       (
-        -- Le cercle destinataire, vu par le lecteur : son alias s'il en a choisi un,
-        -- sinon le nom du cercle. Limite 1 : une publication adressée à plusieurs
-        -- cercles n'affiche que le premier (par nom, donc stable entre deux rendus).
+        -- Le cercle destinataire par lequel le lecteur voit cette publication : son
+        -- alias s'il en a choisi un, sinon le nom du cercle. Même condition que (1)
+        -- ci-dessus — auteur et lecteur membres, lien non coupé — sans quoi une
+        -- publication adressée à deux cercles nommerait au lecteur un cercle dont il
+        -- n'est pas. Limite 1 : s'ils en partagent plusieurs, le premier par nom.
         select coalesce(self.alias, c.name)
         from publication_circle pc
         join circle c on c.id = pc.circle_id and c.archived_at is null
-        left join circle_membership self
+        join circle_membership author_m
+          on author_m.circle_id = c.id
+          and author_m.account_id = p.author_id
+          and author_m.left_at is null
+        join circle_membership self
           on self.circle_id = c.id
           and self.account_id = ${readerId}::uuid
           and self.left_at is null
         where pc.publication_id = p.id
+          and not exists (
+            select 1 from circle_link_cut cut
+            where cut.circle_id = c.id
+              and cut.account_a = least(p.author_id, ${readerId}::uuid)
+              and cut.account_b = greatest(p.author_id, ${readerId}::uuid)
+          )
         order by c.name asc
         limit 1
       ) as circle_name,
+      exists (
+        select 1 from publication_participant moi
+        where moi.publication_id = p.id and moi.account_id = ${readerId}::uuid
+      ) as reader_participates,
       p.note,
       p.starts_at,
       p.ends_at,
@@ -284,6 +307,7 @@ export async function visiblePublications(
     eventId: r.event_id,
     eventTitle: r.event_title,
     circleName: r.circle_name,
+    readerParticipates: r.reader_participates,
     note: r.note,
     startsAt: asDate(r.starts_at),
     endsAt: asDate(r.ends_at),

@@ -23,7 +23,13 @@ import { z } from "zod";
 import { redirect as redirectVers, getPathname } from "@/i18n/navigation";
 import { LOCALE_COOKIE, routing, type Locale } from "@/i18n/routing";
 import { destroySession, requestMagicLink, setAccountLocale, setDisplayName, consumeMagicLink } from "@/lib/auth";
-import { extraireDeLien, extraireDePhoto, extraireDeTexte, poserAnnonceCookie } from "@/lib/annonce";
+import {
+  extraireDeLien,
+  extraireDePhoto,
+  extraireDeTexte,
+  poserAnnonceCookie,
+  type ResultatLecture,
+} from "@/lib/annonce";
 import { recordAudit } from "@/lib/audit";
 import { hashIpDeLaRequete } from "@/lib/audit-ip";
 import { currentAccount } from "@/lib/session";
@@ -968,15 +974,17 @@ export async function lireAnnonce(formData: FormData) {
   const photo = fichier instanceof File && fichier.size > 0 ? fichier : undefined;
   if (!photo && !lien && !texte) redirect("/agenda/nouveau?annonce=rien_trouve");
 
-  let resultat;
+  let resultat: ResultatLecture;
   try {
     if (photo) resultat = await extraireDePhoto(photo);
     else if (lien) resultat = await extraireDeLien(lien);
-    else resultat = await extraireDeTexte(texte!);
-  } catch {
-    // Le modèle a échoué (réseau, quota, réponse illisible). Pas de détail technique
-    // dans l'URL : le parent voit juste que la lecture n'a pas abouti.
-    redirect("/agenda/nouveau?annonce=rien_trouve");
+    else resultat = await extraireDeTexte(texte ?? "");
+  } catch (erreur) {
+    // Le modèle a échoué (clé absente, quota, réseau, réponse illisible) : ce n'est pas
+    // l'annonce qui est en cause, et le parent doit le savoir pour ne pas la réécrire.
+    // Le détail va au journal, jamais dans l'URL.
+    console.error("[annonce] lecture impossible :", erreur);
+    redirect("/agenda/nouveau?annonce=indisponible");
   }
 
   if (!resultat.ok) redirect(`/agenda/nouveau?annonce=${resultat.raison}`);

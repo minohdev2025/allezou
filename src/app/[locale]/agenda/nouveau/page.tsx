@@ -6,6 +6,7 @@ import { myChildren } from "@/lib/children";
 import { searchPlaces } from "@/lib/places";
 import { defaultAudience } from "@/lib/publications";
 import { requireAccount } from "@/lib/session";
+import { contient, normaliser } from "@/lib/texte";
 import { readerCircles } from "@/lib/visibility";
 import { lireAnnonce, proposerActivite } from "../../actions";
 import { Alerte, Bouton, Carte, Champ, PUCE_COCHEE, Titre, teinte } from "../../ui";
@@ -46,7 +47,12 @@ export default async function NouvelleActivite({
     texte_trop_court: t("annonceErreurs.texte_trop_court"),
     rien_trouve: t("annonceErreurs.rien_trouve"),
     date_invraisemblable: t("annonceErreurs.date_invraisemblable"),
+    indisponible: t("annonceErreurs.indisponible"),
   };
+  // `Object.hasOwn` et non un accès direct : la clé vient de l'URL, et `?erreur=__proto__`
+  // rendrait un objet que React refuse d'afficher.
+  const message = (table: Record<string, string>, cle: string, defaut: string) =>
+    Object.hasOwn(table, cle) ? table[cle] : defaut;
 
   // `annonce=1` : la lecture a abouti, le témoin porte les champs. Sinon la valeur
   // est la raison de l'échec, affichée en alerte.
@@ -62,6 +68,16 @@ export default async function NouvelleActivite({
 
   const cochesParDefaut = new Set(defauts.map((c) => c.id));
 
+  /*
+    Le lieu lu sur l'annonce : s'il nomme un lieu du catalogue (sans accents ni casse,
+    « Parc La Grange, Genève » contient « parc la grange »), il est présélectionné ;
+    sinon il part dans le champ libre, que le parent complète ou corrige.
+  */
+  const lieuAnnonce = annonceLue?.lieu ? normaliser(annonceLue.lieu) : "";
+  const lieuReconnu = lieuAnnonce
+    ? lieux.find((lieu) => contient(lieuAnnonce, normaliser(lieu.name)))
+    : undefined;
+
   return (
     <main className="apparait">
       <Titre>
@@ -69,12 +85,12 @@ export default async function NouvelleActivite({
             </Titre>
 
       {erreur ? (
-        <Alerte ton="erreur">{MESSAGES[erreur] ?? t("erreurGenerique")}</Alerte>
+        <Alerte ton="erreur">{message(MESSAGES, erreur, t("erreurGenerique"))}</Alerte>
       ) : null}
 
       {annonceEchec ? (
         <Alerte ton="erreur">
-          {MESSAGES_ANNONCE[annonceEchec] ?? t("annonceErreurs.rien_trouve")}
+          {message(MESSAGES_ANNONCE, annonceEchec, t("annonceErreurs.rien_trouve"))}
         </Alerte>
       ) : null}
 
@@ -170,7 +186,7 @@ export default async function NouvelleActivite({
               <span className="mb-2 block text-sm text-[color:var(--color-doux)]">
                 {t("aideLieu")}
               </span>
-              <select name="lieu" className={champ} defaultValue="">
+              <select name="lieu" className={champ} defaultValue={lieuReconnu?.id ?? ""}>
                 <option value="">{t("choisirLieu")}</option>
                 {lieux.map((lieu) => (
                   <option key={lieu.id} value={lieu.id}>
@@ -184,6 +200,7 @@ export default async function NouvelleActivite({
             <input
               name="lieuLibre"
               maxLength={120}
+              defaultValue={lieuReconnu ? undefined : annonceLue?.lieu}
               placeholder={t("placeholderLieuLibre")}
               className={champ}
             />

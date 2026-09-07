@@ -75,15 +75,24 @@ export function destinationSure(valeur: string | undefined | null): string | und
   return /^\/(rejoindre|parent)\/[A-Za-z0-9_-]{8,200}$/.test(valeur) ? valeur : undefined;
 }
 
-export async function poserSuite(destination: string): Promise<void> {
+/**
+ * Pose un témoin avec la politique commune à toute l'application : jamais lisible par un
+ * script, jamais envoyé depuis un autre site, chiffré en production. Écrite une fois pour
+ * que changer cette politique ne demande pas de retrouver chaque `store.set`.
+ */
+export async function poserTemoin(nom: string, valeur: string, maxAge: number): Promise<void> {
   const store = await cookies();
-  store.set(COOKIE_SUITE, destination, {
+  store.set(nom, valeur, {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
     path: "/",
-    maxAge: UN_QUART_D_HEURE,
+    maxAge,
   });
+}
+
+export async function poserSuite(destination: string): Promise<void> {
+  await poserTemoin(COOKIE_SUITE, destination, UN_QUART_D_HEURE);
 }
 
 /** Lit sans consommer : une page ne peut pas effacer un témoin. */
@@ -101,14 +110,7 @@ export async function releverSuite(): Promise<string | undefined> {
 }
 
 export async function masquerAccueil(): Promise<void> {
-  const store = await cookies();
-  store.set(COOKIE_ACCUEIL, "lu", {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    maxAge: UN_AN_EN_SECONDES,
-  });
+  await poserTemoin(COOKIE_ACCUEIL, "lu", UN_AN_EN_SECONDES);
 }
 
 export async function accueilMasque(): Promise<boolean> {
@@ -117,14 +119,7 @@ export async function accueilMasque(): Promise<boolean> {
 }
 
 export async function setSessionCookie(token: string): Promise<void> {
-  const store = await cookies();
-  store.set(COOKIE_SESSION, token, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    maxAge: SIX_MOIS_EN_SECONDES,
-  });
+  await poserTemoin(COOKIE_SESSION, token, SIX_MOIS_EN_SECONDES);
 }
 
 export async function clearSessionCookie(): Promise<void> {

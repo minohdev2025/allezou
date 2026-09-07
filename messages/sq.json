@@ -265,7 +265,8 @@
       "lien_invalide": "Ky link nuk u hap dot. Kontrolloni adresën ose ngjitni tekstin e njoftimit.",
       "texte_trop_court": "Teksti është shumë i shkurtër për të përshkruar një dalje. Shtoni hollësitë e njoftimit.",
       "rien_trouve": "Nuk u gjet asnjë dalje me datë në njoftim. Plotësoni formularin me dorë.",
-      "date_invraisemblable": "Data e lexuar duket e kaluar ose shumë larg. Korrigjoni fushën para se të propozoni."
+      "date_invraisemblable": "Data e lexuar duket e kaluar ose shumë larg. Korrigjoni fushën para se të propozoni.",
+      "indisponible": "Leximi nuk është i disponueshëm për momentin. Plotësoni formularin me dorë ose provoni më vonë."
     },
     "annoncePhotoChoisir": "Zgjidh një foto"
   },
@@ -721,7 +722,7 @@
     "nousAussi": "Ne gjithashtu",
     "autresFamilles": "{n, plural, one {# familje tjetër} other {# familje të tjera}}",
     "famillesDehors": "{n, plural, =0 {familje jashtë} one {familje jashtë} other {familje jashtë}}",
-    "parmiVosCercles": "mes {n} rrathëve tuaj",
+    "parmiVosCercles": "{n, plural, one {në rrethin tuaj} other {mes # rrathëve tuaj}}",
     "yEst": "është jashtë",
     "restants": "të mbetura",
     "aVenirPar": "{nom} do të shkojë në",
@@ -761,7 +762,8 @@
       "aucun_destinataire": "Shënoni të paktën një rreth: një dalje që askush nuk do ta shihte, nuk ka marrës.",
       "cercle_interdit": "Ju nuk jeni anëtar i njërit prej rretheve të shënuara.",
       "lieu_inconnu": "Ky vend nuk ekziston më.",
-      "duree_invalide": "Kjo kohëzgjatje nuk është e mundur.",
+      "duree_invalide": "Një dalje zgjat nga 15 minuta deri në 8 orë dhe mbaron para mesnatës.",
+      "note_invalide": "Kjo fjalë është tepër e gjatë: 140 shkronja më së shumti.",
       "debut_invalide": "Kjo orë nuk përshtatet: një dalje njoftohet deri në dy javë përpara, jo në të shkuarën."
     },
     "videCercleTitre": "Ju duhet fillimisht një rreth",
@@ -780,7 +782,8 @@
     "laissezVide": "Lëreni bosh nëse jeni tashmë atje.",
     "annuler": "Anuloni",
     "jusqua": "Deri në",
-    "heureRetour": "Ora e kthimit"
+    "heureRetour": "Ora e kthimit",
+    "dureeAide": "Nga 15 minuta deri në 8 orë, para mesnatës."
   },
   "SortirLieu": {
     "titre": "Shtoni një vend",
