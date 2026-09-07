@@ -21,9 +21,9 @@ import { CarteDesLieux } from "../carte-client";
 import { FiltreCommunes } from "./filtre-communes-client";
 import { FormulaireFiltres } from "./filtres-client";
 import {
+  BarreAction,
   Bouton,
   Jeton,
-  LienBouton,
   Navigation,
   Pastille,
   Titre,
@@ -228,16 +228,11 @@ export default async function Agenda({
     <main className="apparait">
       <Titre>{t("titre")}</Titre>
 
-      <div className="mb-6">
-        {/*
-          Le même gabarit que « Annoncer une sortie » sur « Maintenant » : le geste qui
-          enrichit l'agenda du canton mérite la même présence que celui qui remplit la
-          journée d'un cercle.
-        */}
-        <LienBouton href="/agenda/nouveau" variante="principal" className="!py-5 !text-xl">
-          {t("proposerActivite")}
-        </LienBouton>
-      </div>
+      {/*
+        « Proposer une activité » vit dans la barre basse, comme « Annoncer une sortie »
+        sur Maintenant : un écran de lecture garde son geste épinglé en bas, pas en tête,
+        où il repoussait la première activité sous la ligne de flottaison.
+      */}
 
       <FormulaireFiltres
         action={`${getPathname({ href: "/agenda", locale })}#filtres`}
@@ -530,7 +525,15 @@ export default async function Agenda({
         })
       )}
 
-      <Navigation actif="agenda" publique={account === null} />
+      <Navigation
+        actif="agenda"
+        publique={account === null}
+        action={
+          <BarreAction href={account ? "/agenda/nouveau" : "/connexion?suite=%2Fagenda"}>
+            {t("proposerActivite")}
+          </BarreAction>
+        }
+      />
     </main>
   );
 }

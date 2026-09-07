@@ -331,9 +331,14 @@ export function Carte({
 
 type VarianteBouton = "principal" | "second" | "discret";
 
+/*
+ * « principal » est le geste de l'écran, et il porte l'unique couleur-signal, le
+ * vermillon (DA « Plein jour »). Un seul bouton par écran devrait le porter ; ce qui
+ * l'entoure est « second » (contour) ou « discret » (souligné).
+ */
 const stylesBouton: Record<VarianteBouton, string> = {
   principal:
-    "bg-[color:var(--color-vert)] text-[color:var(--color-fond)] font-bold shadow-[0_3px_0_0_var(--color-socle-vert)] active:translate-y-[2px] active:shadow-none",
+    "bg-[color:var(--color-signal)] text-[color:var(--color-signal-encre)] font-black shadow-[0_3px_0_0_var(--color-socle-signal)] active:translate-y-[2px] active:shadow-none",
   second:
     "bg-[color:var(--color-surface)] ring-2 ring-[color:var(--color-trait)] font-semibold active:translate-y-[1px]",
   discret: "text-[color:var(--color-doux)] underline underline-offset-4",
@@ -373,6 +378,25 @@ export function LienBouton({
       className={`flex w-full items-center justify-center gap-2 rounded-[var(--radius-pilule)] px-5 py-3.5 text-center text-[1.05rem] transition-transform ${stylesBouton[variante]} ${className}`}
     >
       {children}
+    </Link>
+  );
+}
+
+/**
+ * La barre d'action d'un écran de lecture (Maintenant, Agenda) : le geste principal,
+ * épinglé au-dessus des onglets par `<Navigation action>`. Même couleur et même relief
+ * que le bouton principal des formulaires ; plus haute, en capitales, avec la flèche —
+ * c'est la seule chose à voir en trois secondes.
+ */
+export function BarreAction({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <Link
+      href={href}
+      data-bouton
+      className="flex h-16 w-full items-center justify-center gap-2 rounded-[18px] bg-[color:var(--color-signal)] px-5 text-[1.05rem] font-black uppercase tracking-wide text-[color:var(--color-signal-encre)] shadow-[0_3px_0_0_var(--color-socle-signal)] transition-transform active:translate-y-[2px] active:shadow-none"
+    >
+      {children}
+      <IconeFleche />
     </Link>
   );
 }
@@ -547,7 +571,6 @@ export function Vide({
 export function Navigation({
   actif,
   action,
-  papier,
   publique = false,
 }: {
   actif: "maintenant" | "agenda" | "cercles" | "reglages" | "sortir" | "lieux" | "connexion";
@@ -557,12 +580,6 @@ export function Navigation({
    * passent pas et ne changent pas.
    */
   action?: React.ReactNode;
-  /**
-   * Écran au papier « Plein jour » : le panneau prend le fond de l'écran au lieu de
-   * la surface blanche, pour ne pas trancher (la couture blanc/crème se lisait comme
-   * une rustine collée sur la page). Le filet gris suffit à marquer la barre.
-   */
-  papier?: boolean;
   /**
    * Sans compte, les onglets sont ceux du site public : « Nous sortons », l'agenda,
    * les lieux, et la connexion à la place des cercles et des réglages, qui n'existent
@@ -608,11 +625,11 @@ export function Navigation({
         boutons système sans annoncer de marge (env() rend 0), et les libellés se
         faisaient rogner. Au moins 0.75rem, davantage quand l'appareil dit sa vraie marge.
       */}
-      <nav
-        className={`sticky bottom-0 z-20 -mx-5 border-t-2 border-[color:var(--color-trait)] pb-[max(env(safe-area-inset-bottom),0.75rem)] ${
-          papier ? "bg-[color:var(--color-fond)]" : "bg-[color:var(--color-surface)]"
-        }`}
-      >
+      {/*
+        Le panneau prend le fond de l'écran, pas la surface blanche : la couture
+        blanc/papier se lisait comme une rustine collée sur la page. Le filet suffit.
+      */}
+      <nav className="sticky bottom-0 z-20 -mx-5 border-t-2 border-[color:var(--color-trait)] bg-[color:var(--color-fond)] pb-[max(env(safe-area-inset-bottom),0.75rem)]">
         {action ? (
           <div className="mx-auto max-w-lg px-5 pt-3">{action}</div>
         ) : null}

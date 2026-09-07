@@ -18,7 +18,7 @@ export default function manifest(): MetadataRoute.Manifest {
     scope: "/",
     display: "standalone",
     orientation: "portrait",
-    background_color: "#fffcf5",
+    background_color: "#f6f4ee",
     theme_color: "#17784f",
     // `/icon` est rendue par src/app/icon.tsx : une seule source, pas de PNG dans le dépôt.
     icons: [

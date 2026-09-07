@@ -85,7 +85,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: "#fffcf5",
+  themeColor: "#f6f4ee",
 };
 
 /** Les cinq langues se construisent d'avance ; une autre valeur est une page inexistante. */

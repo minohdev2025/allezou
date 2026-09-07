@@ -12,8 +12,8 @@ import { readerCircles, type VisiblePublication } from "@/lib/visibility";
 import { rejoindreSortie, retirerSortie } from "../actions";
 import { DemandeNotifications } from "./demande-notifications";
 import {
+  BarreAction,
   Carte,
-  IconeFleche,
   LienBouton,
   Navigation,
   Pastille,
@@ -34,12 +34,12 @@ import {
  *     d'autre chose ;
  *  3. les cartes, avec l'anneau « reste Xh » qui rend le temps visible sans JS
  *     (le pourcentage est calculé au rendu serveur) ;
- *  4. la barre d'action unique « NOUS SORTONS » en vermillon, épinglée au-dessus
+ *  4. la barre d'action unique « Annoncer une sortie » en vermillon, épinglée au-dessus
  *     des onglets — le vermillon est l'unique couleur-signal : il ne porte que le
  *     geste, jamais un état.
  *
- * Le thème `.plein-jour` (papier #f6f4ee, trait accordé) est porté par le <main> :
- * il ne s'applique qu'à cet écran tant que la DA n'est pas généralisée.
+ * Le papier « Plein jour » est celui de tout le site depuis le 7 septembre 2026
+ * (globals.css) ; les titres restent en Fredoka, comme partout.
  */
 export default async function Maintenant() {
   const account = await requireAccount();
@@ -87,19 +87,10 @@ export default async function Maintenant() {
     Sans cercle, pas de barre : l'écran propose d'abord d'en rejoindre un.
   */
   const barreSortir =
-    cercles.length > 0 ? (
-      <Link
-        href="/sortir"
-        data-bouton
-        className="flex h-16 w-full items-center justify-center gap-2 rounded-[18px] bg-[color:var(--color-signal)] px-5 text-[1.05rem] font-black uppercase tracking-wide text-[color:var(--color-signal-encre)] transition-transform active:translate-y-[2px]"
-      >
-        {t("annoncerSortie")}
-        <IconeFleche />
-      </Link>
-    ) : null;
+    cercles.length > 0 ? <BarreAction href="/sortir">{t("annoncerSortie")}</BarreAction> : null;
 
   return (
-    <main className="plein-jour apparait">
+    <main className="apparait">
       <header className="mb-5">
         <p className="text-[0.8rem] font-bold uppercase tracking-[0.18em] text-[color:var(--color-doux)]">
           {dateEnTete}
@@ -108,16 +99,25 @@ export default async function Maintenant() {
           Le compteur est le titre de l'écran : « 3 familles dehors » est exactement ce
           que la page dit, et un lecteur d'écran y arrive par la navigation de titres
           comme sur tout autre écran. Le nombre garde son style de compteur.
+
+          À zéro, il s'efface : un grand zéro en vedette répétait « Personne n'est
+          dehors » juste au-dessus de la carte qui le dit, et mettait le vide en héros.
+          Le titre reste, pour les lecteurs d'écran, mais ne s'affiche pas.
         */}
-        <h1 className="mt-1.5 flex items-baseline gap-3">
-          <span className="text-[3.5rem] font-black leading-none tracking-[-0.04em] text-[color:var(--color-vert)]">
-            {sorties.length}
-          </span>
-          <span className="text-base font-extrabold uppercase leading-tight tracking-[0.02em]">
-            {t("famillesDehors", { n: sorties.length })}
-          </span>
-        </h1>
-        {cercles.length > 0 ? (
+        {sorties.length > 0 ? (
+          <h1 className="mt-1.5 flex items-baseline gap-3">
+            <span className="text-[3.5rem] font-black leading-none tracking-[-0.04em] text-[color:var(--color-vert)]">
+              {sorties.length}
+            </span>
+            {/* Fredoka n'existe qu'en 500–700 : sans graisse, le navigateur retombe sur Nunito. */}
+            <span className="text-xl font-bold leading-tight">
+              {t("famillesDehors", { n: sorties.length })}
+            </span>
+          </h1>
+        ) : (
+          <h1 className="sr-only">{t("famillesDehors", { n: 0 })}</h1>
+        )}
+        {sorties.length > 0 && cercles.length > 0 ? (
           <p className="mt-1 pl-[4.4rem] text-xs font-semibold tracking-[0.04em] text-[color:var(--color-doux)]">
             {t("parmiVosCercles", { n: cercles.length })}
           </p>
@@ -236,7 +236,7 @@ export default async function Maintenant() {
         </section>
       ) : null}
 
-      <Navigation actif="maintenant" action={barreSortir} papier />
+      <Navigation actif="maintenant" action={barreSortir} />
     </main>
   );
 }

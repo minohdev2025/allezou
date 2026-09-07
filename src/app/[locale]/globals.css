@@ -14,12 +14,14 @@
  * l'exécution pour un cercle. La moitié de la palette disparaissait du CSS livré.
  */
 :root {
-  /* Fonds et encre */
-  --color-fond: #fffcf5;
+  /* Fonds et encre. Le papier « Plein jour » : plus gris que le crème historique
+     (#fffcf5), lisible en plein soleil, le vrai contexte d'usage. Généralisé à tout
+     le site le 7 septembre 2026, après avoir vécu sur le seul écran Maintenant. */
+  --color-fond: #f6f4ee;
   --color-surface: #ffffff;
   --color-encre: #1b1a22;
   --color-doux: #6d6a78;
-  --color-trait: #ece7dc;
+  --color-trait: #e0dbd0;
 
   /* Couleurs de sections et de cercles. Saturées, mais toutes contrastées sur blanc. */
   --color-vert: #17784f;
@@ -42,10 +44,12 @@
   --color-socle-vert: rgba(0, 0, 0, 0.18);
   --color-socle-ambre: rgba(0, 0, 0, 0.18);
   --color-socle-corail: rgba(0, 0, 0, 0.18);
+  --color-socle-signal: rgba(0, 0, 0, 0.18);
 
   /* DA « Plein jour » (V3, validée le 5 septembre 2026) : le vermillon des balises de
-     sentier est l'unique couleur-signal — il ne porte que le geste (« Nous sortons »,
-     « Nous aussi »), jamais un état. Le vert reste la couleur du « dehors ». */
+     sentier est l'unique couleur-signal — il porte le geste principal de chaque écran
+     (« Annoncer une sortie », « Confirmer la sortie », « Nous y allons »), jamais un
+     état. Le vert reste la couleur du « dehors » : états, liens, pastilles. */
   --color-signal: #e8590c;
   --color-signal-encre: #ffffff;
   /* Fond secondaire : pastilles d'icône, boutons fantômes. */
@@ -55,32 +59,6 @@
 
   --radius-carte: 1.5rem;
   --radius-pilule: 999px;
-}
-
-/*
- * Le thème « Plein jour » de l'écran Maintenant : papier plus gris que le crème
- * historique (lisible en plein soleil, le vrai contexte d'usage), trait accordé.
- * Portée volontairement limitée à cet écran tant que la DA n'est pas généralisée —
- * les autres pages gardent le fond crème. En mode sombre, aucune redéfinition :
- * la palette sombre existante s'applique telle quelle (variante sombre V3 à dériver
- * plus tard, si besoin).
- */
-@media (prefers-color-scheme: light) {
-  /*
-    Le body porte aussi les variables, pas seulement `.plein-jour` : le fond visible
-    est peint sur le <body>, hors de la portée du <main> qui les redéfinit — sans
-    cela le papier « Plein jour » restait théorique, et tout élément peint en
-    var(--color-fond) dans le main (le menu collant) tranchait sur le crème du body.
-    Sans :has() (navigateurs anciens), dégradation douce : le crème historique partout.
-  */
-  .plein-jour,
-  body:has(.plein-jour) {
-    --color-fond: #f6f4ee;
-    --color-trait: #e0dbd0;
-  }
-  body:has(.plein-jour) {
-    background: var(--color-fond);
-  }
 }
 
 /*
@@ -112,6 +90,7 @@
     --color-socle-vert: #17784f;
     --color-socle-ambre: #9c5c00;
     --color-socle-corail: #c0362f;
+    --color-socle-signal: #b84a0a;
 
     /* Signal vermillon éclairci : sur fond sombre, #e8590c s'assombrit trop. */
     --color-signal: #f76707;
