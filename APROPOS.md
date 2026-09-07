@@ -1,5 +1,14 @@
 # Qui sommes-nous
 
+**Bonjour et bienvenue sur Allezou.ch**
+
+J'ai créé ce site pour permettre à mes deux filles de retrouver le plaisir de jouer dehors,
+entourées d'enfants avec qui elles aiment passer du temps (et surtout que je puisse me poser
+tranquillement pendant qu'elles s'occupent avec les enfants des autres).
+
+Ce site est mis à disposition de tous, gratuitement, en vous souhaitant de bons moments de
+jeux avec vos enfants.
+
 > Redonner aux enfants le goût de jouer dehors, simplement et en toute sécurité.
 
 ## Notre mission
