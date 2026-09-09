@@ -51,7 +51,7 @@
     "texte": "Olá! Uso o Allezou para que os nossos filhos se encontrem lá fora: dizemos quando\nvamos ao parque, e vemos as atividades das comunas genebrinas.\n\nÉ gratuito, alojado na Suíça, sem publicidade, e sobre as crianças só regista um\nprimeiro nome.\n\nAqui está a ligação para se juntar ao nosso círculo « {cercle} »:\n{lien}\nFunciona até {date}.\n\nO que o site regista e quem o pode ver: {donnees}"
   },
   "Metadata": {
-    "promesse": "Para que os nossos filhos se encontrem lá fora. Saídas partilhadas e agenda das famílias genebrinas.",
+    "promesse": "Para que as crianças se encontrem lá fora, em segurança, com colegas do seu círculo. Saídas partilhadas entre famílias que se conhecem e agenda das atividades de Genebra. Gratuito e sem publicidade.",
     "accroche": "Para que os nossos filhos se encontrem lá fora"
   },
   "Donnees": {
@@ -120,7 +120,9 @@
     "surInscription": "Com inscrição",
     "vousYAllez": "Vai",
     "avecVousYAllez": "{noms} e vai também",
-    "yVont": "{noms} {n, plural, one {vai} other {vão}}"
+    "yVont": "{noms} {n, plural, one {vai} other {vão}}",
+    "titreOnglet": "Agenda de atividades para famílias em Genebra",
+    "description": "As atividades para crianças e famílias anunciadas pelos municípios genebrinos: ateliês, espetáculos, festas de bairro, saídas na natureza. Gratuito e sem publicidade."
   },
   "AgendaActivite": {
     "jusquAu": "até",
@@ -150,7 +152,8 @@
     "source": "Fonte: {nom} · atualizado a {jour} de {mois}",
     "retourAgenda": "Voltar à agenda",
     "connexionPourInscrire": "Crie a sua conta para dizer aos seus círculos que vai. Basta um endereço de correio.",
-    "creerRejoindreCercle": "Criar ou juntar-se a um círculo"
+    "creerRejoindreCercle": "Criar ou juntar-se a um círculo",
+    "descriptionRepli": "{titre} — {lieu}. Atividade para famílias, na agenda genebrina do Allezou."
   },
   "AgendaNouveau": {
     "titre": "Propor uma atividade",
@@ -442,7 +445,9 @@
     "adresseFausseResume": "A morada está errada?",
     "adresseFausseTexte": "Tal como para o nome, são precisas {n} validações: é ela que leva as famílias ao sítio certo.",
     "ajouterLieu": "Adicionar um local",
-    "connexionPourCorriger": "Crie a sua conta para corrigir um local ou adicionar um."
+    "connexionPourCorriger": "Crie a sua conta para corrigir um local ou adicionar um.",
+    "titreOnglet": "Parques e locais de saída em Genebra",
+    "description": "Os parques, parques infantis, ludotecas e piscinas onde as famílias genebrinas se encontram. Um catálogo partilhado, corrigido em conjunto pelos pais."
   },
   "Reglages": {
     "titre": "Definições",

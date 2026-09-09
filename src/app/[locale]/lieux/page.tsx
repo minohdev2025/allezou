@@ -1,4 +1,4 @@
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
 
@@ -14,6 +14,17 @@ import {
   validerRenommage,
 } from "../actions";
 import { Alerte, Carte, Navigation, Pastille, Titre, Vide, lienCarte, teinte } from "../ui";
+
+export async function generateMetadata() {
+  const [t, locale] = await Promise.all([getTranslations("Lieux"), getLocale()]);
+  const prefixe = locale === "fr" ? "" : `/${locale}`;
+  return {
+    title: t("titreOnglet"),
+    description: t("description"),
+    // La recherche `?q=` fabrique une adresse par requête : une seule fait foi.
+    alternates: { canonical: `https://allezou.ch${prefixe}/lieux` },
+  };
+}
 
 /**
  * Le catalogue des lieux, et sa correction collective.

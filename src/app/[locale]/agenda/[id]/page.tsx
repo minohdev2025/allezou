@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 
 import { calendarEntry } from "@/lib/calendar";
 import { myChildren } from "@/lib/children";
+import { jourGenevois } from "@/lib/ingest/types";
 import { defaultAudience, myAttendance } from "@/lib/publications";
 import { currentAccount } from "@/lib/session";
 import { localeSure } from "@/lib/traduire";
@@ -18,11 +19,59 @@ import {
   Navigation,
   PUCE_COCHEE,
   Pastille,
+  SchemaJsonLd,
   heureCourte,
   jourCourt,
   lienCarte,
   teinte,
 } from "../../ui";
+
+/** L'adresse publique de cette fiche, dans la langue où on la lit. */
+function urlFiche(locale: string, id: string): string {
+  return `https://allezou.ch${locale === "fr" ? "" : `/${locale}`}/agenda/${id}`;
+}
+
+/**
+ * Chaque activité a son titre et sa description.
+ *
+ * Les mille deux cents fiches de l'agenda portaient le même titre — « Allezou » — et la
+ * même description : pour un moteur, mille deux cents pages identiques. C'est pourtant
+ * ici que vit ce qu'un parent cherche (« atelier poterie Lancy samedi »).
+ *
+ * Lues sans compte, à dessein : ce qu'un moteur indexe doit être ce que tout le monde
+ * voit, jamais ce que le lecteur connecté verrait en plus.
+ */
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  const [t, locale, { id }] = await Promise.all([
+    getTranslations("AgendaActivite"),
+    getLocale(),
+    params,
+  ]);
+  const activite = await calendarEntry(null, id);
+  if (!activite) return {};
+
+  const lieu = [activite.place, activite.commune].filter(Boolean).join(", ") || "Genève";
+  const description = (
+    activite.description ?? t("descriptionRepli", { titre: activite.title, lieu })
+  )
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 200);
+
+  return {
+    title: activite.title,
+    description,
+    alternates: { canonical: urlFiche(locale, id) },
+    /*
+      Une activité passée, ou que la source n'annonce plus, sort des moteurs : elle reste
+      lisible pour qui a son lien — une famille inscrite doit pouvoir y revenir — mais
+      envoyer quelqu'un depuis une recherche vers une sortie qui n'aura pas lieu est le
+      plus sûr moyen de lui faire perdre confiance. Les liens, eux, restent suivis.
+    */
+    robots:
+      activite.termine || activite.retiree ? { index: false, follow: true } : undefined,
+  };
+}
 
 export default async function Activite({
   params,
@@ -64,8 +113,80 @@ export default async function Activite({
   const fin = activite.endsAt ? jourCourt(activite.endsAt, locale) : date;
   const couleur = teinte(activite.id);
 
+  /*
+    L'activité en schema.org, pour que les moteurs et les assistants sachent qu'il s'agit
+    d'un événement daté et situé, et non d'une page quelconque. C'est ce qui permet à une
+    recherche « que faire avec les enfants ce week-end à Genève » de tomber sur la bonne
+    fiche, avec sa date et son lieu.
+
+    Une activité que la source n'annonce plus n'en émet pas : annoncer un événement à une
+    machine engage plus qu'une ligne de liste, et on ne réaffirme pas ce qu'on ne sait plus.
+    Une journée entière se déclare en date nue, comme le veut schema.org : minuit n'est pas
+    son heure de début, c'est l'absence d'heure.
+  */
+  const evenement = activite.retiree
+    ? null
+    : {
+        "@context": "https://schema.org",
+        "@type": "Event",
+        name: activite.title,
+        startDate: activite.allDay
+          ? jourGenevois(activite.startsAt)
+          : activite.startsAt.toISOString(),
+        ...(activite.endsAt
+          ? {
+              endDate: activite.allDay
+                ? jourGenevois(activite.endsAt)
+                : activite.endsAt.toISOString(),
+            }
+          : {}),
+        eventStatus: "https://schema.org/EventScheduled",
+        eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+        ...(activite.description ? { description: activite.description } : {}),
+        url: urlFiche(locale, id),
+        ...(activite.place ?? activite.commune
+          ? {
+              location: {
+                "@type": "Place",
+                name: activite.place ?? activite.commune,
+                address: {
+                  "@type": "PostalAddress",
+                  addressLocality: activite.commune ?? "Genève",
+                  addressCountry: "CH",
+                },
+                ...(activite.lat != null && activite.lon != null
+                  ? {
+                      geo: {
+                        "@type": "GeoCoordinates",
+                        latitude: activite.lat,
+                        longitude: activite.lon,
+                      },
+                    }
+                  : {}),
+              },
+            }
+          : {}),
+        // Le prix ne s'annonce que quand la source l'écrit : « non défini » n'est pas gratuit.
+        ...(activite.tarif === "gratuit"
+          ? {
+              isAccessibleForFree: true,
+              offers: {
+                "@type": "Offer",
+                price: 0,
+                priceCurrency: "CHF",
+                availability: "https://schema.org/InStock",
+                url: activite.url ?? urlFiche(locale, id),
+              },
+            }
+          : {}),
+        ...(activite.sourceName
+          ? { organizer: { "@type": "Organization", name: activite.sourceName } }
+          : {}),
+      };
+
   return (
     <main className="apparait">
+      {evenement ? <SchemaJsonLd donnees={evenement} /> : null}
       <header className="mb-6">
         <div className="mb-3 flex items-center gap-3">
           <div

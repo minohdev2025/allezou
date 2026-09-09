@@ -1,5 +1,16 @@
+import { getLocale } from "next-intl/server";
+
 import { currentAccount } from "@/lib/session";
 import { EcranSortir } from "./ecran-sortir";
+
+/**
+ * Même écran que `/`, donc même page aux yeux d'un moteur : l'adresse canonique est
+ * l'accueil, sinon les deux se font concurrence et aucune ne l'emporte.
+ */
+export async function generateMetadata() {
+  const locale = await getLocale();
+  return { alternates: { canonical: `https://allezou.ch${locale === "fr" ? "" : `/${locale}`}` } };
+}
 
 /**
  * « Nous sortons », à son adresse historique. Le même écran sert d'accueil sous `/` ;

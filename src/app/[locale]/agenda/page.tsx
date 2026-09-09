@@ -124,6 +124,22 @@ function Rangee({ titre, children }: { titre: string; children: React.ReactNode 
   );
 }
 
+/**
+ * L'agenda est la page la plus fournie du site, et celle qu'un parent cherche vraiment :
+ * « activités enfants Genève ». Elle portait le titre par défaut, qui ne contenait ni
+ * « activités » ni « Genève », et aucune adresse canonique — les filtres en query
+ * fabriquaient donc autant d'adresses que de combinaisons, toutes indexables.
+ */
+export async function generateMetadata() {
+  const [t, locale] = await Promise.all([getTranslations("Agenda"), getLocale()]);
+  const prefixe = locale === "fr" ? "" : `/${locale}`;
+  return {
+    title: t("titreOnglet"),
+    description: t("description"),
+    alternates: { canonical: `https://allezou.ch${prefixe}/agenda` },
+  };
+}
+
 export default async function Agenda({
   searchParams,
 }: {

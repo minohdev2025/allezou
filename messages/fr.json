@@ -51,7 +51,7 @@
     "texte": "Bonjour ! J'utilise Allezou pour que nos enfants se retrouvent dehors : on y dit quand\non sort au parc, et on y voit les activités des communes genevoises.\n\nC'est gratuit, hébergé en Suisse, sans publicité, et sur les enfants on n'y met qu'un\nprénom.\n\nVoici le lien pour rejoindre notre cercle « {cercle} » :\n{lien}\nIl fonctionne jusqu'au {date}.\n\nCe que le site enregistre et qui peut le voir : {donnees}"
   },
   "Metadata": {
-    "promesse": "Pour que nos enfants se retrouvent dehors. Sorties partagées et agenda des familles genevoises.",
+    "promesse": "Pour que les enfants se retrouvent dehors, en sécurité avec des camarades de leur entourage. Sorties partagées entre familles qui se connaissent et agenda des activités de Genève. Gratuit et sans publicité.",
     "accroche": "Pour que nos enfants se retrouvent dehors"
   },
   "Donnees": {
@@ -120,7 +120,9 @@
     "surInscription": "Sur inscription",
     "vousYAllez": "Vous y allez",
     "avecVousYAllez": "{noms} et vous y allez",
-    "yVont": "{noms} {n, plural, one {y va} other {y vont}}"
+    "yVont": "{noms} {n, plural, one {y va} other {y vont}}",
+    "titreOnglet": "Agenda des activités pour les familles à Genève",
+    "description": "Les activités pour enfants et familles annoncées par les communes genevoises : ateliers, spectacles, fêtes de quartier, sorties nature. Gratuit et sans publicité."
   },
   "AgendaActivite": {
     "jusquAu": "jusqu'au",
@@ -150,7 +152,8 @@
     "source": "Source : {nom} · mise à jour le {jour} {mois}",
     "retourAgenda": "Retour à l'agenda",
     "connexionPourInscrire": "Créez votre compte pour dire à vos cercles que vous y allez. Une adresse courriel suffit.",
-    "creerRejoindreCercle": "Créer ou rejoindre un cercle"
+    "creerRejoindreCercle": "Créer ou rejoindre un cercle",
+    "descriptionRepli": "{titre} — {lieu}. Activité pour les familles, dans l'agenda genevois d'Allezou."
   },
   "AgendaNouveau": {
     "titre": "Proposer une activité",
@@ -442,7 +445,9 @@
     "adresseFausseResume": "L'adresse est fausse ?",
     "adresseFausseTexte": "Comme pour le nom, il faut {n} validations : c'est elle qui envoie les familles au bon endroit.",
     "ajouterLieu": "Ajouter un lieu",
-    "connexionPourCorriger": "Créez votre compte pour corriger un lieu ou en ajouter un."
+    "connexionPourCorriger": "Créez votre compte pour corriger un lieu ou en ajouter un.",
+    "titreOnglet": "Parcs et lieux de sortie à Genève",
+    "description": "Les parcs, places de jeux, ludothèques et piscines où les familles genevoises se retrouvent. Un catalogue partagé, corrigé à plusieurs par les parents."
   },
   "Reglages": {
     "titre": "Réglages",

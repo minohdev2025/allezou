@@ -35,6 +35,12 @@ export type CalendarEntry = {
   acces: Acces;
   /** Déjà commencé et pas terminé : une exposition, un festival, un été d'animations. */
   enCours: boolean;
+  /**
+   * Sa date est passée. Jugé par l'horloge de la base, comme `enCours` : la page de
+   * l'activité s'en sert pour se retirer des moteurs de recherche plutôt que de laisser
+   * indexer une sortie qui n'aura plus lieu.
+   */
+  termine: boolean;
   /** Aucun horaire annoncé : elle tient la journée, elle ne commence pas à minuit. */
   allDay: boolean;
   /** Le rythme annoncé par l'organisateur : « les mercredis ». Null quand il n'en dit rien. */
@@ -289,6 +295,7 @@ export async function upcomingCalendar(
     lat: number | null;
     lon: number | null;
     en_cours: boolean;
+    termine: boolean;
     retiree: boolean;
   }>(sql`
     select
@@ -296,6 +303,7 @@ export async function upcomingCalendar(
       e.min_age, e.max_age, e.commune, e.tarif, e.acces, e.all_day, e.recurrence,
       e.lat, e.lon,
       (e.starts_at <= now()) as en_cours,
+      (coalesce(e.ends_at, e.starts_at + interval '2 hours') < now()) as termine,
       (e.withdrawn_at is not null or e.rejected_at is not null) as retiree,
       coalesce(pl.name, e.place_label) as place,
       src.name as source_name
@@ -332,6 +340,7 @@ export async function upcomingCalendar(
     tarif: r.tarif,
     acces: r.acces,
     enCours: r.en_cours,
+    termine: r.termine,
     allDay: r.all_day,
     recurrence: r.recurrence,
     lat: r.lat,
@@ -367,6 +376,7 @@ export async function calendarEntry(
     lat: number | null;
     lon: number | null;
     en_cours: boolean;
+    termine: boolean;
     retiree: boolean;
   }>(sql`
     select
@@ -374,6 +384,7 @@ export async function calendarEntry(
       e.min_age, e.max_age, e.commune, e.tarif, e.acces, e.all_day, e.recurrence,
       e.lat, e.lon,
       (e.starts_at <= now()) as en_cours,
+      (coalesce(e.ends_at, e.starts_at + interval '2 hours') < now()) as termine,
       (e.withdrawn_at is not null or e.rejected_at is not null) as retiree,
       coalesce(pl.name, e.place_label) as place,
       src.name as source_name
@@ -409,6 +420,7 @@ export async function calendarEntry(
     tarif: r.tarif,
     acces: r.acces,
     enCours: r.en_cours,
+    termine: r.termine,
     allDay: r.all_day,
     recurrence: r.recurrence,
     lat: r.lat,

@@ -62,7 +62,13 @@ export async function generateMetadata({
   return {
     metadataBase: new URL(ADRESSE),
     // Le gabarit évite de répéter le nom du site dans chaque page, et de l'oublier dans une.
-    title: { default: "Allezou", template: "%s · Allezou" },
+    // Le gabarit ajoute le nom du site aux pages qui ont leur propre titre ; le titre par
+    // défaut, lui, doit dire ce qu'est Allezou — « Allezou » seul ne se distingue de rien
+    // dans une page de résultats, et n'apprend rien à qui ne connaît pas encore le nom.
+    title: {
+      default: "Allezou : pour que nos enfants se retrouvent dehors",
+      template: "%s · Allezou",
+    },
     description: promesse,
     applicationName: "Allezou",
     openGraph: {

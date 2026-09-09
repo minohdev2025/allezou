@@ -51,7 +51,7 @@
     "texte": "Mirëdita! Përdor Allezou që fëmijët tanë të takohen jashtë: aty themi kur\ndalim në park, dhe aty shohim aktivitetet e komunave të Gjenevës.\n\nËshtë falas, e strehuar në Zvicër, pa reklama, dhe për fëmijët shënojmë vetëm\nemrin.\n\nJa lidhja për t'u bashkuar me rrethin tonë « {cercle} »:\n{lien}\nVlen deri më {date}.\n\nÇfarë regjistron faqja dhe kush mund ta shohë: {donnees}"
   },
   "Metadata": {
-    "promesse": "Që fëmijët tanë të takohen jashtë. Dalje të përbashkëta dhe agjendë e familjeve të Gjenevës.",
+    "promesse": "Që fëmijët të takohen jashtë, të sigurt, me shokë nga rrethi i tyre. Dalje të përbashkëta mes familjesh që njihen dhe agjendë e aktiviteteve të Gjenevës. Falas dhe pa reklama.",
     "accroche": "Që fëmijët tanë të takohen jashtë"
   },
   "Donnees": {
@@ -120,7 +120,9 @@
     "surInscription": "Me regjistrim",
     "vousYAllez": "Ju shkoni",
     "avecVousYAllez": "{noms} dhe ju shkoni",
-    "yVont": "{noms} {n, plural, one {shkon} other {shkojnë}}"
+    "yVont": "{noms} {n, plural, one {shkon} other {shkojnë}}",
+    "titreOnglet": "Agjenda e aktiviteteve për familjet në Gjenevë",
+    "description": "Aktivitetet për fëmijë dhe familje të njoftuara nga komunat e Gjenevës: punëtori, shfaqje, festa lagjeje, dalje në natyrë. Falas dhe pa reklama."
   },
   "AgendaActivite": {
     "jusquAu": "deri më",
@@ -150,7 +152,8 @@
     "source": "Burimi: {nom} · përditësuar më {jour} {mois}",
     "retourAgenda": "Kthehuni te agjenda",
     "connexionPourInscrire": "Krijoni llogarinë për t'u treguar rretheve tuaja se do të shkoni. Mjafton një adresë e-mail.",
-    "creerRejoindreCercle": "Krijoni ose bashkohuni me një rreth"
+    "creerRejoindreCercle": "Krijoni ose bashkohuni me një rreth",
+    "descriptionRepli": "{titre} — {lieu}. Aktivitet për familjet, në agjendën e Gjenevës të Allezou."
   },
   "AgendaNouveau": {
     "titre": "Propozoni një aktivitet",
@@ -442,7 +445,9 @@
     "adresseFausseResume": "Adresa është e gabuar?",
     "adresseFausseTexte": "Ashtu si për emrin, duhen {n} miratime: është ajo që i çon familjet në vendin e duhur.",
     "ajouterLieu": "Shtoni një vend",
-    "connexionPourCorriger": "Krijoni llogarinë për të korrigjuar një vend ose për të shtuar një."
+    "connexionPourCorriger": "Krijoni llogarinë për të korrigjuar një vend ose për të shtuar një.",
+    "titreOnglet": "Parqet dhe vendet e daljes në Gjenevë",
+    "description": "Parqet, këndet e lojërave, ludotekat dhe pishinat ku takohen familjet e Gjenevës. Një katalog i përbashkët, i korrigjuar bashkërisht nga prindërit."
   },
   "Reglages": {
     "titre": "Cilësimet",

@@ -51,7 +51,7 @@
     "texte": "Hi! I use Allezou so our kids can meet up outside: it's how we say when we're\nheading to the park, and see the activities in Geneva's municipalities.\n\nIt's free, hosted in Switzerland, with no ads, and for kids we only enter a\nfirst name.\n\nHere's the link to join our circle “{cercle}”:\n{lien}\nIt works until {date}.\n\nWhat the site stores, and who can see it: {donnees}"
   },
   "Metadata": {
-    "promesse": "So our kids can meet up outside. Shared outings and the agenda for Geneva families.",
+    "promesse": "So children can meet up outside, safely, with friends from their own circle. Outings shared between families who know each other, and an agenda of activities in Geneva. Free and without ads.",
     "accroche": "So our kids can meet up outside"
   },
   "Donnees": {
@@ -120,7 +120,9 @@
     "surInscription": "Registration required",
     "vousYAllez": "You're going",
     "avecVousYAllez": "{noms} and you're going",
-    "yVont": "{noms} {n, plural, one {is going} other {are going}}"
+    "yVont": "{noms} {n, plural, one {is going} other {are going}}",
+    "titreOnglet": "Family activities agenda in Geneva",
+    "description": "Activities for children and families announced by the Geneva communes: workshops, shows, neighbourhood fairs, outdoor outings. Free and without ads."
   },
   "AgendaActivite": {
     "jusquAu": "until",
@@ -150,7 +152,8 @@
     "source": "Source: {nom} · updated {jour} {mois}",
     "retourAgenda": "Back to the agenda",
     "connexionPourInscrire": "Create your account to tell your circles you are going. An email address is enough.",
-    "creerRejoindreCercle": "Create or join a circle"
+    "creerRejoindreCercle": "Create or join a circle",
+    "descriptionRepli": "{titre} — {lieu}. An activity for families, in Allezou's Geneva agenda."
   },
   "AgendaNouveau": {
     "titre": "Suggest an activity",
@@ -442,7 +445,9 @@
     "adresseFausseResume": "Is the address wrong?",
     "adresseFausseTexte": "Just like the name, it takes {n} confirmations: the address is what sends families to the right place.",
     "ajouterLieu": "Add a place",
-    "connexionPourCorriger": "Create your account to correct a place or add one."
+    "connexionPourCorriger": "Create your account to correct a place or add one.",
+    "titreOnglet": "Parks and outing places in Geneva",
+    "description": "The parks, playgrounds, toy libraries and pools where Geneva families meet up. A shared catalogue, corrected together by parents."
   },
   "Reglages": {
     "titre": "Settings",

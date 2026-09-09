@@ -51,7 +51,7 @@
     "texte": "¡Hola! Uso Allezou para que nuestros hijos se encuentren al aire libre: ahí avisamos cuándo\nvamos al parque, y ahí vemos las actividades de los municipios de Ginebra.\n\nEs gratis, está alojada en Suiza, sin publicidad, y de los niños solo se guarda un\nnombre de pila.\n\nAquí tienes el enlace para unirte a nuestro círculo «{cercle}»:\n{lien}\nFunciona hasta el {date}.\n\nLo que la web guarda y quién puede verlo: {donnees}"
   },
   "Metadata": {
-    "promesse": "Para que nuestros hijos se encuentren al aire libre. Salidas compartidas y agenda de las familias de Ginebra.",
+    "promesse": "Para que los niños se encuentren al aire libre, seguros, con compañeros de su entorno. Salidas compartidas entre familias que se conocen y agenda de actividades de Ginebra. Gratis y sin publicidad.",
     "accroche": "Para que nuestros hijos se encuentren al aire libre"
   },
   "Donnees": {
@@ -120,7 +120,9 @@
     "surInscription": "Con inscripción",
     "vousYAllez": "Vas a ir",
     "avecVousYAllez": "{noms} y tú vas a ir",
-    "yVont": "{noms} {n, plural, one {va allí} other {van allí}}"
+    "yVont": "{noms} {n, plural, one {va allí} other {van allí}}",
+    "titreOnglet": "Agenda de actividades para familias en Ginebra",
+    "description": "Las actividades para niños y familias anunciadas por los municipios ginebrinos: talleres, espectáculos, fiestas de barrio, salidas al aire libre. Gratis y sin publicidad."
   },
   "AgendaActivite": {
     "jusquAu": "hasta el",
@@ -150,7 +152,8 @@
     "source": "Fuente: {nom} · actualizado el {jour} {mois}",
     "retourAgenda": "Volver a la agenda",
     "connexionPourInscrire": "Crea tu cuenta para decir a tus círculos que vas. Basta un correo.",
-    "creerRejoindreCercle": "Crear o unirse a un círculo"
+    "creerRejoindreCercle": "Crear o unirse a un círculo",
+    "descriptionRepli": "{titre} — {lieu}. Actividad para familias, en la agenda ginebrina de Allezou."
   },
   "AgendaNouveau": {
     "titre": "Proponer una actividad",
@@ -442,7 +445,9 @@
     "adresseFausseResume": "¿La dirección es incorrecta?",
     "adresseFausseTexte": "Como con el nombre, hacen falta {n} validaciones: es ella la que lleva a las familias al lugar correcto.",
     "ajouterLieu": "Añadir un lugar",
-    "connexionPourCorriger": "Crea tu cuenta para corregir un lugar o añadir uno."
+    "connexionPourCorriger": "Crea tu cuenta para corregir un lugar o añadir uno.",
+    "titreOnglet": "Parques y lugares de salida en Ginebra",
+    "description": "Los parques, zonas de juegos, ludotecas y piscinas donde se reúnen las familias ginebrinas. Un catálogo compartido, corregido entre padres."
   },
   "Reglages": {
     "titre": "Ajustes",
