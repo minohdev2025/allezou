@@ -73,6 +73,21 @@ function verificationActive(config: Source["config"]): boolean {
 }
 
 /** Le tri famille se demande par source : `config.filtreFamille: true`. */
+/**
+ * Le tri famille se demande par source : `config.filtreFamille: true`.
+ *
+ * Il a longtemps été réservé aux sources structurées, au motif que les communes lues par
+ * le modèle s'en remettaient à leur consigne d'extraction. Elles ne le faisaient pas :
+ * une seule source sur vingt-cinq triait, et l'agenda a publié les séances du Conseil
+ * municipal de Chancy, une soirée salsa, un thé dansant et une gymnastique Pilates —
+ * soixante-quatorze sorties d'adultes, retirées à la main le 9 septembre 2026. La consigne
+ * d'extraction demande une activité « ouverte au public » ; un conseil municipal l'est.
+ *
+ * Le drapeau est donc posé sur toutes les sources (scripts/seed-sources.mjs). Le défaut du
+ * code reste « non » : l'inverser ferait dépendre du modèle les trois sources iCalendar,
+ * qui sont les seules à ne pas en avoir besoin pour lire — et une panne de modèle fait
+ * échouer la source entière.
+ */
 function triageDemande(config: Source["config"]): boolean {
   return (config as { filtreFamille?: unknown } | null)?.filtreFamille === true;
 }

@@ -136,7 +136,7 @@ const SOURCES = [
     // `itemPattern` sert à retrouver le lien de chaque fiche dans la page de liste : le
     // texte envoyé au modèle est débarrassé de ses balises, donc il n'y voit aucun `href`.
     // Lancy écrit le titre seul dans le lien, ce qui suffit à les rapprocher.
-    config: { maxPages: 3, itemPattern: "/agenda/", lireFiches: true },
+    config: { maxPages: 3, itemPattern: "/agenda/", lireFiches: true, filtreFamille: true },
   },
   {
     name: "Chêne-Bougeries — agenda communal",
@@ -147,7 +147,7 @@ const SOURCES = [
     // Le greffon range les séances du Conseil municipal avec le reste de l'agenda. Un
     // parent qui cherche une sortie de samedi n'a rien à faire de l'ordre du jour de la
     // mairie.
-    config: { categoriesIgnorees: ["Séances Conseil municipal"] },
+    config: { categoriesIgnorees: ["Séances Conseil municipal"], filtreFamille: true },
   },
   {
     name: "Laconnex — agenda communal",
@@ -156,7 +156,7 @@ const SOURCES = [
     commune: "Laconnex",
     autoPublish: true,
     // « Politique » couvre les séances du Conseil, « Ferraille » les levées d'encombrants.
-    config: { categoriesIgnorees: ["Politique", "Ferraille"] },
+    config: { categoriesIgnorees: ["Politique", "Ferraille"], filtreFamille: true },
   },
   {
     name: "Vernier — agenda communal",
@@ -167,7 +167,7 @@ const SOURCES = [
     // La plus grande commune du canton après la Ville. Quatre pages de liste, qui paginent
     // en `?page=N`. Le lien de fiche porte le titre suivi de la date, ce que la recherche
     // par préfixe retrouve.
-    config: { maxPages: 4, itemPattern: "/evenements/", lireFiches: true },
+    config: { maxPages: 4, itemPattern: "/evenements/", lireFiches: true, filtreFamille: true },
   },
   {
     name: "Onex — agenda communal",
@@ -180,7 +180,7 @@ const SOURCES = [
     // rien. Le site refait en août sert enfin les liens de fiches : la carte écrit la date
     // avant le titre, c'est l'appariement tolérant — couvert par la lecture de fiche — qui
     // les retrouve.
-    config: { maxPages: 6, itemPattern: "/agenda/", lireFiches: true },
+    config: { maxPages: 6, itemPattern: "/agenda/", lireFiches: true, filtreFamille: true },
   },
 
   /* ------------------------------------- le tour du 18 août : communes */
@@ -190,7 +190,7 @@ const SOURCES = [
     kind: "ical",
     commune: "Chancy",
     autoPublish: true,
-    config: {},
+    config: { filtreFamille: true },
   },
   {
     name: "Carouge — agenda communal",
@@ -198,7 +198,7 @@ const SOURCES = [
     kind: "html_ai",
     commune: "Carouge",
     autoPublish: true,
-    config: { maxPages: 3, itemPattern: "/agenda/", lireFiches: true },
+    config: { maxPages: 3, itemPattern: "/agenda/", lireFiches: true, filtreFamille: true },
   },
   {
     name: "Meyrin — agenda communal",
@@ -208,7 +208,7 @@ const SOURCES = [
     autoPublish: true,
     // La liste sert ses liens mais compose ses dates dans le navigateur : rien à extraire
     // d'elle, tout à lire derrière. Chaque fiche fait l'événement.
-    config: { maxPages: 3, itemPattern: "/fr/agenda/", modeFiches: true },
+    config: { maxPages: 3, itemPattern: "/fr/agenda/", modeFiches: true, filtreFamille: true },
   },
   {
     name: "Grand-Saconnex — agenda communal",
@@ -216,7 +216,7 @@ const SOURCES = [
     kind: "html_ai",
     commune: "Grand-Saconnex",
     autoPublish: true,
-    config: { maxPages: 3, itemPattern: "/agenda/", lireFiches: true },
+    config: { maxPages: 3, itemPattern: "/agenda/", lireFiches: true, filtreFamille: true },
   },
   {
     name: "Anières — agenda communal",
@@ -224,7 +224,7 @@ const SOURCES = [
     kind: "html_ai",
     commune: "Anières",
     autoPublish: true,
-    config: { maxPages: 2, itemPattern: "/agenda/", lireFiches: true },
+    config: { maxPages: 2, itemPattern: "/agenda/", lireFiches: true, filtreFamille: true },
   },
   {
     name: "Vandœuvres — agenda communal",
@@ -232,7 +232,7 @@ const SOURCES = [
     kind: "html_ai",
     commune: "Vandœuvres",
     autoPublish: true,
-    config: { maxPages: 2, itemPattern: "/evenement/", lireFiches: true },
+    config: { maxPages: 2, itemPattern: "/evenement/", lireFiches: true, filtreFamille: true },
   },
   {
     name: "Collex-Bossy — agenda communal",
@@ -242,7 +242,7 @@ const SOURCES = [
     autoPublish: true,
     // Pagine en `/page-1/`, pas en `?page=N` : une seule page lue, qui suffit à un petit
     // agenda.
-    config: { maxPages: 1, itemPattern: "/fr/agenda/", lireFiches: true },
+    config: { maxPages: 1, itemPattern: "/fr/agenda/", lireFiches: true, filtreFamille: true },
   },
   {
     name: "Perly-Certoux — agenda communal",
@@ -250,7 +250,7 @@ const SOURCES = [
     kind: "html_ai",
     commune: "Perly-Certoux",
     autoPublish: true,
-    config: { maxPages: 1, itemPattern: "/fr/agenda/", lireFiches: true },
+    config: { maxPages: 1, itemPattern: "/fr/agenda/", lireFiches: true, filtreFamille: true },
   },
   {
     name: "Cologny — agenda communal",
@@ -258,7 +258,7 @@ const SOURCES = [
     kind: "html_ai",
     commune: "Cologny",
     autoPublish: true,
-    config: { maxPages: 1, itemPattern: "/agenda/", lireFiches: true },
+    config: { maxPages: 1, itemPattern: "/agenda/", lireFiches: true, filtreFamille: true },
   },
   {
     name: "Troinex — manifestations communales",
@@ -266,7 +266,7 @@ const SOURCES = [
     kind: "html_ai",
     commune: "Troinex",
     autoPublish: true,
-    config: { maxPages: 1 },
+    config: { maxPages: 1, filtreFamille: true },
   },
   {
     name: "Russin — événements",
@@ -274,7 +274,7 @@ const SOURCES = [
     kind: "html_ai",
     commune: "Russin",
     autoPublish: true,
-    config: { maxPages: 1 },
+    config: { maxPages: 1, filtreFamille: true },
   },
 
   /*
@@ -297,7 +297,7 @@ const SOURCES = [
     autoPublish: true,
     // Une soixantaine d'événements, douze par page : quatre pages couvrent l'essentiel,
     // les plus proches d'abord.
-    config: { maxPages: 4, itemPattern: "/agenda/", lireFiches: true },
+    config: { maxPages: 4, itemPattern: "/agenda/", lireFiches: true, filtreFamille: true },
   },
   {
     name: "Thônex — agenda (plateforme des communes)",
@@ -305,7 +305,7 @@ const SOURCES = [
     kind: "html_ai",
     commune: "Thônex",
     autoPublish: true,
-    config: { maxPages: 2, itemPattern: "/agenda/", lireFiches: true },
+    config: { maxPages: 2, itemPattern: "/agenda/", lireFiches: true, filtreFamille: true },
   },
   {
     name: "Versoix — agenda (plateforme des communes)",
@@ -313,7 +313,7 @@ const SOURCES = [
     kind: "html_ai",
     commune: "Versoix",
     autoPublish: true,
-    config: { maxPages: 2, itemPattern: "/agenda/", lireFiches: true },
+    config: { maxPages: 2, itemPattern: "/agenda/", lireFiches: true, filtreFamille: true },
   },
   {
     name: "Confignon — agenda (plateforme des communes)",
@@ -321,7 +321,7 @@ const SOURCES = [
     kind: "html_ai",
     commune: "Confignon",
     autoPublish: true,
-    config: { maxPages: 2, itemPattern: "/agenda/", lireFiches: true },
+    config: { maxPages: 2, itemPattern: "/agenda/", lireFiches: true, filtreFamille: true },
   },
   {
     // La page communale de Veyrier n'est qu'une liste annuelle sans horaires : la
@@ -331,7 +331,7 @@ const SOURCES = [
     kind: "html_ai",
     commune: "Veyrier",
     autoPublish: true,
-    config: { maxPages: 2, itemPattern: "/agenda/", lireFiches: true },
+    config: { maxPages: 2, itemPattern: "/agenda/", lireFiches: true, filtreFamille: true },
   },
 
   /* --------------------------------------- le tour du 18 août : privés */
@@ -349,6 +349,7 @@ const SOURCES = [
       itemPattern: "lancycentre.ch/",
       lireFiches: true,
       lieuParDefaut: "Lancy Centre, Grand-Lancy",
+      filtreFamille: true,
     },
   },
   {
@@ -360,7 +361,7 @@ const SOURCES = [
     // Les cartes de la liste se composent dans le navigateur : les dates se lisent, pas
     // les liens. Les activités renvoient donc à la liste, ce qui est moins bien qu'un lien
     // direct et mieux qu'un lien deviné.
-    config: { maxPages: 1, lieuParDefaut: "Centre commercial Balexert, Vernier" },
+    config: { maxPages: 1, lieuParDefaut: "Centre commercial Balexert, Vernier", filtreFamille: true },
   },
   {
     name: "Le Centre Lancy-Onex — événements",
@@ -373,6 +374,7 @@ const SOURCES = [
       itemPattern: "/evenement",
       lireFiches: true,
       lieuParDefaut: "Le Centre, Lancy-Onex",
+      filtreFamille: true,
     },
   },
 ];
