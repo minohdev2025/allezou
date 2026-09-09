@@ -717,7 +717,11 @@
     "publicAccroche": "Tregojuni rretheve tuaja ku jeni: « në parkun Gué deri në mesditë ». Familjet e besuara ju bashkohen, pa mesazhe dhe pa gjeolokalizim.",
     "publicCercles": "Rrathët tuaj do të shfaqen këtu pasi të hyni: dalja u drejtohet atyre.",
     "lienComment": "Si funksionon",
-    "lienAPropos": "Kush qëndron pas Allezou"
+    "lienAPropos": "Kush qëndron pas Allezou",
+    "titreAgenda": "Aktivitetet e ardhshme në Gjenevë",
+    "sousTitreAgenda": "Aktivitetet e komunave të Gjenevës, të hapura për të gjithë.",
+    "voirAgenda": "Shihni gjithë agjendën",
+    "jusquAu": "deri më"
   },
   "SortirLieu": {
     "titre": "Shtoni një vend",

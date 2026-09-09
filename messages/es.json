@@ -717,7 +717,11 @@
     "publicAccroche": "Di a tus círculos dónde estás: «en el parque del Gué hasta el mediodía». Las familias de confianza se unen, sin chat ni geolocalización.",
     "publicCercles": "Tus círculos aparecerán aquí cuando inicies sesión: la salida es para ellos.",
     "lienComment": "Cómo funciona",
-    "lienAPropos": "Quién está detrás de Allezou"
+    "lienAPropos": "Quién está detrás de Allezou",
+    "titreAgenda": "Las próximas actividades en Ginebra",
+    "sousTitreAgenda": "Las actividades de los municipios de Ginebra, abiertas a todos.",
+    "voirAgenda": "Ver toda la agenda",
+    "jusquAu": "hasta el"
   },
   "SortirLieu": {
     "titre": "Añadir un lugar",

@@ -717,7 +717,11 @@
     "publicAccroche": "Dites à vos cercles où vous êtes : « au parc du Gué jusqu'à midi ». Les familles de confiance vous rejoignent, sans messagerie ni géolocalisation.",
     "publicCercles": "Vos cercles apparaîtront ici une fois connecté·e : c'est à eux que la sortie s'adresse.",
     "lienComment": "Comment ça marche",
-    "lienAPropos": "Qui est derrière Allezou"
+    "lienAPropos": "Qui est derrière Allezou",
+    "titreAgenda": "Les prochaines activités à Genève",
+    "sousTitreAgenda": "Les activités des communes genevoises, ouvertes à tous.",
+    "voirAgenda": "Voir tout l'agenda",
+    "jusquAu": "jusqu'au"
   },
   "SortirLieu": {
     "titre": "Ajouter un lieu",

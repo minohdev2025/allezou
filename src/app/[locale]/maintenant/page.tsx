@@ -11,6 +11,7 @@ import { listeFr } from "@/lib/texte";
 import { readerCircles, type VisiblePublication } from "@/lib/visibility";
 import { rejoindreSortie, retirerSortie } from "../actions";
 import { DemandeNotifications } from "./demande-notifications";
+import { ProchainesActivites } from "../prochaines-activites";
 import {
   BarreAction,
   Carte,
@@ -20,7 +21,6 @@ import {
   Vide,
   heureCourte,
   jourCourt,
-  teinte,
 } from "../ui";
 
 /*
@@ -181,62 +181,14 @@ export default async function Maintenant() {
         </>
       )}
 
-      {enAttendant.length > 0 ? (
-        <section className="mt-8">
-          <h2 className="titre mb-1 text-lg font-bold">{t("titreCanton")}</h2>
-          <p className="mb-3 text-sm leading-snug text-[color:var(--color-doux)]">
-            {t("sousTitreCanton")}
-          </p>
-          <ul className="mb-4 space-y-2">
-            {enAttendant.map((activite) => {
-              /*
-                Une activité déjà commencée portait sa date de début : une exposition
-                ouverte du 22 juillet au 15 août affichait « 22 juillet » alors qu'on
-                était le 12 août. C'est la date de fin qui informe, puisqu'elle dit
-                combien de temps il reste pour y aller.
-              */
-              const jour = jourCourt(
-                activite.enCours && activite.endsAt ? activite.endsAt : activite.startsAt,
-                locale,
-              );
-              return (
-                <li key={activite.id}>
-                  <Link
-                    href={`/agenda/${activite.id}`}
-                    className="flex gap-3 rounded-2xl bg-[color:var(--color-surface)] px-4 py-3"
-                    style={{
-                      boxShadow: `inset 0 0 0 2px var(--color-${teinte(activite.id)}-doux)`,
-                    }}
-                  >
-                    <span
-                      className="w-14 shrink-0 text-sm font-bold leading-tight"
-                      style={{ color: `var(--color-${teinte(activite.id)})` }}
-                    >
-                      {activite.enCours && activite.endsAt ? (
-                        <span className="block text-[0.7rem] opacity-75">
-                          {t("jusquAu")}
-                        </span>
-                      ) : null}
-                      {jour.nombre} {jour.mois}
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="titre line-clamp-2 font-bold leading-tight">
-                        {activite.title}
-                      </span>
-                      {activite.commune ? (
-                        <span className="mt-0.5 block text-sm text-[color:var(--color-doux)]">
-                          {activite.commune}
-                        </span>
-                      ) : null}
-                    </span>
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-          <LienBouton href="/agenda">{t("voirAgenda")}</LienBouton>
-        </section>
-      ) : null}
+      <ProchainesActivites
+        activites={enAttendant}
+        locale={locale}
+        titre={t("titreCanton")}
+        sousTitre={t("sousTitreCanton")}
+        jusquAu={t("jusquAu")}
+        voirAgenda={t("voirAgenda")}
+      />
 
       <Navigation actif="maintenant" action={barreSortir} />
     </main>

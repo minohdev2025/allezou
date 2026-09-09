@@ -717,7 +717,11 @@
     "publicAccroche": "Tell your circles where you are: “at the Gué park until noon”. Trusted families join you, with no chat and no geolocation.",
     "publicCercles": "Your circles will appear here once you sign in: they are who the outing is for.",
     "lienComment": "How it works",
-    "lienAPropos": "Who is behind Allezou"
+    "lienAPropos": "Who is behind Allezou",
+    "titreAgenda": "Upcoming activities in Geneva",
+    "sousTitreAgenda": "Activities from Geneva's municipalities, open to everyone.",
+    "voirAgenda": "See the full agenda",
+    "jusquAu": "until"
   },
   "SortirLieu": {
     "titre": "Add a place",

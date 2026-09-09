@@ -1,14 +1,17 @@
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
+import type { Locale } from "@/i18n/routing";
 
 import type { Account } from "@/lib/auth";
+import { upcomingCalendar } from "@/lib/calendar";
 import { circlesByChild, myChildren } from "@/lib/children";
 import { lieuxFavoris, lieuxMasques, searchPlaces } from "@/lib/places";
 import { defaultAudience, lastOuting } from "@/lib/publications";
 import { readerCircles } from "@/lib/visibility";
 import { declarerSortie, seConnecterPuisRevenir } from "../actions";
 import { MaquetteSortie } from "../maquette";
+import { ProchainesActivites } from "../prochaines-activites";
 import { ChoixDuLieu } from "./choix-lieu-client";
 import { ChoixDuree } from "./duree-client";
 import { LiaisonEnfantsCercles } from "./liaison-client";
@@ -49,6 +52,7 @@ export async function EcranSortir({
   erreur?: string;
 }) {
   const t = await getTranslations("Sortir");
+  const locale = (await getLocale()) as Locale;
 
   const MESSAGES: Record<string, string> = {
     aucun_destinataire: t("erreurs.aucun_destinataire"),
@@ -59,7 +63,7 @@ export async function EcranSortir({
     note_invalide: t("erreurs.note_invalide"),
   };
 
-  const [lieux, cercles, defauts, enfants, derniere, cerclesParEnfant, favoris, masques] =
+  const [lieux, cercles, defauts, enfants, derniere, cerclesParEnfant, favoris, masques, agenda] =
     await Promise.all([
       searchPlaces("", 60),
       account ? readerCircles(account.id) : [],
@@ -69,6 +73,8 @@ export async function EcranSortir({
       account ? circlesByChild(account.id) : {},
       account ? lieuxFavoris(account.id) : [],
       account ? lieuxMasques(account.id) : [],
+      // Cinq activités : de quoi donner envie sans allonger l'écran de déclaration.
+      account ? [] : upcomingCalendar(null, { limit: 5 }),
     ]);
 
   const cerclesCoches = new Set(defauts.map((c) => c.id));
@@ -280,6 +286,25 @@ export async function EcranSortir({
           />
         </form>
       )}
+
+      {/*
+        L'agenda du canton, pour qui arrive sans compte.
+
+        C'est la seule chose qu'un visiteur peut lire tout de suite : il n'a pas de cercle,
+        donc pas une sortie à voir, et l'écran ne lui montrerait qu'un formulaire. C'est
+        aussi ce qu'un moteur de recherche trouve en arrivant sur l'accueil — des activités
+        datées, situées, nommées — là où un formulaire ne dit rien de ce qu'on fait ici.
+      */}
+      {!account ? (
+        <ProchainesActivites
+          activites={agenda}
+          locale={locale}
+          titre={t("titreAgenda")}
+          sousTitre={t("sousTitreAgenda")}
+          jusquAu={t("jusquAu")}
+          voirAgenda={t("voirAgenda")}
+        />
+      ) : null}
 
       {/* « Pas dans la liste » vit désormais sous la liste elle-même (choix-lieu-client). */}
       {account ? (
