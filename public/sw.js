@@ -23,7 +23,8 @@ self.addEventListener("push", (event) => {
     self.registration.showNotification(contenu.title, {
       body: contenu.body,
       icon: "/icon",
-      badge: "/icon",
+      // Le badge (barre d'état Android) doit être monochrome sur fond transparent : /badge.
+      badge: "/badge",
       // La charge dit sa langue — chaque destinataire reçoit la sienne depuis le serveur.
       lang: contenu.lang || "fr",
       // Une seule notification par cercle à l'écran : on remplace plutôt que d'empiler.
