@@ -137,6 +137,10 @@ export type VisiblePublication = {
   placeLon: number | null;
   eventId: string | null;
   eventTitle: string | null;
+  /** Une activité sans horaire (exposition, marché) : on n'affiche pas « 00:00 ». */
+  eventAllDay: boolean | null;
+  /** La commune de l'activité, à côté de la date sur l'écran principal. */
+  eventCommune: string | null;
   /**
    * Le nom du cercle destinataire, quand la publication passe par un cercle.
    * Affiché en pastille sur l'écran principal : « ● Classe de 4P ». Nul pour une
@@ -212,6 +216,8 @@ export async function visiblePublications(
     place_lon: number | null;
     event_id: string | null;
     event_title: string | null;
+    event_all_day: boolean | null;
+    event_commune: string | null;
     circle_name: string | null;
     reader_participates: boolean;
     note: string | null;
@@ -235,6 +241,8 @@ export async function visiblePublications(
       pl.lon as place_lon,
       p.event_id,
       ev.title as event_title,
+      ev.all_day as event_all_day,
+      ev.commune as event_commune,
       (
         -- Le cercle destinataire par lequel le lecteur voit cette publication : son
         -- alias s'il en a choisi un, sinon le nom du cercle. Même condition que (1)
@@ -306,6 +314,8 @@ export async function visiblePublications(
     placeLon: r.place_lon,
     eventId: r.event_id,
     eventTitle: r.event_title,
+    eventAllDay: r.event_all_day,
+    eventCommune: r.event_commune,
     circleName: r.circle_name,
     readerParticipates: r.reader_participates,
     note: r.note,

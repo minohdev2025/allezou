@@ -24,6 +24,7 @@ import {
   setNote,
   setParticipantChildren,
   setPublicationCircles,
+  upcomingAttendances,
   upcomingOutings,
   withdraw,
 } from "@/lib/publications";
@@ -294,6 +295,38 @@ describe("Activité du calendrier", () => {
     const vues = await attendanceFor(bob.id, result.value.eventId);
     expect(vues.map((p) => p.eventTitle)).toEqual(["Visite du Muséum"]);
     expect(vues[0].authorName).toBe("Alice");
+  });
+
+  it("l'écran principal voit les inscriptions du cercle, pas celles des autres", async () => {
+    const alice = await createAccount("Alice");
+    const bob = await createAccount("Bob");
+    const inconnu = await createAccount("Inconnu");
+    const classe = await createCircle(alice);
+    await join(classe, bob);
+    const autre = await createCircle(inconnu);
+
+    const musee = await createEventAndAttend(alice.id, {
+      title: "Visite du Muséum",
+      startsAt: minutesFromNow(60),
+      endsAt: minutesFromNow(180),
+    });
+    if (!musee.ok) return;
+    // Bob s'inscrit aussi : sa propre publication, sur la même activité.
+    await declareAttendance(bob.id, { eventId: musee.value.eventId, circleIds: [classe.id] });
+    // L'inconnu s'inscrit ailleurs, pour son propre cercle.
+    await createEventAndAttend(inconnu.id, {
+      title: "Atelier poterie",
+      startsAt: minutesFromNow(60),
+      circleIds: [autre.id],
+    });
+
+    const vues = await upcomingAttendances(bob.id);
+    expect(vues.map((p) => [p.eventTitle, p.authorName])).toEqual([
+      ["Visite du Muséum", "Alice"],
+      ["Visite du Muséum", "Bob"],
+    ]);
+    expect(vues[0].eventAllDay).toBe(false);
+    expect(await upcomingAttendances(inconnu.id)).toHaveLength(1);
   });
 
   it("l'activité est publique, seule la participation est restreinte", async () => {

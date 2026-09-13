@@ -671,6 +671,16 @@ export function upcomingOutings(actorId: string): Promise<VisiblePublication[]> 
   return visiblePublications(actorId, { kind: "presence", onlyUpcoming: true });
 }
 
+/**
+ * Les inscriptions à l'agenda parmi les cercles qu'on suit — « Alice ira à la visite du
+ * Muséum ». Chaque famille s'inscrit par sa propre publication ; c'est l'écran qui les
+ * regroupe par activité. Les activités passées ont déjà disparu : rien n'est visible
+ * après sa fin.
+ */
+export function upcomingAttendances(actorId: string): Promise<VisiblePublication[]> {
+  return visiblePublications(actorId, { kind: "attendance" });
+}
+
 /** Les participations visibles à une activité du calendrier. */
 export function attendanceFor(
   actorId: string,

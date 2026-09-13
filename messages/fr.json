@@ -641,6 +641,8 @@
     "sousTitreCanton": "Les activités des communes genevoises, ouvertes à tous.",
     "jusquAu": "jusqu'au",
     "voirAgenda": "Voir tout l'agenda",
+    "titreInscriptions": "Inscrits à l'agenda",
+    "touteLaJournee": "journée",
     "titrePersonneDehors": "Personne n'est dehors",
     "textePersonneDehors": "Parmi vos cercles, personne n'a déclaré de sortie en cours.",
     "aVenirDate": "{jour} dès {heure}",
