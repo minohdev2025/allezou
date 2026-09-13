@@ -297,6 +297,60 @@ describe("Activité du calendrier", () => {
     expect(vues[0].authorName).toBe("Alice");
   });
 
+  it("retire un enfant d'une inscription à l'agenda", async () => {
+    const alice = await createAccount("Alice");
+    const bob = await createAccount("Bob");
+    const classe = await createCircle(alice);
+    await join(classe, bob);
+    const mateo = await createChild(alice, "Matéo");
+    const lea = await createChild(alice, "Léa");
+
+    const musee = await createEventAndAttend(alice.id, {
+      title: "Visite du Muséum",
+      startsAt: minutesFromNow(60),
+      childIds: [mateo.id, lea.id],
+    });
+    if (!musee.ok) throw new Error(musee.reason);
+
+    // Léa ne vient finalement pas. Décocher doit l'enlever, pas être ignoré en silence :
+    // c'était le cas tant que corriger les enfants exigeait une présence.
+    expect(
+      (await setParticipantChildren(alice.id, musee.value.publicationId, [mateo.id])).ok,
+    ).toBe(true);
+
+    expect(await myChildrenOnPublication(alice.id, musee.value.publicationId)).toEqual([
+      mateo.id,
+    ]);
+    const [vue] = await attendanceFor(bob.id, musee.value.eventId);
+    expect(vue.authorChildren).toEqual(["Matéo"]);
+
+    // Et jusqu'à zéro : on y va finalement sans les enfants.
+    expect((await setParticipantChildren(alice.id, musee.value.publicationId, [])).ok).toBe(
+      true,
+    );
+    expect((await attendanceFor(bob.id, musee.value.eventId))[0].authorChildren).toEqual([]);
+  });
+
+  it("s'inscrit à l'agenda avec un seul de ses deux enfants", async () => {
+    const alice = await createAccount("Alice");
+    const bob = await createAccount("Bob");
+    const classe = await createCircle(alice);
+    await join(classe, bob);
+    const mateo = await createChild(alice, "Matéo");
+    await createChild(alice, "Léa");
+
+    const evenement = await createEvent({ startsAt: minutesFromNow(60) });
+    const inscription = await declareAttendance(alice.id, {
+      eventId: evenement.id,
+      circleIds: [classe.id],
+      childIds: [mateo.id],
+    });
+    expect(inscription.ok).toBe(true);
+
+    const [vue] = await attendanceFor(bob.id, evenement.id);
+    expect(vue.authorChildren).toEqual(["Matéo"]);
+  });
+
   it("l'écran principal voit les inscriptions du cercle, pas celles des autres", async () => {
     const alice = await createAccount("Alice");
     const bob = await createAccount("Bob");
@@ -321,10 +375,10 @@ describe("Activité du calendrier", () => {
     });
 
     const vues = await upcomingAttendances(bob.id);
-    expect(vues.map((p) => [p.eventTitle, p.authorName])).toEqual([
-      ["Visite du Muséum", "Alice"],
-      ["Visite du Muséum", "Bob"],
-    ]);
+    // Deux publications pour la même activité, une par famille : l'écran les regroupe.
+    // Elles finissent à la même heure, et l'ordre entre elles n'est pas garanti.
+    expect(vues.map((p) => p.eventTitle)).toEqual(["Visite du Muséum", "Visite du Muséum"]);
+    expect(vues.map((p) => p.authorName).sort()).toEqual(["Alice", "Bob"]);
     expect(vues[0].eventAllDay).toBe(false);
     expect(await upcomingAttendances(inconnu.id)).toHaveLength(1);
   });
@@ -505,11 +559,20 @@ describe("Ajuster une sortie après coup", () => {
 
     expect(await myChildrenOnPublication(alice.id, id)).toHaveLength(2);
 
-    await setParticipantChildren(alice.id, id, [mateo.id]);
+    expect((await setParticipantChildren(alice.id, id, [mateo.id])).ok).toBe(true);
 
     expect(await myChildrenOnPublication(alice.id, id)).toEqual([mateo.id]);
     const [vue] = await visiblePublications(bob.id);
     expect(vue.authorChildren).toEqual(["Matéo"]);
+  });
+
+  it("n'enlève pas d'enfant à qui n'est pas inscrit", async () => {
+    const { bob, id } = await uneSortie();
+
+    expect(await setParticipantChildren(bob.id, id, [])).toEqual({
+      ok: false,
+      reason: "pas_participant",
+    });
   });
 
   it("prolonge d'une heure, sans dépasser la durée maximale", async () => {

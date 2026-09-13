@@ -1180,7 +1180,8 @@ export async function sInscrireActivite(formData: FormData) {
   if (deja) {
     const cercles = await setPublicationCircles(account.id, deja.publicationId, circleIds);
     if (!cercles.ok) redirect(`/agenda/${eventId}?erreur=${cercles.reason}`);
-    await setParticipantChildren(account.id, deja.publicationId, childIds);
+    const enfants = await setParticipantChildren(account.id, deja.publicationId, childIds);
+    if (!enfants.ok) redirect(`/agenda/${eventId}?erreur=${enfants.reason}`);
     redirect(`/agenda/${eventId}`);
   }
 
@@ -1224,8 +1225,12 @@ export async function retirerSortie(formData: FormData) {
 export async function corrigerEnfants(formData: FormData) {
   const account = await requireAccount();
   const sortie = String(formData.get("sortie") ?? "");
-  await setParticipantChildren(account.id, sortie, formData.getAll("enfant").map(String));
-  redirect(`/sortie/${sortie}`);
+  const result = await setParticipantChildren(
+    account.id,
+    sortie,
+    formData.getAll("enfant").map(String),
+  );
+  redirect(result.ok ? `/sortie/${sortie}` : `/sortie/${sortie}?erreur=${result.reason}`);
 }
 
 export async function prolongerSortie(formData: FormData) {
