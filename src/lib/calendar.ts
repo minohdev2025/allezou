@@ -58,6 +58,13 @@ export type CalendarEntry = {
   retiree: boolean;
   /** Les personnes inscrites que ce lecteur a le droit de voir. */
   attendees: { publicationId: string; accountId: string; displayName: string }[];
+  /**
+   * La photo jointe à l'activité, si elle en a une. On ne rend ici que ses dimensions et
+   * sa date : les octets vivent derrière `/photo/<id>`, et la fiche n'a pas à les porter.
+   * Les dimensions réservent sa place avant qu'elle n'arrive, pour que le texte en dessous
+   * ne saute pas.
+   */
+  photo: { largeur: number; hauteur: number; updatedAt: Date } | null;
 };
 
 /**
@@ -297,11 +304,17 @@ export async function upcomingCalendar(
     en_cours: boolean;
     termine: boolean;
     retiree: boolean;
+    photo_largeur: number | null;
+    photo_hauteur: number | null;
+    photo_updated_at: Date | null;
   }>(sql`
     select
       e.id, e.title, e.description, e.starts_at, e.ends_at, e.url, e.origin, e.updated_at,
       e.min_age, e.max_age, e.commune, e.tarif, e.acces, e.all_day, e.recurrence,
       e.lat, e.lon,
+      ph.largeur as photo_largeur,
+      ph.hauteur as photo_hauteur,
+      ph.updated_at as photo_updated_at,
       (e.starts_at <= now()) as en_cours,
       (coalesce(e.ends_at, e.starts_at + interval '2 hours') < now()) as termine,
       (e.withdrawn_at is not null or e.rejected_at is not null) as retiree,
@@ -310,6 +323,9 @@ export async function upcomingCalendar(
     from event e
     left join place pl on pl.id = e.place_id
     left join source src on src.id = e.source_id
+    -- Trois entiers, jamais les octets : une liste de cent activités ne traîne pas
+    -- cent images pour dire lesquelles en ont une.
+    left join event_photo ph on ph.event_id = e.id
     where ${sql.join(conditions, sql` and `)}
     -- Une exposition commencée en juin n'a pas à s'afficher avant les activités de demain
     -- sous prétexte qu'elle a commencé avant : ce qui compte, c'est la prochaine occasion.
@@ -347,6 +363,14 @@ export async function upcomingCalendar(
     lon: r.lon,
     retiree: r.retiree,
     attendees: parEvenement.get(r.id) ?? [],
+    photo:
+      r.photo_largeur && r.photo_hauteur && r.photo_updated_at
+        ? {
+            largeur: r.photo_largeur,
+            hauteur: r.photo_hauteur,
+            updatedAt: asDate(r.photo_updated_at),
+          }
+        : null,
   }));
 }
 
@@ -378,11 +402,17 @@ export async function calendarEntry(
     en_cours: boolean;
     termine: boolean;
     retiree: boolean;
+    photo_largeur: number | null;
+    photo_hauteur: number | null;
+    photo_updated_at: Date | null;
   }>(sql`
     select
       e.id, e.title, e.description, e.starts_at, e.ends_at, e.url, e.origin, e.updated_at,
       e.min_age, e.max_age, e.commune, e.tarif, e.acces, e.all_day, e.recurrence,
       e.lat, e.lon,
+      ph.largeur as photo_largeur,
+      ph.hauteur as photo_hauteur,
+      ph.updated_at as photo_updated_at,
       (e.starts_at <= now()) as en_cours,
       (coalesce(e.ends_at, e.starts_at + interval '2 hours') < now()) as termine,
       (e.withdrawn_at is not null or e.rejected_at is not null) as retiree,
@@ -391,6 +421,8 @@ export async function calendarEntry(
     from event e
     left join place pl on pl.id = e.place_id
     left join source src on src.id = e.source_id
+    -- Les octets ne sont pas joints : on ne lit ici que de quoi savoir qu'elle existe.
+    left join event_photo ph on ph.event_id = e.id
     where e.id = ${eventId}
       and e.published_at is not null
     limit 1
@@ -431,6 +463,14 @@ export async function calendarEntry(
       accountId: p.authorId,
       displayName: p.authorName,
     })),
+    photo:
+      r.photo_largeur && r.photo_hauteur && r.photo_updated_at
+        ? {
+            largeur: r.photo_largeur,
+            hauteur: r.photo_hauteur,
+            updatedAt: asDate(r.photo_updated_at),
+          }
+        : null,
   };
 }
 

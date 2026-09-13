@@ -129,10 +129,14 @@
     "enCours": "en cours",
     "touteLaJournee": "Toute la journée",
     "voirDetails": "Voir tous les détails ↗",
+    "photoAgrandir": "Agrandir la photo",
     "erreurs": {
       "aucun_destinataire": "Choisissez au moins un cercle, sinon personne ne verra que vous y allez.",
       "cercle_interdit": "Un de ces cercles ne vous appartient pas.",
-      "activite_inconnue": "Cette activité n'existe plus."
+      "activite_inconnue": "Cette activité n'existe plus.",
+      "photo_trop_lourde": "Cette photo est trop lourde. L'activité est publiée ; réessayez avec une photo plus légère.",
+      "photo_illisible": "Cette photo n'a pas pu être lue. L'activité est publiée, mais sans elle.",
+      "photo_absente": "Cette photo est vide. L'activité est publiée, mais sans elle."
     },
     "erreurGenerique": "L'inscription n'a pas pu être faite.",
     "elleNestPlusAnnoncee": "Elle n'est plus annoncée",
@@ -173,6 +177,12 @@
     "aideLieu": "Un lieu du catalogue, ou écrivez-le en dessous s'il n'y est pas.",
     "choisirLieu": "Choisir un lieu",
     "placeholderLieuLibre": "Ou un lieu en toutes lettres",
+    "photoActivite": "Photo de l'activité",
+    "photoActiviteAide": "Facultatif. L'affiche, ou une vue du lieu. Elle est publique, comme l'activité.",
+    "photoActiviteChoisir": "Ajouter une photo",
+    "photoActiviteChanger": "Changer la photo",
+    "photoActiviteRetirer": "Retirer",
+    "photoActivitePrepare": "Préparation…",
     "visiblePar": "Visible par",
     "vousYAllezAvec": "Vous y allez avec",
     "proposerEtSInscrire": "Proposer et s'y inscrire",

@@ -62,6 +62,7 @@ import {
 } from "@/lib/circles";
 import { heureDeGeneve, minutesJusquAHeurePrecise } from "@/lib/heure";
 import { geocoderUnLieu } from "@/lib/geo";
+import { enregistrerPhoto } from "@/lib/photos";
 import { creerIdee, fermerIdee, repondreIdee, voterIdee } from "@/lib/ideas";
 import { db } from "@/lib/db";
 import { sql } from "drizzle-orm";
@@ -954,8 +955,25 @@ export async function proposerActivite(formData: FormData) {
   });
 
   if (!result.ok) redirect(`/agenda/nouveau?erreur=${result.reason}`);
+
+  /*
+    La photo se joint après coup, et son échec ne défait pas l'activité : celle-ci est déjà
+    au calendrier et des familles peuvent déjà s'y inscrire. Une image illisible vaut donc
+    une fiche sans photo et un mot au parent, pas la perte de ce qu'il vient d'écrire.
+  */
+  const photo = formData.get("photoActivite");
+  let souci = "";
+  if (photo instanceof File && photo.size > 0) {
+    const enregistree = await enregistrerPhoto(
+      result.value.eventId,
+      account.id,
+      Buffer.from(await photo.arrayBuffer()),
+    );
+    if (!enregistree.ok) souci = `?erreur=${enregistree.reason}`;
+  }
+
   prevenir(result.value.publicationId);
-  redirect(`/agenda/${result.value.eventId}`);
+  redirect(`/agenda/${result.value.eventId}${souci}`);
 }
 
 /**

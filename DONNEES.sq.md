@@ -30,6 +30,7 @@ për këtë ekziston kjo faqe.
 | Cili fëmijë ka lidhje me cilin rreth | Që një dalje pa më të madhin të mos shkojë te klasa e tij | Për sa kohë e mbani | Ju, dhe prindi tjetër i fëmijës, nëse ka. Anëtarët e tjerë të rrethit nuk e shohin |
 | Daljet tuaja: një vend i zgjedhur nga një listë, një orë mbarimi, dhe ndoshta një fjalë deri në 140 shkronja | Është ajo që ndani | **Fshihet 24 orë pas orës së mbarimit** | Vetëm rrethet që keni zgjedhur në momentin e botimit |
 | Regjistrimet tuaja në aktivitetet e agjendës | Që të tjerët të dinë se fëmija i tyre do të gjejë dikë atje | **Fshihet 24 orë pas mbarimit të aktivitetit**, ashtu si një dalje | Vetëm rrethet që keni zgjedhur |
+| Fotoja që i bashkëngjitni një aktiviteti që propozoni | Që të shihet për çfarë bëhet fjalë: posteri ose vendi | Për sa kohë aktiviteti është në agjendë; fshihet bashkë me të | **Të gjithë**, sepse agjenda është publike. Serveri e rikodon dhe fshin kështu vendin dhe orën e fotografimit që telefoni juaj kishte shkruar aty |
 | Cilësimet tuaja të njoftimeve | Që t'ju shqetësojmë vetëm kur e keni kërkuar | Për sa kohë ekziston llogaria juaj | Vetëm ju |
 | Fjalët që mbikëqyrni në agjendë: « pishinë », « xhudo » | Për t'ju njoftuar kur një aktivitet i publikuar përmban njërën | Për sa kohë i mbani | Vetëm ju. Nuk i shfaqen askujt dhe nuk shërbejnë për asgjë tjetër |
 | Adresa teknike e telefonit tuaj për njoftimet | Për t'ju dërguar njoftimet | Për sa kohë i pranoni | Askush: është një identifikues teknik |
