@@ -254,7 +254,7 @@ async function LigneActivite({
     "inline-flex shrink-0 items-center gap-1.5 rounded-[12px] bg-[color:var(--color-signal)] px-4 py-2 text-sm font-black uppercase tracking-wide text-[color:var(--color-signal-encre)] active:translate-y-[1px]";
 
   return (
-    <Carte className="flex items-center gap-3 !p-3">
+    <Carte className="relative flex items-center gap-3 !p-3">
       <div className="flex w-16 shrink-0 flex-col items-center rounded-[13px] bg-[color:var(--color-bleu-doux)] px-1 py-2">
         <span className="text-[0.7rem] font-extrabold uppercase tracking-[0.12em] text-[color:var(--color-bleu)]">
           {jour.jour} {jour.nombre}
@@ -270,7 +270,12 @@ async function LigneActivite({
       </div>
       <div className="min-w-0 flex-1">
         <p className="line-clamp-2 text-[0.97rem] font-extrabold leading-tight">
-          <Link href={fiche} className="underline-offset-4 hover:underline">
+          {/* Même motif que les cartes de sortie : toute la carte mène à la fiche,
+              le geste « Nous aussi » reste au-dessus. */}
+          <Link
+            href={fiche}
+            className="after:absolute after:inset-0 underline-offset-4 hover:underline"
+          >
             {premiere.eventTitle}
           </Link>
         </p>
@@ -281,7 +286,7 @@ async function LigneActivite({
       {jySuis ? (
         <Pastille couleur="vert">{t("vousYEtes")}</Pastille>
       ) : (
-        <Link href={fiche} className={signal}>
+        <Link href={fiche} className={`${signal} relative z-10`}>
           {t("nousAussi")}
           <span aria-hidden>→</span>
         </Link>
