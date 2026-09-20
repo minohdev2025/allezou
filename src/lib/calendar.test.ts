@@ -232,47 +232,53 @@ describe("Une activité que la source n'annonce plus", () => {
 
 describe("Filtres prix et inscription", () => {
   /*
-    Un prix non défini entre dans les deux filtres, et c'est un changement assumé.
+    Chaque puce ne rend que sa valeur, et l'indéfini ne s'invite plus dans les autres.
 
-    Le filtre écartait ce que la commune n'avait pas écrit. Comme c'est l'état d'une bonne
-    moitié de l'agenda, un parent qui cherchait du gratuit voyait disparaître la moitié des
-    activités, dont beaucoup le sont. On montre donc plus large et on le laisse vérifier.
+    Le filtre élargissait : « gratuit » ramenait aussi tout ce que la commune n'avait pas
+    étiqueté, pour ne pas cacher la moitié de l'agenda à qui cherchait du gratuit.
+    L'intention était juste, l'effet non : l'indéfini étant le cas courant, « Sur
+    inscription » ramenait presque l'agenda entier et ne filtrait plus rien.
 
-    Ce que cela ne change pas : la fiche affiche toujours « non défini ». Rien n'est
-    requalifié en gratuit, et personne n'arrive devant une caisse en croyant le contraire —
-    c'était la crainte qui avait fondé la règle d'affichage, et elle tient toujours.
+    « Non défini » est une puce comme les autres — qui la veut la coche, seule ou avec
+    « gratuit ». Ce que le filtre imposait, l'écran le demande.
+
+    La règle d'affichage tient : un prix inconnu ne devient jamais « gratuit », ni dans la
+    liste ni sur la fiche. On a cessé de l'élargir, pas de le nommer.
   */
-  it("montre les prix non définis avec les gratuites comme avec les payantes", async () => {
+  it("ne rend que les prix demandés, l'indéfini compris", async () => {
     const alice = await createAccount("Alice");
     await createEvent({ title: "Concert de l'Escalade", tarif: "gratuit" });
     await createEvent({ title: "Cirque de Noël", tarif: "payant" });
     await createEvent({ title: "Vide-greniers du village" });
 
     const gratuites = await upcomingCalendar(alice.id, { tarifs: ["gratuit"] });
-    expect(gratuites.map((e) => e.title).sort()).toEqual([
+    expect(gratuites.map((e) => e.title)).toEqual(["Concert de l'Escalade"]);
+
+    const payantes = await upcomingCalendar(alice.id, { tarifs: ["payant"] });
+    expect(payantes.map((e) => e.title)).toEqual(["Cirque de Noël"]);
+
+    const inconnues = await upcomingCalendar(alice.id, { tarifs: ["inconnu"] });
+    expect(inconnues.map((e) => e.title)).toEqual(["Vide-greniers du village"]);
+
+    // Deux puces cochées, deux valeurs rendues : c'est là que l'indéfini revient.
+    const gratuitesEtIndefinies = await upcomingCalendar(alice.id, {
+      tarifs: ["gratuit", "inconnu"],
+    });
+    expect(gratuitesEtIndefinies.map((e) => e.title).sort()).toEqual([
       "Concert de l'Escalade",
       "Vide-greniers du village",
     ]);
-
-    const payantes = await upcomingCalendar(alice.id, { tarifs: ["payant"] });
-    expect(payantes.map((e) => e.title).sort()).toEqual([
-      "Cirque de Noël",
-      "Vide-greniers du village",
-    ]);
-
-    // Demander « non défini » ne rend que celles-là : le filtre reste utilisable pour voir
-    // ce dont on ignore le prix.
-    const inconnues = await upcomingCalendar(alice.id, { tarifs: ["inconnu"] });
-    expect(inconnues.map((e) => e.title)).toEqual(["Vide-greniers du village"]);
   });
 
   it("garde le prix non défini tel quel, sans le requalifier", async () => {
     const alice = await createAccount("Alice");
     await createEvent({ title: "Atelier sans prix affiché" });
 
-    // Elle apparaît dans le filtre « gratuit », et reste « inconnu » : c'est la fiche qui
-    // doit être exacte, pas la liste de ce qu'on propose de regarder.
-    const [activite] = await upcomingCalendar(alice.id, { tarifs: ["gratuit"] });
+    // Elle n'entre plus dans « gratuit » : c'était le filtre qui la requalifiait, et il
+    // n'avait pas à le faire. Son prix reste « inconnu » là où on le lit.
+    expect(await upcomingCalendar(alice.id, { tarifs: ["gratuit"] })).toEqual([]);
+
+    const [activite] = await upcomingCalendar(alice.id, { tarifs: ["inconnu"] });
     expect(activite.title).toBe("Atelier sans prix affiché");
     expect(activite.tarif).toBe("inconnu");
   });
@@ -281,12 +287,21 @@ describe("Filtres prix et inscription", () => {
     const alice = await createAccount("Alice");
     await createEvent({ title: "Atelier poterie", acces: "inscription" });
     await createEvent({ title: "Marché de Noël", acces: "libre" });
+    /*
+      Le cas courant posé au milieu des deux autres : une activité que personne n'a
+      étiquetée. C'est elle qui s'invitait dans chaque puce, et comme elle est la
+      majorité de l'agenda, « Sur inscription » n'avait aucun effet visible.
+    */
+    await createEvent({ title: "Sortie sans mention" });
 
     const surInscription = await upcomingCalendar(alice.id, { acces: ["inscription"] });
     expect(surInscription.map((e) => e.title)).toEqual(["Atelier poterie"]);
 
     const libres = await upcomingCalendar(alice.id, { acces: ["libre"] });
     expect(libres.map((e) => e.title)).toEqual(["Marché de Noël"]);
+
+    const sansMention = await upcomingCalendar(alice.id, { acces: ["inconnu"] });
+    expect(sansMention.map((e) => e.title)).toEqual(["Sortie sans mention"]);
   });
 
   it("croise les deux axes, qui ne disent pas la même chose", async () => {
@@ -301,14 +316,16 @@ describe("Filtres prix et inscription", () => {
     expect(trouvees.map((e) => e.title)).toEqual(["Atelier gratuit sur inscription"]);
   });
 
-  it("garde plusieurs prix à la fois, et toujours l'indéfini avec", async () => {
+  it("garde plusieurs prix à la fois, et rien de plus", async () => {
     const alice = await createAccount("Alice");
     await createEvent({ title: "Gratuite", tarif: "gratuit" });
     await createEvent({ title: "Payante", tarif: "payant" });
     await createEvent({ title: "Muette" });
 
+    // Les deux puces du prix cochées : tout ce qui a un prix écrit, et « Muette » reste
+    // dehors tant que « Non défini » n'est pas cochée elle aussi.
     const trouvees = await upcomingCalendar(alice.id, { tarifs: ["gratuit", "payant"] });
-    expect(trouvees.map((e) => e.title).sort()).toEqual(["Gratuite", "Muette", "Payante"]);
+    expect(trouvees.map((e) => e.title).sort()).toEqual(["Gratuite", "Payante"]);
   });
 
   it("porte le prix et l'inscription sur chaque entrée", async () => {

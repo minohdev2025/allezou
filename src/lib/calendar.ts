@@ -254,26 +254,29 @@ export async function upcomingCalendar(
   }
 
   /*
-    Ce qui n'est pas défini entre dans les deux cas, et c'est voulu.
+    Chaque puce ne rend que sa valeur, « Non défini » comprise.
 
-    « Non défini » veut dire que la commune n'a rien écrit, pas que l'activité est payante.
-    Un filtre qui l'écarterait cacherait à un parent cherchant du gratuit la moitié de
-    l'agenda, dont une bonne part l'est. On montre donc plus large, et la fiche continue
-    d'afficher « non défini » : c'est elle qui doit être exacte, pas le filtre.
+    Le filtre élargissait : cocher « gratuit » ramenait aussi tout l'indéfini, pour ne pas
+    cacher la moitié de l'agenda à un parent qui cherchait du gratuit. L'intention était
+    juste, l'effet non : l'indéfini est le cas courant, si bien que « Sur inscription »
+    ramenait presque l'agenda entier. Deux puces sur trois ne filtraient rien, et l'écran
+    montrait un filtre actif devant une liste inchangée.
 
-    Cela ne défait pas la règle d'affichage prise en août — ne jamais présenter un prix
-    inconnu comme gratuit — puisque rien n'est requalifié : on élargit ce qu'on propose de
-    regarder, on ne renomme rien.
+    « Non défini » est une puce comme les autres : qui veut les activités que personne n'a
+    étiquetées la coche, avec « gratuit » s'il veut les deux. Ce qui était imposé se demande.
+
+    Rien n'est requalifié pour autant, et la règle d'août tient : un prix inconnu ne devient
+    jamais « gratuit », ni dans la liste ni sur la fiche.
   */
   if (filtre.tarifs?.length) {
     conditions.push(
-      sql`e.tarif::text = any(${sql.param([...filtre.tarifs, "inconnu"])}::text[])`,
+      sql`e.tarif::text = any(${sql.param(filtre.tarifs)}::text[])`,
     );
   }
 
   if (filtre.acces?.length) {
     conditions.push(
-      sql`e.acces::text = any(${sql.param([...filtre.acces, "inconnu"])}::text[])`,
+      sql`e.acces::text = any(${sql.param(filtre.acces)}::text[])`,
     );
   }
 
