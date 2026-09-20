@@ -284,11 +284,21 @@ export async function runSource(
 }
 
 /**
- * Retire de l'agenda ce que la source n'annonce plus.
+ * Retire ce que la source n'annonce plus, publié ou en file.
  *
  * Une activité annulée disparaît de la page de la commune sans autre forme de procès. Tant
  * qu'on ne comparait qu'à ce que la page annonce, elle restait publiée jusqu'à sa date, et
  * une famille pouvait se déplacer pour une sortie qui n'existait plus.
+ *
+ * **La file de relecture y avait droit aussi.** La règle ne touchait que le publié, si bien
+ * qu'une activité retenue par un contrôle y restait même une fois disparue de la page : plus
+ * rien ne la relisait, ses motifs vieillissaient sur place, et la file ne pouvait que grossir.
+ * Vingt-deux des cent quatre activités en attente un soir de septembre 2026 n'avaient plus été
+ * revues depuis deux jours, certaines jamais — autant de fiches à relire qui n'existaient plus
+ * nulle part. Ce qu'aucune source n'annonce ne se relit pas : ça se retire.
+ *
+ * Retiré et non écarté, là encore : si la commune réannonce l'activité et que la lecture passe
+ * les contrôles, `withdrawnAt` retombe à zéro et elle reparaît toute seule.
  *
  * On ne touche qu'au futur : ce qui a déjà eu lieu a eu lieu, et le sortir de l'agenda
  * effacerait la trace d'une sortie à laquelle des familles sont allées.
@@ -301,7 +311,6 @@ async function retirerLesDisparues(sourceId: string): Promise<number> {
     update event
     set withdrawn_at = now()
     where source_id = ${sourceId}
-      and published_at is not null
       and withdrawn_at is null
       and starts_at > now()
       and coalesce(last_seen_at, updated_at)
@@ -627,6 +636,9 @@ export async function pendingReview(limit = 50): Promise<PendingEvent[]> {
     left join source src on src.id = e.source_id
     where e.published_at is null
       and e.rejected_at is null
+      -- Ce que la source n'annonce plus ne se relit pas : depuis que la règle de
+      -- disparition couvre la file, une fiche retirée n'a plus rien à y faire.
+      and e.withdrawn_at is null
     order by e.starts_at asc
     limit ${limit}
   `);
