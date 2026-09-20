@@ -11,12 +11,12 @@
  * n'a pas disparu, elle est devenue l'exception.
  */
 
-import { and, eq, isNull, or, sql } from "drizzle-orm";
+import { and, eq, inArray, isNull, or, sql } from "drizzle-orm";
 
 import { db } from "../db";
 import { asDate, asDateOrNull } from "../db/rows";
 import * as s from "../db/schema";
-import { controler, type Echec } from "./controles";
+import { controler, finDeSaison, type Echec } from "./controles";
 import type { Acces, Tarif } from "./tarif";
 import { icalAdapter } from "./ical";
 import { jsonLdAdapter } from "./jsonld";
@@ -157,9 +157,18 @@ export async function runSource(
         .where(and(eq(s.event.sourceId, source.id), eq(s.event.externalId, event.externalId)))
         .limit(1);
 
+      /*
+        Le doublon rend deux choses : ce qu'on reproche à cette lecture, et les jumelles
+        préfixées de leur rubrique qu'elle rend caduques. Retirées tout de suite : laisser
+        la longue publiée pendant que la courte entre, c'est la même sortie deux fois à
+        l'écran, et c'est exactement ce qui s'est vu à Lancy.
+      */
+      const doublon = await chercherDoublon(event, source.id);
+      await retirerLesJumelles(doublon.aRetirer);
+
       const echecs = [
         ...controler(event, { source, texteSource: event.texteSource }),
-        ...(await chercherDoublon(event, source.id)),
+        ...doublon.echecs,
       ];
 
       if (verdictsFamille?.[rang] === "doute") {
@@ -191,7 +200,9 @@ export async function runSource(
         title: event.title,
         description: event.description,
         startsAt: event.startsAt,
-        endsAt: event.endsAt,
+        // Une activité à rythme dont la page n'écrit pas le terme : on lui pose une fin
+        // à un an, après les contrôles, sinon l'agenda l'efface dès son premier jour passé.
+        endsAt: event.endsAt ?? (event.recurrence ? finDeSaison(event.startsAt) : null),
         placeLabel: event.placeLabel,
         url: event.url,
         minAge: event.minAge,
@@ -233,7 +244,11 @@ export async function runSource(
             ...(publiable ? { publishedAt: new Date() } : {}),
             controles: echecs.length > 0 ? echecs : null,
             lastSeenAt: sql`now()`,
-            withdrawnAt: null,
+            // Une commune qui réannonce une activité retirée la remet à l'agenda — mais
+            // seulement si la lecture du jour passe les contrôles. Sans cette réserve, la
+            // jumelle préfixée ressuscitait à chaque passage : retirée le matin, sa propre
+            // lecture la ramenait l'après-midi.
+            ...(echecs.length === 0 ? { withdrawnAt: null } : {}),
             updatedAt: new Date(),
           })
           .where(eq(s.event.id, existing.id));
@@ -320,9 +335,37 @@ async function retirerLesDisparues(sourceId: string): Promise<number> {
  * Le jour et non l'heure pour ce second cas : la version longue et la courte se lisent parfois
  * à quelques minutes d'écart, et attendre l'égalité à la seconde reviendrait à ne rien voir.
  *
+ * **Laquelle des deux jumelles reste.** Le contrôle marquait celle qui arrivait la seconde,
+ * si bien que l'ordre de lecture décidait. À Lancy, c'est la préfixée qui est passée :
+ * « Sport Animations Jeux-Escalade pour Tuttisports Lancy » est publiée avec une durée nulle
+ * pendant que « Animations Jeux-Escalade pour Tuttisports Lancy », qui porte le vrai horaire,
+ * attend en file comme doublon. La rubrique n'appartient pas au titre : entre deux titres
+ * emboîtés, le court est celui que la page annonce, et c'est lui qui reste.
+ *
+ * L'emboîtement se lit donc dans un sens :
+ *
+ * - la lecture est **plus longue** qu'une activité déjà là : c'est elle qui porte la rubrique,
+ *   elle part en file ;
+ * - la lecture est **plus courte** : c'est l'autre qui la portait. Rien ne lui est reproché,
+ *   et la longue est retirée de l'agenda.
+ *
+ * Retirée et non écartée : `withdrawnAt` est le mot de la machine, que le passage suivant
+ * défait de lui-même si la source cesse d'annoncer la courte. Écarter serait une décision,
+ * et ce n'en est pas une — deux titres emboîtés le même jour ne sont pas toujours la même
+ * activité (« Cours de yoga » et « Cours de yoga prénatal » existent).
+ *
+ * Les titres strictement égaux ne sont pas un emboîtement : aucune des deux lignes n'est plus
+ * propre que l'autre, et la seconde part en file comme avant.
+ *
  * On exclut la ligne de l'activité elle-même, et elle seule.
  */
-async function chercherDoublon(event: RawEvent, sourceId: string): Promise<Echec[]> {
+type Doublon = {
+  echecs: Echec[];
+  /** Les jumelles préfixées à retirer de l'agenda, parce que cette lecture-ci est la propre. */
+  aRetirer: string[];
+};
+
+async function chercherDoublon(event: RawEvent, sourceId: string): Promise<Doublon> {
   const pasSoiMeme = sql`not (${s.event.sourceId} is not distinct from cast(${sourceId} as uuid)
            and ${s.event.externalId} is not distinct from cast(${event.externalId} as text))`;
 
@@ -336,42 +379,85 @@ async function chercherDoublon(event: RawEvent, sourceId: string): Promise<Echec
     sql`lower(${s.event.title}) = lower(cast(${event.title} as text))`,
   );
 
-  const titreEmboiteMemeJour = and(
+  const memeJourMemeSource = and(
     eq(s.event.sourceId, sourceId),
     sql`date(${s.event.startsAt} at time zone 'Europe/Zurich')
         = cast(${jourGenevois(event.startsAt)} as date)`,
-    sql`(
-      position(lower(${s.event.title}) in lower(cast(${event.title} as text))) > 0
-      or position(lower(cast(${event.title} as text)) in lower(${s.event.title})) > 0
-    )`,
+  );
+
+  /* La lecture est la longue : son titre contient celui d'une activité déjà là. */
+  const laLectureEstLaLongue = and(
+    memeJourMemeSource,
+    sql`position(lower(${s.event.title}) in lower(cast(${event.title} as text))) > 0`,
+    sql`length(${s.event.title}) < length(cast(${event.title} as text))`,
+  );
+
+  /* La lecture est la courte : c'est l'activité déjà là qui porte la rubrique. */
+  const laLectureEstLaCourte = and(
+    memeJourMemeSource,
+    sql`position(lower(cast(${event.title} as text)) in lower(${s.event.title})) > 0`,
+    sql`length(cast(${event.title} as text)) < length(${s.event.title})`,
   );
 
   const rows = await db
-    .select({ commune: s.event.commune, sourceId: s.event.sourceId, title: s.event.title })
+    .select({
+      id: s.event.id,
+      commune: s.event.commune,
+      sourceId: s.event.sourceId,
+      title: s.event.title,
+      plusLongue: sql<boolean>`length(${s.event.title}) > length(cast(${event.title} as text))`,
+    })
     .from(s.event)
     .where(
       and(
-        or(memeTitreMemeHeure, titreEmboiteMemeJour),
+        or(memeTitreMemeHeure, laLectureEstLaLongue, laLectureEstLaCourte),
         pasSoiMeme,
         isNull(s.event.rejectedAt),
         isNull(s.event.withdrawnAt),
       ),
-    )
-    .limit(1);
+    );
 
-  if (rows.length === 0) return [];
+  if (rows.length === 0) return { echecs: [], aRetirer: [] };
 
-  const memeSource = rows[0].sourceId === sourceId;
-  const ailleurs = rows[0].commune ? ` (${rows[0].commune})` : "";
+  /*
+    Une lecture propre peut avoir plusieurs jumelles préfixées — la rubrique a changé entre
+    deux passages — mais une seule ligne à reprocher suffit à la retenir. On retire donc
+    toutes les longues, et on ne rend qu'un motif.
+  */
+  const aRetirer = rows.filter((r) => r.plusLongue).map((r) => r.id);
+  const retenue = rows.find((r) => !r.plusLongue);
 
-  return [
-    {
-      code: "doublon",
-      detail: memeSource
-        ? `Cette source annonce déjà « ${rows[0].title} » ce jour-là.`
-        : `Une autre source annonce déjà « ${event.title} » à la même heure${ailleurs}.`,
-    },
-  ];
+  if (!retenue) return { echecs: [], aRetirer };
+
+  const memeSource = retenue.sourceId === sourceId;
+  const ailleurs = retenue.commune ? ` (${retenue.commune})` : "";
+
+  return {
+    echecs: [
+      {
+        code: "doublon",
+        detail: memeSource
+          ? `Cette source annonce déjà « ${retenue.title} » ce jour-là.`
+          : `Une autre source annonce déjà « ${event.title} » à la même heure${ailleurs}.`,
+      },
+    ],
+    aRetirer,
+  };
+}
+
+/**
+ * Retirer de l'agenda les jumelles préfixées de leur rubrique.
+ *
+ * `withdrawnAt` et non `rejectedAt` : la machine observe, elle ne décide pas. Si la source
+ * cesse d'annoncer la version courte, la longue repasse les contrôles au tour suivant et
+ * revient d'elle-même.
+ */
+async function retirerLesJumelles(ids: string[]): Promise<void> {
+  if (ids.length === 0) return;
+  await db
+    .update(s.event)
+    .set({ withdrawnAt: new Date() })
+    .where(inArray(s.event.id, ids));
 }
 
 async function finish(source: Source, report: IngestReport): Promise<IngestReport> {

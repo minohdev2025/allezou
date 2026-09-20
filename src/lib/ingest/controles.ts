@@ -264,6 +264,30 @@ function lieuImpose(config: Source["config"] | undefined): string | undefined {
 }
 
 /**
+ * La fin d'une saison que personne n'a écrite.
+ *
+ * Une page qui annonce « le marché, tous les mardis » ne dit pas quand il s'arrête. Comme on
+ * demandait au modèle une date de fin, il en inventait une : mai 2028 pour le marché des
+ * Ormeaux, juin 2030 pour un cours de hip-hop parent-enfant. Le contrôle de durée les
+ * attrapait à juste titre, et elles restaient en file pour toujours — un marché hebdomadaire
+ * n'entrait jamais à l'agenda.
+ *
+ * La consigne ne demande plus de fin quand la page n'en écrit pas. Reste à en poser une :
+ * sans fin, l'agenda efface l'activité deux heures après son premier jour, et un marché
+ * hebdomadaire disparaîtrait dès le premier mardi passé.
+ *
+ * Un an, parce que c'est exactement la limite au-delà de laquelle une durée cesse d'être
+ * vraisemblable. L'activité se représente au passage suivant tant que la source l'annonce :
+ * c'est la source qui décide de sa fin, pas ce calcul.
+ *
+ * Cette date n'est pas une lecture. Aucun contrôle ne la relit — elle est posée après eux —
+ * et elle ne s'affiche jamais comme une fin annoncée : c'est `recurrence` qui porte ce que
+ * la page dit du rythme, et c'est lui qu'un parent lit.
+ */
+export function finDeSaison(debut: Date): Date {
+  return new Date(debut.getTime() + DUREE_MAX_JOURS * 86_400_000);
+}
+/**
  * Les contrôles qui ne demandent que l'activité et sa page. Fonction pure : c'est elle que
  * les tests verrouillent, et c'est elle qui décide si une activité se publie seule.
  */

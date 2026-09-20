@@ -113,7 +113,20 @@ function pageQuiDitTout(event: RawEvent): string {
       ? ` Jusqu'au ${dateFr(event.endsAt)}.`
       : "";
 
-  return `Agenda communal. ${jour}, ${heure} : ${event.title}. ${event.placeLabel}.${fin}`;
+  // Le rythme s'écrit sur la page comme le reste : c'est lui que le contrôle y cherche.
+  const rythme = event.recurrence ? ` ${event.recurrence}.` : "";
+
+  return `Agenda communal. ${jour}, ${heure} : ${event.title}. ${event.placeLabel}.${rythme}${fin}`;
+}
+
+/** Les titres visibles au calendrier : publiés, ni retirés ni écartés. */
+async function surLAgenda(): Promise<string[]> {
+  const rows = await db.execute<{ title: string }>(sql`
+    select title from event
+    where published_at is not null and withdrawn_at is null and rejected_at is null
+    order by title
+  `);
+  return rows.map((r) => r.title);
 }
 
 beforeEach(async () => {
@@ -908,6 +921,105 @@ describe("Les contrôles à la place de la relecture", () => {
     expect(attente.map((e) => e.controles.map((c) => c.code))).toEqual([
       ["doublon"],
     ]);
+  });
+
+  /*
+    L'ordre de lecture décidait laquelle des deux jumelles restait, et à Lancy c'est la
+    préfixée qui est passée : « Sport Animations Jeux-Escalade pour Tuttisports Lancy »
+    publiée avec une durée nulle, pendant que celle qui porte le vrai horaire attendait en
+    file comme doublon. Entre deux titres emboîtés le même jour, le court est celui que la
+    page annonce, et c'est lui qui reste.
+  */
+  it("rend l'agenda à la lecture propre quand la préfixée est passée la première", async () => {
+    const source = await createSource({ kind: "html_ai", autoPublish: true });
+
+    const event = unEvenement();
+    const avecRubrique = {
+      ...event,
+      externalId: "atelier-chocolat-avec-rubrique",
+      title: `Atelier ${event.title}`,
+    };
+
+    // La préfixée d'abord : rien ne lui est encore reproché, elle paraît.
+    await runSource(
+      source.id,
+      adaptateur([{ ...avecRubrique, texteSource: pageQuiDitTout(avecRubrique) }]),
+    );
+    expect(await surLAgenda()).toEqual([avecRubrique.title]);
+
+    // Puis la propre. Elle ne se voit rien reprocher, et retire l'autre en entrant.
+    await runSource(
+      source.id,
+      adaptateur([{ ...event, texteSource: pageQuiDitTout(event) }]),
+    );
+    expect(await pendingReview()).toEqual([]);
+    expect(await surLAgenda()).toEqual([event.title]);
+
+    /*
+      La source annonce encore les deux au passage suivant. La préfixée ne doit pas
+      ressusciter : sa lecture échoue au doublon, et une lecture qui échoue ne défait pas
+      un retrait. C'est ce qui la ramenait à chaque tour.
+    */
+    await runSource(
+      source.id,
+      adaptateur([
+        { ...avecRubrique, texteSource: pageQuiDitTout(avecRubrique) },
+        { ...event, texteSource: pageQuiDitTout(event) },
+      ]),
+    );
+    expect(await surLAgenda()).toEqual([event.title]);
+  });
+
+  /*
+    « Le marché, tous les mardis » : la page ne dit pas quand il s'arrête, et l'on demandait
+    au modèle une date de fin. Il en inventait une — mai 2028 pour le marché des Ormeaux — que
+    le contrôle de durée attrapait à juste titre, si bien qu'un marché hebdomadaire n'entrait
+    jamais à l'agenda. Ne rien poser du tout ne l'y ferait pas entrer davantage : l'agenda
+    efface une activité deux heures après son premier jour.
+  */
+  it("pose une fin à un an sur une activité à rythme que la page ne date pas", async () => {
+    const source = await createSource({ kind: "html_ai", autoPublish: true });
+
+    const marche = unEvenement({
+      title: "Marché des Ormeaux",
+      recurrence: "tous les mardis et jeudis",
+      endsAt: undefined,
+    });
+
+    const rapport = await runSource(
+      source.id,
+      adaptateur([{ ...marche, texteSource: pageQuiDitTout(marche) }]),
+    );
+
+    expect(rapport.published).toBe(1);
+    expect(await surLAgenda()).toEqual([marche.title]);
+
+    const [ligne] = await db.execute<{ starts_at: Date; ends_at: Date }>(sql`
+      select starts_at, ends_at from event where title = ${marche.title}
+    `);
+    const jours =
+      (new Date(ligne.ends_at).getTime() - new Date(ligne.starts_at).getTime()) / 86_400_000;
+    expect(Math.round(jours)).toBe(366);
+  });
+
+  it("garde la fin que la page annonce, rythme ou pas", async () => {
+    const source = await createSource({ kind: "html_ai", autoPublish: true });
+
+    const cours = unEvenement({
+      title: "Cours de poterie",
+      recurrence: "les mercredis",
+      endsAt: minutesFromNow(60 * 24 * 30),
+    });
+
+    await runSource(
+      source.id,
+      adaptateur([{ ...cours, texteSource: pageQuiDitTout(cours) }]),
+    );
+
+    const [ligne] = await db.execute<{ ends_at: Date }>(sql`
+      select ends_at from event where title = ${cours.title}
+    `);
+    expect(new Date(ligne.ends_at).getTime()).toBe(cours.endsAt?.getTime());
   });
 
   it("une relecture humaine efface les contrôles en défaut", async () => {
