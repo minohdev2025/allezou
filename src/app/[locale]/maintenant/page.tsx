@@ -453,21 +453,17 @@ async function LigneSortie({
         </div>
         <div className="min-w-0 flex-1">
           <p className="text-[0.97rem] font-extrabold leading-snug">
+            {/*
+              Ni « Vous y êtes » ni le nom de l'auteur ne sont des liens : le lien
+              du lieu étend son pseudo-élément sur toute la carte, il les recouvre,
+              et les survoler soulignait le lieu plutôt qu'eux. Toute la carte mène
+              à la fiche — ces mots-là n'ont plus à refaire le trajet.
+            */}
             {cestMoi ? (
-              <Link
-                href={`/sortie/${sortie.id}`}
-                className="underline-offset-4 hover:underline"
-              >
-                {t("vousYEtes")}
-              </Link>
+              t("vousYEtes")
             ) : (
               <>
-                <Link
-                  href={`/sortie/${sortie.id}`}
-                  className="underline-offset-4 hover:underline"
-                >
-                  {sortie.authorName}
-                </Link>{" "}
+                {sortie.authorName}{" "}
                 <span className="font-bold text-[color:var(--color-doux)]">
                   {t("yEst")}
                 </span>

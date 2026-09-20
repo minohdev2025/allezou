@@ -158,6 +158,10 @@ export default async function Sortie({
         </p>
       </header>
 
+      {erreur ? (
+        <Alerte ton="erreur">{MESSAGES[erreur] ?? t("erreurAjustement")}</Alerte>
+      ) : null}
+
       {/*
         Où c'est, en carte. La même brique voilée que sur l'agenda : elle ne
         charge rien de Google avant que le bouton « Voir sur la carte » ait été
@@ -170,10 +174,6 @@ export default async function Sortie({
           cleApi={process.env.GOOGLE_MAPS_API_KEY ?? null}
           mapId={process.env.GOOGLE_MAPS_MAP_ID ?? null}
         />
-      ) : null}
-
-      {erreur ? (
-        <Alerte ton="erreur">{MESSAGES[erreur] ?? t("erreurAjustement")}</Alerte>
       ) : null}
 
       {sortie.note ? (
