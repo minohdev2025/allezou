@@ -971,6 +971,40 @@ describe("Les contrôles à la place de la relecture", () => {
   });
 
   /*
+    L'emboîtement à lui seul ne dit rien. « Sieste musicale (dès 1 an) » commence par
+    « Sieste musicale » : c'est la longue qui porte la tranche d'âge, et la retirer
+    effacerait la seule des deux qui apprenne quelque chose à un parent. Sur treize paires
+    emboîtées en file un jour de septembre 2026, une seule portait une rubrique. Seule une
+    rubrique à gauche du titre fait une jumelle.
+  */
+  it("ne retire pas la version qui en dit plus que la courte", async () => {
+    const source = await createSource({ kind: "html_ai", autoPublish: true });
+
+    const courte = unEvenement({ title: "Sieste musicale" });
+    const avecAge = {
+      ...courte,
+      externalId: "sieste-musicale-avec-age",
+      title: "Sieste musicale (dès 1 an)",
+    };
+
+    await runSource(
+      source.id,
+      adaptateur([{ ...avecAge, texteSource: pageQuiDitTout(avecAge) }]),
+    );
+    expect(await surLAgenda()).toEqual([avecAge.title]);
+
+    // La courte arrive ensuite. Elle ne chasse pas la longue : elle part en file.
+    await runSource(
+      source.id,
+      adaptateur([{ ...courte, texteSource: pageQuiDitTout(courte) }]),
+    );
+    expect(await surLAgenda()).toEqual([avecAge.title]);
+
+    const attente = await pendingReview();
+    expect(attente.map((e) => e.controles.map((c) => c.code))).toEqual([["doublon"]]);
+  });
+
+  /*
     « Le marché, tous les mardis » : la page ne dit pas quand il s'arrête, et l'on demandait
     au modèle une date de fin. Il en inventait une — mai 2028 pour le marché des Ormeaux — que
     le contrôle de durée attrapait à juste titre, si bien qu'un marché hebdomadaire n'entrait
