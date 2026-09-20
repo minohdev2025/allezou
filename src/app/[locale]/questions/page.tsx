@@ -122,7 +122,9 @@ export default async function Questions() {
   return (
     <main>
       {faqSchema ? <SchemaJsonLd donnees={faqSchema} /> : null}
-      <FilDarianeSchema items={[{ nom: "Accueil", url: `https://allezou.ch${prefixe}` }, { nom: t("titre"), url: urlPage }]} />
+      {/* `titreOnglet` et pas `titre` : ce namespace n'a pas de clé `titre` — même
+          correction que sur /donnees. */}
+      <FilDarianeSchema items={[{ nom: "Accueil", url: `https://allezou.ch${prefixe}` }, { nom: t("titreOnglet"), url: urlPage }]} />
       <article
         className="prose-totir"
         // Le contenu vient d'un fichier du dépôt, pas d'une saisie utilisateur.

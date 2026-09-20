@@ -60,7 +60,10 @@ export default async function Donnees() {
 
   return (
     <main>
-      <FilDarianeSchema items={[{ nom: "Accueil", url: `https://allezou.ch${prefixe}` }, { nom: t("titre"), url: urlPage }]} />
+      {/* `titreOnglet` et pas `titre` : ce namespace n'a pas de clé `titre`, et
+          l'étiquette d'onglet (« Vos données ») est exactement ce que le fil
+          d'Ariane doit nommer. */}
+      <FilDarianeSchema items={[{ nom: "Accueil", url: `https://allezou.ch${prefixe}` }, { nom: t("titreOnglet"), url: urlPage }]} />
       <article
         className="prose-totir"
         // Le contenu vient d'un fichier du dépôt, pas d'une saisie utilisateur.
