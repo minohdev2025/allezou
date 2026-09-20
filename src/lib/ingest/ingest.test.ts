@@ -1005,55 +1005,49 @@ describe("Les contrôles à la place de la relecture", () => {
   });
 
   /*
-    « Le marché, tous les mardis » : la page ne dit pas quand il s'arrête, et l'on demandait
-    au modèle une date de fin. Il en inventait une — mai 2028 pour le marché des Ormeaux — que
-    le contrôle de durée attrapait à juste titre, si bien qu'un marché hebdomadaire n'entrait
-    jamais à l'agenda. Ne rien poser du tout ne l'y ferait pas entrer davantage : l'agenda
-    efface une activité deux heures après son premier jour.
+    Lancy écrit « 7 mai 2025 - 5 juin 2030, les mercredis » sur son cours de danse
+    parents-enfants, et « 7 avril 2026 - 4 mai 2028 » sur le marché des Ormeaux. Les deux
+    lectures étaient fidèles — vérifié sur les pages — et les deux partaient en file comme
+    invraisemblables. Aucun rendez-vous qui revient n'entrait donc à l'agenda, c'est-à-dire
+    précisément les sorties qu'une famille refait.
   */
-  it("pose une fin à un an sur une activité à rythme que la page ne date pas", async () => {
+  it("publie une longue période quand la page annonce un rythme", async () => {
     const source = await createSource({ kind: "html_ai", autoPublish: true });
 
-    const marche = unEvenement({
-      title: "Marché des Ormeaux",
-      recurrence: "tous les mardis et jeudis",
-      endsAt: undefined,
+    const cours = unEvenement({
+      title: "Danse avec papa ou maman",
+      recurrence: "les mercredis",
+      endsAt: minutesFromNow(60 * 24 * 900),
     });
 
     const rapport = await runSource(
       source.id,
-      adaptateur([{ ...marche, texteSource: pageQuiDitTout(marche) }]),
+      adaptateur([{ ...cours, texteSource: pageQuiDitTout(cours) }]),
     );
 
     expect(rapport.published).toBe(1);
-    expect(await surLAgenda()).toEqual([marche.title]);
-
-    const [ligne] = await db.execute<{ starts_at: Date; ends_at: Date }>(sql`
-      select starts_at, ends_at from event where title = ${marche.title}
-    `);
-    const jours =
-      (new Date(ligne.ends_at).getTime() - new Date(ligne.starts_at).getTime()) / 86_400_000;
-    expect(Math.round(jours)).toBe(366);
+    expect(await surLAgenda()).toEqual([cours.title]);
   });
 
-  it("garde la fin que la page annonce, rythme ou pas", async () => {
+  /*
+    Sans rythme, le plafond garde tout son sens : trois ans d'affilée sans rien qui revienne,
+    c'est une rubrique que le modèle a prise pour une activité.
+  */
+  it("retient une longue période que rien ne fait revenir", async () => {
     const source = await createSource({ kind: "html_ai", autoPublish: true });
 
-    const cours = unEvenement({
-      title: "Cours de poterie",
-      recurrence: "les mercredis",
-      endsAt: minutesFromNow(60 * 24 * 30),
+    const rubrique = unEvenement({
+      title: "Programme des manifestations",
+      endsAt: minutesFromNow(60 * 24 * 900),
     });
 
     await runSource(
       source.id,
-      adaptateur([{ ...cours, texteSource: pageQuiDitTout(cours) }]),
+      adaptateur([{ ...rubrique, texteSource: pageQuiDitTout(rubrique) }]),
     );
 
-    const [ligne] = await db.execute<{ ends_at: Date }>(sql`
-      select ends_at from event where title = ${cours.title}
-    `);
-    expect(new Date(ligne.ends_at).getTime()).toBe(cours.endsAt?.getTime());
+    const attente = await pendingReview();
+    expect(attente[0].controles.map((c) => c.code)).toContain("duree_invraisemblable");
   });
 
   it("une relecture humaine efface les contrôles en défaut", async () => {

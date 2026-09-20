@@ -17,7 +17,7 @@ import { db } from "../db";
 import { asDate, asDateOrNull } from "../db/rows";
 import * as s from "../db/schema";
 import { normaliser } from "../texte";
-import { controler, finDeSaison, type Echec } from "./controles";
+import { controler, type Echec } from "./controles";
 import type { Acces, Tarif } from "./tarif";
 import { icalAdapter } from "./ical";
 import { jsonLdAdapter } from "./jsonld";
@@ -201,9 +201,7 @@ export async function runSource(
         title: event.title,
         description: event.description,
         startsAt: event.startsAt,
-        // Une activité à rythme dont la page n'écrit pas le terme : on lui pose une fin
-        // à un an, après les contrôles, sinon l'agenda l'efface dès son premier jour passé.
-        endsAt: event.endsAt ?? (event.recurrence ? finDeSaison(event.startsAt) : null),
+        endsAt: event.endsAt,
         placeLabel: event.placeLabel,
         url: event.url,
         minAge: event.minAge,
