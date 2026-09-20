@@ -238,7 +238,7 @@ async function LigneSortie({
   if (aVenir) {
     const jour = jourCourt(sortie.startsAt, locale);
     return (
-      <Carte className="flex items-center gap-3 !p-3">
+      <Carte className="relative flex items-center gap-3 !p-3">
         <div className="flex w-16 shrink-0 flex-col items-center rounded-[13px] bg-[color:var(--color-bleu-doux)] px-1 py-2">
           <span className="text-[0.7rem] font-extrabold uppercase tracking-[0.12em] text-[color:var(--color-bleu)]">
             {jour.jour}
@@ -249,9 +249,17 @@ async function LigneSortie({
         </div>
         <div className="min-w-0 flex-1">
           <p className="truncate text-[0.97rem] font-extrabold leading-tight">
+            {/*
+              Toute la carte mène à la fiche : le lien du lieu étend un
+              pseudo-élément sur la carte entière (after:inset-0, motif
+              « stretched link »). Les gestes qui font autre chose qu'ouvrir la
+              fiche — « Nous aussi », « Annuler » — portent `relative z-10` pour
+              rester au-dessus du lien. Ce qui n'est pas un geste (pastille,
+              bloc date) laisse passer le clic vers la fiche.
+            */}
             <Link
               href={`/sortie/${sortie.id}`}
-              className="underline-offset-4 hover:underline"
+              className="after:absolute after:inset-0 underline-offset-4 hover:underline"
             >
               {sortie.placeName}
             </Link>
@@ -267,7 +275,7 @@ async function LigneSortie({
           </p>
         </div>
         {cestMoi ? (
-          <form action={retirerSortie}>
+          <form action={retirerSortie} className="relative z-10">
             <input type="hidden" name="sortie" value={sortie.id} />
             <button className={fantome}>{t("annuler")}</button>
           </form>
@@ -279,7 +287,7 @@ async function LigneSortie({
             n'affichait qu'une pastille « à venir », mais c'est un écran statique —
             l'app, elle, a toujours laissé dire « nous aussi » en avance.
           */
-          <form action={rejoindreSortie} className="shrink-0">
+          <form action={rejoindreSortie} className="relative z-10 shrink-0">
             <input type="hidden" name="sortie" value={sortie.id} />
             {mesEnfants.map((id) => (
               <input key={id} type="hidden" name="enfant" value={id} />
@@ -381,9 +389,12 @@ async function LigneSortie({
             </span>
             <div className="min-w-0">
               <p className="truncate text-[1.05rem] font-black leading-tight tracking-tight">
+                {/* Toute la carte mène à la fiche — même motif que la carte
+                    « à venir » : le pseudo-élément du lien du lieu recouvre
+                    tout, les formulaires passent au-dessus. */}
                 <Link
                   href={`/sortie/${sortie.id}`}
-                  className="underline-offset-4 hover:underline"
+                  className="after:absolute after:inset-0 underline-offset-4 hover:underline"
                 >
                   {sortie.placeName}
                 </Link>
@@ -421,7 +432,7 @@ async function LigneSortie({
           sortie qu'on a rejointe (sans l'avoir créée) reste possible depuis sa page.
         */}
         {cestMoi ? (
-          <form action={retirerSortie} className="shrink-0">
+          <form action={retirerSortie} className="relative z-10 shrink-0">
             <input type="hidden" name="sortie" value={sortie.id} />
             <button className={fantome}>
               {!sortie.notifiedAt ? t("annuler") : t("rentres")}
@@ -430,7 +441,7 @@ async function LigneSortie({
         ) : jySuis ? (
           <Pastille couleur="vert">{t("vousYEtes")}</Pastille>
         ) : (
-          <form action={rejoindreSortie} className="shrink-0">
+          <form action={rejoindreSortie} className="relative z-10 shrink-0">
             <input type="hidden" name="sortie" value={sortie.id} />
             {mesEnfants.map((id) => (
               <input key={id} type="hidden" name="enfant" value={id} />

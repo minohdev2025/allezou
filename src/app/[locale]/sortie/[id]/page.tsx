@@ -5,6 +5,7 @@ import type { Locale } from "@/i18n/routing";
 import { notFound } from "next/navigation";
 
 import { myChildren } from "@/lib/children";
+import { lienItineraire, type PointCarte } from "@/lib/carte";
 import { myChildrenOnPublication } from "@/lib/publications";
 import { requireAccount } from "@/lib/session";
 import { listeFr } from "@/lib/texte";
@@ -13,6 +14,7 @@ import {
   visibleParticipants,
   visiblePublications,
 } from "@/lib/visibility";
+import { CarteDesLieux } from "../../carte-client";
 import {
   corrigerEnfants,
   enregistrerMot,
@@ -48,6 +50,7 @@ export default async function Sortie({
   searchParams: Promise<{ erreur?: string }>;
 }) {
   const t = await getTranslations("Sortie");
+  const tCarte = await getTranslations("Carte");
   const locale = (await getLocale()) as Locale;
   const account = await requireAccount();
   const { id } = await params;
@@ -69,6 +72,23 @@ export default async function Sortie({
   const mesEnfantsPresents = new Set(presents);
   const aVenir = sortie.startsAt > new Date();
   const couleur = teinte(sortie.placeId ?? sortie.id);
+  /*
+    Le lieu de la sortie sur une carte, et l'itinéraire pour y aller — mais
+    seulement s'il a des coordonnées : sans elles, ni repère juste ni
+    destination sûre (« Maison de quartier » existe dans dix communes). La
+    carte est la même brique voilée que sur l'agenda : rien ne part vers
+    Google avant un clic sur « Voir sur la carte ».
+  */
+  const pointSortie: PointCarte | null =
+    sortie.placeLat != null && sortie.placeLon != null
+      ? {
+          id: sortie.id,
+          nom: sortie.placeName ?? "",
+          sousTitre: sortie.placeAddress ?? sortie.placeCommune,
+          lat: sortie.placeLat,
+          lon: sortie.placeLon,
+        }
+      : null;
 
   const MESSAGES: Record<string, string> = {
     duree_invalide: t("erreurs.duree_invalide"),
@@ -91,20 +111,36 @@ export default async function Sortie({
         {/*
           L'adresse est ici, sur l'écran où quelqu'un décide de venir. Un nom de parc suffit
           à qui le connaît déjà, et ne dit rien à la famille d'un autre quartier.
+          L'itinéraire la suit : c'est le geste de celui qui a décidé.
         */}
-        {sortie.placeAddress ? (
-          <p className="mt-1">
-            <a
-              href={lienCarte(sortie.placeName ?? "", sortie.placeAddress, null, {
-                lat: sortie.placeLat,
-                lon: sortie.placeLon,
-              })}
-              target="_blank"
-              rel="noreferrer"
-              className="text-[color:var(--color-doux)] underline underline-offset-4"
-            >
-              {sortie.placeAddress} ↗
-            </a>
+        {sortie.placeAddress || pointSortie ? (
+          <p className="mt-1 flex flex-wrap items-baseline gap-x-2 text-[color:var(--color-doux)]">
+            {sortie.placeAddress ? (
+              <a
+                href={lienCarte(sortie.placeName ?? "", sortie.placeAddress, null, {
+                  lat: sortie.placeLat,
+                  lon: sortie.placeLon,
+                })}
+                target="_blank"
+                rel="noreferrer"
+                className="underline underline-offset-4"
+              >
+                {sortie.placeAddress} ↗
+              </a>
+            ) : null}
+            {pointSortie ? (
+              <>
+                {sortie.placeAddress ? <span aria-hidden>·</span> : null}
+                <a
+                  href={lienItineraire(pointSortie)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-bold underline underline-offset-4"
+                >
+                  {tCarte("itineraire")}
+                </a>
+              </>
+            ) : null}
           </p>
         ) : null}
 
@@ -121,6 +157,20 @@ export default async function Sortie({
             : t("dateEnCours", { fin: heureCourte(sortie.endsAt) })}
         </p>
       </header>
+
+      {/*
+        Où c'est, en carte. La même brique voilée que sur l'agenda : elle ne
+        charge rien de Google avant que le bouton « Voir sur la carte » ait été
+        touché. Sans coordonnées, elle ne s'affiche pas du tout — l'adresse en
+        lien ci-dessus reste alors le seul repère.
+      */}
+      {pointSortie ? (
+        <CarteDesLieux
+          points={[pointSortie]}
+          cleApi={process.env.GOOGLE_MAPS_API_KEY ?? null}
+          mapId={process.env.GOOGLE_MAPS_MAP_ID ?? null}
+        />
+      ) : null}
 
       {erreur ? (
         <Alerte ton="erreur">{MESSAGES[erreur] ?? t("erreurAjustement")}</Alerte>
