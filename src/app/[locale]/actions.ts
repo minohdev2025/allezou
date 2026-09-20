@@ -62,6 +62,7 @@ import {
 } from "@/lib/circles";
 import { heureDeGeneve, minutesJusquAHeurePrecise } from "@/lib/heure";
 import { geocoderUnLieu } from "@/lib/geo";
+import { enregistrerPhoto } from "@/lib/photos";
 import { creerIdee, fermerIdee, repondreIdee, voterIdee } from "@/lib/ideas";
 import { db } from "@/lib/db";
 import { sql } from "drizzle-orm";
@@ -954,8 +955,25 @@ export async function proposerActivite(formData: FormData) {
   });
 
   if (!result.ok) redirect(`/agenda/nouveau?erreur=${result.reason}`);
+
+  /*
+    La photo se joint après coup, et son échec ne défait pas l'activité : celle-ci est déjà
+    au calendrier et des familles peuvent déjà s'y inscrire. Une image illisible vaut donc
+    une fiche sans photo et un mot au parent, pas la perte de ce qu'il vient d'écrire.
+  */
+  const photo = formData.get("photoActivite");
+  let souci = "";
+  if (photo instanceof File && photo.size > 0) {
+    const enregistree = await enregistrerPhoto(
+      result.value.eventId,
+      account.id,
+      Buffer.from(await photo.arrayBuffer()),
+    );
+    if (!enregistree.ok) souci = `?erreur=${enregistree.reason}`;
+  }
+
   prevenir(result.value.publicationId);
-  redirect(`/agenda/${result.value.eventId}`);
+  redirect(`/agenda/${result.value.eventId}${souci}`);
 }
 
 /**
@@ -1180,7 +1198,8 @@ export async function sInscrireActivite(formData: FormData) {
   if (deja) {
     const cercles = await setPublicationCircles(account.id, deja.publicationId, circleIds);
     if (!cercles.ok) redirect(`/agenda/${eventId}?erreur=${cercles.reason}`);
-    await setParticipantChildren(account.id, deja.publicationId, childIds);
+    const enfants = await setParticipantChildren(account.id, deja.publicationId, childIds);
+    if (!enfants.ok) redirect(`/agenda/${eventId}?erreur=${enfants.reason}`);
     redirect(`/agenda/${eventId}`);
   }
 
@@ -1224,8 +1243,12 @@ export async function retirerSortie(formData: FormData) {
 export async function corrigerEnfants(formData: FormData) {
   const account = await requireAccount();
   const sortie = String(formData.get("sortie") ?? "");
-  await setParticipantChildren(account.id, sortie, formData.getAll("enfant").map(String));
-  redirect(`/sortie/${sortie}`);
+  const result = await setParticipantChildren(
+    account.id,
+    sortie,
+    formData.getAll("enfant").map(String),
+  );
+  redirect(result.ok ? `/sortie/${sortie}` : `/sortie/${sortie}?erreur=${result.reason}`);
 }
 
 export async function prolongerSortie(formData: FormData) {

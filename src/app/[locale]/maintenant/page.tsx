@@ -5,7 +5,7 @@ import { LOCALE_BCP47, type Locale } from "@/i18n/routing";
 import { upcomingCalendar } from "@/lib/calendar";
 import { EMOJIS_CATEGORIE, estCategorieLieu } from "@/lib/categories-lieu";
 import { myChildren } from "@/lib/children";
-import { currentlyOut, upcomingOutings } from "@/lib/publications";
+import { currentlyOut, upcomingAttendances, upcomingOutings } from "@/lib/publications";
 import { requireAccount } from "@/lib/session";
 import { listeFr } from "@/lib/texte";
 import { readerCircles, type VisiblePublication } from "@/lib/visibility";
@@ -45,12 +45,27 @@ export default async function Maintenant() {
   const account = await requireAccount();
   const t = await getTranslations("Maintenant");
   const locale = (await getLocale()) as Locale;
-  const [sorties, aVenir, cercles, enfants] = await Promise.all([
+  const [sorties, aVenir, inscriptions, cercles, enfants] = await Promise.all([
     currentlyOut(account.id),
     upcomingOutings(account.id),
+    upcomingAttendances(account.id),
     readerCircles(account.id),
     myChildren(account.id),
   ]);
+
+  /*
+    Les inscriptions à l'agenda, sur le même écran que les sorties au parc : c'est le
+    même signal — « nous y serons » — et un parent ne doit pas ouvrir chaque fiche de
+    l'agenda pour savoir si une famille du cercle y va. Chaque famille s'inscrit par sa
+    propre publication ; on regroupe par activité pour n'afficher qu'une ligne, avec les
+    prénoms de qui y va. L'ordre est celui de la base : la fin la plus proche d'abord.
+  */
+  const parActivite = new Map<string, VisiblePublication[]>();
+  for (const p of inscriptions) {
+    const cle = p.eventId ?? p.id;
+    parActivite.set(cle, [...(parActivite.get(cle) ?? []), p]);
+  }
+  const activites = [...parActivite.values()];
 
   /*
     L'agenda du canton, dès que l'écran n'a rien d'autre à montrer.
@@ -64,7 +79,9 @@ export default async function Maintenant() {
     autres passent avant : on n'a rien caché de ce qu'il faut faire, on a ajouté ce qu'il
     y a à voir en attendant.
   */
-  const rienAVoir = cercles.length === 0 || (sorties.length === 0 && aVenir.length === 0);
+  const rienAVoir =
+    cercles.length === 0 ||
+    (sorties.length === 0 && aVenir.length === 0 && activites.length === 0);
   const enAttendant = rienAVoir ? await upcomingCalendar(account.id, { limit: 3 }) : [];
 
   /* « Samedi 5 septembre » — en capitales à l'affichage, première lettre majuscule ici
@@ -178,6 +195,19 @@ export default async function Maintenant() {
               ))}
             </ul>
           ) : null}
+
+          {activites.length > 0 ? (
+            <section className="mt-6">
+              <h2 className="titre mb-2 text-lg font-bold">{t("titreInscriptions")}</h2>
+              <ul className="space-y-3">
+                {activites.map((participations) => (
+                  <li key={participations[0].eventId ?? participations[0].id}>
+                    <LigneActivite participations={participations} accountId={account.id} />
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
         </>
       )}
 
@@ -192,6 +222,71 @@ export default async function Maintenant() {
 
       <Navigation actif="maintenant" action={barreSortir} />
     </main>
+  );
+}
+
+/**
+ * Une activité de l'agenda où des familles du cercle vont : une ligne, comme une sortie
+ * à venir, avec les prénoms de qui y va. Le titre mène à la fiche ; c'est là qu'on
+ * s'inscrit, avec ses cercles et ses enfants — l'écran principal ne refait pas ce
+ * formulaire, il y envoie.
+ */
+async function LigneActivite({
+  participations,
+  accountId,
+}: {
+  participations: VisiblePublication[];
+  accountId: string;
+}) {
+  const t = await getTranslations("Maintenant");
+  const locale = (await getLocale()) as Locale;
+  const premiere = participations[0];
+  const jour = jourCourt(premiere.startsAt, locale);
+  const jySuis = participations.some((p) => p.authorId === accountId);
+  // « Vous, Maman de Léa et Papa de Nolan » : le lecteur d'abord, les autres ensuite.
+  const noms = [
+    ...(jySuis ? [t("vous")] : []),
+    ...participations.filter((p) => p.authorId !== accountId).map((p) => p.authorName),
+  ];
+  const fiche = `/agenda/${premiere.eventId}`;
+
+  const signal =
+    "inline-flex shrink-0 items-center gap-1.5 rounded-[12px] bg-[color:var(--color-signal)] px-4 py-2 text-sm font-black uppercase tracking-wide text-[color:var(--color-signal-encre)] active:translate-y-[1px]";
+
+  return (
+    <Carte className="flex items-center gap-3 !p-3">
+      <div className="flex w-16 shrink-0 flex-col items-center rounded-[13px] bg-[color:var(--color-bleu-doux)] px-1 py-2">
+        <span className="text-[0.7rem] font-extrabold uppercase tracking-[0.12em] text-[color:var(--color-bleu)]">
+          {jour.jour} {jour.nombre}
+        </span>
+        <span className="mt-0.5 text-center text-[1.05rem] font-black leading-none text-[color:var(--color-bleu)]">
+          {/* Une exposition ou un marché n'ouvre pas à minuit : afficher 00:00 était faux. */}
+          {premiere.eventAllDay ? (
+            <span className="text-[0.65rem] leading-tight">{t("touteLaJournee")}</span>
+          ) : (
+            heureCourte(premiere.startsAt)
+          )}
+        </span>
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="line-clamp-2 text-[0.97rem] font-extrabold leading-tight">
+          <Link href={fiche} className="underline-offset-4 hover:underline">
+            {premiere.eventTitle}
+          </Link>
+        </p>
+        <p className="mt-0.5 truncate text-xs text-[color:var(--color-doux)]">
+          {[listeFr(noms), premiere.eventCommune].filter(Boolean).join(" · ")}
+        </p>
+      </div>
+      {jySuis ? (
+        <Pastille couleur="vert">{t("vousYEtes")}</Pastille>
+      ) : (
+        <Link href={fiche} className={signal}>
+          {t("nousAussi")}
+          <span aria-hidden>→</span>
+        </Link>
+      )}
+    </Carte>
   );
 }
 

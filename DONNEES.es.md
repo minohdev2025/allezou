@@ -30,6 +30,7 @@ página.
 | Qué hijo está relacionado con qué círculo | Para que una salida sin el mayor no se envíe a su clase | Mientras lo conserves | Tú, y el otro padre o madre del niño si lo tiene. Los demás miembros del círculo no lo ven |
 | Tus salidas: un lugar elegido de una lista, una hora de fin, y opcionalmente una nota de 140 caracteres | Es lo que compartes | **Se borra 24 horas después de su hora de fin** | Solo los círculos que elegiste al publicarla |
 | Tus inscripciones a las actividades de la agenda | Para que otras familias sepan que su hijo se encontrará con alguien | **Se borra 24 horas después de que acabe la actividad**, igual que una salida | Solo los círculos que elegiste |
+| La foto que adjuntas a una actividad que propones | Para que se vea de qué se trata: el cartel o el lugar | Mientras la actividad esté en la agenda; se borra con ella | **Todo el mundo**, porque la agenda es pública. El servidor la recodifica y borra de paso el lugar y la hora de la toma que tu teléfono había escrito en ella |
 | Tus ajustes de notificación | Para molestarte solo cuando tú lo has pedido | Mientras exista tu cuenta | Solo tú |
 | Las palabras que vigilas en la agenda: «piscina», «judo» | Para avisarte cuando se publica una actividad que contenga alguna | Mientras las conserves | Solo tú. No se muestran a nadie y no sirven para nada más |
 | La dirección técnica de tu teléfono para las notificaciones | Para enviarte las notificaciones | Mientras las aceptes | Nadie: es un identificador técnico |

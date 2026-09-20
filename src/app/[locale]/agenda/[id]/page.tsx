@@ -25,6 +25,7 @@ import {
   lienCarte,
   teinte,
 } from "../../ui";
+import { PhotoActivite } from "./photo-activite";
 
 /** L'adresse publique de cette fiche, dans la langue où on la lit. */
 function urlFiche(locale: string, id: string): string {
@@ -93,6 +94,11 @@ export default async function Activite({
     aucun_destinataire: t("erreurs.aucun_destinataire"),
     cercle_interdit: t("erreurs.cercle_interdit"),
     activite_inconnue: t("erreurs.activite_inconnue"),
+    // L'activité est bien là ; c'est sa photo qui n'a pas suivi, et on le dit ici parce
+    // que c'est ici qu'on atterrit après l'avoir proposée.
+    photo_trop_lourde: t("erreurs.photo_trop_lourde"),
+    photo_illisible: t("erreurs.photo_illisible"),
+    photo_absente: t("erreurs.photo_absente"),
   };
 
   const activite = await calendarEntry(account?.id ?? null, id);
@@ -304,6 +310,20 @@ export default async function Activite({
           <strong className="mb-1 block text-lg">{t("elleNestPlusAnnoncee")}</strong>
           {t("organisateurRetire")}
         </Alerte>
+      ) : null}
+
+      {/*
+        La photo arrive avant la description : une affiche se lit d'un coup d'œil, et c'est
+        elle qui dit le plus vite de quoi il s'agit. L'adresse porte la date de la photo —
+        une photo remplacée change d'adresse, et le navigateur cesse de servir l'ancienne.
+      */}
+      {activite.photo ? (
+        <PhotoActivite
+          src={`/photo/${activite.id}?v=${activite.photo.updatedAt.getTime()}`}
+          largeur={activite.photo.largeur}
+          hauteur={activite.photo.hauteur}
+          titre={activite.title}
+        />
       ) : null}
 
       {activite.description ? (

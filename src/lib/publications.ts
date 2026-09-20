@@ -54,6 +54,7 @@ export type PublicationError =
   | "pas_auteur"
   | "enfant_inconnu"
   | "pas_une_presence"
+  | "pas_participant"
   | "sortie_invisible"
   | "debut_invalide"
 
@@ -264,30 +265,76 @@ export async function joinPresence(
       .onConflictDoNothing();
 
     // On remplace la liste d'enfants : rejoindre à nouveau sert à la corriger.
-    await tx
-      .delete(s.publicationParticipantChild)
-      .where(
-        and(
-          eq(s.publicationParticipantChild.publicationId, publicationId),
-          eq(s.publicationParticipantChild.accountId, actorId),
-        ),
-      );
-
-    if (children.length > 0) {
-      await tx
-        .insert(s.publicationParticipantChild)
-        .values(children.map((childId) => ({ publicationId, accountId: actorId, childId })));
-    }
+    await remplacerEnfants(tx, publicationId, actorId, children);
 
     return ok(undefined as void);
   });
 }
 
 /**
- * Corriger les enfants qu'on amène. C'est exactement le même geste que rejoindre : on
- * redit avec qui on est là. Vaut aussi pour l'auteur de la sortie.
+ * Corriger les enfants qu'on amène, sur une sortie comme sur une inscription à l'agenda.
+ *
+ * Ce fut longtemps un alias de `joinPresence`, qui refuse tout ce qui n'est pas une
+ * présence : sur une inscription à l'agenda, décocher un enfant ne faisait donc rien, en
+ * silence, et la case revenait cochée au rechargement. Les deux formes de publication se
+ * corrigent de la même façon — c'est la même phrase, « voilà qui est avec moi ».
+ *
+ * On exige d'être déjà inscrit : corriger n'est pas rejoindre. Rejoindre une sortie reste
+ * `joinPresence`, et l'on ne s'ajoute pas à l'inscription d'une autre famille.
  */
-export const setParticipantChildren = joinPresence;
+export async function setParticipantChildren(
+  actorId: string,
+  publicationId: string,
+  childIds: string[] = [],
+): Promise<Result<void>> {
+  const [participation] = await db
+    .select({ accountId: s.publicationParticipant.accountId })
+    .from(s.publicationParticipant)
+    .where(
+      and(
+        eq(s.publicationParticipant.publicationId, publicationId),
+        eq(s.publicationParticipant.accountId, actorId),
+      ),
+    )
+    .limit(1);
+
+  if (!participation) return ko("pas_participant");
+  if (!(await canSeePublication(actorId, publicationId))) return ko("sortie_invisible");
+
+  const children = await ownedChildren(actorId, childIds);
+  if (children.length !== new Set(childIds).size) return ko("enfant_inconnu");
+
+  return db.transaction(async (tx) => {
+    await remplacerEnfants(tx, publicationId, actorId, children);
+    return ok(undefined as void);
+  });
+}
+
+/**
+ * La liste d'enfants d'une famille sur une publication est remplacée, jamais complétée :
+ * sans le `delete`, décocher n'enlèverait rien.
+ */
+async function remplacerEnfants(
+  tx: Parameters<Parameters<typeof db.transaction>[0]>[0],
+  publicationId: string,
+  accountId: string,
+  children: string[],
+): Promise<void> {
+  await tx
+    .delete(s.publicationParticipantChild)
+    .where(
+      and(
+        eq(s.publicationParticipantChild.publicationId, publicationId),
+        eq(s.publicationParticipantChild.accountId, accountId),
+      ),
+    );
+
+  if (children.length > 0) {
+    await tx
+      .insert(s.publicationParticipantChild)
+      .values(children.map((childId) => ({ publicationId, accountId, childId })));
+  }
+}
 
 /**
  * Les enfants que *je* déclare présents à cette sortie, par identifiant.
@@ -669,6 +716,16 @@ export function currentlyOut(actorId: string): Promise<VisiblePublication[]> {
 /** Les sorties annoncées pour plus tard — « nous serons au parc à 15h ». */
 export function upcomingOutings(actorId: string): Promise<VisiblePublication[]> {
   return visiblePublications(actorId, { kind: "presence", onlyUpcoming: true });
+}
+
+/**
+ * Les inscriptions à l'agenda parmi les cercles qu'on suit — « Alice ira à la visite du
+ * Muséum ». Chaque famille s'inscrit par sa propre publication ; c'est l'écran qui les
+ * regroupe par activité. Les activités passées ont déjà disparu : rien n'est visible
+ * après sa fin.
+ */
+export function upcomingAttendances(actorId: string): Promise<VisiblePublication[]> {
+  return visiblePublications(actorId, { kind: "attendance" });
 }
 
 /** Les participations visibles à une activité du calendrier. */

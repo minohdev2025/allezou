@@ -30,6 +30,7 @@ this page exists.
 | Which child is linked to which circle | So an outing without your oldest doesn't get sent to their class | As long as you keep it | You, and the child's other parent if they have one. Other members of the circle don't see it |
 | Your outings: a place chosen from a list, an end time, and optionally a note of up to 140 characters | This is what you share | **Deleted 24 hours after its end time** | Only the circles you chose when you posted it |
 | Your sign-ups for agenda activities | So others know their child will find someone there | **Deleted 24 hours after the activity ends**, just like an outing | Only the circles you chose |
+| The photo you attach to an activity you propose | So people can see what it is: the poster, or the place | As long as the activity is in the agenda; deleted with it | **Everyone**, since the agenda is public. The server re-encodes it, which erases the place and time of capture your phone had written into it |
 | Your notification settings | So you're only disturbed when you've asked to be | As long as your account exists | Only you |
 | The words you watch for in the agenda: "pool," "judo" | To notify you when a published activity contains one | As long as you keep them | Only you. They're never shown to anyone and are used for nothing else |
 | Your phone's technical address for notifications | To send you notifications | As long as you keep notifications on | No one: it's a technical identifier |

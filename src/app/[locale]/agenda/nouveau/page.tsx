@@ -12,6 +12,7 @@ import { lireAnnonce, proposerActivite } from "../../actions";
 import { Alerte, Bouton, Carte, Champ, LienBouton, PUCE_COCHEE, Titre, teinte } from "../../ui";
 import { BoutonLireAnnonce } from "./bouton-lire-annonce";
 import { ChampPhoto } from "./champ-photo";
+import { ChampPhotoActivite } from "./champ-photo-activite";
 
 const champ =
   "w-full rounded-2xl bg-[color:var(--color-surface)] px-4 py-3.5 text-base ring-2 ring-[color:var(--color-trait)] outline-none focus:ring-[color:var(--color-vert)]";
@@ -213,6 +214,9 @@ export default async function NouvelleActivite({
               placeholder={t("placeholderLieuLibre")}
               className={champ}
             />
+
+            {/* La photo de la fiche : l'affiche, ou le lieu. Facultative, et gardée. */}
+            <ChampPhotoActivite />
 
             <fieldset>
               <legend className="mb-2 font-bold">{t("visiblePar")}</legend>

@@ -18,6 +18,7 @@ import { sql } from "drizzle-orm";
 import {
   boolean,
   check,
+  customType,
   doublePrecision,
   foreignKey,
   index,
@@ -34,6 +35,14 @@ import {
 } from "drizzle-orm/pg-core";
 
 const now = sql`now()`;
+
+/**
+ * Des octets bruts. Drizzle ne connaît pas `bytea` ; le pilote, lui, rend un Buffer et
+ * accepte un Buffer — il n'y a donc rien à convertir, seulement à le dire au typage.
+ */
+const bytea = customType<{ data: Buffer; driverData: Buffer }>({
+  dataType: () => "bytea",
+});
 
 /* ------------------------------------------------------------------ comptes */
 
@@ -596,6 +605,36 @@ export const event = pgTable(
     check("event_dates", sql`${t.endsAt} is null or ${t.endsAt} >= ${t.startsAt}`),
   ],
 );
+
+/**
+ * La photo d'une activité : l'affiche, ou une vue du lieu, telle qu'un parent la joint.
+ *
+ * Dans sa propre table, et non en colonne de `event` : les écrans de l'agenda lisent des
+ * centaines d'activités à la fois, et personne ne veut traîner des mégaoctets d'images dans
+ * la requête qui dessine une liste. Ici, on ne les lit que sur demande explicite.
+ *
+ * Les octets sont ceux que le serveur a réencodés — jamais le fichier d'origine. Une photo
+ * prise au téléphone porte dans ses métadonnées l'endroit et l'heure de la prise de vue, et
+ * DONNEES.md promet qu'Allezou ne garde aucune position de famille : le réencodage les
+ * efface avant que la ligne n'existe.
+ *
+ * Une seule photo par activité : c'est une affiche, pas un album.
+ */
+export const eventPhoto = pgTable("event_photo", {
+  eventId: uuid()
+    .primaryKey()
+    .references(() => event.id, { onDelete: "cascade" }),
+  /** Toujours l'un des types que le serveur produit, jamais celui que le client annonce. */
+  mime: varchar({ length: 30 }).notNull(),
+  octets: integer().notNull(),
+  largeur: integer().notNull(),
+  hauteur: integer().notNull(),
+  contenu: bytea().notNull(),
+  /** Qui l'a jointe. Nul si le compte a été effacé : la photo, elle, reste à l'activité. */
+  addedBy: uuid().references(() => account.id, { onDelete: "set null" }),
+  /** Sert d'entité de validation au cache : une photo remplacée change de date. */
+  updatedAt: timestamp({ withTimezone: true }).notNull().default(now),
+});
 
 /* -------------------------------------------------------------- publications */
 
