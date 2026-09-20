@@ -602,6 +602,28 @@ describe("Lecture d'une page par MiniMax", () => {
   });
 
   /*
+    Ce qui a mis Carouge en échec, mesuré un soir de septembre 2026 : toutes les entités HTML
+    nommées étaient remplacées par une espace. « Parcours C&eacute;ramique Carouge » devenait
+    « Parcours C ramique Carouge », et le contrôle comparait un titre juste à une page
+    mutilée. Quarante et une activités en file, toutes lues fidèlement par le modèle, et
+    « février » réduit à « f vrier » emportait le contrôle des dates avec lui.
+  */
+  it("rend aux entités HTML leur lettre, accents compris", () => {
+    const texte = htmlToText(
+      "<p>Parcours C&eacute;ramique, f&eacute;vrier &agrave; Carouge &mdash; 10&nbsp;h &amp; plus</p>",
+    );
+    expect(texte).toBe("Parcours Céramique, février à Carouge — 10 h & plus");
+  });
+
+  it("distingue la majuscule accentuée, et lit les entités numériques", () => {
+    expect(htmlToText("<p>&Eacute;cole, &#233;t&#xe9;</p>")).toBe("École, été");
+  });
+
+  it("laisse une espace là où l'entité est inconnue, sans coller les mots", () => {
+    expect(htmlToText("<p>avant&zzz;apres</p>")).toBe("avant apres");
+  });
+
+  /*
     Ce qui a mis Lancy en échec en production : le modèle avait répondu par le tableau nu,
     forme que le schéma accepte pourtant. Ne chercher que l'accolade rendait le premier
     événement du tableau, et plus rien ne pouvait le valider.

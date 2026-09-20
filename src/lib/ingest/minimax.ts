@@ -110,15 +110,58 @@ function apiKey(): string {
   }
 }
 
+/**
+ * Les entités HTML, rendues à leur caractère.
+ *
+ * Elles étaient remplacées par une espace, toutes, d'un seul `&[a-z]+;`. « Parcours
+ * C&eacute;ramique Carouge » devenait donc « Parcours C ramique Carouge », et les contrôles
+ * comparaient un titre juste à une page mutilée. Sur carouge.ch, qui encode chacun de ses
+ * accents, aucune activité ne pouvait passer `titre_reformule` : quarante et une en file un
+ * soir de septembre 2026, toutes lues fidèlement par le modèle.
+ *
+ * Le français n'y survivait pas. « février » devenait « f vrier », « à » disparaissait, et
+ * avec les mois c'est le contrôle des dates qui tombait aussi.
+ *
+ * La table couvre le latin-1 accentué et la ponctuation typographique, c'est-à-dire ce
+ * qu'écrit une page d'agenda romande. Ce qui n'y figure pas redevient une espace, comme
+ * avant : une entité inconnue ne doit pas coller deux mots l'un à l'autre.
+ */
+const ENTITES: Record<string, string> = {
+  agrave: "à", aacute: "á", acirc: "â", atilde: "ã", auml: "ä", aring: "å", aelig: "æ",
+  ccedil: "ç",
+  egrave: "è", eacute: "é", ecirc: "ê", euml: "ë",
+  igrave: "ì", iacute: "í", icirc: "î", iuml: "ï",
+  ntilde: "ñ",
+  ograve: "ò", oacute: "ó", ocirc: "ô", otilde: "õ", ouml: "ö", oslash: "ø", oelig: "œ",
+  ugrave: "ù", uacute: "ú", ucirc: "û", uuml: "ü",
+  yacute: "ý", yuml: "ÿ", szlig: "ß",
+  nbsp: " ", amp: "&", lt: "<", gt: ">", quot: '"', apos: "'",
+  laquo: "«", raquo: "»", lsquo: "\u2018", rsquo: "\u2019", ldquo: "\u201C", rdquo: "\u201D",
+  ndash: "\u2013", mdash: "\u2014", hellip: "…", deg: "°", euro: "€", times: "×",
+  middot: "·", bull: "•", frac12: "½", sup2: "²",
+};
+
+export function decoderEntites(texte: string): string {
+  return texte
+    .replace(/&#x([0-9a-f]+);/gi, (_, hex) => String.fromCodePoint(parseInt(hex, 16)))
+    .replace(/&#(\d+);/g, (_, dec) => String.fromCodePoint(Number(dec)))
+    .replace(/&([a-z]+);/gi, (_, nom: string) => {
+      const lettre = ENTITES[nom.toLowerCase()];
+      if (lettre === undefined) return " ";
+      // « &Eacute; » et « &eacute; » ne sont pas la même lettre, et une seule table suffit :
+      // le nom porte la casse, le caractère la reprend.
+      return nom[0] === nom[0].toUpperCase() ? lettre.toUpperCase() : lettre;
+    });
+}
+
 /** Réduit une page à son texte lisible : le modèle n'a pas besoin du balisage. */
 export function htmlToText(html: string, max = 30_000): string {
-  return html
-    .replace(/<script[\s\S]*?<\/script>/gi, " ")
-    .replace(/<style[\s\S]*?<\/style>/gi, " ")
-    .replace(/<[^>]+>/g, " ")
-    .replace(/&nbsp;/g, " ")
-    .replace(/&amp;/g, "&")
-    .replace(/&[a-z]+;/gi, " ")
+  return decoderEntites(
+    html
+      .replace(/<script[\s\S]*?<\/script>/gi, " ")
+      .replace(/<style[\s\S]*?<\/style>/gi, " ")
+      .replace(/<[^>]+>/g, " "),
+  )
     .replace(/\s+/g, " ")
     .trim()
     .slice(0, max);
