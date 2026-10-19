@@ -29,7 +29,9 @@ que esta página existe.
 | O nome sob o qual vê um círculo, quando difere do original | Para que « Classe 4P » possa ler-se « Turma do Jules » do seu lado | Enquanto o mantiver | Só a pessoa titular da conta. Os outros membros veem o nome original |
 | Que filho está ligado a que círculo | Para que uma saída sem o(a) mais velho(a) não vá parar à turma errada | Enquanto o mantiver | O(a) titular da conta, e o outro progenitor da criança, se existir. Os restantes membros do círculo não veem isto |
 | As suas saídas: um local escolhido numa lista, uma hora de fim, e eventualmente uma nota de 140 carateres | É o que partilha | **Apagada 24 horas depois da hora de fim** | Apenas os círculos que escolheu no momento de publicar |
-| As suas inscrições em atividades da agenda | Para que outras famílias saibam que o filho delas vai encontrar ali alguém | **Apagada 24 horas depois do fim da atividade**, tal como uma saída | Apenas os círculos que escolheu |
+| As suas inscrições em atividades da agenda, com o dia e as horas a que vai | Para que outras famílias saibam que o filho delas vai encontrar ali alguém, e quando | **Apagada 24 horas depois da hora de fim que indicou**, tal como uma saída | Apenas os círculos que escolheu |
+| Os seus hábitos da semana, se os indicar: «às quartas, das 16h às 20h» | Para que as famílias que escolhe saibam quando lhe propor sair | Enquanto os mantiver | Apenas as pessoas que nomeou uma a uma, enquanto partilharem um círculo consigo |
+| Cá ou fora, semana a semana, durante as férias escolares | Para que essas mesmas famílias saibam quem fica em Genebra | **Apagado assim que a semana passa** | As mesmas pessoas, nas mesmas condições |
 | A foto que junta a uma atividade que propõe | Para que se veja do que se trata: o cartaz ou o local | Enquanto a atividade estiver na agenda; apagada com ela | **Toda a gente**, porque a agenda é pública. O servidor recodifica-a e apaga assim o local e a hora da captura que o seu telemóvel lá tinha inscrito |
 | As suas definições de notificação | Para só o(a) incomodar quando pediu para isso | Enquanto a sua conta existir | Só a pessoa titular da conta |
 | As palavras que vigia na agenda: « piscina », « judo » | Para o(a) avisar quando uma atividade publicada contém uma delas | Enquanto as mantiver | Só a pessoa titular da conta. Não são mostradas a ninguém e não servem para mais nada |
@@ -77,6 +79,10 @@ O que daqui decorre:
 - Quando várias famílias se juntam à mesma saída, **só vê na lista as pessoas com quem
   já partilha um círculo**. Uma família vinda da vizinhança não aparece a um progenitor
   da turma que não a conhece.
+- A sua **disponibilidade** (hábitos da semana, férias) segue uma regra ainda mais estrita:
+  só a veem as pessoas que **nomeou uma a uma**, e só enquanto partilhar com elas um círculo
+  sem ligação cortada. Por defeito, ninguém. Quem entra no seu círculo não a vê enquanto
+  não o marcar.
 - As **notificações** seguem exatamente a mesma regra: não pode receber um aviso sobre
   algo que não veria no ecrã. E a mensagem enviada para o seu telemóvel não diz nem
   quem, nem onde, apenas o nome do círculo, para que um ecrã bloqueado pousado numa
@@ -164,4 +170,4 @@ silêncio.
 
 ---
 
-*Última atualização: 16 de agosto de 2026.*
+*Última atualização: 19 de outubro de 2026.*

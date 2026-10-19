@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { calendarEntry } from "@/lib/calendar";
 import { myChildren } from "@/lib/children";
 import { jourGenevois } from "@/lib/ingest/types";
-import { defaultAudience, myAttendance } from "@/lib/publications";
+import { defaultAudience, joursDeLActivite, myAttendance } from "@/lib/publications";
 import { currentAccount } from "@/lib/session";
 import { localeSure } from "@/lib/traduire";
 import { readerCircles } from "@/lib/visibility";
@@ -20,9 +20,11 @@ import {
   PUCE_COCHEE,
   Pastille,
   SchemaJsonLd,
+  cleDuJour,
   heureCourte,
   jourCourt,
   lienCarte,
+  plageHoraire,
   teinte,
 } from "../../ui";
 import { PhotoActivite } from "./photo-activite";
@@ -99,6 +101,8 @@ export default async function Activite({
     photo_trop_lourde: t("erreurs.photo_trop_lourde"),
     photo_illisible: t("erreurs.photo_illisible"),
     photo_absente: t("erreurs.photo_absente"),
+    jour_invalide: t("erreurs.jour_invalide"),
+    horaire_invalide: t("erreurs.horaire_invalide"),
   };
 
   const activite = await calendarEntry(account?.id ?? null, id);
@@ -118,6 +122,51 @@ export default async function Activite({
   const date = jourCourt(activite.startsAt, locale);
   const fin = activite.endsAt ? jourCourt(activite.endsAt, locale) : date;
   const couleur = teinte(activite.id);
+
+  /*
+    « De quand à quand » : prérempli avec ce qu'on a déjà dit, sinon avec l'horaire de
+    l'activité, pour que la famille qui y va aux heures annoncées n'ait rien à toucher.
+    Le jour ne se demande qu'à une activité qui en compte plusieurs — une exposition, un
+    stage. Une activité sans horaire ne préremplit rien : laisser vide, c'est la journée.
+  */
+  const jours = joursDeLActivite(activite);
+  const plusieursJours = jours.premier !== jours.dernier;
+  const aujourdhui = cleDuJour(new Date());
+  const jourMin = jours.premier < aujourdhui ? aujourdhui : jours.premier;
+  const plageInscrite = inscription
+    ? plageHoraire(inscription.startsAt, inscription.endsAt)
+    : null;
+  // Une fin pile à minuit ne se saisit pas dans un champ d'heure : on la laisse vide.
+  const sansMinuit = (heure: string) => (heure === "00:00" ? "" : heure);
+  const valeurJour = inscription
+    ? cleDuJour(inscription.startsAt)
+    : jourMin > jours.dernier
+      ? jours.dernier
+      : jourMin;
+  const valeurDe = inscription
+    ? plageInscrite
+      ? heureCourte(inscription.startsAt)
+      : ""
+    : activite.allDay
+      ? ""
+      : heureCourte(activite.startsAt);
+  const valeurA = inscription
+    ? plageInscrite
+      ? sansMinuit(heureCourte(inscription.endsAt))
+      : ""
+    : activite.allDay || !activite.endsAt
+      ? ""
+      : heureCourte(activite.endsAt) > heureCourte(activite.startsAt)
+        ? heureCourte(activite.endsAt)
+        : "";
+
+  /** « mer 21 oct · 14:00–16:00 » : l'horaire qu'une famille a donné, lu par les autres. */
+  const horaireDe = (debut: Date, finInscription: Date): string | null => {
+    const plage = plageHoraire(debut, finInscription);
+    if (!plusieursJours) return plage;
+    const j = jourCourt(debut, locale);
+    return [`${j.jour} ${j.nombre} ${j.mois}`, plage].filter(Boolean).join(" · ");
+  };
 
   /*
     L'activité en schema.org, pour que les moteurs et les assistants sachent qu'il s'agit
@@ -350,14 +399,24 @@ export default async function Activite({
             {t("familles", { n: activite.attendees.length })}
           </h2>
           <ul className="space-y-2">
-            {activite.attendees.map((a) => (
-              <li key={a.publicationId} className="flex items-center gap-3">
-                <Jeton nom={a.displayName} id={a.accountId} taille={32} />
-                <span className="font-semibold">
-                  {a.accountId === account?.id ? t("vous") : a.displayName}
-                </span>
-              </li>
-            ))}
+            {activite.attendees.map((a) => {
+              const horaire = horaireDe(a.startsAt, a.endsAt);
+              return (
+                <li key={a.publicationId} className="flex items-center gap-3">
+                  <Jeton nom={a.displayName} id={a.accountId} taille={32} />
+                  <span className="min-w-0">
+                    <span className="block font-semibold">
+                      {a.accountId === account?.id ? t("vous") : a.displayName}
+                    </span>
+                    {horaire ? (
+                      <span className="block text-sm text-[color:var(--color-doux)]">
+                        {horaire}
+                      </span>
+                    ) : null}
+                  </span>
+                </li>
+              );
+            })}
           </ul>
         </Carte>
       ) : null}
@@ -405,6 +464,41 @@ export default async function Activite({
 
           <form action={sInscrireActivite} className="space-y-4">
             <input type="hidden" name="activite" value={id} />
+
+            <fieldset>
+              <legend className="mb-2 font-bold">{t("quand")}</legend>
+              {plusieursJours ? (
+                <input
+                  type="date"
+                  name="jour"
+                  defaultValue={valeurJour}
+                  min={jourMin}
+                  max={jours.dernier}
+                  required
+                  aria-label={t("quelJour")}
+                  className="mb-2 w-full rounded-2xl bg-[color:var(--color-surface)] px-4 py-3 text-base font-bold ring-2 ring-[color:var(--color-trait)] outline-none [color-scheme:light] focus:ring-[color:var(--color-vert)]"
+                />
+              ) : null}
+              <div className="flex gap-2">
+                {[
+                  { name: "de", libelle: t("de"), valeur: valeurDe },
+                  { name: "a", libelle: t("a"), valeur: valeurA },
+                ].map((champ) => (
+                  <label
+                    key={champ.name}
+                    className="flex h-12 flex-1 items-center justify-center gap-1.5 rounded-[var(--radius-pilule)] bg-[color:var(--color-surface)] px-3 font-bold shadow-[inset_0_0_0_2px_var(--color-trait)]"
+                  >
+                    <span className="shrink-0 text-[color:var(--color-doux)]">{champ.libelle}</span>
+                    <input
+                      type="time"
+                      name={champ.name}
+                      defaultValue={champ.valeur}
+                      className="w-[5.2rem] bg-transparent text-center font-bold outline-none [color-scheme:light]"
+                    />
+                  </label>
+                ))}
+              </div>
+            </fieldset>
 
             <fieldset>
               <legend className="mb-2 font-bold">{t("visiblePar")}</legend>

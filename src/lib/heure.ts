@@ -74,3 +74,63 @@ export function minutesJusquAHeurePrecise(
   const reference = debut ?? maintenant;
   return Math.round((fin.getTime() - reference.getTime()) / 60_000);
 }
+
+/**
+ * Le jour qui suit, en clair : « 2026-10-31 » → « 2026-11-01 ».
+ *
+ * Calculé sur le calendrier et non en ajoutant vingt-quatre heures à un instant : le jour
+ * du changement d'heure en compte vingt-trois ou vingt-cinq, et l'on tomberait à côté.
+ */
+export function jourSuivant(jour: string): string {
+  return decalerJour(jour, 1);
+}
+
+/** Un jour en clair, déplacé de `n` jours sur le calendrier (négatif pour reculer). */
+export function decalerJour(jour: string, n: number): string {
+  const [annee, mois, quantieme] = jour.split("-").map(Number);
+  return new Date(Date.UTC(annee, mois - 1, quantieme + n)).toISOString().slice(0, 10);
+}
+
+/** Minuit à Genève, au début de ce jour. Null si le jour est mal formé. */
+export function minuitDeGeneve(jour: string): Date | null {
+  return heureDeGeneve(`${jour}T00:00`);
+}
+
+/** Le jour de la semaine d'un jour en clair, à la norme ISO : 1 pour lundi, 7 pour dimanche. */
+export function jourDeSemaine(jour: string): number {
+  const dimancheZero = new Date(`${jour}T00:00:00Z`).getUTCDay();
+  return dimancheZero === 0 ? 7 : dimancheZero;
+}
+
+/**
+ * « 16:00 » → 960 minutes depuis minuit. Null si la saisie n'est pas une heure de la
+ * journée : « 24:00 » ou « 7:5 » ne passent pas, plutôt que de déborder en silence sur
+ * le lendemain.
+ */
+export function minutesDeLHeure(saisie: string | null | undefined): number | null {
+  const lu = /^(\d{2}):(\d{2})$/.exec(saisie ?? "");
+  if (!lu) return null;
+  const heures = Number(lu[1]);
+  const minutes = Number(lu[2]);
+  if (heures > 23 || minutes > 59) return null;
+  return heures * 60 + minutes;
+}
+
+/** L'inverse : 960 → « 16:00 », et 1440 → « 24:00 » pour une fin à minuit. */
+export function heureDesMinutes(minutes: number): string {
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+}
+
+/** L'heure qu'il est à Genève, en minutes depuis minuit. */
+export function minutesGenevoises(instant: Date): number {
+  const parties = new Intl.DateTimeFormat("en-GB", {
+    timeZone: ZONE,
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).formatToParts(instant);
+  const lire = (type: string) => Number(parties.find((p) => p.type === type)?.value ?? 0);
+  return (lire("hour") % 24) * 60 + lire("minute");
+}

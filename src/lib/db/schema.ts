@@ -19,6 +19,7 @@ import {
   boolean,
   check,
   customType,
+  date,
   doublePrecision,
   foreignKey,
   index,
@@ -778,6 +779,102 @@ export const publicationHiddenFrom = pgTable(
       .references(() => account.id, { onDelete: "cascade" }),
   },
   (t) => [primaryKey({ columns: [t.publicationId, t.accountId] })],
+);
+
+/* ----------------------------------------------------------- disponibilités */
+
+/**
+ * Le troisième signal : « nous sommes souvent libres le mercredi après-midi », « nous
+ * restons à Genève pendant les vacances d'automne ».
+ *
+ * Ce n'est pas une présence : aucun lieu, aucune heure de fin qui expire, rien qui dise
+ * où est une famille. C'est une habitude, ou une semaine de vacances passée ici ou
+ * ailleurs — de quoi savoir qui appeler pour sortir, sans le demander sur le groupe de
+ * la classe. Visible des seules personnes que la famille a nommées (`disponibiliteLecteur`),
+ * et seulement tant qu'elles partagent un cercle : la règle vit dans visibility.ts.
+ */
+
+/** Une habitude de la semaine : « le mercredi, de 16h à 20h ». */
+export const disponibiliteHebdo = pgTable(
+  "disponibilite_hebdo",
+  {
+    id: uuid().primaryKey().defaultRandom(),
+    accountId: uuid()
+      .notNull()
+      .references(() => account.id, { onDelete: "cascade" }),
+    /** Le jour de la semaine, à la norme ISO : 1 pour lundi, 7 pour dimanche. */
+    jour: smallint().notNull(),
+    /**
+     * En minutes depuis minuit, heure de Genève : 960 pour 16h. Une heure murale et non
+     * un instant — « le mercredi à 16h » reste 16h en hiver comme en été.
+     */
+    debut: smallint().notNull(),
+    /** 1440 pour une fin à minuit. Jamais le lendemain : une habitude tient dans le jour. */
+    fin: smallint().notNull(),
+    createdAt: timestamp({ withTimezone: true }).notNull().default(now),
+  },
+  (t) => [
+    index("disponibilite_hebdo_account_idx").on(t.accountId),
+    check("disponibilite_hebdo_jour", sql`${t.jour} between 1 and 7`),
+    check(
+      "disponibilite_hebdo_heures",
+      sql`${t.debut} >= 0 and ${t.fin} <= 1440 and ${t.fin} > ${t.debut}`,
+    ),
+  ],
+);
+
+export const disponibiliteStatut = pgEnum("disponibilite_statut", ["present", "absent"]);
+
+/**
+ * Une semaine de vacances scolaires genevoises : là, ou pas là.
+ *
+ * La semaine est désignée par son lundi, et ne peut être qu'une semaine de vacances : la
+ * liste vit dans `src/lib/vacances.ts`, recopiée du calendrier officiel du canton. Une
+ * semaine passée est effacée par la maintenance quotidienne — dire où l'on était n'a plus
+ * d'usage, et une suite de semaines « absent » finirait par raconter les voyages d'une
+ * famille.
+ */
+export const disponibiliteVacances = pgTable(
+  "disponibilite_vacances",
+  {
+    accountId: uuid()
+      .notNull()
+      .references(() => account.id, { onDelete: "cascade" }),
+    semaine: date({ mode: "string" }).notNull(),
+    statut: disponibiliteStatut().notNull(),
+  },
+  (t) => [
+    primaryKey({ columns: [t.accountId, t.semaine] }),
+    check("disponibilite_vacances_lundi", sql`extract(isodow from ${t.semaine}) = 1`),
+  ],
+);
+
+/**
+ * Qui voit mes disponibilités : des personnes nommées une à une, parmi celles de mes
+ * cercles.
+ *
+ * Pas un cercle entier, contrairement aux sorties : dire qu'on part trois semaines en
+ * juillet se confie à quelques familles, pas à la classe. Et personne par défaut — un
+ * nouveau venu dans un cercle n'y entre pas tout seul. Ce choix ne remplace pas la règle
+ * de visibilité, il s'y ajoute : quitter le dernier cercle commun, ou couper le lien,
+ * fait disparaître les disponibilités sans qu'il faille décocher qui que ce soit.
+ */
+export const disponibiliteLecteur = pgTable(
+  "disponibilite_lecteur",
+  {
+    accountId: uuid()
+      .notNull()
+      .references(() => account.id, { onDelete: "cascade" }),
+    lecteurId: uuid()
+      .notNull()
+      .references(() => account.id, { onDelete: "cascade" }),
+    createdAt: timestamp({ withTimezone: true }).notNull().default(now),
+  },
+  (t) => [
+    primaryKey({ columns: [t.accountId, t.lecteurId] }),
+    index("disponibilite_lecteur_lecteur_idx").on(t.lecteurId),
+    check("disponibilite_lecteur_pas_soi", sql`${t.accountId} <> ${t.lecteurId}`),
+  ],
 );
 
 /* ------------------------------------------------------------ notifications */

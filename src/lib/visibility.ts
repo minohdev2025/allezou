@@ -576,3 +576,161 @@ export async function readerCircles(
     memberCount: r.member_count,
   }));
 }
+
+/* ----------------------------------------------------------- disponibilités */
+
+/*
+ * Les disponibilités — « le mercredi de 16h à 20h », « absents la deuxième semaine de
+ * Pâques » — suivent la même règle de fond que les publications, avec une condition de
+ * plus :
+ *
+ * ┌─────────────────────────────────────────────────────────────────────────────┐
+ * │ B voit les disponibilités de A si et seulement si :                         │
+ * │   1. A a nommé B parmi les personnes qui les voient ;                       │
+ * │   2. il existe un cercle dont A et B sont membres AU MOMENT DE LA LECTURE,  │
+ * │      et le lien entre eux n'y est pas coupé ;                               │
+ * │   3. A n'est pas un compte supprimé.                                        │
+ * └─────────────────────────────────────────────────────────────────────────────┘
+ *
+ * Le choix des personnes (1) ne suffit jamais seul : quitter le dernier cercle commun,
+ * ou couper le lien, éteint tout sans que A ait à décocher qui que ce soit — et sans
+ * que B puisse distinguer « elle ne dit rien » de « elle ne me le dit plus ».
+ */
+
+/**
+ * A et B partagent-ils un cercle actif, sans lien coupé entre eux ? Restreint à un cercle
+ * précis quand on lit la page de ce cercle : c'est là que la coupure se décide.
+ */
+function partagentUnCercle(a: SQL, b: SQL, circleId?: string): SQL {
+  return sql`
+    exists (
+      select 1
+      from circle_membership m_a
+      join circle c on c.id = m_a.circle_id and c.archived_at is null
+      join circle_membership m_b
+        on m_b.circle_id = m_a.circle_id
+       and m_b.account_id = ${b}
+       and m_b.left_at is null
+      where m_a.account_id = ${a}
+        and m_a.left_at is null
+        ${circleId ? sql`and m_a.circle_id = ${circleId}` : sql``}
+        and not exists (
+          select 1 from circle_link_cut cut
+          where cut.circle_id = m_a.circle_id
+            and cut.account_a = least(${a}, ${b})
+            and cut.account_b = greatest(${a}, ${b})
+        )
+    )
+  `;
+}
+
+export type DisponibilitesVisibles = {
+  accountId: string;
+  displayName: string;
+  /** Les habitudes de la semaine, du lundi au dimanche. */
+  creneaux: { jour: number; debut: number; fin: number }[];
+  /** Les semaines de vacances renseignées, par leur lundi. */
+  semaines: { lundi: string; statut: "present" | "absent" }[];
+};
+
+/**
+ * Les disponibilités que ce lecteur a le droit de voir, personne par personne. Seule
+ * porte de lecture des disponibilités des autres ; on ne s'y voit pas soi-même.
+ *
+ * Une personne qui a nommé le lecteur mais n'a encore rien renseigné n'apparaît pas :
+ * une ligne vide à l'écran ne dirait rien, sinon qu'elle a coché quelqu'un.
+ */
+export async function visibleDisponibilites(
+  readerId: string,
+  options: { circleId?: string } = {},
+): Promise<DisponibilitesVisibles[]> {
+  const rows = await db.execute<{
+    account_id: string;
+    display_name: string;
+    creneaux: { jour: number; debut: number; fin: number }[];
+    semaines: { lundi: string; statut: "present" | "absent" }[];
+  }>(sql`
+    select
+      a.id as account_id,
+      a.display_name,
+      coalesce((
+        select json_agg(
+          json_build_object('jour', h.jour, 'debut', h.debut, 'fin', h.fin)
+          order by h.jour, h.debut
+        )
+        from disponibilite_hebdo h
+        where h.account_id = a.id
+      ), '[]') as creneaux,
+      coalesce((
+        select json_agg(
+          json_build_object('lundi', to_char(v.semaine, 'YYYY-MM-DD'), 'statut', v.statut)
+          order by v.semaine
+        )
+        from disponibilite_vacances v
+        where v.account_id = a.id
+      ), '[]') as semaines
+    from disponibilite_lecteur dl
+    join account a on a.id = dl.account_id and a.deleted_at is null
+    where dl.lecteur_id = ${readerId}::uuid
+      and ${partagentUnCercle(sql`a.id`, sql`${readerId}::uuid`, options.circleId)}
+    order by a.display_name asc, a.id asc
+  `);
+
+  return rows
+    .map((r) => ({
+      accountId: r.account_id,
+      displayName: r.display_name,
+      creneaux: r.creneaux ?? [],
+      semaines: r.semaines ?? [],
+    }))
+    .filter((d) => d.creneaux.length > 0 || d.semaines.length > 0);
+}
+
+/**
+ * Les personnes à qui l'on peut confier ses disponibilités : celles de ses cercles, avec
+ * qui le lien n'est pas coupé, rangées par cercle. C'est la liste de l'écran de réglage,
+ * et le filtre que l'écriture repasse — on ne nomme pas quelqu'un qu'on ne voit pas.
+ */
+export async function lecteursPossibles(
+  actorId: string,
+): Promise<{ id: string; name: string; membres: { accountId: string; displayName: string }[] }[]> {
+  const rows = await db.execute<{
+    circle_id: string;
+    circle_name: string;
+    account_id: string;
+    display_name: string;
+  }>(sql`
+    select
+      c.id as circle_id,
+      coalesce(self.alias, c.name) as circle_name,
+      a.id as account_id,
+      a.display_name
+    from circle_membership self
+    join circle c on c.id = self.circle_id and c.archived_at is null
+    join circle_membership m
+      on m.circle_id = c.id
+     and m.left_at is null
+     and m.account_id <> self.account_id
+    join account a on a.id = m.account_id and a.deleted_at is null
+    where self.account_id = ${actorId}::uuid
+      and self.left_at is null
+      and not exists (
+        select 1 from circle_link_cut cut
+        where cut.circle_id = c.id
+          and cut.account_a = least(a.id, ${actorId}::uuid)
+          and cut.account_b = greatest(a.id, ${actorId}::uuid)
+      )
+    order by coalesce(self.alias, c.name) asc, c.id asc, a.display_name asc
+  `);
+
+  const cercles = new Map<
+    string,
+    { id: string; name: string; membres: { accountId: string; displayName: string }[] }
+  >();
+  for (const r of rows) {
+    const cercle = cercles.get(r.circle_id) ?? { id: r.circle_id, name: r.circle_name, membres: [] };
+    cercle.membres.push({ accountId: r.account_id, displayName: r.display_name });
+    cercles.set(r.circle_id, cercle);
+  }
+  return [...cercles.values()];
+}

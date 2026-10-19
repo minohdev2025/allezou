@@ -41,7 +41,8 @@
     "agendaTitre": "Agenda",
     "motCorrespond": "An activity matches “{mot}”",
     "inscriptionParue": "A registration-required activity was just posted",
-    "rappelBientot": "Starting soon: your activity begins at {heure}"
+    "rappelBientot": "Starting soon: your activity begins at {heure}",
+    "rappelJournee": "Coming up: your activity is tomorrow"
   },
   "MailConnexion": {
     "sujet": "Your Allezou sign-in link",
@@ -136,7 +137,9 @@
       "activite_inconnue": "This activity no longer exists.",
       "photo_trop_lourde": "This photo is too large. The activity is published; try again with a lighter photo.",
       "photo_illisible": "This photo could not be read. The activity is published, but without it.",
-      "photo_absente": "This photo is empty. The activity is published, but without it."
+      "photo_absente": "This photo is empty. The activity is published, but without it.",
+      "jour_invalide": "This day isn't one of the activity's days, or it has already passed.",
+      "horaire_invalide": "These times don't work: the end must be at least fifteen minutes after the start, on the same day, and not already past."
     },
     "erreurGenerique": "Your sign-up couldn't be saved.",
     "elleNestPlusAnnoncee": "It's no longer listed",
@@ -157,7 +160,11 @@
     "retourAgenda": "Back to the agenda",
     "connexionPourInscrire": "Create your account to tell your circles you are going. An email address is enough.",
     "creerRejoindreCercle": "Create or join a circle",
-    "descriptionRepli": "{titre} — {lieu}. An activity for families, in Allezou's Geneva agenda."
+    "descriptionRepli": "{titre} — {lieu}. An activity for families, in Allezou's Geneva agenda.",
+    "quand": "When",
+    "quelJour": "Which day",
+    "de": "From",
+    "a": "to"
   },
   "AgendaNouveau": {
     "titre": "Suggest an activity",
@@ -572,7 +579,9 @@
     "tuilePasskeysGenerique": "Register a trusted device",
     "enSavoirPlusTitre": "Learn more",
     "lienAPropos": "Who we are",
-    "lienComment": "How it works, in detail"
+    "lienComment": "How it works, in detail",
+    "tuileDisponibilitesTitre": "Availability",
+    "tuileDisponibilitesGenerique": "Routines and holidays"
   },
   "Connexion": {
     "accroche": "So our kids can meet up outside.",
@@ -909,5 +918,45 @@
     "description": "Everything Allezou does, step by step: circles, outings, the Geneva municipalities' agenda, notifications.",
     "placeholder": "Content to be written — see the brief in the session.",
     "retour": "Back to settings"
+  },
+  "ChoixLecteurs": {
+    "tous": "All",
+    "aucun": "None"
+  },
+  "Disponibilites": {
+    "titre": "Availability",
+    "hebdoTitre": "Every week",
+    "jour": "Day",
+    "de": "From",
+    "a": "to",
+    "ajouter": "Add",
+    "retirer": "Remove this slot",
+    "vacancesTitre": "School holidays",
+    "toutes": "All weeks",
+    "present": "Around",
+    "absent": "Away",
+    "statutPresent": "around",
+    "statutAbsent": "away",
+    "etendue": "{statut} {periode}",
+    "ligneVacances": "{vacances}: {details}",
+    "ligneAujourdhui": "Today {plages}",
+    "lecteursTitre": "Who sees it",
+    "lecteursPersonne": "No one",
+    "lecteursNombre": "{n, plural, one {# person} other {# people}}",
+    "enregistrer": "Save",
+    "aucunCercle": "Join a circle to choose who sees it.",
+    "erreurs": {
+      "creneau_invalide": "This slot doesn't work: the end must be at least fifteen minutes after the start.",
+      "creneaux_max": "Fourteen slots at most. Remove one to add another.",
+      "lecteur_interdit": "One of these people is no longer in your circles."
+    },
+    "erreurGenerique": "This setting couldn't be saved.",
+    "vacances": {
+      "automne": "Autumn holidays",
+      "noel": "Christmas holidays",
+      "fevrier": "February holidays",
+      "paques": "Easter holidays",
+      "ete": "Summer holidays"
+    }
   }
 }

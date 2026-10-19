@@ -15,7 +15,9 @@ import { z } from "zod";
 
 import { db } from "./db";
 import * as s from "./db/schema";
+import { heureDeGeneve, jourSuivant, minuitDeGeneve, minutesDeLHeure } from "./heure";
 import { lireTarifEtAcces } from "./ingest/tarif";
+import { jourGenevois } from "./ingest/types";
 import {
   canSeePublication,
   visiblePublications,
@@ -57,6 +59,8 @@ export type PublicationError =
   | "pas_participant"
   | "sortie_invisible"
   | "debut_invalide"
+  | "jour_invalide"
+  | "horaire_invalide";
 
 export type Result<T> = { ok: true; value: T } | { ok: false; reason: PublicationError };
 
@@ -476,9 +480,19 @@ export async function lastOuting(actorId: string): Promise<{
 export async function myAttendance(
   actorId: string,
   eventId: string,
-): Promise<{ publicationId: string; circleIds: string[]; childIds: string[] } | null> {
+): Promise<{
+  publicationId: string;
+  circleIds: string[];
+  childIds: string[];
+  startsAt: Date;
+  endsAt: Date;
+} | null> {
   const [publication] = await db
-    .select({ id: s.publication.id })
+    .select({
+      id: s.publication.id,
+      startsAt: s.publication.startsAt,
+      endsAt: s.publication.endsAt,
+    })
     .from(s.publication)
     .where(
       and(
@@ -503,6 +517,8 @@ export async function myAttendance(
     publicationId: publication.id,
     circleIds: cercles.map((c) => c.circleId),
     childIds: enfants,
+    startsAt: publication.startsAt,
+    endsAt: publication.endsAt,
   };
 }
 
@@ -572,22 +588,166 @@ export async function leavePresence(
 
 /* ------------------------------------------------- participation à une activité */
 
+/**
+ * « De quand à quand » on va à une activité, tel que la famille le dit.
+ *
+ * Une exposition ouverte six semaines ne dit pas quand on y passe, et l'inscription en
+ * copiait jusqu'ici les bornes : « Maman de Léa va à l'exposition » restait affiché du
+ * 1er juillet au 30 août, sans qu'aucune famille sache quel jour la rejoindre. C'est la
+ * même phrase que la sortie au parc — un lieu, une heure, une fin — rattachée à l'agenda.
+ *
+ * Les trois champs sont facultatifs. Le jour ne se demande qu'à une activité qui en
+ * compte plusieurs ; une heure laissée vide reprend celle de l'activité ce jour-là, et la
+ * journée entière quand l'activité n'en annonce pas.
+ */
+export type HoraireSaisi = {
+  /** « 2026-10-21 ». Absent : le premier jour de l'activité qui n'est pas passé. */
+  jour?: string;
+  /** « 14:00 ». */
+  de?: string;
+  /** « 16:00 ». */
+  a?: string;
+};
+
+/** En deçà, ce n'est plus y aller, c'est passer devant. Même plancher que les sorties. */
+export const INSCRIPTION_MIN_MINUTES = DUREE_MIN_MINUTES;
+
+/** Quand une activité ne dit pas sa fin, on y reste une après-midi. */
+const DUREE_ACTIVITE_SANS_FIN_MS = 4 * 3_600_000;
+
+type ActiviteDatee = { startsAt: Date; endsAt: Date | null; allDay: boolean };
+
+/**
+ * Les jours, à Genève, où l'activité a lieu : du premier au dernier, bornes comprises.
+ *
+ * Une activité à la journée finit le jour de sa date de fin — c'est ce que la fiche
+ * affiche (« jusqu'au 30 août »), et l'on n'en refuse pas le dernier jour. Une activité
+ * à l'heure qui finit pile à minuit n'a pas lieu le lendemain : on retire une
+ * milliseconde avant de lire le jour.
+ */
+export function joursDeLActivite(activite: ActiviteDatee): { premier: string; dernier: string } {
+  const premier = jourGenevois(activite.startsAt);
+  const fin = activite.endsAt ?? activite.startsAt;
+  const dernier = activite.allDay
+    ? jourGenevois(fin)
+    : jourGenevois(new Date(Math.max(activite.startsAt.getTime(), fin.getTime() - 1)));
+  return { premier, dernier: dernier < premier ? premier : dernier };
+}
+
+/**
+ * Traduit ce que la famille a saisi en un début et une fin. Fonction pure : c'est elle
+ * que les tests verrouillent, et l'écran comme le serveur s'y tiennent.
+ *
+ * Bornes : le jour doit être un jour de l'activité et ne pas être passé ; l'horaire tient
+ * dans ce jour, sans passer minuit, comme une sortie ; il dure au moins un quart d'heure
+ * et ne se termine pas avant l'instant présent — une inscription déjà finie serait une
+ * inscription que personne ne voit. Arriver avant l'ouverture ou repartir après la
+ * fermeture reste permis : c'est l'horaire de la famille, pas celui de l'activité.
+ */
+export function horaireInscription(
+  activite: ActiviteDatee,
+  saisie: HoraireSaisi,
+  maintenant: Date,
+): Result<{ startsAt: Date; endsAt: Date }> {
+  const { premier, dernier } = joursDeLActivite(activite);
+  const aujourdhui = jourGenevois(maintenant);
+
+  let jour: string;
+  if (saisie.jour) {
+    if (
+      !/^\d{4}-\d{2}-\d{2}$/.test(saisie.jour) ||
+      saisie.jour < premier ||
+      saisie.jour > dernier ||
+      saisie.jour < aujourdhui
+    ) {
+      return ko("jour_invalide");
+    }
+    jour = saisie.jour;
+  } else {
+    jour = premier < aujourdhui ? aujourdhui : premier;
+    if (jour > dernier) return ko("jour_invalide");
+  }
+
+  const debutJour = minuitDeGeneve(jour);
+  const finJour = minuitDeGeneve(jourSuivant(jour));
+  if (!debutJour || !finJour) return ko("jour_invalide");
+
+  // Ce que l'activité occupe de ce jour-là : l'horaire retenu quand on ne dit rien.
+  // Une fin absente, ou égale au début (« 10:00 – 10:00 » existe dans les sources),
+  // ne fait pas une inscription de durée nulle que la base refuserait.
+  const finActivite =
+    activite.endsAt && activite.endsAt > activite.startsAt
+      ? activite.endsAt
+      : new Date(activite.startsAt.getTime() + DUREE_ACTIVITE_SANS_FIN_MS);
+  const parDefautDebut = activite.allDay
+    ? debutJour
+    : new Date(Math.max(activite.startsAt.getTime(), debutJour.getTime()));
+  const parDefautFin = activite.allDay
+    ? finJour
+    : new Date(Math.min(finActivite.getTime(), finJour.getTime()));
+
+  const lire = (saisi: string | undefined): Date | null | "illisible" => {
+    if (!saisi) return null;
+    if (minutesDeLHeure(saisi) === null) return "illisible";
+    return heureDeGeneve(`${jour}T${saisi}`) ?? "illisible";
+  };
+  const de = lire(saisie.de);
+  const a = lire(saisie.a);
+  if (de === "illisible" || a === "illisible") return ko("horaire_invalide");
+
+  let startsAt = de ?? parDefautDebut;
+  let endsAt = a ?? parDefautFin;
+
+  // Une seule borne donnée, et celle de l'activité tombe du mauvais côté : « dès 17h »
+  // pour une activité qui finit à 16h. On garde ce que la famille a dit et on lui
+  // prête deux heures, dans la journée.
+  if (de && !a && endsAt <= startsAt) {
+    endsAt = new Date(Math.min(startsAt.getTime() + 2 * 3_600_000, finJour.getTime()));
+  }
+  if (a && !de && startsAt >= endsAt) {
+    startsAt = new Date(Math.max(endsAt.getTime() - 2 * 3_600_000, debutJour.getTime()));
+  }
+
+  if (
+    endsAt.getTime() - startsAt.getTime() < INSCRIPTION_MIN_MINUTES * 60_000 ||
+    endsAt <= maintenant
+  ) {
+    return ko("horaire_invalide");
+  }
+
+  return ok({ startsAt, endsAt });
+}
+
+async function activiteDatee(
+  eventId: string,
+): Promise<(ActiviteDatee & { id: string }) | null> {
+  const [event] = await db
+    .select({
+      id: s.event.id,
+      startsAt: s.event.startsAt,
+      endsAt: s.event.endsAt,
+      allDay: s.event.allDay,
+    })
+    .from(s.event)
+    .where(eq(s.event.id, eventId))
+    .limit(1);
+  return event ?? null;
+}
+
 export type AttendanceInput = {
   eventId: string;
   circleIds?: string[];
   hiddenFrom?: string[];
   childIds?: string[];
+  /** Absent : l'horaire de l'activité, au premier jour qui n'est pas passé. */
+  horaire?: HoraireSaisi;
 };
 
 export async function declareAttendance(
   actorId: string,
   input: AttendanceInput,
 ): Promise<Result<PublishedTo>> {
-  const [event] = await db
-    .select({ id: s.event.id, startsAt: s.event.startsAt, endsAt: s.event.endsAt })
-    .from(s.event)
-    .where(eq(s.event.id, input.eventId))
-    .limit(1);
+  const event = await activiteDatee(input.eventId);
   if (!event) return ko("activite_inconnue");
 
   const wanted = input.circleIds ?? (await defaultAudience(actorId)).map((c) => c.id);
@@ -599,6 +759,9 @@ export async function declareAttendance(
   const children = await ownedChildren(actorId, childIds);
   if (children.length !== new Set(childIds).size) return ko("enfant_inconnu");
 
+  const horaire = horaireInscription(event, input.horaire ?? {}, new Date());
+  if (!horaire.ok) return horaire;
+
   return db.transaction(async (tx) => {
     const [publication] = await tx
       .insert(s.publication)
@@ -606,9 +769,8 @@ export async function declareAttendance(
         authorId: actorId,
         kind: "attendance",
         eventId: event.id,
-        startsAt: event.startsAt,
-        // Une activité sans heure de fin reste visible jusqu'au soir même.
-        endsAt: event.endsAt ?? new Date(event.startsAt.getTime() + 4 * 3_600_000),
+        startsAt: horaire.value.startsAt,
+        endsAt: horaire.value.endsAt,
       })
       .returning();
 
@@ -617,6 +779,55 @@ export async function declareAttendance(
 
     return ok({ publicationId: publication.id, circles, endsAt: publication.endsAt });
   });
+}
+
+/**
+ * Changer l'horaire d'une inscription déjà faite : on passera finalement samedi, ou à
+ * 15h plutôt qu'à 14h. Comme les destinataires, cela se corrige sans republier — et
+ * donc sans faire sonner une seconde fois les téléphones du cercle.
+ *
+ * Le rappel « c'est bientôt » est réarmé quand le début bouge : il a pu sonner pour
+ * l'ancien horaire, et le nouveau mérite le sien.
+ */
+export async function setAttendanceTimes(
+  actorId: string,
+  publicationId: string,
+  saisie: HoraireSaisi,
+): Promise<Result<{ startsAt: Date; endsAt: Date }>> {
+  const [publication] = await db
+    .select({
+      authorId: s.publication.authorId,
+      kind: s.publication.kind,
+      eventId: s.publication.eventId,
+      startsAt: s.publication.startsAt,
+    })
+    .from(s.publication)
+    .where(eq(s.publication.id, publicationId))
+    .limit(1);
+
+  if (!publication) return ko("publication_inconnue");
+  if (publication.authorId !== actorId) return ko("pas_auteur");
+  if (publication.kind !== "attendance" || !publication.eventId) {
+    return ko("publication_inconnue");
+  }
+
+  const event = await activiteDatee(publication.eventId);
+  if (!event) return ko("activite_inconnue");
+
+  const horaire = horaireInscription(event, saisie, new Date());
+  if (!horaire.ok) return horaire;
+
+  const debutChange = horaire.value.startsAt.getTime() !== publication.startsAt.getTime();
+  await db
+    .update(s.publication)
+    .set({
+      startsAt: horaire.value.startsAt,
+      endsAt: horaire.value.endsAt,
+      ...(debutChange ? { remindedAt: null } : {}),
+    })
+    .where(eq(s.publication.id, publicationId));
+
+  return horaire;
 }
 
 /**

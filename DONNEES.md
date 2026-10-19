@@ -30,7 +30,9 @@ que cette page existe.
 | Le nom sous lequel vous voyez un cercle, s'il diffère de celui d'origine | Pour que « Classe 4P » puisse se lire « Classe de Jules » chez vous | Tant que vous le gardez | Vous seul·e. Les autres membres voient le nom d'origine |
 | Quel enfant est concerné par quel cercle | Pour qu'une sortie sans l'aîné ne parte pas vers sa classe | Tant que vous le gardez | Vous, et l'autre parent de l'enfant s'il en a un. Les autres membres du cercle ne le voient pas |
 | Vos sorties : un lieu choisi dans une liste, une heure de fin, éventuellement un mot de 140 caractères | C'est ce que vous partagez | **Effacée 24 heures après son heure de fin** | Uniquement les cercles que vous avez choisis au moment de publier |
-| Vos inscriptions aux activités de l'agenda | Pour que d'autres sachent que leur enfant y retrouvera quelqu'un | **Effacée 24 heures après la fin de l'activité**, comme une sortie | Uniquement les cercles que vous avez choisis |
+| Vos inscriptions aux activités de l'agenda, avec le jour et les heures où vous y allez | Pour que d'autres sachent que leur enfant y retrouvera quelqu'un, et quand | **Effacée 24 heures après l'heure de fin que vous avez donnée**, comme une sortie | Uniquement les cercles que vous avez choisis |
+| Vos habitudes de la semaine, si vous en donnez : « le mercredi de 16h à 20h » | Pour que les familles que vous choisissez sachent quand vous proposer de sortir | Tant que vous les gardez | Uniquement les personnes que vous avez nommées une à une, tant qu'elles partagent un cercle avec vous |
+| Présent ou absent, semaine par semaine, pendant les vacances scolaires | Pour que ces mêmes familles sachent qui reste à Genève | **Effacé dès que la semaine est passée** | Les mêmes personnes, aux mêmes conditions |
 | La photo que vous joignez à une activité que vous proposez | Pour qu'on voie de quoi il s'agit : l'affiche, ou le lieu | Tant que l'activité est à l'agenda ; effacée avec elle | **Tout le monde**, l'agenda étant public. Le serveur la réencode et efface au passage l'endroit et l'heure de la prise de vue que votre téléphone y avait inscrits |
 | Vos réglages de notification | Pour ne vous déranger que quand vous l'avez demandé | Tant que votre compte existe | Vous seul·e |
 | Les mots que vous surveillez à l'agenda : « piscine », « judo » | Pour vous prévenir quand une activité publiée en contient un | Tant que vous les gardez | Vous seul·e. Ils ne sont montrés à personne et ne servent à rien d'autre |
@@ -75,6 +77,10 @@ Ce qui en découle :
 - Quand plusieurs familles rejoignent une même sortie, **vous ne voyez dans la liste que les
   personnes avec qui vous partagez déjà un cercle**. Une famille venue par le voisinage
   n'apparaît pas à un parent de la classe qui ne la connaît pas.
+- Vos **disponibilités** (habitudes de la semaine, vacances) suivent une règle plus stricte
+  encore : seules les personnes que vous avez **nommées une à une** les voient, et seulement
+  tant que vous partagez avec elles un cercle sans lien coupé. Par défaut, personne.
+  Quelqu'un qui arrive dans votre cercle ne les voit pas tant que vous ne l'avez pas coché.
 - Les **notifications** suivent exactement la même règle : vous ne pouvez pas être averti·e de
   quelque chose que vous ne verriez pas à l'écran. Et le message envoyé à votre téléphone ne
   dit ni qui, ni où, seulement le nom du cercle, pour qu'un écran verrouillé posé sur une table
@@ -160,4 +166,4 @@ en silence.
 
 ---
 
-*Dernière mise à jour : 16 août 2026.*
+*Dernière mise à jour : 19 octobre 2026.*

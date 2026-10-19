@@ -41,7 +41,8 @@
     "agendaTitre": "Agenda",
     "motCorrespond": "Hay una actividad que coincide con «{mot}»",
     "inscriptionParue": "Se acaba de publicar una actividad con inscripción",
-    "rappelBientot": "Empieza pronto: su actividad comienza a las {heure}"
+    "rappelBientot": "Empieza pronto: su actividad comienza a las {heure}",
+    "rappelJournee": "Es pronto: tu actividad es mañana"
   },
   "MailConnexion": {
     "sujet": "Tu enlace de conexión a Allezou",
@@ -136,7 +137,9 @@
       "activite_inconnue": "Esta actividad ya no existe.",
       "photo_trop_lourde": "Esta foto pesa demasiado. La actividad está publicada; inténtelo con una foto más ligera.",
       "photo_illisible": "No se ha podido leer esta foto. La actividad está publicada, pero sin ella.",
-      "photo_absente": "Esta foto está vacía. La actividad está publicada, pero sin ella."
+      "photo_absente": "Esta foto está vacía. La actividad está publicada, pero sin ella.",
+      "jour_invalide": "Ese día no es un día de la actividad, o ya ha pasado.",
+      "horaire_invalide": "Ese horario no cuadra: el final debe ser al menos un cuarto de hora después del inicio, el mismo día, y no haber pasado ya."
     },
     "erreurGenerique": "No se ha podido hacer la inscripción.",
     "elleNestPlusAnnoncee": "Ya no está anunciada",
@@ -157,7 +160,11 @@
     "retourAgenda": "Volver a la agenda",
     "connexionPourInscrire": "Crea tu cuenta para decir a tus círculos que vas. Basta un correo.",
     "creerRejoindreCercle": "Crear o unirse a un círculo",
-    "descriptionRepli": "{titre} — {lieu}. Actividad para familias, en la agenda ginebrina de Allezou."
+    "descriptionRepli": "{titre} — {lieu}. Actividad para familias, en la agenda ginebrina de Allezou.",
+    "quand": "Cuándo",
+    "quelJour": "Qué día",
+    "de": "De",
+    "a": "a"
   },
   "AgendaNouveau": {
     "titre": "Proponer una actividad",
@@ -572,7 +579,9 @@
     "tuilePasskeysGenerique": "Registrar un dispositivo de confianza",
     "enSavoirPlusTitre": "Más información",
     "lienAPropos": "Quiénes somos",
-    "lienComment": "Cómo funciona, en detalle"
+    "lienComment": "Cómo funciona, en detalle",
+    "tuileDisponibilitesTitre": "Disponibilidad",
+    "tuileDisponibilitesGenerique": "Costumbres y vacaciones"
   },
   "Connexion": {
     "accroche": "Para que nuestros hijos se encuentren al aire libre.",
@@ -909,5 +918,45 @@
     "description": "Todo lo que hace Allezou, paso a paso: círculos, salidas, agenda de los municipios ginebrinos, notificaciones.",
     "placeholder": "Contenido por escribir — ver el brief en la sesión.",
     "retour": "Volver a los ajustes"
+  },
+  "ChoixLecteurs": {
+    "tous": "Todos",
+    "aucun": "Ninguno"
+  },
+  "Disponibilites": {
+    "titre": "Disponibilidad",
+    "hebdoTitre": "Cada semana",
+    "jour": "Día",
+    "de": "De",
+    "a": "a",
+    "ajouter": "Añadir",
+    "retirer": "Quitar esta franja",
+    "vacancesTitre": "Vacaciones escolares",
+    "toutes": "Todas las semanas",
+    "present": "Aquí",
+    "absent": "Fuera",
+    "statutPresent": "aquí",
+    "statutAbsent": "fuera",
+    "etendue": "{statut} {periode}",
+    "ligneVacances": "{vacances}: {details}",
+    "ligneAujourdhui": "Hoy {plages}",
+    "lecteursTitre": "Quién la ve",
+    "lecteursPersonne": "Nadie",
+    "lecteursNombre": "{n, plural, one {# persona} other {# personas}}",
+    "enregistrer": "Guardar",
+    "aucunCercle": "Únete a un círculo para elegir quién la ve.",
+    "erreurs": {
+      "creneau_invalide": "Esa franja no cuadra: el final debe ser al menos un cuarto de hora después del inicio.",
+      "creneaux_max": "Catorce franjas como máximo. Quita una para añadir otra.",
+      "lecteur_interdit": "Una de estas personas ya no está en tus círculos."
+    },
+    "erreurGenerique": "No se ha podido guardar este ajuste.",
+    "vacances": {
+      "automne": "Vacaciones de otoño",
+      "noel": "Vacaciones de Navidad",
+      "fevrier": "Vacaciones de febrero",
+      "paques": "Vacaciones de Semana Santa",
+      "ete": "Vacaciones de verano"
+    }
   }
 }

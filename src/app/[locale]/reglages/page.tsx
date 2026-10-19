@@ -13,7 +13,7 @@ import { seDeconnecter } from "../actions";
 import { Navigation, Titre } from "../ui";
 
 /**
- * Page d'accueil des réglages. Tout doit être lisible sans scroller : quatre
+ * Page d'accueil des réglages. Tout doit être lisible sans scroller : cinq
  * grandes tuiles en haut pour les paramètres courants, puis en bas les actions
  * secondaires (lieux, données, aide, contact) et — en tout dernier, visible
  * uniquement pour le contact qui relit — les outils d'administration.
@@ -99,6 +99,12 @@ export default async function Reglages() {
             href="/reglages/cercles"
             titre={t("tuileCerclesTitre")}
             sous={t("tuileCerclesGenerique")}
+          />
+
+          <Tuile
+            href="/reglages/disponibilites"
+            titre={t("tuileDisponibilitesTitre")}
+            sous={t("tuileDisponibilitesGenerique")}
           />
         </ul>
       </section>

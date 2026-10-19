@@ -41,7 +41,8 @@
     "agendaTitre": "Agenda",
     "motCorrespond": "Uma atividade corresponde a « {mot} »",
     "inscriptionParue": "Foi publicada uma nova atividade com inscrição",
-    "rappelBientot": "É já: a sua atividade começa às {heure}"
+    "rappelBientot": "É já: a sua atividade começa às {heure}",
+    "rappelJournee": "É já: a sua atividade é amanhã"
   },
   "MailConnexion": {
     "sujet": "A sua ligação de acesso ao Allezou",
@@ -136,7 +137,9 @@
       "activite_inconnue": "Esta atividade já não existe.",
       "photo_trop_lourde": "Esta foto é demasiado pesada. A atividade está publicada; tente com uma foto mais leve.",
       "photo_illisible": "Não foi possível ler esta foto. A atividade está publicada, mas sem ela.",
-      "photo_absente": "Esta foto está vazia. A atividade está publicada, mas sem ela."
+      "photo_absente": "Esta foto está vazia. A atividade está publicada, mas sem ela.",
+      "jour_invalide": "Esse dia não é um dia da atividade, ou já passou.",
+      "horaire_invalide": "Este horário não serve: o fim tem de ser pelo menos um quarto de hora depois do início, no mesmo dia, e não pode já ter passado."
     },
     "erreurGenerique": "Não foi possível fazer a inscrição.",
     "elleNestPlusAnnoncee": "Já não está anunciada",
@@ -157,7 +160,11 @@
     "retourAgenda": "Voltar à agenda",
     "connexionPourInscrire": "Crie a sua conta para dizer aos seus círculos que vai. Basta um endereço de correio.",
     "creerRejoindreCercle": "Criar ou juntar-se a um círculo",
-    "descriptionRepli": "{titre} — {lieu}. Atividade para famílias, na agenda genebrina do Allezou."
+    "descriptionRepli": "{titre} — {lieu}. Atividade para famílias, na agenda genebrina do Allezou.",
+    "quand": "Quando",
+    "quelJour": "Que dia",
+    "de": "Das",
+    "a": "às"
   },
   "AgendaNouveau": {
     "titre": "Propor uma atividade",
@@ -572,7 +579,9 @@
     "tuilePasskeysGenerique": "Registar um dispositivo de confiança",
     "enSavoirPlusTitre": "Saber mais",
     "lienAPropos": "Quem somos",
-    "lienComment": "Como funciona, em detalhe"
+    "lienComment": "Como funciona, em detalhe",
+    "tuileDisponibilitesTitre": "Disponibilidade",
+    "tuileDisponibilitesGenerique": "Hábitos e férias"
   },
   "Connexion": {
     "accroche": "Para que os nossos filhos se encontrem lá fora.",
@@ -909,5 +918,45 @@
     "description": "Tudo o que o Allezou faz, passo a passo: círculos, saídas, agenda dos municípios genebrinos, notificações.",
     "placeholder": "Conteúdo a escrever — ver o brief na sessão.",
     "retour": "Voltar às definições"
+  },
+  "ChoixLecteurs": {
+    "tous": "Todos",
+    "aucun": "Nenhum"
+  },
+  "Disponibilites": {
+    "titre": "Disponibilidade",
+    "hebdoTitre": "Todas as semanas",
+    "jour": "Dia",
+    "de": "Das",
+    "a": "às",
+    "ajouter": "Adicionar",
+    "retirer": "Retirar este horário",
+    "vacancesTitre": "Férias escolares",
+    "toutes": "Todas as semanas",
+    "present": "Cá",
+    "absent": "Fora",
+    "statutPresent": "cá",
+    "statutAbsent": "fora",
+    "etendue": "{statut} {periode}",
+    "ligneVacances": "{vacances}: {details}",
+    "ligneAujourdhui": "Hoje {plages}",
+    "lecteursTitre": "Quem vê",
+    "lecteursPersonne": "Ninguém",
+    "lecteursNombre": "{n, plural, one {# pessoa} other {# pessoas}}",
+    "enregistrer": "Guardar",
+    "aucunCercle": "Junte-se a um círculo para escolher quem vê.",
+    "erreurs": {
+      "creneau_invalide": "Este horário não serve: o fim tem de ser pelo menos um quarto de hora depois do início.",
+      "creneaux_max": "Catorze horários no máximo. Retire um para adicionar outro.",
+      "lecteur_interdit": "Uma destas pessoas já não está nos seus círculos."
+    },
+    "erreurGenerique": "Não foi possível guardar esta definição.",
+    "vacances": {
+      "automne": "Férias de outono",
+      "noel": "Férias de Natal",
+      "fevrier": "Férias de fevereiro",
+      "paques": "Férias da Páscoa",
+      "ete": "Férias de verão"
+    }
   }
 }

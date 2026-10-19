@@ -31,6 +31,13 @@ import {
   type ResultatLecture,
 } from "@/lib/annonce";
 import { recordAudit } from "@/lib/audit";
+import {
+  ajouterCreneau,
+  reglerLecteurs,
+  reglerSemaine,
+  reglerVacances,
+  retirerCreneau,
+} from "@/lib/disponibilites";
 import { hashIpDeLaRequete } from "@/lib/audit-ip";
 import { currentAccount } from "@/lib/session";
 import { deleteAccount } from "@/lib/account";
@@ -114,6 +121,7 @@ import {
   joinPresence,
   leavePresence,
   myAttendance,
+  setAttendanceTimes,
   setDefaultAudience,
   setNote,
   setParticipantChildren,
@@ -730,6 +738,56 @@ export async function reglerRappel(formData: FormData) {
   redirect("/reglages");
 }
 
+/* -------------------------------------------------------------- disponibilités */
+
+const ECRAN_DISPONIBILITES = "/reglages/disponibilites";
+
+/** « present », « absent », ou rien : toucher le statut déjà choisi l'efface. */
+function statutLu(formData: FormData): "present" | "absent" | null {
+  const statut = formData.get("statut");
+  return statut === "present" || statut === "absent" ? statut : null;
+}
+
+export async function ajouterDisponibilite(formData: FormData) {
+  const account = await requireAccount();
+  const result = await ajouterCreneau(account.id, {
+    jour: String(formData.get("jour") ?? ""),
+    de: String(formData.get("de") ?? ""),
+    a: String(formData.get("a") ?? ""),
+  });
+  redirect(result.ok ? ECRAN_DISPONIBILITES : `${ECRAN_DISPONIBILITES}?erreur=${result.reason}`);
+}
+
+export async function retirerDisponibilite(formData: FormData) {
+  const account = await requireAccount();
+  await retirerCreneau(account.id, String(formData.get("creneau") ?? ""));
+  revalidatePath(ECRAN_DISPONIBILITES);
+}
+
+/*
+  Les semaines se règlent sans redirection : l'écran en aligne une quinzaine, et une
+  redirection ramènerait en haut de page à chaque toucher. Une semaine refusée ne peut
+  être qu'une semaine passée entre l'affichage et le toucher — l'écran, rechargé, ne la
+  montre plus, ce qui dit la même chose qu'un message.
+*/
+export async function reglerSemaineVacances(formData: FormData) {
+  const account = await requireAccount();
+  await reglerSemaine(account.id, String(formData.get("semaine") ?? ""), statutLu(formData));
+  revalidatePath(ECRAN_DISPONIBILITES);
+}
+
+export async function reglerVacancesEntieres(formData: FormData) {
+  const account = await requireAccount();
+  await reglerVacances(account.id, String(formData.get("vacances") ?? ""), statutLu(formData));
+  revalidatePath(ECRAN_DISPONIBILITES);
+}
+
+export async function choisirLecteursDisponibilites(formData: FormData) {
+  const account = await requireAccount();
+  const result = await reglerLecteurs(account.id, formData.getAll("lecteur").map(String));
+  redirect(result.ok ? ECRAN_DISPONIBILITES : `${ECRAN_DISPONIBILITES}?erreur=${result.reason}`);
+}
+
 export async function ecarterActivite(formData: FormData) {
   await requireRelecteur();
   await rejectEvent(String(formData.get("activite") ?? ""));
@@ -1191,11 +1249,21 @@ export async function sInscrireActivite(formData: FormData) {
 
   const circleIds = formData.getAll("cercle").map(String);
   const childIds = formData.getAll("enfant").map(String);
+  // Vides, ils valent l'horaire de l'activité : c'est publications.ts qui tranche.
+  const horaire = {
+    jour: formData.get("jour")?.toString() || undefined,
+    de: formData.get("de")?.toString() || undefined,
+    a: formData.get("a")?.toString() || undefined,
+  };
 
   const deja = await myAttendance(account.id, eventId);
 
-  // Déjà inscrit : on ne recrée rien, on met à jour les destinataires et les enfants.
+  // Déjà inscrit : on ne recrée rien, on met à jour l'horaire, les destinataires et les
+  // enfants. L'horaire d'abord : c'est lui qui peut être refusé, et un refus ne doit pas
+  // laisser derrière lui des destinataires à moitié changés.
   if (deja) {
+    const heures = await setAttendanceTimes(account.id, deja.publicationId, horaire);
+    if (!heures.ok) redirect(`/agenda/${eventId}?erreur=${heures.reason}`);
     const cercles = await setPublicationCircles(account.id, deja.publicationId, circleIds);
     if (!cercles.ok) redirect(`/agenda/${eventId}?erreur=${cercles.reason}`);
     const enfants = await setParticipantChildren(account.id, deja.publicationId, childIds);
@@ -1203,7 +1271,7 @@ export async function sInscrireActivite(formData: FormData) {
     redirect(`/agenda/${eventId}`);
   }
 
-  const result = await declareAttendance(account.id, { eventId, circleIds, childIds });
+  const result = await declareAttendance(account.id, { eventId, circleIds, childIds, horaire });
   if (!result.ok) redirect(`/agenda/${eventId}?erreur=${result.reason}`);
 
   prevenir(result.value.publicationId);

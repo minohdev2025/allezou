@@ -136,6 +136,7 @@ export default async function RootLayout({
       "Position",
       "Carte",
       "Partage",
+      "ChoixLecteurs",
     ]
       .filter((ns) => ns in messages)
       .map((ns) => [ns, messages[ns as keyof typeof messages]]),

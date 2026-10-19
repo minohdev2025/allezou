@@ -41,11 +41,13 @@ const RACINE_SRC = fileURLToPath(new URL("..", import.meta.url));
  */
 const TOLEREES: Record<string, { lectures: number; pourquoi: string }> = {
   "lib/publications.ts": {
-    lectures: 8,
+    lectures: 9,
     pourquoi:
-      "sept contrôles d'auteur avant une écriture (rejoindre, prolonger, annoter, " +
-      "changer les destinataires, quitter, retirer) et « ma dernière sortie », qui ne " +
-      "lit que ses propres lignes.",
+      "huit contrôles d'auteur avant une écriture (rejoindre, prolonger, annoter, " +
+      "changer les destinataires, changer l'horaire d'une inscription, quitter, " +
+      "retirer) et « ma dernière sortie », qui ne lit que ses propres lignes. " +
+      "L'horaire relit aussi le début de sa propre inscription, pour savoir s'il faut " +
+      "réarmer son propre rappel.",
   },
   "lib/notifications.ts": {
     lectures: 4,

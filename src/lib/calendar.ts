@@ -56,8 +56,17 @@ export type CalendarEntry = {
    * qu'aucun passage ne défait. À l'écran, un parent n'a que faire de la nuance.
    */
   retiree: boolean;
-  /** Les personnes inscrites que ce lecteur a le droit de voir. */
-  attendees: { publicationId: string; accountId: string; displayName: string }[];
+  /**
+   * Les personnes inscrites que ce lecteur a le droit de voir, avec l'horaire que
+   * chacune a donné : deux familles vont à la même exposition sans y aller le même jour.
+   */
+  attendees: {
+    publicationId: string;
+    accountId: string;
+    displayName: string;
+    startsAt: Date;
+    endsAt: Date;
+  }[];
   /**
    * La photo jointe à l'activité, si elle en a une. On ne rend ici que ses dimensions et
    * sa date : les octets vivent derrière `/photo/<id>`, et la fiche n'a pas à les porter.
@@ -198,7 +207,13 @@ export async function upcomingCalendar(
   for (const p of participations) {
     if (!p.eventId) continue;
     const liste = parEvenement.get(p.eventId) ?? [];
-    liste.push({ publicationId: p.id, accountId: p.authorId, displayName: p.authorName });
+    liste.push({
+      publicationId: p.id,
+      accountId: p.authorId,
+      displayName: p.authorName,
+      startsAt: p.startsAt,
+      endsAt: p.endsAt,
+    });
     parEvenement.set(p.eventId, liste);
   }
 
@@ -465,6 +480,8 @@ export async function calendarEntry(
       publicationId: p.id,
       accountId: p.authorId,
       displayName: p.authorName,
+      startsAt: p.startsAt,
+      endsAt: p.endsAt,
     })),
     photo:
       r.photo_largeur && r.photo_hauteur && r.photo_updated_at

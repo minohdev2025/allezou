@@ -10,6 +10,7 @@ import { sql } from "drizzle-orm";
 
 import { purgePastEvents } from "./calendar";
 import { db } from "./db";
+import { purgerSemainesPassees } from "./disponibilites";
 import { purgeExpired } from "./publications";
 
 /**
@@ -61,6 +62,7 @@ export type PurgeReport = {
   liensDeConnexion: number;
   sessions: number;
   abonnementsMorts: number;
+  semainesDeVacancesPassees: number;
 };
 
 export async function purgeAll(): Promise<PurgeReport> {
@@ -69,6 +71,7 @@ export async function purgeAll(): Promise<PurgeReport> {
   const journalAudit = await purgeAuditLog();
   const { links, sessions } = await purgeAccessTokens();
   const abonnementsMorts = await purgeDeadSubscriptions();
+  const semainesDeVacancesPassees = await purgerSemainesPassees();
 
   return {
     presencesExpirees,
@@ -77,5 +80,6 @@ export async function purgeAll(): Promise<PurgeReport> {
     liensDeConnexion: links,
     sessions,
     abonnementsMorts,
+    semainesDeVacancesPassees,
   };
 }

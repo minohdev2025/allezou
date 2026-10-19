@@ -97,6 +97,7 @@ describe("Rétention", () => {
       liensDeConnexion: 0,
       sessions: 0,
       abonnementsMorts: 0,
+      semainesDeVacancesPassees: 0,
     });
   });
 });

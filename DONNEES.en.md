@@ -29,7 +29,9 @@ this page exists.
 | The name you see a circle under, if it differs from the original | So "Classe 4P" can read as "Jules's class" for you | As long as you keep it | Only you. Other members see the original name |
 | Which child is linked to which circle | So an outing without your oldest doesn't get sent to their class | As long as you keep it | You, and the child's other parent if they have one. Other members of the circle don't see it |
 | Your outings: a place chosen from a list, an end time, and optionally a note of up to 140 characters | This is what you share | **Deleted 24 hours after its end time** | Only the circles you chose when you posted it |
-| Your sign-ups for agenda activities | So others know their child will find someone there | **Deleted 24 hours after the activity ends**, just like an outing | Only the circles you chose |
+| Your sign-ups for agenda activities, with the day and times you're going | So others know their child will find someone there, and when | **Deleted 24 hours after the end time you gave**, just like an outing | Only the circles you chose |
+| Your weekly routines, if you give any: "Wednesdays from 4pm to 8pm" | So the families you choose know when to suggest going out | As long as you keep them | Only the people you named one by one, as long as they share a circle with you |
+| Around or away, week by week, during school holidays | So those same families know who is staying in Geneva | **Deleted as soon as the week is over** | The same people, on the same conditions |
 | The photo you attach to an activity you propose | So people can see what it is: the poster, or the place | As long as the activity is in the agenda; deleted with it | **Everyone**, since the agenda is public. The server re-encodes it, which erases the place and time of capture your phone had written into it |
 | Your notification settings | So you're only disturbed when you've asked to be | As long as your account exists | Only you |
 | The words you watch for in the agenda: "pool," "judo" | To notify you when a published activity contains one | As long as you keep them | Only you. They're never shown to anyone and are used for nothing else |
@@ -76,6 +78,10 @@ Here's what follows from that:
   the people you already share a circle with**. A family that joined
   through the neighborhood doesn't appear to a classmate's parent who
   doesn't know them.
+- Your **availability** (weekly routines, holidays) follows an even stricter rule: only
+  the people you **named one by one** see it, and only as long as you share a circle with
+  them without a cut link. By default, no one. Someone who joins your circle doesn't see
+  it until you tick them.
 - **Notifications** follow exactly the same rule: you can't be notified
   about something you wouldn't see on screen. And the message sent to your
   phone doesn't say who or where, only the circle's name, so a locked
@@ -168,4 +174,4 @@ applied silently.
 
 ---
 
-*Last updated: 16 August 2026.*
+*Last updated: 19 October 2026.*

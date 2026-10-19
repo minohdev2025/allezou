@@ -41,7 +41,8 @@
     "agendaTitre": "Agjenda",
     "motCorrespond": "Një aktivitet përputhet me « {mot} »",
     "inscriptionParue": "Sapo u shfaq një aktivitet me regjistrim",
-    "rappelBientot": "Fillon së shpejti: aktiviteti juaj nis në {heure}"
+    "rappelBientot": "Fillon së shpejti: aktiviteti juaj nis në {heure}",
+    "rappelJournee": "Së shpejti: aktiviteti juaj është nesër"
   },
   "MailConnexion": {
     "sujet": "Lidhja juaj e hyrjes në Allezou",
@@ -136,7 +137,9 @@
       "activite_inconnue": "Ky aktivitet nuk ekziston më.",
       "photo_trop_lourde": "Kjo foto është shumë e rëndë. Aktiviteti u publikua; provoni me një foto më të lehtë.",
       "photo_illisible": "Kjo foto nuk u lexua dot. Aktiviteti u publikua, por pa të.",
-      "photo_absente": "Kjo foto është bosh. Aktiviteti u publikua, por pa të."
+      "photo_absente": "Kjo foto është bosh. Aktiviteti u publikua, por pa të.",
+      "jour_invalide": "Kjo ditë nuk është ditë e aktivitetit, ose ka kaluar tashmë.",
+      "horaire_invalide": "Ky orar nuk shkon: mbarimi duhet të jetë të paktën një çerek ore pas fillimit, në të njëjtën ditë, dhe jo i kaluar."
     },
     "erreurGenerique": "Regjistrimi nuk u bë dot.",
     "elleNestPlusAnnoncee": "Nuk publikohet më",
@@ -157,7 +160,11 @@
     "retourAgenda": "Kthehuni te agjenda",
     "connexionPourInscrire": "Krijoni llogarinë për t'u treguar rretheve tuaja se do të shkoni. Mjafton një adresë e-mail.",
     "creerRejoindreCercle": "Krijoni ose bashkohuni me një rreth",
-    "descriptionRepli": "{titre} — {lieu}. Aktivitet për familjet, në agjendën e Gjenevës të Allezou."
+    "descriptionRepli": "{titre} — {lieu}. Aktivitet për familjet, në agjendën e Gjenevës të Allezou.",
+    "quand": "Kur",
+    "quelJour": "Cila ditë",
+    "de": "Nga",
+    "a": "deri"
   },
   "AgendaNouveau": {
     "titre": "Propozoni një aktivitet",
@@ -572,7 +579,9 @@
     "tuilePasskeysGenerique": "Regjistroni një pajisje të besuar",
     "enSavoirPlusTitre": "Mëso më shumë",
     "lienAPropos": "Kush jemi ne",
-    "lienComment": "Si funksionon, në detaje"
+    "lienComment": "Si funksionon, në detaje",
+    "tuileDisponibilitesTitre": "Disponueshmëria",
+    "tuileDisponibilitesGenerique": "Zakone dhe pushime"
   },
   "Connexion": {
     "accroche": "Që fëmijët tanë të takohen jashtë.",
@@ -909,5 +918,45 @@
     "description": "Gjithçka bën Allezou, hap pas hapi: rrethet, daljet, agjenda e komunave të Gjenevës, njoftimet.",
     "placeholder": "Përmbajtja për t'u shkruar — shih brief-in në sesion.",
     "retour": "Kthehu te rregullimet"
+  },
+  "ChoixLecteurs": {
+    "tous": "Të gjithë",
+    "aucun": "Asnjë"
+  },
+  "Disponibilites": {
+    "titre": "Disponueshmëria",
+    "hebdoTitre": "Çdo javë",
+    "jour": "Dita",
+    "de": "Nga",
+    "a": "deri",
+    "ajouter": "Shtoni",
+    "retirer": "Hiqni këtë orar",
+    "vacancesTitre": "Pushimet shkollore",
+    "toutes": "Të gjitha javët",
+    "present": "Këtu",
+    "absent": "Larg",
+    "statutPresent": "këtu",
+    "statutAbsent": "larg",
+    "etendue": "{statut} {periode}",
+    "ligneVacances": "{vacances}: {details}",
+    "ligneAujourdhui": "Sot {plages}",
+    "lecteursTitre": "Kush e sheh",
+    "lecteursPersonne": "Askush",
+    "lecteursNombre": "{n, plural, one {# person} other {# persona}}",
+    "enregistrer": "Ruani",
+    "aucunCercle": "Bashkohuni me një rreth për të zgjedhur kush e sheh.",
+    "erreurs": {
+      "creneau_invalide": "Ky orar nuk shkon: mbarimi duhet të jetë të paktën një çerek ore pas fillimit.",
+      "creneaux_max": "Katërmbëdhjetë orare më së shumti. Hiqni një për të shtuar një tjetër.",
+      "lecteur_interdit": "Njëri nga këta persona nuk është më në rrethet tuaja."
+    },
+    "erreurGenerique": "Ky cilësim nuk u ruajt dot.",
+    "vacances": {
+      "automne": "Pushimet e vjeshtës",
+      "noel": "Pushimet e Krishtlindjeve",
+      "fevrier": "Pushimet e shkurtit",
+      "paques": "Pushimet e Pashkëve",
+      "ete": "Pushimet verore"
+    }
   }
 }

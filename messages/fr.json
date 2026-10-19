@@ -41,7 +41,8 @@
     "agendaTitre": "Agenda",
     "motCorrespond": "Une activité correspond à « {mot} »",
     "inscriptionParue": "Une activité sur inscription vient de paraître",
-    "rappelBientot": "C'est bientôt : votre activité commence à {heure}"
+    "rappelBientot": "C'est bientôt : votre activité commence à {heure}",
+    "rappelJournee": "C'est bientôt : votre activité a lieu demain"
   },
   "MailConnexion": {
     "sujet": "Votre lien de connexion à Allezou",
@@ -136,7 +137,9 @@
       "activite_inconnue": "Cette activité n'existe plus.",
       "photo_trop_lourde": "Cette photo est trop lourde. L'activité est publiée ; réessayez avec une photo plus légère.",
       "photo_illisible": "Cette photo n'a pas pu être lue. L'activité est publiée, mais sans elle.",
-      "photo_absente": "Cette photo est vide. L'activité est publiée, mais sans elle."
+      "photo_absente": "Cette photo est vide. L'activité est publiée, mais sans elle.",
+      "jour_invalide": "Ce jour n'est pas un jour de l'activité, ou il est déjà passé.",
+      "horaire_invalide": "Cet horaire ne tient pas : la fin doit venir au moins un quart d'heure après le début, le même jour, et ne pas être déjà passée."
     },
     "erreurGenerique": "L'inscription n'a pas pu être faite.",
     "elleNestPlusAnnoncee": "Elle n'est plus annoncée",
@@ -157,7 +160,11 @@
     "retourAgenda": "Retour à l'agenda",
     "connexionPourInscrire": "Créez votre compte pour dire à vos cercles que vous y allez. Une adresse courriel suffit.",
     "creerRejoindreCercle": "Créer ou rejoindre un cercle",
-    "descriptionRepli": "{titre} — {lieu}. Activité pour les familles, dans l'agenda genevois d'Allezou."
+    "descriptionRepli": "{titre} — {lieu}. Activité pour les familles, dans l'agenda genevois d'Allezou.",
+    "quand": "Quand",
+    "quelJour": "Quel jour",
+    "de": "De",
+    "a": "à"
   },
   "AgendaNouveau": {
     "titre": "Proposer une activité",
@@ -572,7 +579,9 @@
     "tuilePasskeysGenerique": "Enregistrer un appareil de confiance",
     "enSavoirPlusTitre": "En savoir plus",
     "lienAPropos": "Qui sommes-nous",
-    "lienComment": "Comment ça marche, en détail"
+    "lienComment": "Comment ça marche, en détail",
+    "tuileDisponibilitesTitre": "Disponibilités",
+    "tuileDisponibilitesGenerique": "Habitudes et vacances"
   },
   "Connexion": {
     "accroche": "Pour que nos enfants se retrouvent dehors.",
@@ -909,5 +918,45 @@
     "description": "Tout ce qu'Allezou fait, expliqué pas à pas : cercles, sorties, agenda des communes genevoises, notifications.",
     "placeholder": "Contenu à rédiger — voir le brief dans la session.",
     "retour": "Retour aux réglages"
+  },
+  "ChoixLecteurs": {
+    "tous": "Tous",
+    "aucun": "Aucun"
+  },
+  "Disponibilites": {
+    "titre": "Disponibilités",
+    "hebdoTitre": "Chaque semaine",
+    "jour": "Jour",
+    "de": "De",
+    "a": "à",
+    "ajouter": "Ajouter",
+    "retirer": "Retirer ce créneau",
+    "vacancesTitre": "Vacances scolaires",
+    "toutes": "Toutes les semaines",
+    "present": "Présent",
+    "absent": "Absent",
+    "statutPresent": "présent",
+    "statutAbsent": "absent",
+    "etendue": "{statut} {periode}",
+    "ligneVacances": "{vacances} : {details}",
+    "ligneAujourdhui": "Aujourd'hui {plages}",
+    "lecteursTitre": "Qui les voit",
+    "lecteursPersonne": "Personne",
+    "lecteursNombre": "{n, plural, one {# personne} other {# personnes}}",
+    "enregistrer": "Enregistrer",
+    "aucunCercle": "Rejoignez un cercle pour choisir qui les voit.",
+    "erreurs": {
+      "creneau_invalide": "Ce créneau ne tient pas : la fin doit venir au moins un quart d'heure après le début.",
+      "creneaux_max": "Quatorze créneaux au plus. Retirez-en un pour en ajouter un autre.",
+      "lecteur_interdit": "Une de ces personnes n'est plus dans vos cercles."
+    },
+    "erreurGenerique": "Ce réglage n'a pas pu être enregistré.",
+    "vacances": {
+      "automne": "Vacances d'automne",
+      "noel": "Vacances de Noël",
+      "fevrier": "Vacances de février",
+      "paques": "Vacances de Pâques",
+      "ete": "Vacances d'été"
+    }
   }
 }

@@ -77,6 +77,13 @@ export async function deleteAccount(actorId: string): Promise<DeleteReport> {
     await tx.execute(sql`
       delete from circle_link_cut where account_a = ${actorId} or account_b = ${actorId}
     `);
+    // Ses disponibilités, et le fait qu'il voyait celles des autres.
+    await tx.execute(sql`delete from disponibilite_hebdo where account_id = ${actorId}`);
+    await tx.execute(sql`delete from disponibilite_vacances where account_id = ${actorId}`);
+    await tx.execute(sql`
+      delete from disponibilite_lecteur
+      where account_id = ${actorId} or lecteur_id = ${actorId}
+    `);
     await tx.execute(sql`delete from push_subscription where account_id = ${actorId}`);
     await tx.execute(sql`delete from session where account_id = ${actorId}`);
     await tx.execute(sql`

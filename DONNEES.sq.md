@@ -29,7 +29,9 @@ për këtë ekziston kjo faqe.
 | Emri me të cilin e shihni një rreth, nëse ndryshon nga ai origjinal | Që « Klasa 4P » të mund të lexohet « Klasa e Jules » te ju | Për sa kohë e mbani | Vetëm ju. Anëtarët e tjerë shohin emrin origjinal |
 | Cili fëmijë ka lidhje me cilin rreth | Që një dalje pa më të madhin të mos shkojë te klasa e tij | Për sa kohë e mbani | Ju, dhe prindi tjetër i fëmijës, nëse ka. Anëtarët e tjerë të rrethit nuk e shohin |
 | Daljet tuaja: një vend i zgjedhur nga një listë, një orë mbarimi, dhe ndoshta një fjalë deri në 140 shkronja | Është ajo që ndani | **Fshihet 24 orë pas orës së mbarimit** | Vetëm rrethet që keni zgjedhur në momentin e botimit |
-| Regjistrimet tuaja në aktivitetet e agjendës | Që të tjerët të dinë se fëmija i tyre do të gjejë dikë atje | **Fshihet 24 orë pas mbarimit të aktivitetit**, ashtu si një dalje | Vetëm rrethet që keni zgjedhur |
+| Regjistrimet tuaja në aktivitetet e agjendës, me ditën dhe orët kur shkoni | Që të tjerët të dinë se fëmija i tyre do të gjejë dikë atje, dhe kur | **Fshihet 24 orë pas orës së mbarimit që keni dhënë**, ashtu si një dalje | Vetëm rrethet që keni zgjedhur |
+| Zakonet tuaja të javës, nëse i jepni: «të mërkurave nga ora 16 deri në 20» | Që familjet që zgjidhni të dinë kur t'ju propozojnë të dilni | Për sa kohë i mbani | Vetëm personat që keni emëruar një nga një, për sa kohë ndajnë një rreth me ju |
+| Këtu ose larg, javë pas jave, gjatë pushimeve shkollore | Që po këto familje të dinë kush mbetet në Gjenevë | **Fshihet sapo java ka kaluar** | Të njëjtët persona, me të njëjtat kushte |
 | Fotoja që i bashkëngjitni një aktiviteti që propozoni | Që të shihet për çfarë bëhet fjalë: posteri ose vendi | Për sa kohë aktiviteti është në agjendë; fshihet bashkë me të | **Të gjithë**, sepse agjenda është publike. Serveri e rikodon dhe fshin kështu vendin dhe orën e fotografimit që telefoni juaj kishte shkruar aty |
 | Cilësimet tuaja të njoftimeve | Që t'ju shqetësojmë vetëm kur e keni kërkuar | Për sa kohë ekziston llogaria juaj | Vetëm ju |
 | Fjalët që mbikëqyrni në agjendë: « pishinë », « xhudo » | Për t'ju njoftuar kur një aktivitet i publikuar përmban njërën | Për sa kohë i mbani | Vetëm ju. Nuk i shfaqen askujt dhe nuk shërbejnë për asgjë tjetër |
@@ -76,6 +78,10 @@ Ky është pika më e rëndësishme, dhe i bindet një rregulli të vetëm:
 - Kur disa familje bashkohen me të njëjtën dalje, **në listë shihni vetëm personat
   me të cilët ndani tashmë një rreth**. Një familje ardhur nga lagja nuk i shfaqet
   një prindi të klasës që nuk e njeh.
+- **Disponueshmëria** juaj (zakonet e javës, pushimet) ndjek një rregull edhe më të rreptë:
+  e shohin vetëm personat që keni **emëruar një nga një**, dhe vetëm për sa kohë ndani me ta
+  një rreth pa lidhje të prerë. Si parazgjedhje, askush. Kush hyn në rrethin tuaj nuk e
+  sheh derisa ta shënoni.
 - **Njoftimet** ndjekin saktësisht të njëjtin rregull: nuk mund të njoftoheni për
   diçka që nuk do ta shihnit në ekran. Dhe mesazhi i dërguar në telefonin tuaj nuk
   thotë as kush, as ku, vetëm emrin e rrethit, që një ekran i kyçur i lënë mbi
@@ -163,4 +169,4 @@ në heshtje.
 
 ---
 
-*Përditësimi i fundit: 16 gusht 2026.*
+*Përditësimi i fundit: 19 tetor 2026.*

@@ -6,6 +6,7 @@ import { Link } from "@/i18n/navigation";
 
 import { stylesCarte } from "./carte-style";
 import { LOCALE_BCP47, type Locale } from "@/i18n/routing";
+import { jourSuivant, minuitDeGeneve } from "@/lib/heure";
 
 /* ------------------------------------------------------------------ couleurs */
 
@@ -709,6 +710,19 @@ export function heureCourte(date: Date): string {
   }).format(date);
 }
 
+/**
+ * « 14:00–16:00 », ou null quand l'horaire couvre la journée entière.
+ *
+ * Minuit à minuit n'est pas un horaire, c'est l'absence d'horaire : l'afficher donnerait
+ * « 00:00–00:00 », qui se lit comme une erreur. L'appelant dit alors « toute la journée »
+ * ou ne dit rien, selon la place qu'il a.
+ */
+export function plageHoraire(debut: Date, fin: Date): string | null {
+  const minuitSuivant = minuitDeGeneve(jourSuivant(cleDuJour(debut)));
+  if (heureCourte(debut) === "00:00" && minuitSuivant && fin >= minuitSuivant) return null;
+  return `${heureCourte(debut)}–${heureCourte(fin)}`;
+}
+
 /** Clé de regroupement par jour, à l'heure de Genève : « 2026-08-15 ». */
 export function cleDuJour(date: Date): string {
   return new Intl.DateTimeFormat("sv-SE", {
@@ -762,4 +776,37 @@ export function jourCourt(date: Date, locale: Locale): { jour: string; nombre: s
     nombre: lire("day"),
     mois: lire("month").replace(".", ""),
   };
+}
+
+/**
+ * « 19–23 oct. », « 28 déc. – 3 janv. » : une période de jours en clair, dans la langue
+ * du lecteur. `formatRange` sait déjà ne pas répéter le mois quand il est le même, et le
+ * fait dans les cinq langues — rien à réinventer.
+ *
+ * Les jours sont lus à midi UTC : un jour en clair n'a pas de fuseau, et minuit UTC
+ * risquerait de basculer sur la veille dans une implémentation trop zélée.
+ */
+export function periodeCourte(debut: string, fin: string, locale: Locale): string {
+  const format = new Intl.DateTimeFormat(LOCALE_BCP47[locale], {
+    day: "numeric",
+    month: "short",
+    timeZone: "UTC",
+  });
+  const lire = (jour: string) => new Date(`${jour}T12:00:00Z`);
+  if (debut === fin) return format.format(lire(debut));
+  // À cheval sur deux années, formatRange ajoute l'année des deux côtés (« 28 déc. 2026 –
+  // 3 janv. 2027 ») : trop long pour une ligne de téléphone, et personne ne doute de
+  // l'année des vacances de Noël.
+  if (debut.slice(0, 4) !== fin.slice(0, 4)) {
+    return `${format.format(lire(debut))} – ${format.format(lire(fin))}`;
+  }
+  return format.formatRange(lire(debut), lire(fin));
+}
+
+/** Le nom d'un jour de la semaine ISO (1 = lundi) : « mercredi », ou « mer. » en court. */
+export function nomDuJour(jour: number, locale: Locale, style: "long" | "short" = "long"): string {
+  // Le 1er janvier 2024 est un lundi : le jour ISO n tombe le n janvier.
+  return new Intl.DateTimeFormat(LOCALE_BCP47[locale], { weekday: style, timeZone: "UTC" }).format(
+    new Date(Date.UTC(2024, 0, jour, 12)),
+  );
 }

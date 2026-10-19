@@ -18,7 +18,12 @@ import { defaultAudience } from "@/lib/publications";
 import { messageDInvitation } from "@/lib/message-invitation";
 import { COOKIE_INVITATION, requireAccount } from "@/lib/session";
 import { localeSure } from "@/lib/traduire";
-import { isCircleAdmin, readerCircles, visibleCircleMembers } from "@/lib/visibility";
+import {
+  isCircleAdmin,
+  readerCircles,
+  visibleCircleMembers,
+  visibleDisponibilites,
+} from "@/lib/visibility";
 import {
   accepterDemande,
   basculerDefaut,
@@ -34,6 +39,7 @@ import {
   remplacerInvitation,
   revoquerInvitation,
 } from "../../actions";
+import { resumerDisponibilites } from "../../disponibilites";
 import { PartageInvitation } from "../../partage-client";
 import { CodeQR } from "../../qr";
 import { Alerte, Bouton, Carte, Jeton, Pastille, jourCourt, teinte } from "../../ui";
@@ -57,12 +63,18 @@ export default async function Cercle({
   const cercle = (await readerCircles(account.id)).find((c) => c.id === id);
   if (!cercle) notFound();
 
-  const [membres, admin, sourdines, defauts] = await Promise.all([
+  const [membres, admin, sourdines, defauts, disponibilites] = await Promise.all([
     visibleCircleMembers(account.id, id),
     isCircleAdmin(account.id, id),
     mutedIn(account.id, id),
     defaultAudience(account.id),
+    visibleDisponibilites(account.id, { circleId: id }),
   ]);
+
+  // Les habitudes de chacun, telles qu'il a choisi de nous les dire — sous son nom.
+  const dispoParMembre = new Map(
+    (await resumerDisponibilites(disponibilites, "semaine")).map((r) => [r.accountId, r.lignes]),
+  );
 
   const enfants = await childrenInCircle(account.id, id);
 
@@ -350,6 +362,20 @@ export default async function Cercle({
               </div>
             )}
             </div>
+
+            {/*
+              Sous la rangée et non sous le nom : la colonne du nom est étroite, coincée
+              entre le jeton et les boutons, et « lun. 16:00–20:00 » s'y cassait en trois.
+              Décalée de la largeur du jeton, elle se lit encore comme la suite du nom.
+            */}
+            {(dispoParMembre.get(membre.accountId) ?? []).map((ligne) => (
+              <p
+                key={ligne}
+                className="mt-1 pl-12 text-sm leading-snug text-[color:var(--color-doux)]"
+              >
+                {ligne}
+              </p>
+            ))}
 
             {/*
               Les deux gestes d'administration sont repliés : ils sont rares, et un bouton

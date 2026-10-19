@@ -8,8 +8,13 @@ import { myChildren } from "@/lib/children";
 import { currentlyOut, upcomingAttendances, upcomingOutings } from "@/lib/publications";
 import { requireAccount } from "@/lib/session";
 import { listeFr } from "@/lib/texte";
-import { readerCircles, type VisiblePublication } from "@/lib/visibility";
+import {
+  readerCircles,
+  visibleDisponibilites,
+  type VisiblePublication,
+} from "@/lib/visibility";
 import { rejoindreSortie, retirerSortie } from "../actions";
+import { DisponibilitesDuMoment } from "../disponibilites";
 import { DemandeNotifications } from "./demande-notifications";
 import { ProchainesActivites } from "../prochaines-activites";
 import {
@@ -19,8 +24,10 @@ import {
   Navigation,
   Pastille,
   Vide,
+  cleDuJour,
   heureCourte,
   jourCourt,
+  plageHoraire,
 } from "../ui";
 
 /*
@@ -45,12 +52,13 @@ export default async function Maintenant() {
   const account = await requireAccount();
   const t = await getTranslations("Maintenant");
   const locale = (await getLocale()) as Locale;
-  const [sorties, aVenir, inscriptions, cercles, enfants] = await Promise.all([
+  const [sorties, aVenir, inscriptions, cercles, enfants, disponibilites] = await Promise.all([
     currentlyOut(account.id),
     upcomingOutings(account.id),
     upcomingAttendances(account.id),
     readerCircles(account.id),
     myChildren(account.id),
+    visibleDisponibilites(account.id),
   ]);
 
   /*
@@ -59,10 +67,14 @@ export default async function Maintenant() {
     l'agenda pour savoir si une famille du cercle y va. Chaque famille s'inscrit par sa
     propre publication ; on regroupe par activité pour n'afficher qu'une ligne, avec les
     prénoms de qui y va. L'ordre est celui de la base : la fin la plus proche d'abord.
+
+    Le regroupement se fait par activité *et par jour* : chaque famille dit quand elle
+    y va, et deux familles qui vont à la même exposition, l'une mercredi et l'autre
+    samedi, ne se croiseront pas. Une seule ligne laisserait croire le contraire.
   */
   const parActivite = new Map<string, VisiblePublication[]>();
   for (const p of inscriptions) {
-    const cle = p.eventId ?? p.id;
+    const cle = `${p.eventId ?? p.id}|${cleDuJour(p.startsAt)}`;
     parActivite.set(cle, [...(parActivite.get(cle) ?? []), p]);
   }
   const activites = [...parActivite.values()];
@@ -201,13 +213,20 @@ export default async function Maintenant() {
               <h2 className="titre mb-2 text-lg font-bold">{t("titreInscriptions")}</h2>
               <ul className="space-y-3">
                 {activites.map((participations) => (
-                  <li key={participations[0].eventId ?? participations[0].id}>
+                  <li key={participations[0].id}>
                     <LigneActivite participations={participations} accountId={account.id} />
                   </li>
                 ))}
               </ul>
             </section>
           ) : null}
+
+          {/*
+            Après les sorties et les inscriptions : ce qui se passe passe avant ce qui
+            pourrait se passer. Une famille libre aujourd'hui de 16h à 20h est une idée de
+            sortie, pas une sortie.
+          */}
+          <DisponibilitesDuMoment dispos={disponibilites} />
         </>
       )}
 
@@ -241,7 +260,11 @@ async function LigneActivite({
   const t = await getTranslations("Maintenant");
   const locale = (await getLocale()) as Locale;
   const premiere = participations[0];
-  const jour = jourCourt(premiere.startsAt, locale);
+  // L'heure de la ligne est celle de la première famille arrivée : c'est à partir de là
+  // qu'on peut retrouver quelqu'un. La fiche détaille l'horaire de chacune.
+  const debut = new Date(Math.min(...participations.map((p) => p.startsAt.getTime())));
+  const jour = jourCourt(debut, locale);
+  const plage = plageHoraire(debut, premiere.endsAt);
   const jySuis = participations.some((p) => p.authorId === accountId);
   // « Vous, Maman de Léa et Papa de Nolan » : le lecteur d'abord, les autres ensuite.
   const noms = [
@@ -260,11 +283,15 @@ async function LigneActivite({
           {jour.jour} {jour.nombre}
         </span>
         <span className="mt-0.5 text-center text-[1.05rem] font-black leading-none text-[color:var(--color-bleu)]">
-          {/* Une exposition ou un marché n'ouvre pas à minuit : afficher 00:00 était faux. */}
-          {premiere.eventAllDay ? (
+          {/*
+            Une exposition ou un marché n'ouvre pas à minuit : afficher 00:00 était faux.
+            C'est désormais l'horaire de la famille qui décide, pas celui de l'activité —
+            une exposition sans horaire où l'on passe à 14h se lit « 14:00 ».
+          */}
+          {plage === null ? (
             <span className="text-[0.65rem] leading-tight">{t("touteLaJournee")}</span>
           ) : (
-            heureCourte(premiere.startsAt)
+            heureCourte(debut)
           )}
         </span>
       </div>

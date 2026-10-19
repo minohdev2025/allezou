@@ -29,7 +29,9 @@ página.
 | El nombre con el que ves un círculo, si es distinto del original | Para que «Clase 4P» pueda leerse «Clase de Jules» en tu pantalla | Mientras lo conserves | Solo tú. Los demás miembros ven el nombre original |
 | Qué hijo está relacionado con qué círculo | Para que una salida sin el mayor no se envíe a su clase | Mientras lo conserves | Tú, y el otro padre o madre del niño si lo tiene. Los demás miembros del círculo no lo ven |
 | Tus salidas: un lugar elegido de una lista, una hora de fin, y opcionalmente una nota de 140 caracteres | Es lo que compartes | **Se borra 24 horas después de su hora de fin** | Solo los círculos que elegiste al publicarla |
-| Tus inscripciones a las actividades de la agenda | Para que otras familias sepan que su hijo se encontrará con alguien | **Se borra 24 horas después de que acabe la actividad**, igual que una salida | Solo los círculos que elegiste |
+| Tus inscripciones a las actividades de la agenda, con el día y las horas en que vas | Para que otras familias sepan que su hijo se encontrará con alguien, y cuándo | **Se borra 24 horas después de la hora de fin que indicaste**, igual que una salida | Solo los círculos que elegiste |
+| Tus costumbres de la semana, si las indicas: «los miércoles de 16 h a 20 h» | Para que las familias que eliges sepan cuándo proponerte salir | Mientras las conserves | Solo las personas que nombraste una a una, mientras compartan un círculo contigo |
+| Aquí o fuera, semana a semana, durante las vacaciones escolares | Para que esas mismas familias sepan quién se queda en Ginebra | **Se borra en cuanto la semana ha pasado** | Las mismas personas, en las mismas condiciones |
 | La foto que adjuntas a una actividad que propones | Para que se vea de qué se trata: el cartel o el lugar | Mientras la actividad esté en la agenda; se borra con ella | **Todo el mundo**, porque la agenda es pública. El servidor la recodifica y borra de paso el lugar y la hora de la toma que tu teléfono había escrito en ella |
 | Tus ajustes de notificación | Para molestarte solo cuando tú lo has pedido | Mientras exista tu cuenta | Solo tú |
 | Las palabras que vigilas en la agenda: «piscina», «judo» | Para avisarte cuando se publica una actividad que contenga alguna | Mientras las conserves | Solo tú. No se muestran a nadie y no sirven para nada más |
@@ -74,6 +76,10 @@ De ahí se desprende:
 - Cuando varias familias se unen a una misma salida, **en la lista solo ves a las personas
   con quienes ya compartes un círculo**. Una familia que viene por el vecindario no le
   aparece a un padre o madre de la clase que no la conoce.
+- Tu **disponibilidad** (costumbres de la semana, vacaciones) sigue una regla aún más
+  estricta: solo la ven las personas que has **nombrado una a una**, y solo mientras
+  compartas con ellas un círculo sin vínculo cortado. Por defecto, nadie. Quien entra en tu
+  círculo no la ve hasta que lo marques.
 - Las **notificaciones** siguen exactamente la misma regla: no se te puede avisar de algo
   que no verías en la pantalla. Y el mensaje enviado a tu teléfono no dice ni quién ni dónde,
   solo el nombre del círculo, para que una pantalla bloqueada sobre una mesa no cuente nada.
@@ -157,4 +163,4 @@ silencio.
 
 ---
 
-*Última actualización: 16 de agosto de 2026.*
+*Última actualización: 19 de octubre de 2026.*

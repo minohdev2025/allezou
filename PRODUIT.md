@@ -273,3 +273,19 @@ précisément pourquoi la minimisation n'est pas une posture ici.
   horaire fabrique des erreurs invisibles. Les écrans d'administration (/relecture, /mesures)
   restent français : ils ne servent qu'au responsable. La page des données existe par langue
   (DONNEES.en.md…), le français faisant foi et servant de repli.
+- **Une inscription à l'agenda dit quand on y va** (19 octobre 2026). Un jour pour une
+  activité qui en compte plusieurs, une heure d'arrivée et une heure de départ, préremplis
+  avec l'horaire de l'activité : qui y va aux heures annoncées n'a rien à toucher. Une
+  exposition de six semaines n'annonçait jusqu'ici aucune famille un jour précis, et gardait
+  son inscription affichée six semaines. L'horaire tient dans la journée, comme une sortie,
+  se corrige sans republier, et c'est lui que suit le rappel « c'est bientôt ».
+- **Un troisième signal : les disponibilités** (19 octobre 2026). Allezou en diffusait deux ;
+  s'y ajoute « le mercredi de 16h à 20h », et, pendant les vacances scolaires genevoises,
+  présent ou absent semaine par semaine. Ce n'est ni une présence ni une position : aucun
+  lieu, et rien qui dise où l'on part. Elles ne vont pas à des cercles mais à des personnes
+  nommées une à une parmi ses cercles, personne par défaut — dire qu'on part trois semaines
+  en juillet se confie à quelques familles, pas à la classe. La règle de visibilité s'y
+  ajoute au lieu de s'effacer : sans cercle commun, ou avec un lien coupé, plus rien. Les
+  semaines passées sont effacées chaque nuit, car une suite de semaines « absent » finirait
+  par raconter les voyages d'une famille. Les dates des vacances sont recopiées du calendrier
+  du canton (`src/lib/vacances.ts`), et un test échoue quand il ne reste plus six mois devant.

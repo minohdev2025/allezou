@@ -758,6 +758,12 @@ export async function rappelPresenceHeures(accountId: string): Promise<number | 
  * pour les alertes, et interdit de sonner deux fois. Une activité retirée de l'agenda ne
  * sonne pas — rappeler une sortie annulée enverrait une famille devant une porte close —
  * et une inscription retirée non plus.
+ *
+ * L'heure qui compte est celle de l'inscription, pas celle de l'activité : chaque famille
+ * dit quand elle y va. Une exposition commencée en juillet où l'on passe samedi à 14h
+ * sonne samedi avant 14h — sur l'heure de l'activité, elle n'aurait jamais sonné.
+ * Une inscription à la journée commence à minuit : le rappel dit « demain », pas
+ * « à 00:00 ».
  */
 export async function notifyUpcomingAttendances(send: Sender): Promise<NotifyReport> {
   const rows = await db.execute<{
@@ -767,7 +773,7 @@ export async function notifyUpcomingAttendances(send: Sender): Promise<NotifyRep
     starts_at: Date;
     locale: string;
   }>(sql`
-    select p.id as publication_id, p.author_id as account_id, e.id as event_id, e.starts_at,
+    select p.id as publication_id, p.author_id as account_id, e.id as event_id, p.starts_at,
            a.locale
     from publication p
     join event e on e.id = p.event_id
@@ -779,9 +785,9 @@ export async function notifyUpcomingAttendances(send: Sender): Promise<NotifyRep
       and e.published_at is not null
       and e.withdrawn_at is null
       and e.rejected_at is null
-      and e.starts_at > now()
-      and e.starts_at <= now() + make_interval(hours => a.rappel_heures_avant)
-    order by e.starts_at asc
+      and p.starts_at > now()
+      and p.starts_at <= now() + make_interval(hours => a.rappel_heures_avant)
+    order by p.starts_at asc
     limit 200
   `);
 
@@ -802,7 +808,7 @@ export async function notifyUpcomingAttendances(send: Sender): Promise<NotifyRep
       row.account_id,
       {
         title: t("agendaTitre"),
-        body: t("rappelBientot", { heure }),
+        body: heure === "00:00" ? t("rappelJournee") : t("rappelBientot", { heure }),
         url: cheminLocalise(row.locale, `/agenda/${row.event_id}`),
         lang: localeSure(row.locale),
       },
