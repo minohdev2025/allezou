@@ -16,7 +16,8 @@ import { and, eq, inArray, isNull, or, sql } from "drizzle-orm";
 import { db } from "../db";
 import { asDate, asDateOrNull } from "../db/rows";
 import * as s from "../db/schema";
-import { controler, finDeSaison, type Echec } from "./controles";
+import { normaliser } from "../texte";
+import { controler, type Echec } from "./controles";
 import type { Acces, Tarif } from "./tarif";
 import { icalAdapter } from "./ical";
 import { jsonLdAdapter } from "./jsonld";
@@ -200,9 +201,7 @@ export async function runSource(
         title: event.title,
         description: event.description,
         startsAt: event.startsAt,
-        // Une activité à rythme dont la page n'écrit pas le terme : on lui pose une fin
-        // à un an, après les contrôles, sinon l'agenda l'efface dès son premier jour passé.
-        endsAt: event.endsAt ?? (event.recurrence ? finDeSaison(event.startsAt) : null),
+        endsAt: event.endsAt,
         placeLabel: event.placeLabel,
         url: event.url,
         minAge: event.minAge,
@@ -285,11 +284,21 @@ export async function runSource(
 }
 
 /**
- * Retire de l'agenda ce que la source n'annonce plus.
+ * Retire ce que la source n'annonce plus, publié ou en file.
  *
  * Une activité annulée disparaît de la page de la commune sans autre forme de procès. Tant
  * qu'on ne comparait qu'à ce que la page annonce, elle restait publiée jusqu'à sa date, et
  * une famille pouvait se déplacer pour une sortie qui n'existait plus.
+ *
+ * **La file de relecture y avait droit aussi.** La règle ne touchait que le publié, si bien
+ * qu'une activité retenue par un contrôle y restait même une fois disparue de la page : plus
+ * rien ne la relisait, ses motifs vieillissaient sur place, et la file ne pouvait que grossir.
+ * Vingt-deux des cent quatre activités en attente un soir de septembre 2026 n'avaient plus été
+ * revues depuis deux jours, certaines jamais — autant de fiches à relire qui n'existaient plus
+ * nulle part. Ce qu'aucune source n'annonce ne se relit pas : ça se retire.
+ *
+ * Retiré et non écarté, là encore : si la commune réannonce l'activité et que la lecture passe
+ * les contrôles, `withdrawnAt` retombe à zéro et elle reparaît toute seule.
  *
  * On ne touche qu'au futur : ce qui a déjà eu lieu a eu lieu, et le sortir de l'agenda
  * effacerait la trace d'une sortie à laquelle des familles sont allées.
@@ -302,7 +311,6 @@ async function retirerLesDisparues(sourceId: string): Promise<number> {
     update event
     set withdrawn_at = now()
     where source_id = ${sourceId}
-      and published_at is not null
       and withdrawn_at is null
       and starts_at > now()
       and coalesce(last_seen_at, updated_at)
@@ -337,22 +345,30 @@ async function retirerLesDisparues(sourceId: string): Promise<number> {
  *
  * **Laquelle des deux jumelles reste.** Le contrôle marquait celle qui arrivait la seconde,
  * si bien que l'ordre de lecture décidait. À Lancy, c'est la préfixée qui est passée :
- * « Sport Animations Jeux-Escalade pour Tuttisports Lancy » est publiée avec une durée nulle
+ * « Sport Animations Jeux-Escalade pour Tuttisports Lancy » publiée avec une durée nulle,
  * pendant que « Animations Jeux-Escalade pour Tuttisports Lancy », qui porte le vrai horaire,
- * attend en file comme doublon. La rubrique n'appartient pas au titre : entre deux titres
- * emboîtés, le court est celui que la page annonce, et c'est lui qui reste.
+ * attendait en file comme doublon.
  *
- * L'emboîtement se lit donc dans un sens :
+ * **La rubrique est à gauche du titre, jamais à droite, et c'est tout l'écart.** « Sport
+ * Animations Jeux-Escalade » se termine par « Animations Jeux-Escalade » : la longue est la
+ * préfixée, la courte est le titre. Mais « Sieste musicale (dès 1 an) » commence par « Sieste
+ * musicale » — la longue est ici celle qui porte la tranche d'âge, et la retirer effacerait
+ * la seule des deux qui dise quelque chose au parent. Sur les treize paires emboîtées en file
+ * un jour de septembre 2026, une seule était préfixée. L'emboîtement à lui seul ne dit rien.
  *
- * - la lecture est **plus longue** qu'une activité déjà là : c'est elle qui porte la rubrique,
- *   elle part en file ;
- * - la lecture est **plus courte** : c'est l'autre qui la portait. Rien ne lui est reproché,
- *   et la longue est retirée de l'agenda.
+ * On exige donc que la courte **termine** la longue, sur un début de mot :
+ *
+ * - la lecture est la courte et la longue s'achève sur elle : c'est une rubrique. Rien n'est
+ *   reproché à la lecture, et la longue est retirée de l'agenda ;
+ * - tout autre emboîtement reste un doublon ordinaire, retenu en file comme avant.
+ *
+ * La comparaison passe par `normaliser`, comme tous les contrôles : « Bienvenue au CaF'liens ! »
+ * se termine bien par « CaF'liens » une fois la ponctuation retirée, et la garder dépendrait
+ * sinon d'un point d'exclamation.
  *
  * Retirée et non écartée : `withdrawnAt` est le mot de la machine, que le passage suivant
  * défait de lui-même si la source cesse d'annoncer la courte. Écarter serait une décision,
- * et ce n'en est pas une — deux titres emboîtés le même jour ne sont pas toujours la même
- * activité (« Cours de yoga » et « Cours de yoga prénatal » existent).
+ * et ce n'en est pas une.
  *
  * Les titres strictement égaux ne sont pas un emboîtement : aucune des deux lignes n'est plus
  * propre que l'autre, et la seconde part en file comme avant.
@@ -405,7 +421,6 @@ async function chercherDoublon(event: RawEvent, sourceId: string): Promise<Doubl
       commune: s.event.commune,
       sourceId: s.event.sourceId,
       title: s.event.title,
-      plusLongue: sql<boolean>`length(${s.event.title}) > length(cast(${event.title} as text))`,
     })
     .from(s.event)
     .where(
@@ -420,12 +435,23 @@ async function chercherDoublon(event: RawEvent, sourceId: string): Promise<Doubl
   if (rows.length === 0) return { echecs: [], aRetirer: [] };
 
   /*
+    Le tri se fait ici et non en SQL : `normaliser` retire la ponctuation et les accents comme
+    partout ailleurs, et Postgres ne connaît que `lower`. Un titre se compare d'une seule
+    façon dans cette application.
+  */
+  const titreLu = normaliser(event.title);
+  const prefixee = (autre: string) => {
+    const t = normaliser(autre);
+    return t.length > titreLu.length && t.endsWith(` ${titreLu}`);
+  };
+
+  /*
     Une lecture propre peut avoir plusieurs jumelles préfixées — la rubrique a changé entre
     deux passages — mais une seule ligne à reprocher suffit à la retenir. On retire donc
-    toutes les longues, et on ne rend qu'un motif.
+    toutes les préfixées, et on ne rend qu'un motif.
   */
-  const aRetirer = rows.filter((r) => r.plusLongue).map((r) => r.id);
-  const retenue = rows.find((r) => !r.plusLongue);
+  const aRetirer = rows.filter((r) => prefixee(r.title)).map((r) => r.id);
+  const retenue = rows.find((r) => !prefixee(r.title));
 
   if (!retenue) return { echecs: [], aRetirer };
 
@@ -610,6 +636,9 @@ export async function pendingReview(limit = 50): Promise<PendingEvent[]> {
     left join source src on src.id = e.source_id
     where e.published_at is null
       and e.rejected_at is null
+      -- Ce que la source n'annonce plus ne se relit pas : depuis que la règle de
+      -- disparition couvre la file, une fiche retirée n'a plus rien à y faire.
+      and e.withdrawn_at is null
     order by e.starts_at asc
     limit ${limit}
   `);

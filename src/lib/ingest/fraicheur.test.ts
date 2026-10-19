@@ -209,6 +209,37 @@ describe("Ce que la source n'annonce plus", () => {
     expect(rapport.ok).toBe(false);
     expect(rapport.withdrawn).toBe(0);
   });
+
+  /*
+    La file y avait droit aussi. La règle ne touchait que le publié, si bien qu'une activité
+    retenue par un contrôle restait à relire une fois disparue de la page : plus rien ne la
+    relisait, ses motifs vieillissaient sur place, et la file ne pouvait que grossir. Vingt-
+    deux des cent quatre activités en attente un soir de septembre 2026 n'avaient plus été
+    revues depuis deux jours, certaines jamais.
+  */
+  it("retire aussi ce qui attendait en file, et que plus rien ne relit", async () => {
+    // Sans publication automatique, la lecture entre en file au lieu de paraître.
+    const source = await createSource({ kind: "jsonld", autoPublish: false });
+    await runSource(source.id, adaptateur([unEvenement()]));
+    expect(await pendingReview()).toHaveLength(1);
+
+    await vieillir(24);
+    const rapport = await runSource(source.id, adaptateur([]));
+
+    expect(rapport.withdrawn).toBe(1);
+    expect(await pendingReview()).toEqual([]);
+  });
+
+  it("la ramène en file si la commune la réannonce", async () => {
+    const source = await createSource({ kind: "jsonld", autoPublish: false });
+    await runSource(source.id, adaptateur([unEvenement()]));
+    await vieillir(24);
+    await runSource(source.id, adaptateur([]));
+
+    await runSource(source.id, adaptateur([unEvenement()]));
+
+    expect(await pendingReview()).toHaveLength(1);
+  });
 });
 
 describe("Publiées, mais signalées", () => {

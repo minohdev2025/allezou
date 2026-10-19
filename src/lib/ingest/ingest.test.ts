@@ -602,6 +602,28 @@ describe("Lecture d'une page par MiniMax", () => {
   });
 
   /*
+    Ce qui a mis Carouge en échec, mesuré un soir de septembre 2026 : toutes les entités HTML
+    nommées étaient remplacées par une espace. « Parcours C&eacute;ramique Carouge » devenait
+    « Parcours C ramique Carouge », et le contrôle comparait un titre juste à une page
+    mutilée. Quarante et une activités en file, toutes lues fidèlement par le modèle, et
+    « février » réduit à « f vrier » emportait le contrôle des dates avec lui.
+  */
+  it("rend aux entités HTML leur lettre, accents compris", () => {
+    const texte = htmlToText(
+      "<p>Parcours C&eacute;ramique, f&eacute;vrier &agrave; Carouge &mdash; 10&nbsp;h &amp; plus</p>",
+    );
+    expect(texte).toBe("Parcours Céramique, février à Carouge — 10 h & plus");
+  });
+
+  it("distingue la majuscule accentuée, et lit les entités numériques", () => {
+    expect(htmlToText("<p>&Eacute;cole, &#233;t&#xe9;</p>")).toBe("École, été");
+  });
+
+  it("laisse une espace là où l'entité est inconnue, sans coller les mots", () => {
+    expect(htmlToText("<p>avant&zzz;apres</p>")).toBe("avant apres");
+  });
+
+  /*
     Ce qui a mis Lancy en échec en production : le modèle avait répondu par le tableau nu,
     forme que le schéma accepte pourtant. Ne chercher que l'accolade rendait le premier
     événement du tableau, et plus rien ne pouvait le valider.
@@ -971,55 +993,83 @@ describe("Les contrôles à la place de la relecture", () => {
   });
 
   /*
-    « Le marché, tous les mardis » : la page ne dit pas quand il s'arrête, et l'on demandait
-    au modèle une date de fin. Il en inventait une — mai 2028 pour le marché des Ormeaux — que
-    le contrôle de durée attrapait à juste titre, si bien qu'un marché hebdomadaire n'entrait
-    jamais à l'agenda. Ne rien poser du tout ne l'y ferait pas entrer davantage : l'agenda
-    efface une activité deux heures après son premier jour.
+    L'emboîtement à lui seul ne dit rien. « Sieste musicale (dès 1 an) » commence par
+    « Sieste musicale » : c'est la longue qui porte la tranche d'âge, et la retirer
+    effacerait la seule des deux qui apprenne quelque chose à un parent. Sur treize paires
+    emboîtées en file un jour de septembre 2026, une seule portait une rubrique. Seule une
+    rubrique à gauche du titre fait une jumelle.
   */
-  it("pose une fin à un an sur une activité à rythme que la page ne date pas", async () => {
+  it("ne retire pas la version qui en dit plus que la courte", async () => {
     const source = await createSource({ kind: "html_ai", autoPublish: true });
 
-    const marche = unEvenement({
-      title: "Marché des Ormeaux",
-      recurrence: "tous les mardis et jeudis",
-      endsAt: undefined,
+    const courte = unEvenement({ title: "Sieste musicale" });
+    const avecAge = {
+      ...courte,
+      externalId: "sieste-musicale-avec-age",
+      title: "Sieste musicale (dès 1 an)",
+    };
+
+    await runSource(
+      source.id,
+      adaptateur([{ ...avecAge, texteSource: pageQuiDitTout(avecAge) }]),
+    );
+    expect(await surLAgenda()).toEqual([avecAge.title]);
+
+    // La courte arrive ensuite. Elle ne chasse pas la longue : elle part en file.
+    await runSource(
+      source.id,
+      adaptateur([{ ...courte, texteSource: pageQuiDitTout(courte) }]),
+    );
+    expect(await surLAgenda()).toEqual([avecAge.title]);
+
+    const attente = await pendingReview();
+    expect(attente.map((e) => e.controles.map((c) => c.code))).toEqual([["doublon"]]);
+  });
+
+  /*
+    Lancy écrit « 7 mai 2025 - 5 juin 2030, les mercredis » sur son cours de danse
+    parents-enfants, et « 7 avril 2026 - 4 mai 2028 » sur le marché des Ormeaux. Les deux
+    lectures étaient fidèles — vérifié sur les pages — et les deux partaient en file comme
+    invraisemblables. Aucun rendez-vous qui revient n'entrait donc à l'agenda, c'est-à-dire
+    précisément les sorties qu'une famille refait.
+  */
+  it("publie une longue période quand la page annonce un rythme", async () => {
+    const source = await createSource({ kind: "html_ai", autoPublish: true });
+
+    const cours = unEvenement({
+      title: "Danse avec papa ou maman",
+      recurrence: "les mercredis",
+      endsAt: minutesFromNow(60 * 24 * 900),
     });
 
     const rapport = await runSource(
       source.id,
-      adaptateur([{ ...marche, texteSource: pageQuiDitTout(marche) }]),
+      adaptateur([{ ...cours, texteSource: pageQuiDitTout(cours) }]),
     );
 
     expect(rapport.published).toBe(1);
-    expect(await surLAgenda()).toEqual([marche.title]);
-
-    const [ligne] = await db.execute<{ starts_at: Date; ends_at: Date }>(sql`
-      select starts_at, ends_at from event where title = ${marche.title}
-    `);
-    const jours =
-      (new Date(ligne.ends_at).getTime() - new Date(ligne.starts_at).getTime()) / 86_400_000;
-    expect(Math.round(jours)).toBe(366);
+    expect(await surLAgenda()).toEqual([cours.title]);
   });
 
-  it("garde la fin que la page annonce, rythme ou pas", async () => {
+  /*
+    Sans rythme, le plafond garde tout son sens : trois ans d'affilée sans rien qui revienne,
+    c'est une rubrique que le modèle a prise pour une activité.
+  */
+  it("retient une longue période que rien ne fait revenir", async () => {
     const source = await createSource({ kind: "html_ai", autoPublish: true });
 
-    const cours = unEvenement({
-      title: "Cours de poterie",
-      recurrence: "les mercredis",
-      endsAt: minutesFromNow(60 * 24 * 30),
+    const rubrique = unEvenement({
+      title: "Programme des manifestations",
+      endsAt: minutesFromNow(60 * 24 * 900),
     });
 
     await runSource(
       source.id,
-      adaptateur([{ ...cours, texteSource: pageQuiDitTout(cours) }]),
+      adaptateur([{ ...rubrique, texteSource: pageQuiDitTout(rubrique) }]),
     );
 
-    const [ligne] = await db.execute<{ ends_at: Date }>(sql`
-      select ends_at from event where title = ${cours.title}
-    `);
-    expect(new Date(ligne.ends_at).getTime()).toBe(cours.endsAt?.getTime());
+    const attente = await pendingReview();
+    expect(attente[0].controles.map((c) => c.code)).toContain("duree_invraisemblable");
   });
 
   it("une relecture humaine efface les contrôles en défaut", async () => {

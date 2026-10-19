@@ -264,30 +264,6 @@ function lieuImpose(config: Source["config"] | undefined): string | undefined {
 }
 
 /**
- * La fin d'une saison que personne n'a écrite.
- *
- * Une page qui annonce « le marché, tous les mardis » ne dit pas quand il s'arrête. Comme on
- * demandait au modèle une date de fin, il en inventait une : mai 2028 pour le marché des
- * Ormeaux, juin 2030 pour un cours de hip-hop parent-enfant. Le contrôle de durée les
- * attrapait à juste titre, et elles restaient en file pour toujours — un marché hebdomadaire
- * n'entrait jamais à l'agenda.
- *
- * La consigne ne demande plus de fin quand la page n'en écrit pas. Reste à en poser une :
- * sans fin, l'agenda efface l'activité deux heures après son premier jour, et un marché
- * hebdomadaire disparaîtrait dès le premier mardi passé.
- *
- * Un an, parce que c'est exactement la limite au-delà de laquelle une durée cesse d'être
- * vraisemblable. L'activité se représente au passage suivant tant que la source l'annonce :
- * c'est la source qui décide de sa fin, pas ce calcul.
- *
- * Cette date n'est pas une lecture. Aucun contrôle ne la relit — elle est posée après eux —
- * et elle ne s'affiche jamais comme une fin annoncée : c'est `recurrence` qui porte ce que
- * la page dit du rythme, et c'est lui qu'un parent lit.
- */
-export function finDeSaison(debut: Date): Date {
-  return new Date(debut.getTime() + DUREE_MAX_JOURS * 86_400_000);
-}
-/**
  * Les contrôles qui ne demandent que l'activité et sa page. Fonction pure : c'est elle que
  * les tests verrouillent, et c'est elle qui décide si une activité se publie seule.
  */
@@ -310,14 +286,31 @@ export function controler(event: RawEvent, contexte: ContexteControle): Echec[] 
     });
   }
 
+  /*
+    Le plafond de durée ne vaut que pour une activité qui n'annonce aucun rythme.
+
+    Il a d'abord tenu en file des lectures parfaitement fidèles. La page du marché des
+    Ormeaux écrit « 7 avril 2026 - 4 mai 2028 » et celle du cours de hip-hop parents-enfants
+    « 7 mai 2025 - 5 juin 2030, les mercredis » : deux ans et cinq ans, recopiés mot pour mot,
+    et rejetés comme invraisemblables. Aucun marché hebdomadaire, aucun cours à l'année
+    n'entrait donc à l'agenda, c'est-à-dire précisément les sorties qu'une famille refait.
+
+    Une période longue avec un rythme écrit n'est pas une rubrique restée ouverte, c'est un
+    rendez-vous qui revient. Et elle ne se croit pas sur parole : `recurrence_absente` vérifie
+    que le rythme figure sur la page, `date_fin_absente` que la date de fin y figure aussi.
+    Deux contrôles valent mieux qu'un plafond arbitraire.
+
+    Sans rythme, le plafond garde tout son sens : trois ans d'affilée sans rien qui revienne,
+    c'est une rubrique qu'un modèle a prise pour une activité.
+  */
   if (event.endsAt) {
     const jours = (event.endsAt.getTime() - event.startsAt.getTime()) / 86_400_000;
     if (jours < 0) {
       echecs.push({ code: "duree_invraisemblable", detail: "La fin précède le début." });
-    } else if (jours > DUREE_MAX_JOURS) {
+    } else if (jours > DUREE_MAX_JOURS && !event.recurrence) {
       echecs.push({
         code: "duree_invraisemblable",
-        detail: `L'activité durerait ${Math.round(jours)} jours.`,
+        detail: `L'activité durerait ${Math.round(jours)} jours, sans rythme annoncé.`,
       });
     }
   }
