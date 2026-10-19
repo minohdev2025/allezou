@@ -168,6 +168,10 @@ Qualquer alteração ser-lhe-á anunciada na aplicação antes de entrar em vigo
 alteração que alargasse o que é recolhido ou quem o pode ver nunca será aplicada em
 silêncio.
 
+O que mudou a 19 de outubro de 2026: a sua **disponibilidade** (hábitos da semana,
+presente ou ausente durante as férias escolares), e **o dia e as horas** das suas
+inscrições na agenda.
+
 ---
 
 *Última atualização: 19 de outubro de 2026.*

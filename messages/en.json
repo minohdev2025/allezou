@@ -59,6 +59,12 @@
     "titreOnglet": "Your data",
     "retour": "Back"
   },
+  "AnnonceDonnees": {
+    "titre": "Your data: this page changed on {date}",
+    "ceQuiChange": "Your availability, and the day and times of your agenda sign-ups.",
+    "lire": "Read",
+    "jaiLu": "I've read it"
+  },
   "Bienvenue": {
     "titre": "Welcome",
     "sousTitre": "Two questions, and you're done.",

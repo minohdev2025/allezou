@@ -59,6 +59,12 @@
     "titreOnglet": "Os seus dados",
     "retour": "Voltar"
   },
+  "AnnonceDonnees": {
+    "titre": "Os seus dados: a página mudou a {date}",
+    "ceQuiChange": "A sua disponibilidade, e o dia e as horas das suas inscrições na agenda.",
+    "lire": "Ler",
+    "jaiLu": "Já li"
+  },
   "Bienvenue": {
     "titre": "Boas-vindas",
     "sousTitre": "Duas perguntas, e está feito.",

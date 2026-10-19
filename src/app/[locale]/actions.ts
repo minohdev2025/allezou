@@ -39,6 +39,7 @@ import {
   retirerCreneau,
 } from "@/lib/disponibilites";
 import { hashIpDeLaRequete } from "@/lib/audit-ip";
+import { marquerDonneesLues } from "@/lib/donnees";
 import { currentAccount } from "@/lib/session";
 import { deleteAccount } from "@/lib/account";
 import {
@@ -729,6 +730,13 @@ export async function basculerAlerteInscription(formData: FormData) {
   const account = await requireAccount();
   await reglerAlerteInscription(account.id, formData.get("actif") === "1");
   redirect("/reglages");
+}
+
+/** « J'ai lu » sous l'annonce d'un changement de /donnees. */
+export async function lireDonnees() {
+  const account = await requireAccount();
+  await marquerDonneesLues(account.id);
+  redirect("/maintenant");
 }
 
 export async function reglerRappel(formData: FormData) {

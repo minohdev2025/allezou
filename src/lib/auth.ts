@@ -15,6 +15,7 @@ import { z } from "zod";
 
 import { db } from "./db";
 import * as s from "./db/schema";
+import { VERSION_DONNEES } from "./donnees";
 import { sendLoginLink } from "./mail";
 import { generateToken, hashToken } from "./tokens";
 
@@ -221,7 +222,13 @@ export async function consumeMagicLink(token: string): Promise<LoginResult> {
       const created = await tx
         .insert(s.account)
         // La langue du lien suivi : celle dans laquelle cette personne nous a lus.
-        .values({ email: link.email, displayName: provisional, locale: link.locale })
+        // Et la version de /donnees du jour : on la découvre en entier, pas comme un changement.
+        .values({
+          email: link.email,
+          displayName: provisional,
+          locale: link.locale,
+          donneesLues: VERSION_DONNEES,
+        })
         .returning();
       account = created[0];
       isNew = true;

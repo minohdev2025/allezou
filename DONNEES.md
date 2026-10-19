@@ -164,6 +164,10 @@ Toute modification vous sera annoncée dans l'application avant de prendre effet
 modification qui élargirait ce qui est collecté ou qui peut le voir ne sera jamais appliquée
 en silence.
 
+Ce qui a changé le 19 octobre 2026 : vos **disponibilités** (habitudes de la semaine,
+présent ou absent pendant les vacances scolaires), et **le jour et les heures** de vos
+inscriptions à l'agenda.
+
 ---
 
 *Dernière mise à jour : 19 octobre 2026.*

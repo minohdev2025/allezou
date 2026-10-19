@@ -1,0 +1,1 @@
+ALTER TABLE "account" ADD COLUMN "donnees_lues" varchar(10);

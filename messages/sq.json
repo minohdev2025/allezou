@@ -59,6 +59,12 @@
     "titreOnglet": "Të dhënat tuaja",
     "retour": "Prapa"
   },
+  "AnnonceDonnees": {
+    "titre": "Të dhënat tuaja: faqja ndryshoi më {date}",
+    "ceQuiChange": "Disponueshmëria juaj, dhe dita e orët e regjistrimeve tuaja në agjendë.",
+    "lire": "Lexo",
+    "jaiLu": "E lexova"
+  },
   "Bienvenue": {
     "titre": "Mirë se vini",
     "sousTitre": "Dy pyetje, dhe kaq.",

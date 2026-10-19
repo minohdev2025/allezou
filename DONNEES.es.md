@@ -161,6 +161,10 @@ Cualquier modificación se te anunciará en la aplicación antes de entrar en vi
 modificación que ampliara lo que se recoge o quién puede verlo nunca se aplicará en
 silencio.
 
+Lo que cambió el 19 de octubre de 2026: tu **disponibilidad** (costumbres de la semana,
+presente o ausente durante las vacaciones escolares), y **el día y las horas** de tus
+inscripciones en la agenda.
+
 ---
 
 *Última actualización: 19 de octubre de 2026.*

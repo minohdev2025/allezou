@@ -172,6 +172,9 @@ Any change will be announced in the app before it takes effect. A change
 that would expand what's collected, or who can see it, will never be
 applied silently.
 
+What changed on 19 October 2026: your **availability** (weekly routines, present or away
+during school holidays), and **the day and times** of your agenda sign-ups.
+
 ---
 
 *Last updated: 19 October 2026.*

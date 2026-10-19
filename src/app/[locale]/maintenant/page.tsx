@@ -5,6 +5,7 @@ import { LOCALE_BCP47, type Locale } from "@/i18n/routing";
 import { upcomingCalendar } from "@/lib/calendar";
 import { EMOJIS_CATEGORIE, estCategorieLieu } from "@/lib/categories-lieu";
 import { myChildren } from "@/lib/children";
+import { donneesAAnnoncer } from "@/lib/donnees";
 import { currentlyOut, upcomingAttendances, upcomingOutings } from "@/lib/publications";
 import { requireAccount } from "@/lib/session";
 import { listeFr } from "@/lib/texte";
@@ -15,6 +16,7 @@ import {
 } from "@/lib/visibility";
 import { rejoindreSortie, retirerSortie } from "../actions";
 import { DisponibilitesDuMoment } from "../disponibilites";
+import { AnnonceDonnees } from "./annonce-donnees";
 import { DemandeNotifications } from "./demande-notifications";
 import { ProchainesActivites } from "../prochaines-activites";
 import {
@@ -152,6 +154,9 @@ export default async function Maintenant() {
           </p>
         ) : null}
       </header>
+
+      {/* Un changement de /donnees s'annonce à tous, avant tout le reste, cercle ou pas. */}
+      {donneesAAnnoncer(account.donneesLues) ? <AnnonceDonnees /> : null}
 
       {/*
         Bannière de demande d'autorisation pour les notifications push. Visible

@@ -289,3 +289,13 @@ précisément pourquoi la minimisation n'est pas une posture ici.
   semaines passées sont effacées chaque nuit, car une suite de semaines « absent » finirait
   par raconter les voyages d'une famille. Les dates des vacances sont recopiées du calendrier
   du canton (`src/lib/vacances.ts`), et un test échoue quand il ne reste plus six mois devant.
+- **Un changement de /donnees s'annonce sur l'écran Maintenant** (19 octobre 2026). La page
+  promettait qu'aucune modification ne prendrait effet sans être annoncée dans l'application,
+  et rien ne le faisait. La page a désormais une version, sa date de mise à jour
+  (`VERSION_DONNEES`, `src/lib/donnees.ts`), et chaque compte retient la dernière qu'il a lue.
+  Tant qu'il est en retard, Maintenant affiche en tête la date et ce qui change en une ligne,
+  « Lire » et « J'ai lu » — pas de « Plus tard » : une promesse ne se repousse pas. Un compte
+  créé reçoit la version du jour, qu'il découvre en entier et non comme un changement. Le
+  bas de DONNEES.md dit ce qui a changé, et un test refuse que la date de la page et la
+  version du code divergent. Changer la page, c'est donc changer la version et la ligne
+  `AnnonceDonnees.ceQuiChange` des cinq langues.

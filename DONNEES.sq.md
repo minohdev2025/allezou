@@ -167,6 +167,10 @@ t'i drejtoheni Komisionerit Federal për Mbrojtjen e të Dhënave dhe Transparen
 që do të zgjeronte çfarë mblidhet ose kush mund ta shohë, nuk do të zbatohet kurrë
 në heshtje.
 
+Çfarë ndryshoi më 19 tetor 2026: **disponueshmëria** juaj (zakonet e javës, i pranishëm
+ose larg gjatë pushimeve shkollore), dhe **dita dhe orët** e regjistrimeve tuaja në
+agjendë.
+
 ---
 
 *Përditësimi i fundit: 19 tetor 2026.*

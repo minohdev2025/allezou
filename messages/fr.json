@@ -59,6 +59,12 @@
     "titreOnglet": "Vos données",
     "retour": "Retour"
   },
+  "AnnonceDonnees": {
+    "titre": "Vos données : la page a changé le {date}",
+    "ceQuiChange": "Vos disponibilités, et le jour et les heures de vos inscriptions à l'agenda.",
+    "lire": "Lire",
+    "jaiLu": "J'ai lu"
+  },
   "Bienvenue": {
     "titre": "Bienvenue",
     "sousTitre": "Deux questions, et c'est fini.",

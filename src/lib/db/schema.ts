@@ -80,6 +80,15 @@ export const account = pgTable(
      * rendez-vous avec soi-même, aucun cercle n'a son mot à dire.
      */
     rappelHeuresAvant: integer(),
+    /**
+     * La version de /donnees que cette personne a lue (`VERSION_DONNEES`, src/lib/donnees.ts).
+     *
+     * La page promet qu'un changement est annoncé dans l'application avant de prendre
+     * effet : tant que cette valeur est en retard sur la version du code, /maintenant
+     * l'annonce. Nul pour les comptes antérieurs au mécanisme ; un compte créé reçoit la
+     * version du jour, qu'il découvre en entier et non comme un changement.
+     */
+    donneesLues: varchar({ length: 10 }),
     /** Compte supprimé : invisible partout, y compris dans les cercles. */
     deletedAt: timestamp({ withTimezone: true }),
   },
