@@ -298,4 +298,7 @@ précisément pourquoi la minimisation n'est pas une posture ici.
   créé reçoit la version du jour, qu'il découvre en entier et non comme un changement. Le
   bas de DONNEES.md dit ce qui a changé, et un test refuse que la date de la page et la
   version du code divergent. Changer la page, c'est donc changer la version et la ligne
-  `AnnonceDonnees.ceQuiChange` des cinq langues.
+  `AnnonceDonnees.ceQuiChange` des cinq langues. L'annonce est partie dans le même
+  déploiement que les disponibilités : elles sont vides et lues de personne par défaut, et
+  l'horaire d'une inscription ne part qu'avec l'inscription. Rien ne s'élargit donc sans un
+  geste de la personne.
